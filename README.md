@@ -123,9 +123,8 @@ Account data is synchronised across all devices, including
 
 ## Scenes
 
-* Create and modify scenes and blueprints by opening the tab on the right.
-* Scene configuration can be seen [here](#scenes)
-* Blueprint creation and management can be seen [here](#blueprints)
+* Create and modify scenes by opening the tab on the right.
+* Scene configuration can be seen [here](#creating-and-modifying-scenes)
 * While modifying or creating a scene, players will not be able to affect the current scene and will only see the laning page.
 
 ### Creating and modifying scenes
