@@ -78,7 +78,7 @@ namespace Networking
                 Socket.OnReconnectError -= OnReconnect;
             }
 
-            var uri = new Uri($"http://{address}:3000/");
+            var uri = new Uri($"http://{address}");
             Socket = new SocketIOUnity(uri, new SocketIOOptions
             {
                 Query = new Dictionary<string, string>

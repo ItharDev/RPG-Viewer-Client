@@ -15,6 +15,7 @@ namespace RPG
         public static bool Synced;
         public static string Scene;
         public static List<string> Users = new List<string>();
+        public static Sprite BackgroundSprite;
 
         public static Session session;
 
@@ -180,24 +181,33 @@ namespace RPG
         }
 
         [System.Obsolete]
-        public static async void JoinSession(JoinData data)
+        public static void JoinSession(JoinData data)
         {
-            var Loader = SceneManager.LoadSceneAsync("Session");
-            await UniTask.WaitUntil(() => Loader.isDone);
-
-            IsMaster = data.master;
-            Synced = data.synced;
-            Scene = data.scene;
-            Users = data.users;
-
-            if (session == null) session = FindObjectOfType<Session>();
-            if (!IsMaster && !Synced) return;
-
-            if (!string.IsNullOrEmpty(data.scene))
+            WebManager.Download(data.background, true, async (bytes) =>
             {
-                SocketManager.Socket.Emit("update-scene", Scene);
-                session.LoadScene(data.scene);
-            }
+                await UniTask.SwitchToMainThread();
+
+                Texture2D texture = new Texture2D(1, 1);
+                texture.LoadImage(bytes);
+                BackgroundSprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
+
+                var Loader = SceneManager.LoadSceneAsync("Session");
+                await UniTask.WaitUntil(() => Loader.isDone);
+
+                IsMaster = data.master;
+                Synced = data.synced;
+                Scene = data.scene;
+                Users = data.users;
+
+                if (session == null) session = FindObjectOfType<Session>();
+                if (!IsMaster && !Synced) return;
+
+                if (!string.IsNullOrEmpty(data.scene))
+                {
+                    SocketManager.Socket.Emit("update-scene", Scene);
+                    session.LoadScene(data.scene);
+                }
+            });
         }
     }
 
@@ -209,5 +219,6 @@ namespace RPG
         public bool master;
         public bool synced;
         public string scene;
+        public string background;
     }
 }

@@ -44,6 +44,7 @@ namespace RPG
         [System.Obsolete]
         private void Start()
         {
+            background.sprite = SessionManager.BackgroundSprite;
             if (SocketManager.SceneSettings != null)
             {
                 SocketManager.SceneSettings = null;

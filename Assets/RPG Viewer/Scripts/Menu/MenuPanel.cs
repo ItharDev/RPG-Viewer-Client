@@ -1,6 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using Networking;
+using SFB;
 using TMPro;
 using UnityEngine;
 
@@ -37,6 +41,8 @@ namespace RPG
 
         private readonly List<string> sessions = new List<string>();
 
+        private byte[] bytes;
+
         private void Start()
         {
             if (PlayerPrefs.HasKey("Address"))
@@ -49,6 +55,21 @@ namespace RPG
         {
             if (SocketManager.Socket != null) statusText.text = SocketManager.Socket.Connected ? "Online" : "Offline";
         }
+
+
+        #region Image
+        public async void SelectImage() => await ImageTask();
+        private async Task ImageTask()
+        {
+            var extensions = new[] { new ExtensionFilter("Image Files", "png", "jpg", "jpeg") };
+            StandaloneFileBrowser.OpenFilePanelAsync("Select file", "", extensions, false, (string[] paths) =>
+            {
+                if (paths.Length == 0) return;
+                bytes = File.ReadAllBytes(paths[0]);
+            });
+            await Task.Yield();
+        }
+        #endregion
 
         #region Buttons
         public void Connect()
@@ -67,6 +88,12 @@ namespace RPG
                 return;
             }
 
+            if (bytes == null)
+            {
+                MessageManager.QueueMessage("No landing page selected");
+                return;
+            }
+
             await SocketManager.Socket.EmitAsync("create-session", (callback) =>
             {
                 if (callback.GetValue().GetBoolean())
@@ -79,7 +106,9 @@ namespace RPG
                     MessageManager.QueueMessage(callback.GetValue(1).GetString());
                 }
 
-            }, createName.text);
+            }, createName.text, Convert.ToBase64String(bytes));
+
+            bytes = null;
         }
         public void CopyId()
         {
