@@ -1,0 +1,100 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b19cefa3bf552f94390d1c272b19ea6e, type: 3}
+  m_Name: FOW Profile
+  m_EditorClassIdentifier: 
+  lightmapPresets:
+    list:
+    - name: Regular Lights
+      type: 0
+      hdr: 1
+      darknessColor: {r: 0, g: 0, b: 0, a: 1}
+      depth: -100
+      resolution: 1
+      dayLayers:
+        list: []
+      lightLayers:
+        list:
+        - id: 0
+          type: 0
+          sorting: 0
+    - name: Fog of War Lights
+      type: 0
+      hdr: 1
+      darknessColor: {r: 0, g: 0, b: 0, a: 1}
+      depth: -100
+      resolution: 1
+      dayLayers:
+        list: []
+      lightLayers:
+        list:
+        - id: 1
+          type: 0
+          sorting: 0
+  lightPresets:
+    list:
+    - name: Default
+      layerSetting:
+        list:
+        - layerID: 0
+          type: 0
+          sorting: 0
+          sortingIgnore: 0
+          shadowEffect: 2
+          shadowEffectLayer: 0
+          maskLit: 0
+          maskLitDistance: 1
+        - layerID: 1
+          type: 0
+          sorting: 0
+          sortingIgnore: 0
+          shadowEffect: 2
+          shadowEffectLayer: 0
+          maskLit: 0
+          maskLitDistance: 1
+  eventPresets:
+    list:
+    - name: Disabled
+      layerSetting:
+        list:
+        - layerID: 0
+    - name: 'Preset (Id: 1)'
+      layerSetting:
+        list:
+        - layerID: 0
+  qualitySettings:
+    lightTextureSize: 1
+    lightEffectTextureSize: 1
+    lightFilterMode: 2
+    lightmapFilterMode: 2
+    updateMethod: 0
+    coreAxis: 0
+    projection: 0
+  dayLightingSettings:
+    direction: 322
+    ShadowColor: {r: 0, g: 0, b: 0, a: 1}
+    height: 2.84
+    bumpMap:
+      height: 0.89
+      strength: 1.55
+  layers:
+    colliderLayers:
+      names:
+      - Block Vision
+      - Block Everything
+    lightLayers:
+      names:
+      - Regular Lights
+      - Fog of War Lights
+    dayLayers:
+      names:
+      - Default

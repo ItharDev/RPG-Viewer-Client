@@ -1,0 +1,76 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b19cefa3bf552f94390d1c272b19ea6e, type: 3}
+  m_Name: Depth Map Profile
+  m_EditorClassIdentifier: 
+  lightmapPresets:
+    list:
+    - name: Default
+      type: 3
+      darknessColor: {r: 0, g: 0, b: 0, a: 0}
+      depth: -100
+      resolution: 1
+      dayLayers:
+        list:
+        - id: 0
+          type: 0
+          sorting: 0
+      lightLayers:
+        list: []
+  lightPresets:
+    list:
+    - name: Default
+      layerSetting:
+        list:
+        - layerID: 0
+          type: 0
+          sorting: 0
+          sortingIgnore: 0
+          shadowEffect: 0
+          shadowEffectLayer: 0
+          maskLit: 0
+          maskLitDistance: 1
+  eventPresets:
+    list:
+    - name: Disabled
+      layerSetting:
+        list:
+        - layerID: 0
+    - name: Default
+      layerSetting:
+        list:
+        - layerID: 0
+  qualitySettings:
+    HDR: 0
+    lightTextureSize: 1
+    lightEffectTextureSize: 1
+    lightFilterMode: 1
+    updateMethod: 0
+    coreAxis: 0
+    projection: 0
+  dayLightingSettings:
+    alpha: 1
+    direction: 52
+    height: 1.71
+    bumpMap:
+      height: 0
+      strength: 1
+  layers:
+    colliderLayers:
+      names:
+      - Default
+    lightLayers:
+      names:
+      - Default
+    dayLayers:
+      names:
+      - Default

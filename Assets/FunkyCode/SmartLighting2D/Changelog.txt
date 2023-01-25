@@ -1,0 +1,540 @@
+﻿--- Todo
+
+Lighting Manager 2D: scene profile (no priority)
+Lighting Manager 2D: sorting layer / unity layer Lighting Pipeline (no priority)
+Lighting Manager 2D: compiler directive - disable lighting? (no priority) (for batch mode?)
+
+Light2D: line light type (no priority)
+
+Light2D: issues when editing multiple "Light2D" components
+Asset: Fog Of War with angle demo / screenshot
+Tilemap: Cell Size does not work
+-- Light2D: cleanup light texture size logics (priority)
+-- use material blocks to improve performance of batches/setpass calls?
+
+--- 2022.11.0 [15.11.2022]
+Added: Shader off-screen lit option
+Changed: Core code refactored
+Fixed: Light overlay supporting angle and freeform
+
+--- 2022.4.0 [12.04.2022]
+Fixed: Pass Material: new instance did not work until modifying pass id
+Fixed: Light 2D: Sprite flipX & flipY did not affect result
+
+
+--- 2021.12.1 [06.12.2021]
+Added: Light2D: AddEvent method
+Added: Lightmap Preset: separate hdr property for each lightmaps
+Added: Day Lighting: Shadow Color
+Added: Lighting Manager 2D: Shader Graph Preview Mode
+Fixed: Bumped material reacting only to red channel
+Fixed: Light2D shader line flickering
+Changed: improved light source performance
+Changed: improved day lighting performance
+
+
+--- 2021.12.0 [03.12.2021]
+Added: Day Light Collider: shadow falloff
+Added: Day Light Collider: help messages
+Added: [5-8] passes for material System
+Fixed: clickable foldouts
+Fixed: Scene camera culling
+Fixed: Overexposed Free Form blending darkened lightmap
+Changed: Improved shader performance
+
+
+--- 2021.11.5 [29.11.2021]
+Added: Lighting Manager 2D: lightmap scene view property
+Added: Material System: new pass SL2D shader pass library allows to select pass in material
+Added: Lightmap pass debugging (tools/lighting2D/debugging)
+Fixed: Light Spite2D: mesh mode, now is called overlay
+
+
+--- 2021.11.4 [17.11.2021]
+Added: Light2D: scene handles to organize spot angle, size and rotation
+Changed: Light2D: default free form shape is triangle
+Fixed: Light2D: custom spot angle broke light 2D additive blend
+
+
+--- 2021.11.3 [16.11.2021]
+Changed: spot angle contains of inner & outer angle
+Changed: improved spot angle visuals
+Fixed: light sprite alpha issues
+Fixed: Super Tilemap Editor compiler errors
+Fixed: missing shader graph nodes (SL2D_Light_[index])
+
+
+--- 2021.11.2 [15.11.2021]
+Added: new SL2D shader graph nodes
+Added: scene view support for shader graph
+Added: Light2D: translucency layer
+Changed: Light2D: overhauled light translucency system
+Changed: LightCollider2D: isStatic property is replaced with game object isStatic property
+Changed: mask & shadow properties visible only when included in presets
+Removed: affect children option for LightCollider2D and Day LightCollider2D
+
+
+--- 2021.11.1 [10.11.2021]
+Added: Light2D: "point" light type
+Added: DayLightCollider2D: shadow softness
+Fixed: Light2D: shadow translucency for shadows with custom length
+Fixed: LightingManager2D: disabling rendering did not disabled overlay
+Fixed: day lighting translucency overlap
+
+
+--- 2021.11.0 [08.11.2021]
+Changed: performance improvement - light2D is only 1 set pass call (previously 2)
+Changed: project rework - "FunkyCode" namespace added to every class
+Changed: Overlay Sorting Order moved to LightingManager2D
+Changed: shader graph support & performance improved
+Changed: material lightmaps count increased (from 2 to 8)
+Changed: materials using normal map improved
+Changed: render "mode" option was split into rendering & overlay
+Added: "Light2D/Misc/MultiplyLog" shader for better light blending
+Added: shadow translucency works with outer angle (LegacyCPU shadow type)
+Added: lighting passes: lightmaps can be exported to selected material
+Added: lightTilemap.RefreshTile(Vector3Int) - method to refresh specific tiles in runtime
+Added: new depth system added
+Added: Light2D: option to skip drawing when inside collider
+Added: Light2D: Free Form
+Added: Light2D: Soft Distance shadows
+Added: Light2D: Improve Soft shadows
+
+
+--- 2021.7.1 [02.07.2021]
+Added: FunkyCode.Utilities namespace
+Changed: Lighting Manager: Lightmap batches reduced from 2 to 1
+
+
+--- 2021.7.0 [01.07.2021]
+Added: SL2D shader API assists to implement lighting into any shader
+Added: Mesh Mode: Additive Blur mode
+Added: Light Collider: Mask Unlit option
+Added: Soft Convex Shadow: considers "ignore light when inside collider" option
+Fixed: Sprite Lit shader typo caused artifacts with transparent sprites
+Fixed: Lighting Manager 2D: fixed serialization issues
+Changed: Reduced GC calls when using event handling
+
+
+--- 2021.6.1 [15.06.2021]
+Added: Project Settings: Option to disable gizmo icons
+Added: Day Light Collider: Lit Above
+Changed: Lighting Manager: Layer selection tweaks
+Changed: Improved Lit/FoW Shader implementation workflow
+Changed: Lighting Manager: Layer selection tweaks
+Changed: Lit materials rework
+Fixed: Material system applied disabled camera values
+Fixed: Lighting Manager: Constructor did not initialized lightmaps
+
+
+--- 2021.6.0 [02.06.2021]
+Added: Lighting Manager: Lightmap shader output selection
+Added: Light Collider: "is static" property
+Added: Legacy GPU shadow works with "Ignore When Inside Collider" option
+Added: Light2D: Occlusion layer output
+Fixed: Light2D: Ignore When Inside Collider
+Fixed: Tilemap chunk errors
+Fixed: Rendering Mode "OnPostRender" caused additional draw calls
+Changed: UI: Light Presets shows name when unfolded
+
+
+--- 2021.4.1 [23.04.2021]
+Fixed: Mac metal API froze when using specific shader
+Fixed: Tilemap chunks error
+Fixed: Default lighting settings caused light layers to invisible in some projects
+Added: Additional Shader Graph demos
+Added: Lighting Sub Shader Graph
+
+
+--- 2021.4.0 [16.04.2021]
+Added: Shader Graph API
+Added: Shader Graph Demos
+Added: Secondary textures (SL2D materials)
+Added: Day Light Collider: Property "Is Static"
+Added: Day Light Collider: Shadow Type "Fill Collider"
+Added: Light Tilemap Collider: Shadow Translucency
+Changed: Improved Material System
+
+
+-- 2021.3.4 [25.03.2021]
+Added: Material: Sprite Bumped
+Added: Scene: Sprite Projection Demo
+Fixed: Day lighting shadows froze when gizmos disabled
+Changed: Increased maximum height for lighting settings window
+Changed: Increased maximum layer count for Light Presets to 8
+
+
+--- 2021.3.3 [15.03.2021]
+Added: Float/Half HDR options
+Added: Day Light Collider: Shadow Type - Sprite Projection Shape
+Added: Day Light Collider: Shadow Type - Sprite Projection Collider
+Changed: Day Light Collider: Sprite Mask Performance improvement (reduced setpass & draw calls)
+Changed: Day Light Collider: Sprite Shadow Performance improvement (reduced setpass & draw calls)
+Changed: Light Room: Collider Mask Performance improvement (reduced setpass & draw calls)
+Changed: Light Sprite: Performance improvement (reduced setpass & draw calls)
+Removed: Lighting Atlas System
+
+
+--- 2021.3.2 [09.03.2021]
+Investigating: MacOS metal graphics API freezes because of mask feature (mask shader)
+Added: Shadow Effect "Legacy GPU" for better performance
+Changed: New day light shadows drawing system
+Fixed: Shader artifacts in android builds
+Fixed: Additional GC calls by GUI.paint
+Removed: Day shadow softness
+
+
+--- 2021.3.1 [03.03.2021]
+Fixed: STE compilation error
+Changed: Improved consistency with pass & draw calls
+
+
+--- 2021.3.0 [01.03.2021]
+Changed: Light Collider 2D: "Sprite" mask performance improvement (reduced setpass & draw calls)
+Changed: Light Tilemap Collider 2D: "Sprite" mask performance improvement (reduced setpass & draw calls)
+Changed: Light Sprite 2D: Performance improvement (reduced draw calls)
+
+
+--- 2021.2.3 [24.02.2021]
+Added: Light Collider: Mask Effect - Custom
+Changed: "Light" Layer is now called "Collider" Layer
+Changed: "Night" Layer is now called "Light" Layer
+Changed: Light Collider: Sorting Order effects "Mesh Renderer" type
+Changed: Shadow Casting performance improvements
+
+
+--- 2021.2.2 [12.02.2021]
+Added: Light Tilemap: Optimization option
+Added: New Material System
+Added: New & more robust Fog of War System
+Added: Material: Sprite Lit 
+Added: Material: Sprite Fog Of War
+Added: Material: UI Fog of War
+Added: Material: Text Mesh Pro Fog Of War
+Changed: Improved loading times
+Fixed: Sprite Projection artifacts with sprite sheets
+Removed: Light Mesh 2D Component
+Removed: Fog Of War Profile Settings
+Removed: Fog Of War Sprite Component
+Removed: Fog Of War Tilemap component
+
+
+--- 2021.2.1 [05.02.2021]
+Added: Day Light Tilemap Collider 2D: Shadow Distance
+Added: GUI for profile scriptable object
+Fixed: Issue with Tilemap tiles draw limit when chunks are disabled
+Fixed: Issues with light glow shader
+
+
+--- 2021.2.0 [04.02.2021]
+Added: Light2D: Mask Translucency Intensity
+Added: Lighting Manager 2D: Fog of War Material
+Added: Day Light Collider 2D: Sprite Projection shadow type
+Fixed: Light Sprite 2D: Glow Mode
+
+
+--- 2021.1.1 [18.01.2021]
+Added: Light Preset: Sorting "Sorting Layer and Order"
+Added: Light2D: Lit Mode "Isometric"
+Added: Light2D: "Mask Translucency" works with bump mode
+Added: Scriptable "Light Sprite 2D" 
+Changed: Lighting Manager 2D: custom material creates a new material instance
+
+
+--- 2021.1.0 [09.01.2021]
+Support: Unity 2021 Support
+Added: Light: "Mask Translucency"
+Added: Light Collider: New Setting "Mask Translucency"
+Added: Light Collider: New Mask type "Bumped Mesh Renderer"
+Added: Light Collider: Normal Map Depth
+Added: Lighting Manager 2D: Camera output "Layer" setting
+Changed: Game View & Scene View layer settings
+Changed: Shadow Caster optimization
+Fixed: On Render console error
+Fixed: Light: gizmos now works with "Apply Rotation"
+Fixed: Light Collider: Collider 3D Shadow & Mask light sorting
+
+
+### Beta 1.2.5 [08.12.2020]
+Info: General tweaks, clean-up and optimization
+Fixed: Error messages when using collider events
+
+
+### Beta 1.2.4 [03.12.2020]
+Added: Experimental "Pixel Perfect" lights
+Added: Light Collider: Mask pivot to improve sorting features
+Added: Light Tilemap Collider: Tiles now can be flipped in X and Y axis
+Changed: Light Collider: Effect layer replaced with shadow layer
+Changed: Light Tilemap: Clean-up
+Changed: Light Collider: Clean-up
+
+
+### Beta 1.2.3 [26.11.2020]
+Added: Profile: Event Presets
+Added: Light Collider: Collider3D Shadow Caster
+Added: Day Light Collider: Shadow Translucency
+Added: Core Axis: XZ / XZFlipped / XYFlipped
+Added: Fog of War (RT): Output camera selections in Lighting Manager 2D
+Added: Fog of War (RT): Fog Of War Tilemap Component
+Changed: Handling System Overhaul
+ 
+
+### Beta 1.2.2 [17.11.2020]
+Changed: "Lighting Source 2D changed to "Light 2D"
+Changed: "Lighting Collider 2D changed to "Light Collider 2D"
+Changed: "Lighting Tilemap Collider 2D changed to "Light Tilemap Collider 2D"
+Changed: "Lighting Room 2D changed to "LightRoom 2D"
+Changed: "Lighting Tilemap Room 2D changed to "Light Tilemap Room 2D"
+Changed: "Lighting Occlusion 2D changed to "Light Occlusion 2D"
+Changed: "Lighting Tilemap Occlusion 2D changed to "Light Tilemap Occlusion 2D"
+Removed: Lighting Atlas System
+
+
+### Beta 1.2.1 [04.11.2020]
+Added: Fog Of War (RT): Objects Sorting
+Added: Fog Of War (RT): Filter mode
+Added: Light Settings: Window Scrollbar
+Added: Light Sprite: Serialization (undo + multi edit)
+Added: Super Tilemap Editor: "Tile Collider" shadow type 
+Added: Isometric Tilemap: Z as Y option
+Fixed: Custom headless build errors
+Changed: "Lighting Sprite Renderer 2D" changed to "Light Sprite 2D"
+
+
+### Beta 1.2.0 - 28.10.2020
+ [ADDED] Shadow Effect: Soft Shadows (light presets)
+ [CHANGED] Day Lighting Collider 2D: Serialization improvements
+ [CHANGED] Fog of War (RT): Smoother sprites
+
+
+### Beta 1.1.9 - 26.10.2020
+ [ADDED] Lighting Source 2D: Serialization (undo + multi edit)
+ [ADDED] Lighting Collider 2D: Serialization (undo + multi edit)
+ [ADDED] Lighting Sprite 2D: Bound Gizmos
+ [FIXED] Build errors related to tilemap features
+ [CHANGED] Improved workflow: Internal lighting objects are not touchable
+ [CHANGED] Shadow Engine: Optimization for large objects
+
+
+### Beta 1.1.8 - 22.10.2020
+ [ADDED] Light components now can display bounds
+ [ADDED] Event handling takes tilemaps in account
+ [ADDED] Lighting Setting: Manager instance 
+ [FIXED] Tilemap rotation when using lighting components
+ [FIXED] Day lighting tilemaps
+ [CHANGED] Tilemaps stability
+ [CHANGED] Improved memory management
+ [CHANGED] Performance improvements
+
+
+### Beta 1.1.7 - 19.10.2020
+ [ADDED] New Component: Light Mesh 2D
+ [ADDED] Lighting Collider: Shadow effect layer
+ [ADDED] Lighting Collider: Shadow Distance
+ [ADDED] Lighting Preset: Shadow Effects (perpendicular shadow collision)
+ [ADDED] Lighting Manager: Custom material mode
+ [ADDED] Mesh Mode: Custom material option
+ [ADDED] Day Lighting: Y Sorting
+ [CHANGED] Additive Mode -> Mesh Mode
+ [CHANGED] Layers is now Profile property
+ [FIXED] Shadow casting issues when lights were close to the object
+ [FIXED] Fog of War to work with HDR
+ [REMOVED] Tilemap optimizations (caused several issues)
+
+
+### Beta 1.1.6 - 14.10.2020
+ [ADDED] Light Cycle: New component
+ [ADDED] Light Source: Light Presets
+ [ADDED] Lighting Source: Event Handling include spot angle
+ [ADDED] Lighting Source: Event Handling options
+ [ADDED] Lighting Source: Sorting Ignore field
+ [ADDED] Project Settings: Scene View options
+ [ADDED] Lighting Profile: Day Layers Sorting
+ [ADDED] Lighting Profile: Night Layers Sorting
+ [ADDED] Lighting Manager: active scene profile field
+ [CHANGED] Lighting Manager: now auto updates from latest version
+
+ [REMOVED] LightingSettings2D
+
+
+### Beta 1.1.5 - 12.10.2020
+ [ADDED] Lighting Source: Mask Lit Mode 
+ [ADDED] Lighting Source: Z Axis Sorting 
+ [ADDED] LightingCollider: Composite Collider shadow & mask type
+ [ADDED] LightingCollider: Apply To Children
+ [ADDED] Lighting Tilemap Collider: Hexagon tilemap support
+ [ADDED] Lighting Tilemap Collider: Composite Collider shadow type
+ [ADDED] Lighitng Tilemap Collider: Automatically updated when editing in editor mode
+ [ADDED] DayLightingCollider: Apply To Children
+ [ADDED] Gizmos for the lighting components
+ [CHANGED] GUI Gaps between lighting component fields
+
+
+### Beta 1.1.4 - 05.10.2020
+ [ADDED] Project Settings: Update Method setting
+ [ADDED] LighingCollider2D: Multiple colliders
+ [ADDED] LighingCollider2D: Mask Effect (Lit/Unlit)
+ [ADDED] URP: Fog of War Support
+ [ADDED] Race Demo
+ [CHANGED] Major performance improvement for shadows
+ [CHANGED] DayLightingCollider2D: Less batches for shadows
+ [CHANGED] LightingSource2D: Penumbra Size changed to Outer Angle
+
+
+### Beta 1.1.3 - 28.09.2020
+ [ADDED] Universal Rendering Pipeline support
+
+
+### Beta 1.1.2 - 25.09.2020
+ [ADDED] Plenty quality of life improvements
+ [ADDED] Lighting Scene View
+ [ADDED] Lighting Project settings
+ [ADDED] Fog of War system
+ [ADDED] Buffer Preset System
+ [ADDED] Normal Maps
+ [ADDED] New Layer system
+ [ADDED] Sprite Atlas support
+ [ADDED] Sprite "Tiled" Draw Mode support
+ [ADDED] New daylighting system
+ [CHANGED] STE enabled using SUPER_TILEMAP_EDITOR scripting define variable
+ [CHANGED] Improved Lighting Particle Renderer component
+
+
+### Beta 1.1.1 - 10.02.2020
+ [ADDED] HDR Support
+ [ADDED] Super Tilemap Editor: sprite mask type
+ [FIXED] STE Support did not work after isometric tilemap update
+ [FIXED] Lights flicker when loading blur sprites in real time
+ [CHANGED] Improved Performance when using OnRender mode
+
+
+### Beta 1.1.0 - 24.01.2020
+ [ADDED] Isometric Tilemap Support
+ [ADDED] Multiple Camera Support
+ [ADDED] New LightingTextureRenderer Component
+ [ADDED] New LightingParticleRenderer Component
+ [ADDED] New profile settings using scriptable objects
+
+
+### Beta 1.0.9 - 04.11.2019
+ [ADDED] Event Handling demo scene
+ [FIXED] Lighting Sprite Renderer: Additive mode for spritesheet
+ [FIXED] Lighting Sprite Renderer: Additive mode offset
+ [FIXED] Lighting Sprite Renderer: Little offset with additive mode when blur is applied
+ [CHANGED] Event Handling: Improved perfomance
+ [CHANGED] Lighting Collider: Improved performance when drawing mask and shadows
+
+
+### Beta 1.0.8 - 28.10.2019
+ [ADDED] Lighting Collider: Skinned Mesh Support
+ [ADDED] Lighting Collider: Standard Mesh Support
+ [FIXED] Tilemap Scale & Grid Size issues
+ [FIXED] Issues when reloading scene asynchronously
+ [CHANGED] Improved Room component performance
+ [CHANGED] Cleaned up most of the code
+
+
+### Beta 1.0.7 - 15.03.2019
+ [ADDED] FlipX and FlipY for Lighting Souce Texture
+ [FIXED] Material Leak
+ [FIXED] Super Tilemap Shadows Offset
+ [FIXED] Issues when creating object with no scene view
+ [FIXED] Tilemap Shape Masking
+ [CHANGED] Improved lighting atlas initialization time
+ [CHANGED] Improved performance for day lighting 
+ [CHANGED] Improved performance for collider Shape
+
+
+### Beta 1.0.6 - 28.02.2019
+ [ADDED] Lighting Manager: Lighting Atlas (improves performance)
+ [ADDED] Lighting Manager: Custom Camera Field
+ [ADDED] Lighting Manager: Preload Lighting Buffers
+ [ADDED] Lighting Manager: Preload Lighting Atlas Sprites
+ [ADDED] Lighting Source: Layer Sorting Mode Support for Tilemaps
+ [ADDED] Lighting Source: Layer Effects (Invisible Bellow)
+ [ADDED] Lighting Source: Sorting Layer for additive shader
+ [ADDED] Lighting Sprite Renderer: Sorting Layer for additive shader
+ [ADDED] Lighting Collider: Invisible Masking Mode For Light Sources
+ [ADDED] LightingTilemapRoom2D Component
+ [ADDED] Tilemap Tiles Supports Multiple Custom Physics Shapes 
+ [ADDED] Mesh2D: Update Mesh button
+ [ADDED] ColliderLineRenderer2D: Update Renderer button
+ [CHANGED] Rendering Mode from "Mesh Renderer" to "OnRender"
+ [CHANGED] Optimized Custom Physics Shape (loads once per sprite)
+ [CHANGED] Improved Lighting Performance in General (200-500%)
+
+
+### Beta 1.0.5 - 24.01.2019
+ [ADDED] Game Object Context Menu to add lighting game objects into the scene
+ [ADDED] Multiple Lighting Component Editing at the same time
+ [ADDED] Sprite Animation Support
+ [ADDED] Tilemap Batching (optimization)
+ [ADDED] Lighting Engine Rendering Mode (OnRender) with Sorting Order
+ [ADDED] Lighting Engine "Fixed Light Buffer Size" option for optimization
+ [ADDED] Lighting Engine Resolution option for optimization
+ [ADDED] Lighting Engine "Disable" option
+ [ADDED] Lighting Engine Display Options (Rooms/Day Lighting/Occlusion/Main Buffer/Scene View)
+ [ADDED] Lighting Source Rendering Order (Defaut, Depth and Y axis)
+ [ADDED] Lighting Source Layers
+ [ADDED] Lighting Source Additive Mode option
+ [ADDED] Lighting Source "Draw Inside Collider" option
+ [ADDED] Lighting Sprite Renderer Black Masking Mode
+ [ADDED] Lighting Sprite Renderer Rotation option
+ [ADDED] Lighting Sprite Renderer Blur/Glow option
+ [ADDED] Lighting Sprite Renderer Additive option
+ [ADDED] Lighting Collider "Apply Day Mask" option
+ [FIXED] Custom camera far clipping option broke the lighting
+ [FIXED] 1 frame delay in lighting buffer
+ [FIXED] Pre-Render Lighting Engine mode camera rotation did not worked
+ [CHANGED] Reworked Lighting Buffer System from the scratch
+ [CHANGED] Additional optimizations to make lighting mobile friendly!
+
+ [INFO] Unity 2019 Support
+ [INFO] Android demo is now available
+ [INFO] Demo video is now available
+ [INFO] Updated Documentation
+
+
+### Beta 1.0.4 - 07.01.2019
+ [ADDED] Lighting Manager Rendering Mode (OnPreRender / OnPostRender)
+ [ADDED] Light collision event handling
+ [ADDED] Sprite pivot support
+ [FIXED] Tilemaps now supports gridsize and anchor
+ [FIXED] "SceneView" class did not allowed to build properly
+ [CHANGED] Performance improvements with tilemaps
+
+
+### Beta 1.0.3 - 20.12.2018
+ [ADDED] Sprite Sheet Support
+ [ADDED] Custom Physics Shape Support
+ [ADDED] Various lighting collider masking options
+ [ADDED] "Update Collider" button for lighting collider components
+ [CHANGED] Imporived editor behaviour
+
+
+### Beta 1.0.2 - 07.12.2018
+ [ADDED] Tilemap support (2018.1 or higher)
+ [ADDED] Lighting renderer component
+ [ADDED] Flicker effect component
+ [ADDED] Color blending effect component
+ [ADDED] Light "alpha" parameter
+ [ADDED] Lighting collider masking modes
+ [ADDED] 5 new demo scenes
+ [FIXED] Screen artifacts
+ [CHANGED] Imporved lighting performance
+ [CHANGED] Imporived editor run-time editing
+
+ [SUPPORT] Unity 2018.3 Support
+
+
+### Beta 1.0.1 - 23.11.2018
+ [ADDED] LightingSprite component
+ [FIXED] Camera rotation issues
+ [CHANGED] Improved occlusion
+ [CHANGED] Improved day shadows
+
+ [INFO] Asset is no longer free
+
+
+### Beta 1.0.0 - 05.11.2018
+ [INFO] Initial beta release 

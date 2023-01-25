@@ -1,0 +1,91 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b19cefa3bf552f94390d1c272b19ea6e, type: 3}
+  m_Name: LitTranslucency
+  m_EditorClassIdentifier: 
+  lightmapPresets:
+    list:
+    - name: Shadows
+      type: 0
+      hdr: 2
+      darknessColor: {r: 0, g: 0, b: 0, a: 1}
+      depth: 0
+      resolution: 0.25
+      dayLayers:
+        list: []
+      lightLayers:
+        list:
+        - id: 0
+          type: 0
+          sorting: 0
+    - name: Occlusion
+      type: 0
+      hdr: 2
+      darknessColor: {r: 0, g: 0, b: 0, a: 1}
+      depth: 0
+      resolution: 0.25
+      dayLayers:
+        list: []
+      lightLayers:
+        list:
+        - id: 1
+          type: 0
+          sorting: 0
+  lightPresets:
+    list:
+    - name: Default
+      layerSetting:
+        list:
+        - layerID: 0
+          type: 1
+          sorting: 0
+          sortingIgnore: 0
+          shadowEffect: 0
+          shadowEffectLayer: 0
+          maskLit: 0
+          maskLitDistance: 1
+  eventPresets:
+    list:
+    - name: Disabled
+      layerSetting:
+        list:
+        - layerID: 0
+    - name: 'Preset (Id: 1)'
+      layerSetting:
+        list:
+        - layerID: 0
+  qualitySettings:
+    lightTextureSize: 3
+    lightEffectTextureSize: 3
+    lightFilterMode: 1
+    lightmapFilterMode: 1
+    updateMethod: 0
+    coreAxis: 0
+    projection: 0
+  dayLightingSettings:
+    direction: 270
+    ShadowColor: {r: 0, g: 0, b: 0, a: 1}
+    height: 1
+    bumpMap:
+      height: 1
+      strength: 1
+  layers:
+    colliderLayers:
+      names:
+      - Default
+    lightLayers:
+      names:
+      - Light
+      - Occlusion
+    dayLayers:
+      names:
+      - Default
