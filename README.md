@@ -163,6 +163,7 @@ Account data is synchronised across all devices, including
       * To discard changes, click `Close`
     * ![image](https://user-images.githubusercontent.com/70658690/214679223-86133691-198f-48aa-ad0f-6190263023ce.png)
       Enable & disable grid visibility. Applies to Modification View only
+    * Scale grid by dragging one of its corners. Move grid around using `Arrow keys` or `W A S D`
 * ![image](https://user-images.githubusercontent.com/70658690/214675490-301ee42f-5a21-480c-bf64-7c95b8a17ff7.png)
   Fog configuration
   * Restrict players' view. Add dynamic lighting and shadows to the scene
