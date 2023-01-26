@@ -30,6 +30,8 @@ By reading this guide, you will understand everything you need to know about thi
 
 # Installation
 
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/ItharDev/RPG-Viewer-Client)
+
 1. Download `RPG-Viewer.zip`
 2. Extract all of the zip file's contents
 3. Run the applicaton by starting `RPG Viewer.exe`
