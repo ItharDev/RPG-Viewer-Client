@@ -88,7 +88,7 @@ Account data is synchronised across all devices, including
   
   * ![image](https://user-images.githubusercontent.com/70658690/214668643-62a6a8a0-b93e-42c8-86e3-ec4aa5bfb505.png) 
     Pan tool
-    * Quick select this tool by pressing '1' on your keyboard 
+    * Quick select this tool by pressing `1` on your keyboard 
     * Right-click to move the camera
     * Left click on doors, tokens and notes
   * ![image](https://user-images.githubusercontent.com/70658690/214668692-54e15ca9-6ead-4a3c-a8b8-70481f1c7e29.png)
@@ -104,7 +104,7 @@ Account data is synchronised across all devices, including
   * ![image](https://user-images.githubusercontent.com/70658690/214668832-1b29f490-d61a-4cbc-854d-37bffc5473e0.png)
     Ping tool
     * The markers remain on the map for 10 seconds
-    * Left-click and hold to move each player's camera to that location
+    * Left-click and hold to move each players' camera to that location
   * ![image](https://user-images.githubusercontent.com/70658690/214669095-5fcb56cc-6761-445a-b79b-724a66db672e.png)
     Fog tool (Game Master only)
     * Quick select this tool by pressing `4` on your keyboard
@@ -148,7 +148,7 @@ Account data is synchronised across all devices, including
 
 * ![image](https://user-images.githubusercontent.com/70658690/214675341-8c7a686f-066c-4b0a-9f14-f18b092f62b9.png)
   Wall tools
-  * Restrict the player's view and lights. Create toggleable doors that can be hidden from players.
+  * Restrict players' vision and lighting. Create toggleable doors that can be hidden from players.
   * ![image](https://user-images.githubusercontent.com/70658690/214675899-47515036-173d-4898-96a2-0c3f6f4ff50a.png)
     Regular walls. Block player movement, light and vision
   * ![image](https://user-images.githubusercontent.com/70658690/214676076-45314635-07c2-4cd8-bc87-5ac83f88a17e.png)
@@ -158,7 +158,7 @@ Account data is synchronised across all devices, including
   * ![image](https://user-images.githubusercontent.com/70658690/214676578-7f57c534-bdde-42c7-97a4-b97ebd2c9a4e.png)
     Invisible walls. Blocks player movement, but not light or vision
   * Click and drag to create walls
-  * Hold 'Ctrl' and drag from wall endpoint to continue wall
+  * Hold `Ctrl` and drag from wall endpoint to continue wall
   * Click on a wall endpoint to select it. Press `Backspace` or `Delete` to delete that wall point.
   * Snap wall endpoints together by dragging one endpoint over another
 * ![image](https://user-images.githubusercontent.com/70658690/214675430-c027dc43-bb5f-448b-a735-1153f5692736.png)
@@ -192,8 +192,8 @@ Account data is synchronised across all devices, including
   * `Fog colour`: Opens a colour picker where you can choose the colour for your fog.
       
       There is currently a known bug where you have to click this button at least twice to update the colour in the colour picker.
-  * To save changes, click the 'Save' button.
-  * To discard changes, click 'Close
+  * To save changes, click the `Save` button.
+  * To discard changes, click `Close`
 * ![image](https://user-images.githubusercontent.com/70658690/214675517-3c7d468f-e4d9-4d97-bd9b-8f692b15110e.png)
   Night Filter
     * Apply the Night filter to this scene to create the illusion of night lighting.
@@ -278,7 +278,7 @@ While you are the owner of the token, you can do the following
     * Select the light colour. Selecting one of the light presets will automatically update this to match that preset's settings.
     
       There is currently a known bug where you need to click this button at least twice to update the colour of the colour picker.
-  * To save changes, click 'Save'.
+  * To save changes, click `Save`.
   * Discard changes will be added in the near future.
   
   
