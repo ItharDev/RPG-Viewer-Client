@@ -7,28 +7,41 @@ By reading this guide, you will understand everything you need to know about thi
 ## Table of contents
 
 <!--ts-->
-* [Connecting](#connecting)
-* [Accounts](#accounts)
-* [Sessions](#sessions)
-* [Game view](#game-view)
-  * [Side buttons](#side-buttons)
-  * [Game master](#game-master)
-* [Scenes](#scenes)
-  * [Creation & modification](#creating-and-modifying-scenes)
-  * [Tokens](#tokens)
-  * [Lights](#lights)
-  * [Notes](#notes)
-* [Blueprints](#blueprints)
-  * [Permissions](#permissions)
-    * [Owner](#owner)
-    * [Observer](#observer)
-    * [None](#none)
+* [Installation](#installation)
+* [User guide](#user-guide)
+  * [Connecting](#connecting)
+  * [Accounts](#accounts)
+  * [Sessions](#sessions)
+  * [Game view](#game-view)
+    * [Side buttons](#side-buttons)
+    * [Game master](#game-master)
+  * [Scenes](#scenes)
+    * [Creation & modification](#creating-and-modifying-scenes)
+    * [Tokens](#tokens)
+    * [Lights](#lights)
+    * [Notes](#notes)
+  * [Blueprints](#blueprints)
+    * [Permissions](#permissions)
+      * [Owner](#owner)
+      * [Observer](#observer)
+      * [None](#none)
 * [Keyboard shortcuts](#keyboard-shortcuts)
 <!--te-->
 
+# Installation
+
+1. Download `RPG-Viewer.zip`
+2. Extract all of the zip file's contents
+3. Run the applicaton by starting `RPG Viewer.exe`
+   
+   Windows may ask for permission to operate on private networks. Please accept this to allow the application to work normally
+4. See [user guide](#user-guide) below 
+
+# User guide
+
 ## Connecting
 
-![image](https://user-images.githubusercontent.com/70658690/214673500-f749f687-2c3d-4cd9-9583-6286c23b1621.png)
+![image](https://user-images.githubusercontent.com/70658690/214797669-9742276a-cf76-4076-a262-48b130c24b5a.png)
 
 * When the application is started, an IP Address must be specified to which the application will try to connect
 * This can be done from the top right corner of the main menu
@@ -39,7 +52,7 @@ By reading this guide, you will understand everything you need to know about thi
 
 ## Accounts
 
-![image](https://user-images.githubusercontent.com/70658690/214652812-8cc895ca-c9bf-44df-b8dd-da1c57a29da0.png)
+![image](https://user-images.githubusercontent.com/70658690/214797780-dfde14bd-7dbe-4f9c-b9e8-bc377efab93d.png)
 
 Account data is synchronised across all devices, including
 * Sessions
@@ -49,7 +62,7 @@ Account data is synchronised across all devices, including
 
 ## Sessions
 
-![image](https://user-images.githubusercontent.com/70658690/214652734-9a858f7b-e1bb-48d0-98db-562537aa838f.png)
+![image](https://user-images.githubusercontent.com/70658690/214797913-3c4b2ded-23a3-40da-917d-9cd1634a69ee.png)
 
 * There is no limit to the number of sessions you can create.
 * Landing page will be visible if there are no scenes loaded or the session is not synced with players (more on this [later](#side-buttons)).
@@ -299,19 +312,21 @@ While you are the owner of the token, you can do the following
 * This player does not have permissions to move, edit, delete or see through the token's eyes.
 * This option is useful for enemies and tokens that you don't want the player to interact with.
 
-## Keyboard shortcuts
+# Keyboard shortcuts
 
 * Here are some useful keayboard shortcuts that everyone should know
 * More will be added in future updates
 
-### Game View
+## Game View
 
-Tokens
+### Tokens
+
 * `Tab`: Switch between tokens you own
 * `Arrow keys`: Moves selected token on the map, one cell at a time
 * `Alt`: Prevents token from snapping to grid when moved
 
-Side panel
+### Side panel
+
 * `Num 1`: Pan tool
 * `Num 2`: Measure tools
 * `Num 3`: Ping tool
