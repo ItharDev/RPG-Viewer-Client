@@ -29,11 +29,8 @@ namespace RPG
             else Destroy(gameObject);
         }
 
-        [System.Obsolete]
-        private void Start()
+        public void Subscribe()
         {
-            if (SocketManager.Socket == null) return;
-
             SocketManager.Socket.On("user-connected", async (data) =>
             {
                 await UniTask.SwitchToMainThread();
@@ -48,6 +45,7 @@ namespace RPG
             {
                 await UniTask.SwitchToMainThread();
                 Scene = data.GetValue().ToString();
+                Debug.Log("set-scene");
                 SocketManager.Socket.Emit("update-scene", Scene);
                 if (Synced || IsMaster) session.LoadScene(Scene);
             });

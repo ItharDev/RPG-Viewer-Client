@@ -103,6 +103,7 @@ namespace RPG
         [Obsolete]
         public async void LoadScene(string id)
         {
+            Debug.Log("Unload");
             UnloadScene();
             if (string.IsNullOrEmpty(id)) return;
 
