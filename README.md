@@ -30,6 +30,8 @@ By reading this guide, you will understand everything you need to know about thi
 
 # Installation
 
+You can find the latest release on the right hand panel
+
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/ItharDev/RPG-Viewer-Client)
 
 1. Download `RPG-Viewer.zip`
