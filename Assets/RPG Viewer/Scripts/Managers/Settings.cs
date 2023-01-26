@@ -1,6 +1,7 @@
-using System.Net.Mime;
 using System;
+using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Settings : MonoBehaviour
 {
@@ -9,6 +10,8 @@ public class Settings : MonoBehaviour
 
     [Range(0, 4)]
     public int vSyncCount;
+
+    private TMP_InputField fpsInput;
 
     private int lastFPS;
     private int lastVSync;
@@ -24,6 +27,16 @@ public class Settings : MonoBehaviour
 
     private void Update()
     {
+        if (SceneManager.GetActiveScene().name == "Menu")
+        {
+            if (fpsInput == null)
+            {
+                fpsInput = GameObject.Find("Fps Input").GetComponent<TMP_InputField>();
+                fpsInput.text = PlayerPrefs.GetString("target-fps");
+                UpdateFPS();
+            }
+        }
+
         if (Input.GetKeyDown(KeyCode.F12)) Screen.fullScreenMode = Screen.fullScreenMode == FullScreenMode.ExclusiveFullScreen ? FullScreenMode.Windowed : FullScreenMode.ExclusiveFullScreen;
         if (lastFPS != targetFPS)
         {
@@ -41,5 +54,13 @@ public class Settings : MonoBehaviour
     {
         Application.targetFrameRate = targetFPS;
         QualitySettings.vSyncCount = vSyncCount;
+    }
+
+    public void UpdateFPS()
+    {
+        if (string.IsNullOrEmpty(fpsInput.text)) fpsInput.text = targetFPS.ToString();
+        targetFPS = int.Parse(fpsInput.text);
+
+        PlayerPrefs.SetString("target-fps", fpsInput.text);
     }
 }

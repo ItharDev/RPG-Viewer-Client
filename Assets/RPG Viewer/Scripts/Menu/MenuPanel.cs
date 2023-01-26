@@ -49,6 +49,7 @@ namespace RPG
             {
                 var address = PlayerPrefs.GetString("Address");
                 SocketManager.Connect(address);
+                SocketManager.Instance.OnConnectedEvent.AddListener(AutomaticSignIn);
             }
         }
         private void Update()
@@ -75,6 +76,7 @@ namespace RPG
         public void Connect()
         {
             var address = ipInput.text;
+            SocketManager.Instance.OnConnectedEvent.AddListener(AutomaticSignIn);
             SocketManager.Connect(address);
         }
 

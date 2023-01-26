@@ -29,6 +29,7 @@ namespace RPG
             else Destroy(gameObject);
         }
 
+        [System.Obsolete]
         public void Subscribe()
         {
             SocketManager.Socket.On("user-connected", async (data) =>
