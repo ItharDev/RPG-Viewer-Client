@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Networking;
-using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 

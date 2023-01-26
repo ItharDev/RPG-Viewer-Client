@@ -1,8 +1,6 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Networking;
-using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -14,7 +12,7 @@ namespace RPG
         [SerializeField] private Transform noteParent;
 
         private List<NoteHolder> notes = new List<NoteHolder>();
-        private StateManager stateManager;
+        [SerializeField] private StateManager stateManager;
         private Session session;
 
         private void Update()
@@ -67,6 +65,50 @@ namespace RPG
             var note = Instantiate(notePrefab, noteParent);
             note.LoadData(data, this);
             notes.Add(note);
+        }
+        public void ModifyText(string id, string newText)
+        {
+            var note = notes.FirstOrDefault(x => x.Data.id == id);
+            if (note == null) return;
+
+            note.UpdateText(newText);
+        }
+        public void ModifyHeader(string id, string newText)
+        {
+            var note = notes.FirstOrDefault(x => x.Data.id == id);
+            if (note == null) return;
+
+            note.UpdateHeader(newText);
+        }
+        public void ModifyImage(string id, string newImage)
+        {
+            var note = notes.FirstOrDefault(x => x.Data.id == id);
+            if (note == null) return;
+
+            note.UpdateImage(newImage);
+        }
+        public void Move(string id, Vector2 pos)
+        {
+            var note = notes.FirstOrDefault(x => x.Data.id == id);
+            if (note == null) return;
+
+            note.transform.localPosition = new Vector3(pos.x, pos.y, -1);
+        }
+        public void SetPublic(string id, bool newState)
+        {
+            var note = notes.FirstOrDefault(x => x.Data.id == id);
+            if (note == null) return;
+
+            note.SetPublic(newState);
+        }
+        public void Remove(string id)
+        {
+            var note = notes.FirstOrDefault(x => x.Data.id == id);
+            if (note == null) return;
+
+            notes.Remove(note);
+            Destroy(note.gameObject);
+            Destroy(note.Panel);
         }
     }
 }
