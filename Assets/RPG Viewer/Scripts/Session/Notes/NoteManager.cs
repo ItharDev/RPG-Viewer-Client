@@ -54,5 +54,19 @@ namespace RPG
                 if (!callback.GetValue().GetBoolean()) MessageManager.QueueMessage(callback.GetValue(1).GetString());
             }, JsonUtility.ToJson(data));
         }
+
+        public void SelectNote(NoteHolder holder)
+        {
+            for (int i = 0; i < notes.Count; i++)
+            {
+                if (notes[i] != holder) notes[i].Deselect();
+            }
+        }
+        public void AddNote(NoteData data)
+        {
+            var note = Instantiate(notePrefab, noteParent);
+            note.LoadData(data, this);
+            notes.Add(note);
+        }
     }
 }

@@ -126,7 +126,7 @@ namespace RPG
         {
             for (int i = 0; i < lights.Count; i++)
             {
-                if (lights[i] != holder) lights[i].DeselectLight();
+                if (lights[i] != holder) lights[i].Deselect();
             }
         }
         public void UnloadLights()

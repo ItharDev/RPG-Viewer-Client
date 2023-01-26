@@ -31,7 +31,7 @@ namespace RPG
             Config = Instantiate(configPrefab, GameObject.Find("Main Canvas").transform);
             Config.gameObject.SetActive(false);
 
-            DeselectLight();
+            Deselect();
             if (!SessionManager.IsMaster)
             {
                 canvas.gameObject.SetActive(false);
@@ -80,17 +80,17 @@ namespace RPG
         {
             canvas.enabled = enabled;
         }
-        public void DeselectLight()
+        public void Deselect()
         {
             Selected = false;
             if (configPrefab.gameObject.activeInHierarchy) configPrefab.SaveData();
             configPrefab.gameObject.SetActive(false);
         }
 
-        public void SelectLight(BaseEventData eventData)
+        public void Select(BaseEventData eventData)
         {
             PointerEventData pointerData = eventData as PointerEventData;
-            if (pointerData.button != PointerEventData.InputButton.Left) return;
+            if (pointerData.button != PointerEventData.InputButton.Left || pointerData.clickCount < 2) return;
             manager.SelectLight(this);
 
             Config.gameObject.SetActive(true);
