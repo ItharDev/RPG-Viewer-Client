@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Resources;
 using Cysharp.Threading.Tasks;
 using FunkyCode;
 using Networking;
@@ -72,6 +71,10 @@ namespace RPG
         private bool editInput;
         private List<Vector2> waypoints = new List<Vector2>();
         public Permission Permission;
+
+        private List<Vector2> movePoints = new List<Vector2>();
+        private int currentWaypoint = 0;
+
 
         private void OnValidate()
         {
@@ -162,10 +165,15 @@ namespace RPG
             }
         }
 
+        private void FixedUpdate()
+        {
+            if (movePoints.Count > 0) MoveToPosition();
+        }
+
         public void Move(MovementData data)
         {
             Data.position = data.points[data.points.Count - 1];
-            if (gameObject.activeInHierarchy) StartCoroutine(MoveToPosition(data.points, 0.25f));
+            if (gameObject.activeInHierarchy) movePoints = data.points;
             else transform.localPosition = new Vector3(Data.position.x, Data.position.y, Data.locked ? -1 : -2);
         }
 
@@ -401,6 +409,7 @@ namespace RPG
         }
         public void LoadLights()
         {
+            Debug.Log("R");
             lightHandler.Init(Data.lightEffect, Data.lightColor, Data.lightIntensity, Data.flickerFrequency, Data.flickerAmount, Data.pulseInterval, Data.pulseAmount);
 
             visionSource.enabled = Data.enabled && Data.hasVision && Data.type == TokenType.Character && Permission.permission != PermissionType.None;
@@ -489,30 +498,19 @@ namespace RPG
                 if (!callback.GetValue().GetBoolean()) MessageManager.QueueMessage(callback.GetValue(1).GetString());
             }, JsonUtility.ToJson(_data), _imageChanged ? Convert.ToBase64String(_bytes) : null);
         }
-        private IEnumerator MoveToPosition(List<Vector2> points, float time)
+
+        private void MoveToPosition()
         {
-            var tokens = SessionManager.session.Tokens;
-            for (int i = 0; i < tokens.Count; i++)
+            if (Vector3.Distance(movePoints[currentWaypoint], transform.position) < 0.01f)
             {
-                tokens[i].transform.position = new Vector3(tokens[i].transform.localPosition.x, tokens[i].transform.localPosition.y, 0);
-
-                if (tokens[i].Data.type == TokenType.Mount) tokens[i].transform.localPosition = new Vector3(tokens[i].transform.localPosition.x, tokens[i].transform.localPosition.y, 1);
-                else if (tokens[i].Data.type == TokenType.Item) tokens[i].transform.localPosition = new Vector3(tokens[i].transform.localPosition.x, tokens[i].transform.localPosition.y, 2);
-
-            }
-            for (int i = 1; i < points.Count; i++)
-            {
-                Vector3 startPos = transform.position;
-                var point = new Vector3(points[i].x, points[i].y, (Data.type == TokenType.Mount || Data.type == TokenType.Item) ? transform.position.z : -1);
-
-                float t = 0f;
-                while (t < 1)
+                currentWaypoint++;
+                if (currentWaypoint >= movePoints.Count)
                 {
-                    t += Time.deltaTime / time;
-                    transform.localPosition = Vector3.Lerp(startPos, point, t);
-                    yield return new WaitForEndOfFrame();
+                    currentWaypoint = 0;
+                    movePoints.Clear();
                 }
             }
+            if (movePoints.Count > 0) transform.position = Vector3.MoveTowards(transform.position, movePoints[currentWaypoint], Time.fixedDeltaTime * 4.0f);
         }
         #endregion
 

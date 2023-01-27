@@ -1,16 +1,14 @@
 using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using Networking;
+using SFB;
 using TMPro;
 using UnityEngine;
-using SFB;
-using System.Threading.Tasks;
-using System.IO;
-using System.Collections.Generic;
-using System.Linq;
-using Cysharp.Threading.Tasks;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
-using MongoDB.Bson;
 
 namespace RPG
 {
@@ -161,7 +159,7 @@ namespace RPG
                     permission = PermissionType.None
                 });
             }
-            
+
             await SocketManager.Socket.EmitAsync("create-blueprint", async (callback) =>
             {
                 await UniTask.SwitchToMainThread();
@@ -243,7 +241,7 @@ namespace RPG
                     var dest = path == "" ? $"{callback.GetValue(1).GetString()}" : $"{path}/{callback.GetValue(1).GetString()}";
                     HandleFolderBlueprintAdded(dest, name);
                 }
-            }, path, name); 
+            }, path, name);
         }
 
         public async void RemoveBlueprintFolder(string path)
@@ -287,7 +285,7 @@ namespace RPG
         private void HandleFolderBlueprintRemoved(string path)
         {
             var folder = blueprintFolders.FirstOrDefault(x => x.Path == path);
-            if (folder != null) 
+            if (folder != null)
             {
                 var bps = folder.GetComponentsInChildren<BlueprintHolder>(true);
                 var folders = folder.GetComponentsInChildren<FolderBlueprint>(true);
@@ -446,6 +444,11 @@ namespace RPG
         }
         public async void CreateScene()
         {
+            if (bytes == null)
+            {
+                MessageManager.QueueMessage("Image not selected");
+                return;
+            }
             string name = createScenePanel.GetComponentInChildren<TMP_InputField>().text;
             SocketManager.SceneSettings = new SceneSettings()
             {

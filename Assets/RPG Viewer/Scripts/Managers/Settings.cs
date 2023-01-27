@@ -33,21 +33,13 @@ public class Settings : MonoBehaviour
             {
                 fpsInput = GameObject.Find("Fps Input").GetComponent<TMP_InputField>();
                 fpsInput.text = PlayerPrefs.GetString("target-fps");
-                UpdateFPS();
+                fpsInput.onDeselect.AddListener(UpdateFPS);
+                fpsInput.onEndEdit.AddListener(UpdateFPS);
+                UpdateFPS("");
             }
         }
 
         if (Input.GetKeyDown(KeyCode.F12)) Screen.fullScreenMode = Screen.fullScreenMode == FullScreenMode.ExclusiveFullScreen ? FullScreenMode.Windowed : FullScreenMode.ExclusiveFullScreen;
-        if (lastFPS != targetFPS)
-        {
-            lastFPS = targetFPS;
-            UpdateSettings();
-        }
-        if (lastVSync != vSyncCount)
-        {
-            lastVSync = vSyncCount;
-            UpdateSettings();
-        }
     }
 
     private void UpdateSettings()
@@ -56,11 +48,12 @@ public class Settings : MonoBehaviour
         QualitySettings.vSyncCount = vSyncCount;
     }
 
-    public void UpdateFPS()
+    public void UpdateFPS(string fps)
     {
         if (string.IsNullOrEmpty(fpsInput.text)) fpsInput.text = targetFPS.ToString();
         targetFPS = int.Parse(fpsInput.text);
 
         PlayerPrefs.SetString("target-fps", fpsInput.text);
+        UpdateSettings();
     }
 }

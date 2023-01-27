@@ -16,7 +16,7 @@ MonoBehaviour:
     list:
     - name: Regular Lights
       type: 0
-      hdr: 1
+      hdr: 0
       darknessColor: {r: 0, g: 0, b: 0, a: 1}
       depth: -100
       resolution: 1
@@ -29,7 +29,7 @@ MonoBehaviour:
           sorting: 0
     - name: Fog of War Lights
       type: 0
-      hdr: 1
+      hdr: 0
       darknessColor: {r: 0, g: 0, b: 0, a: 1}
       depth: -100
       resolution: 1
@@ -46,7 +46,7 @@ MonoBehaviour:
       layerSetting:
         list:
         - layerID: 0
-          type: 0
+          type: 1
           sorting: 0
           sortingIgnore: 0
           shadowEffect: 2
@@ -54,7 +54,7 @@ MonoBehaviour:
           maskLit: 0
           maskLitDistance: 1
         - layerID: 1
-          type: 0
+          type: 1
           sorting: 0
           sortingIgnore: 0
           shadowEffect: 2
@@ -72,8 +72,8 @@ MonoBehaviour:
         list:
         - layerID: 0
   qualitySettings:
-    lightTextureSize: 1
-    lightEffectTextureSize: 1
+    lightTextureSize: 2
+    lightEffectTextureSize: 2
     lightFilterMode: 2
     lightmapFilterMode: 2
     updateMethod: 0

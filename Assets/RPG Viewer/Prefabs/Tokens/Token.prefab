@@ -49,7 +49,7 @@ MonoBehaviour:
   eventPresetId: 0
   lightLayer: 0
   occlusionLayer: 0
-  translucentLayer: 1
+  translucentLayer: 0
   translucentPresetId: 0
   color: {r: 0.5837771, g: 0.5801887, b: 1, a: 0.7}
   size: 1
@@ -1019,7 +1019,7 @@ MonoBehaviour:
   eventPresetId: 0
   lightLayer: 0
   occlusionLayer: 0
-  translucentLayer: 1
+  translucentLayer: 0
   translucentPresetId: 0
   color: {r: 1, g: 1, b: 1, a: 0.5}
   size: 1
@@ -1032,7 +1032,7 @@ MonoBehaviour:
   lightRadius: 1
   shadowDistanceClose: 0
   shadowDistanceFar: 5
-  maskTranslucencyQuality: 3
+  maskTranslucencyQuality: 0
   maskTranslucencyStrength: 0.5
   applyRotation: 0
   textureSize: 1
@@ -2683,7 +2683,7 @@ MonoBehaviour:
   eventPresetId: 0
   lightLayer: 0
   occlusionLayer: 0
-  translucentLayer: 1
+  translucentLayer: 0
   translucentPresetId: 0
   color: {r: 1, g: 1, b: 1, a: 1}
   size: 1
@@ -2696,7 +2696,7 @@ MonoBehaviour:
   lightRadius: 1
   shadowDistanceClose: 0
   shadowDistanceFar: 5
-  maskTranslucencyQuality: 3
+  maskTranslucencyQuality: 0
   maskTranslucencyStrength: 0.5
   applyRotation: 0
   textureSize: 1
@@ -4085,15 +4085,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 85a34663ca705a54eac3205e225a6d45, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  lightType: 1
+  lightType: 0
   lightPresetId: 0
   eventPresetId: 0
   lightLayer: 1
   occlusionLayer: 0
-  translucentLayer: 1
+  translucentLayer: 0
   translucentPresetId: 0
   color: {r: 1, g: 1, b: 1, a: 1}
-  size: 100
+  size: 2
   spotAngleInner: 360
   spotAngleOuter: 360
   coreSize: 0.5
@@ -4103,7 +4103,7 @@ MonoBehaviour:
   lightRadius: 1
   shadowDistanceClose: 0
   shadowDistanceFar: 5
-  maskTranslucencyQuality: 1
+  maskTranslucencyQuality: 0
   maskTranslucencyStrength: 0.5
   applyRotation: 0
   textureSize: 1
