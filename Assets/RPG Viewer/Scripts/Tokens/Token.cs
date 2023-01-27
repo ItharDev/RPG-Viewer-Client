@@ -86,7 +86,7 @@ namespace RPG
         {
             if (config != null)
             {
-                if (config.gameObject.activeInHierarchy) Destroy(config);
+                if (!config.gameObject.activeInHierarchy) Destroy(config);
             }
             if (state == null) state = FindObjectOfType<StateManager>(true);
 

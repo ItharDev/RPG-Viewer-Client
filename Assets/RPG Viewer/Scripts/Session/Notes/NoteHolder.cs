@@ -20,6 +20,7 @@ namespace RPG
         [SerializeField] private TMP_InputField textInput;
         [SerializeField] private GameObject publicButton;
         [SerializeField] private GameObject removeButton;
+        [SerializeField] private GameObject deleteButton;
         [SerializeField] private TMP_Text hoverText;
         [SerializeField] private Image image;
 
@@ -35,7 +36,6 @@ namespace RPG
         private Vector2 startPos;
         private byte[] bytes;
         private bool minimised;
-        private Vector3 originalPosition;
 
         public void Select(BaseEventData eventData)
         {
@@ -68,11 +68,13 @@ namespace RPG
             {
                 gameObject.SetActive(true);
                 publicButton.SetActive(true);
+                deleteButton.SetActive(true);
             }
             else
             {
                 gameObject.SetActive(Data.isPublic);
                 publicButton.SetActive(false);
+                deleteButton.SetActive(false);
             }
 
             UpdateImage(data.image);
@@ -172,7 +174,6 @@ namespace RPG
         {
             if (minimised)
             {
-                originalPosition = Panel.GetComponent<RectTransform>().anchoredPosition;
                 content.SetActive(true);
                 buttonParent.SetActive(true);
                 topPanel.sizeDelta = new Vector2(0, 30);
@@ -184,7 +185,6 @@ namespace RPG
             }
             else
             {
-                Panel.GetComponent<RectTransform>().anchoredPosition = originalPosition;
                 content.SetActive(false);
                 buttonParent.SetActive(false);
                 topPanel.sizeDelta = new Vector2(-450, 30);
@@ -206,6 +206,7 @@ namespace RPG
                 if (paths.Length == 0) return;
                 bytes = File.ReadAllBytes(paths[0]);
 
+                MessageManager.QueueMessage("Uploading image");
                 await SocketManager.Socket.EmitAsync("modify-note-image", (callback) =>
                 {
                     if (!callback.GetValue().GetBoolean()) MessageManager.QueueMessage(callback.GetValue(1).GetString());
