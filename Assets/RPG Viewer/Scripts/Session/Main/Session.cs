@@ -152,6 +152,7 @@ namespace RPG
 
                         await UniTask.WaitUntil(() => Loaders == 8);
                         background.gameObject.SetActive(false);
+                        ChangeFog(FogState.Player);
                         if (SessionManager.IsMaster) FindObjectOfType<StateManager>(true).SelectHidden();
                         MessageManager.RemoveMessage("Loading scene");
                     });
@@ -268,13 +269,21 @@ namespace RPG
         }
         public void ChangeFog(FogState state)
         {
+            Debug.Log(Settings.fogOfWar.globalLighting);
             if (Settings == null) return;
-            if (!Settings.fogOfWar.enabled) return;
+            if (!Settings.fogOfWar.enabled)
+            {
+                Lighting2D.LightmapPresets[0].darknessColor = new Color(0.0f, 0.0f, 0.0f, 0.0f);
+                Lighting2D.LightmapPresets[1].darknessColor = new Color(0.0f, 0.0f, 0.0f, 0.0f);
+                return;
+            }
 
             if (state == FogState.Player)
             {
                 Lighting2D.LightmapPresets[0].darknessColor = Settings.fogOfWar.color;
                 Lighting2D.LightmapPresets[1].darknessColor = Settings.fogOfWar.color;
+
+                if (Settings.fogOfWar.globalLighting) Lighting2D.LightmapPresets[0].darknessColor = new Color(Settings.fogOfWar.color.r, Settings.fogOfWar.color.g, Settings.fogOfWar.color.b, 0.0f);
             }
             else if (state == FogState.Vision)
             {

@@ -78,8 +78,9 @@ namespace RPG
                 if (Input.GetKeyDown(KeyCode.Alpha1) && panSelection.transform.parent.gameObject.activeInHierarchy) UsePan();
                 if (Input.GetKeyDown(KeyCode.Alpha2) && measureSelection.transform.parent.gameObject.activeInHierarchy) UseMeasure();
                 if (Input.GetKeyDown(KeyCode.Alpha3) && pingSelection.transform.parent.gameObject.activeInHierarchy) UsePing();
-                if (Input.GetKeyDown(KeyCode.Alpha4) && fogSelection.transform.parent.gameObject.activeInHierarchy) UseFog();
-                if (Input.GetKeyDown(KeyCode.Alpha5) && lightSelection.transform.parent.gameObject.activeInHierarchy) UseLight();
+                if (Input.GetKeyDown(KeyCode.Alpha4) && pingSelection.transform.parent.gameObject.activeInHierarchy) UseNotes();
+                if (Input.GetKeyDown(KeyCode.Alpha5) && fogSelection.transform.parent.gameObject.activeInHierarchy) UseFog();
+                if (Input.GetKeyDown(KeyCode.Alpha6) && lightSelection.transform.parent.gameObject.activeInHierarchy) UseLight();
             }
 
             fogButton.SetActive(isMaster && !string.IsNullOrEmpty(SessionManager.Scene));
