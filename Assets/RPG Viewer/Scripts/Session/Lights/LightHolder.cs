@@ -87,7 +87,7 @@ namespace RPG
             configPrefab.gameObject.SetActive(false);
         }
 
-        public void Select(BaseEventData eventData)
+        public void SelectLight(BaseEventData eventData)
         {
             PointerEventData pointerData = eventData as PointerEventData;
             if (pointerData.button != PointerEventData.InputButton.Left || pointerData.clickCount < 2) return;
