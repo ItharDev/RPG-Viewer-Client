@@ -90,7 +90,7 @@ Account data is synchronised across all devices, including
     Pan tool
     * Quick select this tool by pressing `1` on your keyboard 
     * Right-click to move the camera
-    * Left click on doors, tokens and notes
+    * Left-click on doors, tokens and notes
   * ![image](https://user-images.githubusercontent.com/70658690/214668692-54e15ca9-6ead-4a3c-a8b8-70481f1c7e29.png)
     Measure tool
     * Quick select this tool by pressing `3` on your keyboard
@@ -105,9 +105,15 @@ Account data is synchronised across all devices, including
     Ping tool
     * The markers remain on the map for 10 seconds
     * Left-click and hold to move each players' camera to that location
+  * ![image](https://user-images.githubusercontent.com/70658690/215039279-0a064a12-49ce-4842-855a-cdb7544d29e1.png)
+    Note Tools
+    * Quick select this tool by pressing `4` on your keyboard
+    * Add notes by clicking left-clicking
+    * See [notes](#notes)
+
   * ![image](https://user-images.githubusercontent.com/70658690/214669095-5fcb56cc-6761-445a-b79b-724a66db672e.png)
     Fog tool (Game Master only)
-    * Quick select this tool by pressing `4` on your keyboard
+    * Quick select this tool by pressing `5` on your keyboard
     * ![image](https://user-images.githubusercontent.com/70658690/214665922-02bbf0fb-7a02-4ef5-996c-f86ea6ebdf0a.png)
       Player view. Clicking on a token with this enabled will simulate that player's view of the game.
     * ![image](https://user-images.githubusercontent.com/70658690/214666376-61d7809b-5965-4a11-8620-f1ab6350c443.png)
@@ -116,8 +122,8 @@ Account data is synchronised across all devices, including
       No Fog. This will remove all fog and allow you to see the entire map and tokens.
   * ![image](https://user-images.githubusercontent.com/70658690/214669164-d0685566-3deb-4e2f-8311-75b8eeb3f662.png)
     Light tool (Game Master only)
-    * Quick select this tool by pressing `5` on your keyboard
-    * Left clicking on a map will add a light source on that location
+    * Quick select this tool by pressing `6` on your keyboard
+    * Left-clicking on a map will add a light source on that location
     * More on lights can be found [here](#lights)
   * ![image](https://user-images.githubusercontent.com/70658690/214669185-852c161f-72f9-4e4c-92fa-4785320d9334.png)
     Sync (Game master only)
@@ -284,7 +290,12 @@ While you are the owner of the token, you can do the following
   
 ### Notes
 
-* Notes will be added in future updates
+* Create notes by selecting the `Notes` tool and clicking on a scene
+* By default, notes are set to be visible only for you
+* Double clicking on a note icon will open it.
+* Move notes around by dragging, and minimise by double clicking. Both actions can be done from the top panel
+* By setting a note public, other players can edit and move them
+* Removing and changing note publicity can only be done by the note owner
 
 ## Blueprints
 
