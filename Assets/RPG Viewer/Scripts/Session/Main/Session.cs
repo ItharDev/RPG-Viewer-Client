@@ -18,6 +18,8 @@ namespace RPG
         [Header("Lights")]
         [SerializeField] private LightManager lightManager;
 
+        [Header("Notes")]
+        [SerializeField] private NoteManager noteManager;
 
         [Header("Tokens")]
         [SerializeField] private Token tokenPrefab;
@@ -146,6 +148,9 @@ namespace RPG
                         FindObjectOfType<InitiativeController>(true).LoadHolders(settings.initiatives);
 
                         await UniTask.WaitUntil(() => Loaders == 7);
+                        LoadNotes();
+
+                        await UniTask.WaitUntil(() => Loaders == 8);
                         background.gameObject.SetActive(false);
                         if (SessionManager.IsMaster) FindObjectOfType<StateManager>(true).SelectHidden();
                         MessageManager.RemoveMessage("Loading scene");
@@ -196,6 +201,34 @@ namespace RPG
             }
 
             Loaders++;
+        }
+        private async void LoadNotes()
+        {
+            await SocketManager.Socket.EmitAsync("get-notes", async (callback) =>
+            {
+                await UniTask.SwitchToMainThread();
+                if (callback.GetValue(0).GetBoolean())
+                {
+                    var notes = callback.GetValue(1).EnumerateArray().ToArray();
+                    if (notes.Length == 0)
+                    {
+                        Loaders++;
+                        return;
+                    }
+
+                    for (int i = 0; i < notes.Length; i++)
+                    {
+                        Debug.Log(callback);
+                        var data = JsonUtility.FromJson<NoteData>(notes[i].ToString());
+                        data.id = notes[i].GetProperty("_id").GetString();
+                        CreateNote(data);
+                    }
+
+                    Loaders++;
+                }
+                else MessageManager.QueueMessage(callback.GetValue(1).GetString());
+            }, Settings.id);
+
         }
 
         private async void LoadTokens()
@@ -255,27 +288,12 @@ namespace RPG
             }
         }
 
-        public void ToggleDoor(string id, bool state)
-        {
-            wallManager.ToggleWall(id, state);
-        }
-        public void ModifyWall(WallData data)
-        {
-            wallManager.ModifyWall(data);
-        }
+        public void ToggleDoor(string id, bool state) => wallManager.ToggleWall(id, state);
+        public void ModifyWall(WallData data) => wallManager.ModifyWall(data);
 
-        public void CreateLight(LightData data)
-        {
-            lightManager.AddLight(data);
-        }
-        public void ModifyLight(LightData data)
-        {
-            lightManager.ModifyLight(data);
-        }
-        public void RemoveLight(string id)
-        {
-            lightManager.RemoveLight(id);
-        }
+        public void CreateLight(LightData data) => lightManager.AddLight(data);
+        public void ModifyLight(LightData data) => lightManager.ModifyLight(data);
+        public void RemoveLight(string id) => lightManager.RemoveLight(id);
 
         public void CreateToken(TokenData data)
         {
@@ -383,25 +401,12 @@ namespace RPG
             }
         }
 
-        public void CreateNote(NoteData data)
-        {
-
-        }
-        public void ModifyNoteText(string id, string newText)
-        {
-
-        }
-        public void ModifyNoteImage(string id, string newImage)
-        {
-
-        }
-        public void SetNotePublic(string id, bool publicState)
-        {
-
-        }
-        public void RemoveNote(string id)
-        {
-
-        }
+        public void CreateNote(NoteData data) => noteManager.AddNote(data);
+        public void ModifyNoteText(string id, string newText) => noteManager.ModifyText(id, newText);
+        public void ModifyNoteHeader(string id, string newText) => noteManager.ModifyHeader(id, newText);
+        public void ModifyNoteImage(string id, string newImage) => noteManager.ModifyImage(id, newImage);
+        public void MoveNote(string id, Vector2 newPosition) => noteManager.Move(id, newPosition);
+        public void SetNotePublic(string id, bool publicState) => noteManager.SetPublic(id, publicState);
+        public void RemoveNote(string id) => noteManager.Remove(id);
     }
 }

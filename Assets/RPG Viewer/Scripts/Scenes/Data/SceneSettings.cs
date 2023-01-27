@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using System;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace RPG
@@ -13,6 +13,7 @@ namespace RPG
         public List<string> tokens;
         public List<InitiativeData> initiatives;
         public List<LightData> lights;
+        public List<NoteData> notes;
 
         [NonSerialized] public string path;
         [NonSerialized] public string id;
@@ -26,7 +27,7 @@ namespace RPG
         public string image;
         public float nightStrength;
     }
-    
+
     [Serializable]
     public struct FogOfWarData
     {
@@ -34,7 +35,7 @@ namespace RPG
         public bool globalLighting;
         public Color color;
     }
-    
+
     [Serializable]
     public struct GridData
     {

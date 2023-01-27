@@ -108,6 +108,7 @@ namespace RPG
             pingSelection.SetActive(false);
             lightSelection.SetActive(false);
             fogPanel.SetActive(false);
+            noteSelection.SetActive(false);
         }
 
         public void UseMeasure()
@@ -120,6 +121,8 @@ namespace RPG
             pingSelection.SetActive(false);
             fogPanel.SetActive(false);
             lightSelection.SetActive(false);
+            noteSelection.SetActive(false);
+
             if (!preciseSelection.activeInHierarchy && !gridSelection.activeInHierarchy) SelectPrecise();
         }
         public void SelectPrecise()
@@ -147,6 +150,7 @@ namespace RPG
             pingSelection.SetActive(false);
             lightSelection.SetActive(false);
             fogPanel.SetActive(true);
+            noteSelection.SetActive(false);
 
             if (!playerSelection.activeInHierarchy && !visionSelection.activeInHierarchy && !hiddenSelection.activeInHierarchy) playerSelection.SetActive(true);
         }
@@ -188,6 +192,7 @@ namespace RPG
             fogPanel.SetActive(false);
             lightSelection.SetActive(false);
             pingSelection.SetActive(true);
+            noteSelection.SetActive(false);
         }
 
         public void UseLight()
@@ -200,6 +205,20 @@ namespace RPG
             fogPanel.SetActive(false);
             pingSelection.SetActive(false);
             lightSelection.SetActive(true);
+            noteSelection.SetActive(false);
+        }
+
+        public void UseNotes()
+        {
+            ToolState = ToolState.Notes;
+            measurePanel.SetActive(false);
+            measureSelection.SetActive(false);
+            panSelection.SetActive(false);
+            fogSelection.SetActive(false);
+            fogPanel.SetActive(false);
+            pingSelection.SetActive(false);
+            lightSelection.SetActive(false);
+            noteSelection.SetActive(true);
         }
     }
 

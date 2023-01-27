@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Networking;
-using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -126,7 +125,7 @@ namespace RPG
         {
             for (int i = 0; i < lights.Count; i++)
             {
-                if (lights[i] != holder) lights[i].DeselectLight();
+                if (lights[i] != holder) lights[i].Deselect();
             }
         }
         public void UnloadLights()

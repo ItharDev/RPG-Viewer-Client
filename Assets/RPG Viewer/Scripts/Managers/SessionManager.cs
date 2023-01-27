@@ -153,6 +153,13 @@ namespace RPG
                 var text = data.GetValue(1).GetString();
                 if (session != null) session.ModifyNoteText(id, text);
             });
+            SocketManager.Socket.On("modify-note-header", async (data) =>
+            {
+                await UniTask.SwitchToMainThread();
+                var id = data.GetValue().GetString();
+                var text = data.GetValue(1).GetString();
+                if (session != null) session.ModifyNoteHeader(id, text);
+            });
             SocketManager.Socket.On("modify-note-image", async (data) =>
             {
                 await UniTask.SwitchToMainThread();
@@ -166,6 +173,13 @@ namespace RPG
                 var id = data.GetValue().GetString();
                 var state = data.GetValue(1).GetBoolean();
                 if (session != null) session.SetNotePublic(id, state);
+            });
+            SocketManager.Socket.On("move-note", async (data) =>
+            {
+                await UniTask.SwitchToMainThread();
+                var id = data.GetValue().GetString();
+                var pos = JsonUtility.FromJson<Vector2>(data.GetValue(1).GetString());
+                if (session != null) session.MoveNote(id, pos);
             });
             SocketManager.Socket.On("remove-note", async (data) =>
             {
