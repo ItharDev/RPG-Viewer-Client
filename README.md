@@ -345,5 +345,6 @@ While you are the owner of the token, you can do the following
 * `Num 1`: Pan tool
 * `Num 2`: Measure tools
 * `Num 3`: Ping tool
-* `Num 4`: Fog tools (Game Master only)
-* `Num 5`: Light tools (Game Master only)
+* `Num 4`: Note tool
+* `Num 5`: Fog tools (Game Master only)
+* `Num 6`: Light tools (Game Master only)
