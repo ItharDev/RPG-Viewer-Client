@@ -22,7 +22,8 @@ namespace RPG
 
         private void Update()
         {
-            if (!EventSystem.current.IsPointerOverGameObject()) HandleCameraZoom();
+            HandleCameraZoom();
+
             if (UsePan)
             {
                 if (Input.GetMouseButtonDown(1) && !EventSystem.current.IsPointerOverGameObject())

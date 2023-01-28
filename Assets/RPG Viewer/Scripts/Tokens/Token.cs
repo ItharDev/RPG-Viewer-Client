@@ -390,11 +390,6 @@ namespace RPG
             UpdateRotation(data.rotation);
             SetHealth(Data.health);
 
-            if (!SessionManager.IsMaster)
-            {
-                panel.SetActive(false);
-            }
-
             EnableToken(data.enabled);
 
             if (grid.CellSize > 0) Resize(grid.CellSize);
@@ -409,7 +404,6 @@ namespace RPG
         }
         public void LoadLights()
         {
-            Debug.Log("R");
             lightHandler.Init(Data.lightEffect, Data.lightColor, Data.lightIntensity, Data.flickerFrequency, Data.flickerAmount, Data.pulseInterval, Data.pulseAmount);
 
             visionSource.enabled = Data.enabled && Data.hasVision && Data.type == TokenType.Character && Permission.permission != PermissionType.None;
@@ -518,7 +512,7 @@ namespace RPG
         public void ToggleSelection()
         {
             Selection.gameObject.SetActive(!Selection.gameObject.activeInHierarchy);
-            panel.SetActive(Selection.gameObject.activeInHierarchy);
+            if (SessionManager.IsMaster) panel.SetActive(Selection.gameObject.activeInHierarchy);
             rotateButton.SetActive(Selection.gameObject.activeInHierarchy);
             if (SessionManager.IsMaster) SessionManager.session.SelectToken(Selection.gameObject.activeInHierarchy ? this : null);
 
