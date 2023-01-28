@@ -17,10 +17,17 @@ namespace RPG
         public GameObject Panel;
         [SerializeField] private TMP_InputField headerInput;
         [SerializeField] private GameObject publicButton;
-        [SerializeField] private GameObject removeButton;
         [SerializeField] private GameObject deleteButton;
+        [SerializeField] private GameObject selectButton;
+
+        [SerializeField] private GameObject viewButton;
+        [SerializeField] private Image viewImage;
+        [SerializeField] private Sprite imageSprite;
+        [SerializeField] private Sprite textSprite;
+
+
         [SerializeField] private TMP_Text hoverText;
-        [SerializeField] private MarkdownRenderer markDown;
+        [SerializeField] private MarkdownRenderer markdown;
         [SerializeField] private TMP_InputField markdownInput;
         [SerializeField] private Image image;
 
@@ -41,24 +48,34 @@ namespace RPG
         private void Start()
         {
             markdownInput.onValueChanged.AddListener(UpdateMarkdown);
-            markdownInput.onSelect.AddListener(SelectTextBox);
-            markdownInput.onDeselect.AddListener(DeselectTextBox);
-            markdownInput.onEndEdit.AddListener(DeselectTextBox);
+        }
+        private void Update()
+        {
+            if (Input.GetKeyDown(KeyCode.S) && Input.GetKey(KeyCode.LeftControl))
+            {
+                DeselectTextBox("");
+            }
+
+            if (Input.GetKeyDown(KeyCode.M) && Input.GetKey(KeyCode.LeftControl))
+            {
+                SelectTextBox("");
+            }
         }
 
         public void SelectTextBox(string text)
         {
-            markDown.gameObject.SetActive(false);
+            markdown.gameObject.SetActive(false);
             markdownInput.gameObject.SetActive(true);
+            markdownInput.ActivateInputField();
         }
         public void DeselectTextBox(string text)
         {
-            markDown.gameObject.SetActive(true);
+            markdown.gameObject.SetActive(true);
             markdownInput.gameObject.SetActive(false);
         }
         public void UpdateMarkdown(string text)
         {
-            markDown.Source = text;
+            markdown.Source = text;
         }
 
         public void Select(BaseEventData eventData)
@@ -87,6 +104,7 @@ namespace RPG
         {
             Data = data;
             manager = noteManager;
+            Data.type = NoteType.Text;
 
             transform.localPosition = new Vector3(data.position.x, data.position.y, -1);
             if (Data.owner == SocketManager.UserId)
@@ -102,11 +120,47 @@ namespace RPG
                 deleteButton.SetActive(false);
             }
 
+            headerInput.text = data.header;
+            hoverText.text = data.header;
+
+            markdownInput.gameObject.SetActive(false);
+            markdown.gameObject.SetActive(true);
+            image.gameObject.SetActive(false);
+            selectButton.SetActive(false);
+
             UpdateImage(data.image);
 
             markdownInput.text = data.text;
-            headerInput.text = data.header;
-            hoverText.text = data.header;
+            markdown.Source = data.text;
+
+            viewButton.GetComponentInChildren<TMP_Text>(true).text = "View image";
+            viewImage.sprite = imageSprite;
+        }
+
+        public void ChangeView()
+        {
+            if (Data.type == NoteType.Text)
+            {
+                Data.type = NoteType.Image;
+                viewButton.GetComponentInChildren<TMP_Text>(true).text = "View text";
+                viewImage.sprite = textSprite;
+
+                markdownInput.gameObject.SetActive(false);
+                markdown.gameObject.SetActive(false);
+                image.gameObject.SetActive(true);
+                selectButton.SetActive(true);
+            }
+            else if (Data.type == NoteType.Image)
+            {
+                Data.type = NoteType.Text;
+                viewButton.GetComponentInChildren<TMP_Text>(true).text = "View image";
+                viewImage.sprite = imageSprite;
+
+                markdownInput.gameObject.SetActive(false);
+                markdown.gameObject.SetActive(true);
+                image.gameObject.SetActive(false);
+                selectButton.SetActive(false);
+            }
         }
 
         public void UpdateImage(string id)
@@ -114,13 +168,11 @@ namespace RPG
             Data.image = id;
             if (string.IsNullOrEmpty(id))
             {
-                image.enabled = false;
-                Panel.GetComponent<RectTransform>().sizeDelta = new Vector2(600.0f, 400.0f);
-                removeButton.SetActive(false);
+                image.gameObject.SetActive(false);
+                return;
             }
-            else
-            {
-                WebManager.Download(id, true, async (bytes) =>
+
+            WebManager.Download(id, true, async (bytes) =>
                 {
                     await UniTask.SwitchToMainThread();
                     if (bytes != null)
@@ -129,12 +181,8 @@ namespace RPG
                         texture.LoadImage(bytes);
                         Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
                         image.sprite = sprite;
-                        image.enabled = true;
-                        Panel.GetComponent<RectTransform>().sizeDelta = new Vector2(600.0f, 730.0f);
-                        removeButton.SetActive(true);
                     }
                 });
-            }
         }
         public void UpdateText(string text)
         {
@@ -286,5 +334,13 @@ namespace RPG
         public string image;
         public bool isPublic;
         public Vector2 position;
+        public NoteType type;
+    }
+
+    [Serializable]
+    public enum NoteType
+    {
+        Text,
+        Image
     }
 }

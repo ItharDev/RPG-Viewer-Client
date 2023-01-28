@@ -1,6 +1,6 @@
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.EventSystems;
-using UnityEngine.UI;
 
 namespace RPG
 {
@@ -13,6 +13,8 @@ namespace RPG
         private RectTransform rectTransform;
         private Vector2 currentPointerPosition;
         private Vector2 previousPointerPosition;
+
+        public UnityEvent onResize = new UnityEvent();
 
         void Awake()
         {
@@ -44,6 +46,8 @@ namespace RPG
             rectTransform.sizeDelta = sizeDelta;
 
             previousPointerPosition = currentPointerPosition;
+
+            onResize.Invoke();
         }
     }
 }
