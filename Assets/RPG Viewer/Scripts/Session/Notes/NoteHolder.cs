@@ -1,8 +1,8 @@
 using System;
 using System.IO;
-using System.Resources;
 using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
+using LogicUI.FancyTextRendering;
 using Networking;
 using SFB;
 using TMPro;
@@ -16,12 +16,12 @@ namespace RPG
     {
         public GameObject Panel;
         [SerializeField] private TMP_InputField headerInput;
-        [SerializeField] private TMP_Text headerText;
-        [SerializeField] private TMP_InputField textInput;
         [SerializeField] private GameObject publicButton;
         [SerializeField] private GameObject removeButton;
         [SerializeField] private GameObject deleteButton;
         [SerializeField] private TMP_Text hoverText;
+        [SerializeField] private MarkdownRenderer markDown;
+        [SerializeField] private TMP_InputField markdownInput;
         [SerializeField] private Image image;
 
         [SerializeField] private GameObject buttonParent;
@@ -34,8 +34,32 @@ namespace RPG
         private NoteManager manager;
         private bool dragging;
         private Vector2 startPos;
+        private Vector2 openSize;
         private byte[] bytes;
         private bool minimised;
+
+        private void Start()
+        {
+            markdownInput.onValueChanged.AddListener(UpdateMarkdown);
+            markdownInput.onSelect.AddListener(SelectTextBox);
+            markdownInput.onDeselect.AddListener(DeselectTextBox);
+            markdownInput.onEndEdit.AddListener(DeselectTextBox);
+        }
+
+        public void SelectTextBox(string text)
+        {
+            markDown.gameObject.SetActive(false);
+            markdownInput.gameObject.SetActive(true);
+        }
+        public void DeselectTextBox(string text)
+        {
+            markDown.gameObject.SetActive(true);
+            markdownInput.gameObject.SetActive(false);
+        }
+        public void UpdateMarkdown(string text)
+        {
+            markDown.Source = text;
+        }
 
         public void Select(BaseEventData eventData)
         {
@@ -45,7 +69,8 @@ namespace RPG
 
             Panel.SetActive(true);
             Panel.transform.SetParent(GameObject.Find("Main Canvas").transform);
-            Panel.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
+            Panel.GetComponent<RectTransform>().sizeDelta = new Vector2(600.0f, 750.0f);
+            Panel.GetComponent<RectTransform>().anchoredPosition = new Vector2(660.0f, -165.0f);
             Panel.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
             Panel.transform.SetAsLastSibling();
 
@@ -79,7 +104,7 @@ namespace RPG
 
             UpdateImage(data.image);
 
-            textInput.text = data.text;
+            markdownInput.text = data.text;
             headerInput.text = data.header;
             hoverText.text = data.header;
         }
@@ -113,7 +138,7 @@ namespace RPG
         }
         public void UpdateText(string text)
         {
-            textInput.text = text;
+            markdownInput.text = text;
         }
         public void UpdateHeader(string text)
         {
@@ -176,22 +201,18 @@ namespace RPG
             {
                 content.SetActive(true);
                 buttonParent.SetActive(true);
-                topPanel.sizeDelta = new Vector2(0, 30);
                 headerInput.GetComponent<Image>().raycastTarget = true;
                 headerInput.interactable = true;
-                headerText.raycastTarget = true;
-                headerText.horizontalAlignment = HorizontalAlignmentOptions.Left;
-                Panel.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
+                Panel.GetComponent<RectTransform>().sizeDelta = openSize;
             }
             else
             {
+                openSize = Panel.GetComponent<RectTransform>().sizeDelta;
                 content.SetActive(false);
                 buttonParent.SetActive(false);
-                topPanel.sizeDelta = new Vector2(-450, 30);
+                Panel.GetComponent<RectTransform>().sizeDelta = new Vector2(100, 30);
                 headerInput.GetComponent<Image>().raycastTarget = false;
                 headerInput.interactable = false;
-                headerText.raycastTarget = false;
-                headerText.horizontalAlignment = HorizontalAlignmentOptions.Center;
             }
 
             minimised = !minimised;
@@ -233,10 +254,11 @@ namespace RPG
         }
         public async void ModifyText()
         {
+            Debug.Log(markdownInput.text);
             await SocketManager.Socket.EmitAsync("modify-note-text", (callback) =>
             {
                 if (!callback.GetValue().GetBoolean()) MessageManager.QueueMessage(callback.GetValue(1).GetString());
-            }, Data.id, textInput.text);
+            }, Data.id, markdownInput.text);
         }
         public async void SetState()
         {
