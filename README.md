@@ -295,7 +295,12 @@ While you are the owner of the token, you can do the following
 * Double clicking on a note icon will open it
 * Modify note text by pressin `Ctrl + M`, and save edits by pressin `Ctrl + S`
 * Move notes around by dragging, and minimise by double clicking. Both actions can be done from the top left corner
-* By setting a note public, other players can edit and move them
+* Scale notes from bottom right corner
+* Top Panel buttons:
+  * `Cross` close note
+  * `Bin` delete note
+  * `Send arrow` show note to others
+  * `Eye` set note public / private 
 * Removing and changing note publicity can only be done by the note owner
 
 ## Blueprints
