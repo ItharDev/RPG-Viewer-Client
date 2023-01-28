@@ -105,7 +105,6 @@ namespace RPG
         [Obsolete]
         public async void LoadScene(string id)
         {
-            Debug.Log("Unload");
             UnloadScene();
             if (string.IsNullOrEmpty(id)) return;
 
@@ -171,6 +170,7 @@ namespace RPG
             myTokens.Clear();
             wallManager.UnloadWalls();
             lightManager.UnloadLights();
+            noteManager.UnloadNotes();
 
             sprite.sprite = null;
 
@@ -417,5 +417,6 @@ namespace RPG
         public void MoveNote(string id, Vector2 newPosition) => noteManager.Move(id, newPosition);
         public void SetNotePublic(string id, bool publicState) => noteManager.SetPublic(id, publicState);
         public void RemoveNote(string id) => noteManager.Remove(id);
+        public void ShowNote(string id) => noteManager.Show(id);
     }
 }

@@ -89,7 +89,7 @@ namespace RPG
         {
             if (config != null)
             {
-                if (!config.gameObject.activeInHierarchy) Destroy(config);
+                if (!config.gameObject.activeInHierarchy) Destroy(config.gameObject);
             }
             if (state == null) state = FindObjectOfType<StateManager>(true);
 
@@ -117,7 +117,7 @@ namespace RPG
                 waypoints.Add(Camera.main.ScreenToWorldPoint(Input.mousePosition));
             }
 
-            if (Input.GetMouseButtonDown(0) && !RectTransformUtility.RectangleContainsScreenPoint(Selection.GetComponent<RectTransform>(), Camera.main.ScreenToWorldPoint(Input.mousePosition)) && Selection.gameObject.activeInHierarchy)
+            if (Input.GetMouseButtonDown(0) && !RectTransformUtility.RectangleContainsScreenPoint(Selection.GetComponent<RectTransform>(), Camera.main.ScreenToWorldPoint(Input.mousePosition)) && !RectTransformUtility.RectangleContainsScreenPoint(rotateButton.GetComponent<RectTransform>(), Camera.main.ScreenToWorldPoint(Input.mousePosition)) && Selection.gameObject.activeInHierarchy)
             {
                 ToggleSelection();
             }
@@ -504,7 +504,21 @@ namespace RPG
                     movePoints.Clear();
                 }
             }
-            if (movePoints.Count > 0) transform.position = Vector3.MoveTowards(transform.position, movePoints[currentWaypoint], Time.fixedDeltaTime * 4.0f);
+            if (movePoints.Count > 0)
+            {
+                bool moveFast = true;
+                for (int i = 0; i < Data.permissions.Count; i++)
+                {
+                    if (Data.permissions[i].permission == PermissionType.Owner)
+                    {
+                        moveFast = false;
+                        break;
+                    }
+                }
+
+                if (!moveFast || currentWaypoint == 0) transform.position = Vector3.MoveTowards(transform.position, movePoints[currentWaypoint], Time.fixedDeltaTime * grid.CellSize * 4.0f);
+                else transform.position = Vector3.MoveTowards(transform.position, movePoints[currentWaypoint], Time.fixedDeltaTime * Vector2.Distance(movePoints[currentWaypoint], movePoints[currentWaypoint - 1]) * 4.0f);
+            }
         }
         #endregion
 
@@ -596,7 +610,7 @@ namespace RPG
             {
                 confirmPanel.SetActive(true);
                 confirmPanel.transform.SetParent(GameObject.Find("Main Canvas").transform);
-                configPanel.transform.SetAsLastSibling();
+                confirmPanel.transform.SetAsLastSibling();
                 confirmPanel.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
                 confirmPanel.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
             }

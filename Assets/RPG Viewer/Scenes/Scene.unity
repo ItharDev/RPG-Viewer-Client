@@ -760,6 +760,7 @@ GameObject:
   - component: {fileID: 50771639}
   - component: {fileID: 50771641}
   - component: {fileID: 50771640}
+  - component: {fileID: 50771642}
   m_Layer: 5
   m_Name: Top Panel
   m_TagString: Untagged
@@ -828,6 +829,67 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 50771638}
   m_CullTransparentMesh: 1
+--- !u!114 &50771642
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 50771638}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0b148fe25e99eb48b9724523833bab1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Delegates:
+  - eventID: 13
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 1506927680}
+          m_TargetAssemblyTypeName: RPG.DragPanel, Assembly-CSharp
+          m_MethodName: OnBeginDrag
+          m_Mode: 0
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+  - eventID: 5
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 1506927680}
+          m_TargetAssemblyTypeName: RPG.DragPanel, Assembly-CSharp
+          m_MethodName: OnDrag
+          m_Mode: 0
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+  - eventID: 14
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 1506927680}
+          m_TargetAssemblyTypeName: RPG.DragPanel, Assembly-CSharp
+          m_MethodName: OnEndDrag
+          m_Mode: 0
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
 --- !u!1 &52953917
 GameObject:
   m_ObjectHideFlags: 0
@@ -15344,6 +15406,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1506927678}
   - component: {fileID: 1506927679}
+  - component: {fileID: 1506927680}
   m_Layer: 5
   m_Name: Night Config
   m_TagString: Untagged
@@ -15382,6 +15445,23 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1506927677}
   m_CullTransparentMesh: 1
+--- !u!114 &1506927680
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1506927677}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2abf2c016676b8244907ddb9e16fbdbe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dragRect: {fileID: 50771639}
+  useWorldPos: 0
+  minimise:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &1514742493
 GameObject:
   m_ObjectHideFlags: 0
@@ -24017,6 +24097,7 @@ GameObject:
   - component: {fileID: 4609876944748106049}
   - component: {fileID: 3463041371454386309}
   - component: {fileID: 5523438420625510975}
+  - component: {fileID: 5523438420625510976}
   m_Layer: 5
   m_Name: Top Panel
   m_TagString: Untagged
@@ -24828,6 +24909,7 @@ GameObject:
   m_Component:
   - component: {fileID: 9203976217988983555}
   - component: {fileID: 194187704523215786}
+  - component: {fileID: 9203976217988983556}
   m_Layer: 5
   m_Name: Grid Configuration
   m_TagString: Untagged
@@ -31279,6 +31361,67 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &5523438420625510976
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3177896620274210850}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0b148fe25e99eb48b9724523833bab1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Delegates:
+  - eventID: 13
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 9203976217988983556}
+          m_TargetAssemblyTypeName: RPG.DragPanel, Assembly-CSharp
+          m_MethodName: OnBeginDrag
+          m_Mode: 0
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+  - eventID: 5
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 9203976217988983556}
+          m_TargetAssemblyTypeName: RPG.DragPanel, Assembly-CSharp
+          m_MethodName: OnDrag
+          m_Mode: 0
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+  - eventID: 14
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 9203976217988983556}
+          m_TargetAssemblyTypeName: RPG.DragPanel, Assembly-CSharp
+          m_MethodName: OnEndDrag
+          m_Mode: 0
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
 --- !u!1 &5570448849254468964
 GameObject:
   m_ObjectHideFlags: 0
@@ -33222,6 +33365,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3374512545365860754}
   - component: {fileID: 6043371571368368443}
+  - component: {fileID: 7357041662073618901}
   m_Layer: 5
   m_Name: Fog Configuration
   m_TagString: Untagged
@@ -33229,6 +33373,23 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 0
+--- !u!114 &7357041662073618901
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7357041662073618900}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2abf2c016676b8244907ddb9e16fbdbe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dragRect: {fileID: 7968601072635255760}
+  useWorldPos: 0
+  minimise:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &7407700197999247168
 GameObject:
   m_ObjectHideFlags: 0
@@ -34889,6 +35050,7 @@ GameObject:
   - component: {fileID: 7968601072635255760}
   - component: {fileID: 7016761169449122324}
   - component: {fileID: 2146118219358869678}
+  - component: {fileID: 9040293452651827892}
   m_Layer: 5
   m_Name: Top Panel
   m_TagString: Untagged
@@ -34896,6 +35058,67 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &9040293452651827892
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9040293452651827891}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0b148fe25e99eb48b9724523833bab1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Delegates:
+  - eventID: 13
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 7357041662073618901}
+          m_TargetAssemblyTypeName: RPG.DragPanel, Assembly-CSharp
+          m_MethodName: OnBeginDrag
+          m_Mode: 0
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+  - eventID: 5
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 7357041662073618901}
+          m_TargetAssemblyTypeName: RPG.DragPanel, Assembly-CSharp
+          m_MethodName: OnDrag
+          m_Mode: 0
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+  - eventID: 14
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 7357041662073618901}
+          m_TargetAssemblyTypeName: RPG.DragPanel, Assembly-CSharp
+          m_MethodName: OnEndDrag
+          m_Mode: 0
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
 --- !u!224 &9047964602351328551
 RectTransform:
   m_ObjectHideFlags: 0
@@ -34982,6 +35205,23 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 500, y: 193}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &9203976217988983556
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3996606798833650501}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2abf2c016676b8244907ddb9e16fbdbe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dragRect: {fileID: 4609876944748106049}
+  useWorldPos: 0
+  minimise:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!224 &9216718289630108083
 RectTransform:
   m_ObjectHideFlags: 0

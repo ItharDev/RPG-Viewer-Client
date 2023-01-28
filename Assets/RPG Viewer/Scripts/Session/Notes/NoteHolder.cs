@@ -15,8 +15,11 @@ namespace RPG
     public class NoteHolder : MonoBehaviour
     {
         public GameObject Panel;
+        public GameObject confirmPanel;
+
         [SerializeField] private TMP_InputField headerInput;
         [SerializeField] private GameObject publicButton;
+        [SerializeField] private GameObject showButton;
         [SerializeField] private GameObject deleteButton;
         [SerializeField] private GameObject selectButton;
 
@@ -34,8 +37,8 @@ namespace RPG
         [SerializeField] private GameObject buttonParent;
         [SerializeField] private GameObject content;
         [SerializeField] private RectTransform topPanel;
+        [SerializeField] private GameObject resizeIcon;
 
-        public bool Selected;
         public NoteData Data;
 
         private NoteManager manager;
@@ -51,14 +54,20 @@ namespace RPG
         }
         private void Update()
         {
-            if (Input.GetKeyDown(KeyCode.S) && Input.GetKey(KeyCode.LeftControl))
-            {
-                DeselectTextBox("");
-            }
 
-            if (Input.GetKeyDown(KeyCode.M) && Input.GetKey(KeyCode.LeftControl))
+            if (Input.GetKey(KeyCode.LeftControl))
             {
-                SelectTextBox("");
+                if (Data.owner != SocketManager.UserId) return;
+                if (Input.GetKeyDown(KeyCode.S))
+                {
+                    DeselectTextBox("");
+                    ModifyText();
+                }
+
+                if (Input.GetKeyDown(KeyCode.M))
+                {
+                    SelectTextBox("");
+                }
             }
         }
 
@@ -82,22 +91,17 @@ namespace RPG
         {
             PointerEventData pointerData = eventData as PointerEventData;
             if (pointerData.button != PointerEventData.InputButton.Left || pointerData.clickCount < 2) return;
-            manager.SelectNote(this);
 
-            Panel.SetActive(true);
-            Panel.transform.SetParent(GameObject.Find("Main Canvas").transform);
-            Panel.GetComponent<RectTransform>().sizeDelta = new Vector2(600.0f, 750.0f);
-            Panel.GetComponent<RectTransform>().anchoredPosition = new Vector2(660.0f, -165.0f);
-            Panel.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
-            Panel.transform.SetAsLastSibling();
-
-            Selected = true;
-        }
-
-        public void Deselect()
-        {
-            Selected = false;
-            Panel.SetActive(false);
+            if (minimised) Minimise();
+            else
+            {
+                Panel.SetActive(true);
+                Panel.transform.SetParent(GameObject.Find("Main Canvas").transform);
+                Panel.GetComponent<RectTransform>().sizeDelta = new Vector2(600.0f, 750.0f);
+                Panel.GetComponent<RectTransform>().anchoredPosition = new Vector2(660.0f, -165.0f);
+                Panel.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
+                Panel.transform.SetAsLastSibling();
+            }
         }
 
         public void LoadData(NoteData data, NoteManager noteManager)
@@ -112,12 +116,14 @@ namespace RPG
                 gameObject.SetActive(true);
                 publicButton.SetActive(true);
                 deleteButton.SetActive(true);
+                showButton.SetActive(true);
             }
             else
             {
                 gameObject.SetActive(Data.isPublic);
                 publicButton.SetActive(false);
                 deleteButton.SetActive(false);
+                showButton.SetActive(false);
             }
 
             headerInput.text = data.header;
@@ -135,6 +141,8 @@ namespace RPG
 
             viewButton.GetComponentInChildren<TMP_Text>(true).text = "View image";
             viewImage.sprite = imageSprite;
+
+            GetComponentInChildren<Canvas>(true).GetComponent<RectTransform>().localScale = new Vector3(SessionManager.session.Settings.grid.cellSize * 0.4f, SessionManager.session.Settings.grid.cellSize * 0.4f, 1.0f);
         }
 
         public void ChangeView()
@@ -147,8 +155,8 @@ namespace RPG
 
                 markdownInput.gameObject.SetActive(false);
                 markdown.gameObject.SetActive(false);
-                image.gameObject.SetActive(true);
-                selectButton.SetActive(true);
+                if (!string.IsNullOrEmpty(Data.image)) image.gameObject.SetActive(true);
+                if (Data.owner == SocketManager.UserId) selectButton.SetActive(true);
             }
             else if (Data.type == NoteType.Image)
             {
@@ -166,6 +174,7 @@ namespace RPG
         public void UpdateImage(string id)
         {
             Data.image = id;
+
             if (string.IsNullOrEmpty(id))
             {
                 image.gameObject.SetActive(false);
@@ -181,6 +190,7 @@ namespace RPG
                         texture.LoadImage(bytes);
                         Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
                         image.sprite = sprite;
+                        if (Data.type == NoteType.Image) image.gameObject.SetActive(true);
                     }
                 });
         }
@@ -209,6 +219,32 @@ namespace RPG
                 publicButton.SetActive(false);
             }
         }
+        public void Show()
+        {
+            if (minimised) Minimise();
+            else
+            {
+                Panel.SetActive(true);
+                Panel.transform.SetParent(GameObject.Find("Main Canvas").transform);
+                Panel.GetComponent<RectTransform>().sizeDelta = new Vector2(600.0f, 750.0f);
+                Panel.GetComponent<RectTransform>().anchoredPosition = new Vector2(660.0f, -165.0f);
+                Panel.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
+                Panel.transform.SetAsLastSibling();
+
+                if (Data.type == NoteType.Text)
+                {
+                    markdownInput.gameObject.SetActive(false);
+                    markdown.gameObject.SetActive(true);
+                }
+                else
+                {
+                    markdown.gameObject.SetActive(false);
+                    image.gameObject.SetActive(true);
+                }
+            }
+        }
+
+
 
         public void BeginDrag(BaseEventData eventData)
         {
@@ -252,6 +288,18 @@ namespace RPG
                 headerInput.GetComponent<Image>().raycastTarget = true;
                 headerInput.interactable = true;
                 Panel.GetComponent<RectTransform>().sizeDelta = openSize;
+                resizeIcon.SetActive(true);
+
+                if (Data.type == NoteType.Text)
+                {
+                    markdownInput.gameObject.SetActive(false);
+                    markdown.gameObject.SetActive(true);
+                }
+                else
+                {
+                    markdown.gameObject.SetActive(false);
+                    image.gameObject.SetActive(true);
+                }
             }
             else
             {
@@ -261,8 +309,10 @@ namespace RPG
                 Panel.GetComponent<RectTransform>().sizeDelta = new Vector2(100, 30);
                 headerInput.GetComponent<Image>().raycastTarget = false;
                 headerInput.interactable = false;
+                resizeIcon.SetActive(false);
             }
 
+            Panel.transform.SetAsLastSibling();
             minimised = !minimised;
         }
 
@@ -286,13 +336,6 @@ namespace RPG
             await Task.Yield();
         }
 
-        public async void RemoveImage()
-        {
-            await SocketManager.Socket.EmitAsync("modify-note-image", (callback) =>
-            {
-                if (!callback.GetValue().GetBoolean()) MessageManager.QueueMessage(callback.GetValue(1).GetString());
-            }, Data.id, null);
-        }
         public async void ModifyHeader()
         {
             await SocketManager.Socket.EmitAsync("modify-note-header", (callback) =>
@@ -302,7 +345,6 @@ namespace RPG
         }
         public async void ModifyText()
         {
-            Debug.Log(markdownInput.text);
             await SocketManager.Socket.EmitAsync("modify-note-text", (callback) =>
             {
                 if (!callback.GetValue().GetBoolean()) MessageManager.QueueMessage(callback.GetValue(1).GetString());
@@ -315,11 +357,28 @@ namespace RPG
                 if (!callback.GetValue().GetBoolean()) MessageManager.QueueMessage(callback.GetValue(1).GetString());
             }, Data.id, !Data.isPublic);
         }
-        public async void Remove()
+        public void Remove()
         {
+            confirmPanel.SetActive(true);
+            confirmPanel.transform.SetParent(GameObject.Find("Main Canvas").transform);
+            confirmPanel.transform.SetAsLastSibling();
+            confirmPanel.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
+            confirmPanel.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
+        }
+        public async void ConfirmDeletion()
+        {
+            Destroy(confirmPanel);
             await SocketManager.Socket.EmitAsync("remove-note", (callback) =>
             {
                 if (!callback.GetValue().GetBoolean()) MessageManager.QueueMessage(callback.GetValue(1).GetString());
+            }, Data.id);
+        }
+        public async void ShowToPlayers()
+        {
+            await SocketManager.Socket.EmitAsync("show-note", (callback) =>
+            {
+                if (callback.GetValue().GetBoolean()) MessageManager.QueueMessage("Note showed to others");
+                else MessageManager.QueueMessage(callback.GetValue(1).GetString());
             }, Data.id);
         }
     }

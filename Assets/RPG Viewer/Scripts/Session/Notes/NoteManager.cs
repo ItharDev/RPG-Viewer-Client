@@ -21,16 +21,7 @@ namespace RPG
             {
                 if (Input.GetMouseButtonUp(0) && !EventSystem.current.IsPointerOverGameObject())
                 {
-                    bool modified = false;
-                    for (int i = 0; i < notes.Count; i++)
-                    {
-                        if (notes[i].Selected)
-                        {
-                            modified = true;
-                            break;
-                        }
-                    }
-                    if (!modified) CreateNote(Camera.main.ScreenToWorldPoint(Input.mousePosition));
+                    CreateNote(Camera.main.ScreenToWorldPoint(Input.mousePosition));
                 }
             }
         }
@@ -53,13 +44,17 @@ namespace RPG
             }, JsonUtility.ToJson(data));
         }
 
-        public void SelectNote(NoteHolder holder)
+        public void UnloadNotes()
         {
             for (int i = 0; i < notes.Count; i++)
             {
-                if (notes[i] != holder) notes[i].Deselect();
+                Destroy(notes[i].Panel);
+                Destroy(notes[i].gameObject);
             }
+
+            notes.Clear();
         }
+
         public void AddNote(NoteData data)
         {
             var note = Instantiate(notePrefab, noteParent);
@@ -107,8 +102,16 @@ namespace RPG
             if (note == null) return;
 
             notes.Remove(note);
-            Destroy(note.gameObject);
             Destroy(note.Panel);
+            Destroy(note.confirmPanel);
+            Destroy(note.gameObject);
+        }
+        public void Show(string id)
+        {
+            var note = notes.FirstOrDefault(x => x.Data.id == id);
+            if (note == null) return;
+
+            note.Show();
         }
     }
 }

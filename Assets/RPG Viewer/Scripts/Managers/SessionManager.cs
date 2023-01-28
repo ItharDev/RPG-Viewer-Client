@@ -187,6 +187,12 @@ namespace RPG
                 var id = data.GetValue().GetString();
                 if (session != null) session.RemoveNote(id);
             });
+            SocketManager.Socket.On("show-note", async (data) =>
+            {
+                await UniTask.SwitchToMainThread();
+                var id = data.GetValue().GetString();
+                if (session != null) session.ShowNote(id);
+            });
         }
         private void Update()
         {
