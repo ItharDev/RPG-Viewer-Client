@@ -292,8 +292,9 @@ While you are the owner of the token, you can do the following
 
 * Create notes by selecting the `Notes` tool and clicking on a scene
 * By default, notes are set to be visible only for you
-* Double clicking on a note icon will open it.
-* Move notes around by dragging, and minimise by double clicking. Both actions can be done from the top panel
+* Double clicking on a note icon will open it
+* Modify note text by pressin `Ctrl + M`, and save edits by pressin `Ctrl + S`
+* Move notes around by dragging, and minimise by double clicking. Both actions can be done from the top left corner
 * By setting a note public, other players can edit and move them
 * Removing and changing note publicity can only be done by the note owner
 
