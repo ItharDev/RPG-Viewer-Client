@@ -57,7 +57,7 @@ namespace RPG
 
             if (Input.GetKey(KeyCode.LeftControl))
             {
-                if (Data.owner != SocketManager.UserId) return;
+                if (Data.owner != SocketManager.UserId && !Data.isPublic) return;
                 if (Input.GetKeyDown(KeyCode.S))
                 {
                     DeselectTextBox("");
