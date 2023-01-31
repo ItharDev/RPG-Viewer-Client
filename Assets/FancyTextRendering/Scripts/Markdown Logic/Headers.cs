@@ -93,7 +93,7 @@ namespace LogicUI.FancyTextRendering.MarkdownLogic
 
                     builder_.TrimStart(' ');
 
-                    builder_.PrependChain("<size=", info.Size.ToString(), "em>");
+                    builder_.PrependChain("<size=", info.Size.ToString().Replace(",", "."), "em>");
                     builder_.Append("</size>");
 
                     if (info.Bold)
