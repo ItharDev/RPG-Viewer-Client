@@ -219,7 +219,6 @@ namespace RPG
 
                     for (int i = 0; i < notes.Length; i++)
                     {
-                        Debug.Log(callback);
                         var data = JsonUtility.FromJson<NoteData>(notes[i].ToString());
                         data.id = notes[i].GetProperty("_id").GetString();
                         CreateNote(data);
@@ -408,6 +407,8 @@ namespace RPG
 
                 Tokens[i].LoadLights();
             }
+
+            FindObjectOfType<Camera2D>().FollowTarget(token == null ? null : token.transform);
         }
 
         public void CreateNote(NoteData data) => noteManager.AddNote(data);

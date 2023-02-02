@@ -1,6 +1,6 @@
+using System.Linq;
 using Cysharp.Threading.Tasks;
 using Networking;
-using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -8,7 +8,7 @@ using UnityEngine.UI;
 
 namespace RPG
 {
-    public class FolderBlueprint : MonoBehaviour
+    public class FolderJournal : MonoBehaviour
     {
         [Header("Image")]
         [SerializeField] private Image image;
@@ -17,7 +17,7 @@ namespace RPG
 
         [Header("Buttons")]
         [SerializeField] private GameObject folderButton;
-        [SerializeField] private GameObject blueprintButton;
+        [SerializeField] private GameObject journalButton;
         [SerializeField] private GameObject deleteButton;
 
 
@@ -39,10 +39,11 @@ namespace RPG
         {
             input.GetComponentInChildren<TMP_SelectionCaret>().raycastTarget = false;
         }
+
         private void Update()
         {
             folderButton.SetActive(RectTransformUtility.RectangleContainsScreenPoint(BackgroundRect, Input.mousePosition));
-            blueprintButton.SetActive(RectTransformUtility.RectangleContainsScreenPoint(BackgroundRect, Input.mousePosition));
+            journalButton.SetActive(RectTransformUtility.RectangleContainsScreenPoint(BackgroundRect, Input.mousePosition));
             deleteButton.SetActive(RectTransformUtility.RectangleContainsScreenPoint(BackgroundRect, Input.mousePosition));
 
             GetComponent<RectTransform>().sizeDelta = new Vector2(300, (Content.gameObject.activeInHierarchy ? Content.GetComponent<RectTransform>().sizeDelta.y : 0) + 50);
@@ -57,12 +58,12 @@ namespace RPG
         }
         public void UpdateChildren()
         {
-            var folders = GetComponentsInChildren<FolderBlueprint>(true);
-            var blueprints = GetComponentsInChildren<BlueprintHolder>(true);
+            var folders = GetComponentsInChildren<FolderJournal>(true);
+            var journals = GetComponentsInChildren<JournalHolder>(true);
 
-            for (int i = 0; i < blueprints.Length; i++)
+            for (int i = 0; i < journals.Length; i++)
             {
-                if (blueprints[i].transform.parent == Content) blueprints[i].UpdatePath(Path);
+                if (journals[i].transform.parent == Content) journals[i].UpdatePath(Path);
             }
             for (int i = 0; i < folders.Length; i++)
             {
@@ -108,7 +109,7 @@ namespace RPG
         public async void EndDrag()
         {
             bool moved = false;
-            var dictionaries = FindObjectsOfType<FolderBlueprint>();
+            var dictionaries = FindObjectsOfType<FolderJournal>();
 
             for (int i = 0; i < dictionaries.Length; i++)
             {
@@ -120,7 +121,7 @@ namespace RPG
                         var newPath = dictionaries[i].Path;
                         var content = dictionaries[i].Content;
 
-                        await SocketManager.Socket.EmitAsync("move-blueprint-folder", async (callback) =>
+                        await SocketManager.Socket.EmitAsync("move-journal-folder", async (callback) =>
                         {
                             await UniTask.SwitchToMainThread();
                             startTransform = null;
@@ -142,12 +143,12 @@ namespace RPG
                             }
                         }, path, newPath);
                     }
-                }                
+                }
             }
 
-            if (!moved && RectTransformUtility.RectangleContainsScreenPoint(masterPanel.BlueprintPanel.GetComponent<RectTransform>(), Input.mousePosition) && Path.Split("/").Length != 1)
+            if (!moved && RectTransformUtility.RectangleContainsScreenPoint(masterPanel.JournalPanel.GetComponent<RectTransform>(), Input.mousePosition) && Path.Split("/").Length != 1)
             {
-                await SocketManager.Socket.EmitAsync("move-blueprint-folder", async (callback) =>
+                await SocketManager.Socket.EmitAsync("move-journal-folder", async (callback) =>
                 {
                     await UniTask.SwitchToMainThread();
                     startTransform = null;
@@ -156,7 +157,7 @@ namespace RPG
                     {
                         var id = Path.Split("/").Last();
 
-                        transform.SetParent(masterPanel.BlueprintList);
+                        transform.SetParent(masterPanel.JournalList);
                         transform.SetAsFirstSibling();
 
                         path = id;
@@ -181,17 +182,17 @@ namespace RPG
 
         public void CreateFolder()
         {
-            masterPanel.OpenBlueprintFolder(Path);
+            masterPanel.OpenJournalFolder(Path);
         }
-        public void CreateBlueprint()
+        public void CreateJournal()
         {
-            masterPanel.OpenBlueprintConfig(default, Path);
+            masterPanel.OpenJournalCreation(Path);
         }
         public async void RenameFolder()
         {
             if (string.IsNullOrEmpty(input.text)) input.text = "New folder";
 
-            await SocketManager.Socket.EmitAsync("rename-blueprint-folder", async (callback) =>
+            await SocketManager.Socket.EmitAsync("rename-journal-folder", async (callback) =>
             {
                 await UniTask.SwitchToMainThread();
                 if (callback.GetValue().GetBoolean()) folderName = input.text;
@@ -206,7 +207,7 @@ namespace RPG
         {
             masterPanel.ConfirmDeletion((value) =>
             {
-                if (value) masterPanel.RemoveBlueprintFolder(path);
+                if (value) masterPanel.RemoveJournalFolder(path);
             });
         }
     }

@@ -1,22 +1,23 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using Networking;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace RPG
 {
-    public class BlueprintHolder : MonoBehaviour
+    public class JournalHolder : MonoBehaviour
     {
-        [SerializeField] private Image image;
         [SerializeField] private TMP_Text text;
 
         [SerializeField] private GameObject panel;
-        [SerializeField] private PermissionPanel permissionPanel;
+        [SerializeField] private CollaboratorPanel collaboratorPanel;
 
-        private TokenData data;
+        [SerializeField] private Color normalColor;
+        [SerializeField] private Color activeColor;
+
+        private JournalData data;
         private string id;
         private string path;
 
@@ -27,6 +28,8 @@ namespace RPG
 
         private void Update()
         {
+            text.color = RectTransformUtility.RectangleContainsScreenPoint(GetComponent<RectTransform>(), Input.mousePosition) ? activeColor : normalColor;
+
             if (Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1))
             {
                 if (!RectTransformUtility.RectangleContainsScreenPoint(panel.GetComponent<RectTransform>(), Input.mousePosition))
@@ -36,35 +39,24 @@ namespace RPG
             }
         }
 
-        public void LoadData(TokenData _data, string _id, string _folder, byte[] _image, MasterPanel _masterPanel)
+        public void LoadData(JournalData _data, string _id, string _folder, MasterPanel _masterPanel)
         {
             data = _data;
             id = _id;
             path = _folder;
-            text.text = _data.name;
+            text.text = _data.header;
             masterPanel = _masterPanel;
-
-            Texture2D texture = new Texture2D(1, 1);
-            texture.LoadImage(_image);
-
-            image.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
-            image.color = Color.white;
         }
         public void UpdatePath(string newPath)
         {
             path = newPath;
         }
 
-
-        public void OpenConfig()
-        {
-            masterPanel.OpenBlueprintConfig(data, this, path, image.sprite.texture.GetRawTextureData());
-        }
-        public void DeleteBlueprint()
+        public void DeleteJournal()
         {
             masterPanel.ConfirmDeletion((value) =>
             {
-                if (value) masterPanel.DeleteBlueprint(this, path);
+                if (value) masterPanel.DeleteJournal(this, path);
             });
         }
         public void TogglePanel()
@@ -75,66 +67,55 @@ namespace RPG
             panel.transform.SetAsLastSibling();
             panel.SetActive(!panel.gameObject.activeInHierarchy);
         }
-        public void OpenPermissions()
+        public void OpenSharing()
         {
-            permissionPanel.gameObject.SetActive(true);
-            permissionPanel.transform.SetParent(GameObject.Find("Main Canvas").transform);
-            permissionPanel.transform.SetAsLastSibling();
-            permissionPanel.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
-            permissionPanel.LoadPermissions(data.permissions, this);
+            collaboratorPanel.gameObject.SetActive(true);
+            collaboratorPanel.transform.SetParent(GameObject.Find("Main Canvas").transform);
+            collaboratorPanel.transform.SetAsLastSibling();
+            collaboratorPanel.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
+            collaboratorPanel.LoadCollaborators(data.collaborators, this);
         }
-        public async void ClosePermissions(List<Permission> permissions)
+        public async void CloseSharing(List<Collaborator> collaboratos)
         {
             var jsonList = new List<string>();
-            for (int i = 0; i < permissions.Count; i++)
+            for (int i = 0; i < collaboratos.Count; i++)
             {
-                jsonList.Add(JsonUtility.ToJson(permissions[i]));
+                jsonList.Add(JsonUtility.ToJson(collaboratos[i]));
             }
 
-            await SocketManager.Socket.EmitAsync("set-permissions", async (callback) =>
+            await SocketManager.Socket.EmitAsync("set-collaborators", async (callback) =>
             {
                 await UniTask.SwitchToMainThread();
                 if (callback.GetValue().GetBoolean())
                 {
-                    data.permissions = permissions;
+                    data.collaborators = collaboratos;
                 }
                 else MessageManager.QueueMessage(callback.GetValue(1).GetString());
             }, Id, jsonList);
         }
 
-        public async void ModifyBlueprint(TokenData _data, byte[] _bytes, bool _imageChanged)
+        public async void ModifyHeader(string header)
         {
-            await SocketManager.Socket.EmitAsync("modify-blueprint", async (callback) =>
+            await SocketManager.Socket.EmitAsync("modify-journal-header", async (callback) =>
             {
                 await UniTask.SwitchToMainThread();
 
                 if (callback.GetValue().GetBoolean())
                 {
-                    data = _data;
-
-                    if (_imageChanged)
-                    {
-                        data.image = callback.GetValue(1).GetString();
-
-                        Texture2D texture = new Texture2D(1, 1);
-                        texture.LoadImage(_bytes);
-
-                        image.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
-                    }
-
-                    text.text = _data.name;
+                    data.header = header;
+                    text.text = header;
                 }
                 else
                 {
                     MessageManager.QueueMessage(callback.GetValue(1).GetString());
                 }
 
-            }, id, JsonUtility.ToJson(_data), _imageChanged ? Convert.ToBase64String(_bytes) : null);
+            }, id, header);
         }
 
         public void BeginDrag()
         {
-            dragObject = Instantiate(image.gameObject);
+            dragObject = Instantiate(text.gameObject);
             dragObject.transform.SetParent(GameObject.Find("Main Canvas").transform);
             dragObject.transform.SetAsLastSibling();
             dragObject.GetComponent<RectTransform>().pivot = new Vector2(0.5f, 0.5f);
@@ -143,7 +124,7 @@ namespace RPG
         {
             Destroy(dragObject);
             bool moved = false;
-            var dictionaries = FindObjectsOfType<FolderBlueprint>();
+            var dictionaries = FindObjectsOfType<FolderJournal>();
 
             for (int i = 0; i < dictionaries.Length; i++)
             {
@@ -154,13 +135,13 @@ namespace RPG
                         moved = true;
                         string newPath = dictionaries[i].Path;
 
-                        if (path != newPath) await SocketManager.Socket.EmitAsync("move-blueprint", async (callback) =>
+                        if (path != newPath) await SocketManager.Socket.EmitAsync("move-journal", async (callback) =>
                         {
                             await UniTask.SwitchToMainThread();
 
                             if (callback.GetValue().GetBoolean())
                             {
-                                masterPanel.MoveBlueprint(this, newPath);
+                                masterPanel.MoveJournal(this, newPath);
                                 path = newPath;
                             }
                             else
@@ -179,15 +160,15 @@ namespace RPG
                 }
             }
 
-            if (!moved && RectTransformUtility.RectangleContainsScreenPoint(masterPanel.BlueprintPanel.GetComponent<RectTransform>(), Input.mousePosition))
+            if (!moved && RectTransformUtility.RectangleContainsScreenPoint(masterPanel.JournalPanel.GetComponent<RectTransform>(), Input.mousePosition))
             {
-                if (path != "") await SocketManager.Socket.EmitAsync("move-blueprint", async (callback) =>
+                if (path != "") await SocketManager.Socket.EmitAsync("move-journal", async (callback) =>
                 {
                     await UniTask.SwitchToMainThread();
 
                     if (callback.GetValue().GetBoolean())
                     {
-                        masterPanel.MoveBlueprint(this, "");
+                        masterPanel.MoveJournal(this, "");
                         path = "";
                     }
                     else
@@ -196,23 +177,29 @@ namespace RPG
                     }
                 }, id, path, "");
             }
-            else if (!moved && !RectTransformUtility.RectangleContainsScreenPoint(masterPanel.BlueprintPanel.GetComponent<RectTransform>(), Input.mousePosition))
-            {
-                Vector2 pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-                TokenData newData = data;
-                newData.position = pos;
-                newData.enabled = false;
-
-                await SocketManager.Socket.EmitAsync("create-token", async (callback) =>
-                {
-                    await UniTask.SwitchToMainThread();
-                    if (!callback.GetValue().GetBoolean()) MessageManager.QueueMessage(callback.GetValue(1).GetString());
-                }, JsonUtility.ToJson(newData));
-            }
         }
         public void Drag()
         {
             dragObject.transform.position = Input.mousePosition;
         }
+    }
+
+    [Serializable]
+    public struct JournalData
+    {
+        public string id;
+        public string owner;
+        public string header;
+        public string text;
+        public string image;
+        public List<Collaborator> collaborators;
+        public NoteType type;
+    }
+
+    [Serializable]
+    public struct Collaborator
+    {
+        public string user;
+        public bool isCollaborator;
     }
 }

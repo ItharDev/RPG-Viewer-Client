@@ -26,13 +26,19 @@ namespace RPG
 
         [Header("Lights")]
         [SerializeField] private GameObject lightSelection;
+        [SerializeField] private GameObject lightPanel;
         [SerializeField] private GameObject lightButton;
+        [SerializeField] private GameObject createLightSelection;
+        [SerializeField] private GameObject deleteLightSelection;
 
         [Header("Ping")]
         [SerializeField] private GameObject pingSelection;
 
         [Header("Notes")]
         [SerializeField] private GameObject noteSelection;
+        [SerializeField] private GameObject notePanel;
+        [SerializeField] private GameObject createNoteSelection;
+        [SerializeField] private GameObject deleteNoteSelection;
 
         [Header("Sync")]
         [SerializeField] private GameObject stateButton;
@@ -43,6 +49,8 @@ namespace RPG
         [Header("State")]
         public ToolState ToolState;
         public FogState FogState;
+        public LightState LightState;
+        public NoteState NoteState;
         public MeasurementType MeasureType;
         public bool allowMeaure;
 
@@ -110,6 +118,8 @@ namespace RPG
             lightSelection.SetActive(false);
             fogPanel.SetActive(false);
             noteSelection.SetActive(false);
+            notePanel.SetActive(false);
+            lightPanel.SetActive(false);
         }
 
         public void UseMeasure()
@@ -123,6 +133,8 @@ namespace RPG
             fogPanel.SetActive(false);
             lightSelection.SetActive(false);
             noteSelection.SetActive(false);
+            notePanel.SetActive(false);
+            lightPanel.SetActive(false);
 
             if (!preciseSelection.activeInHierarchy && !gridSelection.activeInHierarchy) SelectPrecise();
         }
@@ -152,6 +164,8 @@ namespace RPG
             lightSelection.SetActive(false);
             fogPanel.SetActive(true);
             noteSelection.SetActive(false);
+            notePanel.SetActive(false);
+            lightPanel.SetActive(false);
 
             if (!playerSelection.activeInHierarchy && !visionSelection.activeInHierarchy && !hiddenSelection.activeInHierarchy) playerSelection.SetActive(true);
         }
@@ -194,6 +208,8 @@ namespace RPG
             lightSelection.SetActive(false);
             pingSelection.SetActive(true);
             noteSelection.SetActive(false);
+            notePanel.SetActive(false);
+            lightPanel.SetActive(false);
         }
 
         public void UseLight()
@@ -207,6 +223,24 @@ namespace RPG
             pingSelection.SetActive(false);
             lightSelection.SetActive(true);
             noteSelection.SetActive(false);
+            notePanel.SetActive(false);
+            lightPanel.SetActive(true);
+
+            if (!createLightSelection.activeInHierarchy && !deleteLightSelection.activeInHierarchy) CreateLight();
+        }
+        public void CreateLight()
+        {
+            createLightSelection.SetActive(true);
+            deleteLightSelection.SetActive(false);
+
+            LightState = LightState.Create;
+        }
+        public void DeleteLight()
+        {
+            createLightSelection.SetActive(false);
+            deleteLightSelection.SetActive(true);
+
+            LightState = LightState.Delete;
         }
 
         public void UseNotes()
@@ -220,6 +254,24 @@ namespace RPG
             pingSelection.SetActive(false);
             lightSelection.SetActive(false);
             noteSelection.SetActive(true);
+            notePanel.SetActive(true);
+            lightPanel.SetActive(false);
+
+            if (!createNoteSelection.activeInHierarchy && !deleteNoteSelection.activeInHierarchy) CreateNote();
+        }
+        public void CreateNote()
+        {
+            createNoteSelection.SetActive(true);
+            deleteNoteSelection.SetActive(false);
+
+            NoteState = NoteState.Create;
+        }
+        public void DeleteNote()
+        {
+            createNoteSelection.SetActive(false);
+            deleteNoteSelection.SetActive(true);
+
+            NoteState = NoteState.Delete;
         }
     }
 
@@ -236,6 +288,16 @@ namespace RPG
         Player,
         Vision,
         Hidden
+    }
+    public enum LightState
+    {
+        Create,
+        Delete
+    }
+    public enum NoteState
+    {
+        Create,
+        Delete
     }
 
 }

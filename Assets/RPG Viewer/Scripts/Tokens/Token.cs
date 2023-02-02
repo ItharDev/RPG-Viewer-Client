@@ -124,7 +124,8 @@ namespace RPG
 
             if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.RightArrow))
             {
-                if (!Selection.gameObject.activeInHierarchy || !Data.enabled) return;
+                if (!Selection.gameObject.activeInHierarchy || (!Data.enabled && !SessionManager.IsMaster)) return;
+                FindObjectOfType<Camera2D>().FollowTarget(transform);
                 var inputX = Input.GetAxisRaw("Horizontal");
                 var inputY = Input.GetAxisRaw("Vertical");
                 var currentCell = grid.PointToCell(transform.position);
@@ -435,6 +436,7 @@ namespace RPG
         public void SetLocked(bool locked)
         {
             Data.locked = locked;
+            lockedImage.sprite = Data.locked ? lockedSprite : unlockedSprite;
         }
         public void SetHealth(int health)
         {

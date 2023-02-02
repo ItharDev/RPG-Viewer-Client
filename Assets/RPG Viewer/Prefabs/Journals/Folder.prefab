@@ -500,8 +500,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 8832655988253204911}
-        m_TargetAssemblyTypeName: RPG.FolderBlueprint, Assembly-CSharp
+      - m_Target: {fileID: 7027854360395300376}
+        m_TargetAssemblyTypeName: RPG.FolderJournal, Assembly-CSharp
         m_MethodName: DeleteFolder
         m_Mode: 1
         m_Arguments:
@@ -863,8 +863,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 8832655988253204911}
-        m_TargetAssemblyTypeName: RPG.FolderBlueprint, Assembly-CSharp
+      - m_Target: {fileID: 7027854360395300376}
+        m_TargetAssemblyTypeName: RPG.FolderJournal, Assembly-CSharp
         m_MethodName: CreateFolder
         m_Mode: 1
         m_Arguments:
@@ -984,7 +984,7 @@ MonoBehaviour:
   m_OnEndEdit:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 8832655988253204911}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: RPG.FolderBlueprint, Assembly-CSharp
         m_MethodName: RenameFolder
         m_Mode: 1
@@ -1045,7 +1045,7 @@ GameObject:
   - component: {fileID: 3547263202895124184}
   - component: {fileID: 5971129398177900130}
   m_Layer: 0
-  m_Name: New Blueprint
+  m_Name: New Journal
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1155,9 +1155,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 8832655988253204911}
-        m_TargetAssemblyTypeName: RPG.FolderBlueprint, Assembly-CSharp
-        m_MethodName: CreateBlueprint
+      - m_Target: {fileID: 7027854360395300376}
+        m_TargetAssemblyTypeName: RPG.FolderJournal, Assembly-CSharp
+        m_MethodName: CreateJournal
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1177,9 +1177,9 @@ GameObject:
   m_Component:
   - component: {fileID: 5239976482527942039}
   - component: {fileID: 8870719137074008975}
-  - component: {fileID: 8832655988253204911}
   - component: {fileID: 8548947464447848775}
   - component: {fileID: 3809912884434936518}
+  - component: {fileID: 7027854360395300376}
   m_Layer: 0
   m_Name: Folder
   m_TagString: Untagged
@@ -1223,27 +1223,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6147754336803135894}
   m_CullTransparentMesh: 1
---- !u!114 &8832655988253204911
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6147754336803135894}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b7c9818066fdf0042b5eefa86a8ff491, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  image: {fileID: 5190053659455029317}
-  folderClose: {fileID: 21300000, guid: 08a61b22410531e4994cd0b404ab9cb2, type: 3}
-  folderOpen: {fileID: 21300000, guid: c2e5a9c4dadbc8745884b57ba20c2adc, type: 3}
-  folderButton: {fileID: 5820049824639096360}
-  blueprintButton: {fileID: 6090758588318257961}
-  deleteButton: {fileID: 848656930648517854}
-  input: {fileID: 8069189981635645726}
-  Content: {fileID: 1470183434}
-  BackgroundRect: {fileID: 3380222358473410766}
 --- !u!114 &8548947464447848775
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1261,8 +1240,8 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 8832655988253204911}
-          m_TargetAssemblyTypeName: RPG.FolderBlueprint, Assembly-CSharp
+        - m_Target: {fileID: 7027854360395300376}
+          m_TargetAssemblyTypeName: RPG.FolderJournal, Assembly-CSharp
           m_MethodName: PointerClick
           m_Mode: 0
           m_Arguments:
@@ -1277,8 +1256,8 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 8832655988253204911}
-          m_TargetAssemblyTypeName: RPG.FolderBlueprint, Assembly-CSharp
+        - m_Target: {fileID: 7027854360395300376}
+          m_TargetAssemblyTypeName: RPG.FolderJournal, Assembly-CSharp
           m_MethodName: BeginDrag
           m_Mode: 1
           m_Arguments:
@@ -1293,9 +1272,9 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 8832655988253204911}
-          m_TargetAssemblyTypeName: RPG.FolderBlueprint, Assembly-CSharp
-          m_MethodName: EndDrag
+        - m_Target: {fileID: 7027854360395300376}
+          m_TargetAssemblyTypeName: RPG.FolderJournal, Assembly-CSharp
+          m_MethodName: Drag
           m_Mode: 1
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -1309,9 +1288,9 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 8832655988253204911}
-          m_TargetAssemblyTypeName: RPG.FolderBlueprint, Assembly-CSharp
-          m_MethodName: Drag
+        - m_Target: {fileID: 7027854360395300376}
+          m_TargetAssemblyTypeName: RPG.FolderJournal, Assembly-CSharp
+          m_MethodName: EndDrag
           m_Mode: 1
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -1351,6 +1330,27 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &7027854360395300376
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6147754336803135894}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ca1dbe7693a0ccd47b42fd59b6f85956, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  image: {fileID: 5190053659455029317}
+  folderClose: {fileID: 21300000, guid: 08a61b22410531e4994cd0b404ab9cb2, type: 3}
+  folderOpen: {fileID: 21300000, guid: c2e5a9c4dadbc8745884b57ba20c2adc, type: 3}
+  folderButton: {fileID: 5820049824639096360}
+  journalButton: {fileID: 6090758588318257961}
+  deleteButton: {fileID: 848656930648517854}
+  input: {fileID: 8069189981635645726}
+  Content: {fileID: 1470183434}
+  BackgroundRect: {fileID: 3380222358473410766}
 --- !u!1 &6978598512831562018
 GameObject:
   m_ObjectHideFlags: 0
@@ -1622,7 +1622,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 4bda2ba7b8dbffa4392fbdb8147cea95, type: 3}
+  m_Sprite: {fileID: 21300000, guid: ed4102c6b4a44c14eb6f5fc2e0d973a9, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1

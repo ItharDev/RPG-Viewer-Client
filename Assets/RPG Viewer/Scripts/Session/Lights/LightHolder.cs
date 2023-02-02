@@ -10,6 +10,7 @@ namespace RPG
     {
         [SerializeField] private Color activeColor;
         [SerializeField] private Color normalColor;
+        [SerializeField] private Image icon;
 
         [SerializeField] private Light2D lightSource;
         [SerializeField] private LightHandler lightHandler;
@@ -40,11 +41,7 @@ namespace RPG
         private void Update()
         {
             canDrag = RectTransformUtility.RectangleContainsScreenPoint(GetComponentInChildren<Canvas>(true).GetComponent<RectTransform>(), Camera.main.ScreenToWorldPoint(Input.mousePosition));
-            if ((Input.GetKeyDown(KeyCode.Backspace) || Input.GetKeyDown(KeyCode.Delete)) && Selected)
-            {
-                manager.SelectLight(null);
-                manager.RemoveLight(this);
-            }
+
             if (Input.GetMouseButtonUp(0) && CanDeselect() && Selected)
             {
                 manager.ModifyLight(this);
@@ -75,6 +72,8 @@ namespace RPG
             lightSource.enabled = data.enabled;
 
             if (SessionManager.IsMaster) ShowLight(toolActive);
+
+            icon.color = Data.enabled ? activeColor : normalColor;
         }
         public void ShowLight(bool enabled)
         {
@@ -90,14 +89,26 @@ namespace RPG
         public void SelectLight(BaseEventData eventData)
         {
             PointerEventData pointerData = eventData as PointerEventData;
-            if (pointerData.button != PointerEventData.InputButton.Left || pointerData.clickCount < 2) return;
-            manager.SelectLight(this);
 
-            Config.gameObject.SetActive(true);
-            Config.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
-            Config.LoadData(Data, this, manager);
+            if (pointerData.button != PointerEventData.InputButton.Left) return;
 
-            Selected = true;
+            if (pointerData.clickCount >= 2 && manager.StateManager.LightState == LightState.Create)
+            {
+                manager.SelectLight(this);
+
+                Config.gameObject.SetActive(true);
+                Config.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
+                Config.LoadData(Data, this, manager);
+
+                Selected = true;
+            }
+            else if (manager.StateManager.LightState == LightState.Delete)
+            {
+                Config.gameObject.SetActive(false);
+
+                manager.SelectLight(null);
+                manager.RemoveLight(this);
+            }
         }
 
         public void BeginDrag(BaseEventData eventData)

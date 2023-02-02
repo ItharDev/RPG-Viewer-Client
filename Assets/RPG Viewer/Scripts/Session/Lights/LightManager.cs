@@ -12,17 +12,14 @@ namespace RPG
         [SerializeField] private Transform lightParent;
 
         private List<LightHolder> lights = new List<LightHolder>();
-        private StateManager stateManager;
-        private Session session;
+        public StateManager StateManager;
         private LightData copyData;
         private bool lightEnabled;
 
         private void Update()
         {
-            if (stateManager == null) stateManager = FindObjectOfType<StateManager>(true);
-            if (session == null) session = FindObjectOfType<Session>(true);
 
-            if (stateManager.ToolState == ToolState.Light && !lightEnabled)
+            if (StateManager.ToolState == ToolState.Light && !lightEnabled)
             {
                 lightEnabled = true;
                 for (int i = 0; i < lights.Count; i++)
@@ -31,7 +28,7 @@ namespace RPG
                 }
             }
 
-            if (stateManager.ToolState != ToolState.Light && lightEnabled)
+            if (StateManager.ToolState != ToolState.Light && lightEnabled)
             {
                 lightEnabled = false;
                 for (int i = 0; i < lights.Count; i++)
@@ -53,7 +50,7 @@ namespace RPG
                             break;
                         }
                     }
-                    if (!modified) CreateLight(Camera.main.ScreenToWorldPoint(Input.mousePosition));
+                    if (!modified && StateManager.LightState == LightState.Create) CreateLight(Camera.main.ScreenToWorldPoint(Input.mousePosition));
                 }
 
                 if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.V))
@@ -141,7 +138,7 @@ namespace RPG
         public void AddLight(LightData data)
         {
             var light = Instantiate(lightPrefab, lightParent);
-            light.LoadData(data, this, stateManager.ToolState == ToolState.Light);
+            light.LoadData(data, this, StateManager.ToolState == ToolState.Light);
             lights.Add(light);
         }
         public void ModifyLight(LightData data)
@@ -149,7 +146,7 @@ namespace RPG
             var light = lights.FirstOrDefault(x => x.Data.id == data.id);
             if (light == null) return;
 
-            light.LoadData(data, this, stateManager.ToolState == ToolState.Light);
+            light.LoadData(data, this, StateManager.ToolState == ToolState.Light);
         }
         public void RemoveLight(string id)
         {
@@ -157,8 +154,8 @@ namespace RPG
             if (light == null) return;
 
             lights.Remove(light);
-            Destroy(light.gameObject);
             Destroy(light.Config.gameObject);
+            Destroy(light.gameObject);
         }
     }
 }
