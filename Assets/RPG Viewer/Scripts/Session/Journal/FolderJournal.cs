@@ -42,11 +42,20 @@ namespace RPG
 
         private void Update()
         {
+            GetComponent<RectTransform>().sizeDelta = new Vector2(300, (Content.gameObject.activeInHierarchy ? Content.GetComponent<RectTransform>().sizeDelta.y : 0) + 50);
+
+            if (Path == "shared")
+            {
+                folderButton.SetActive(false);
+                journalButton.SetActive(false);
+                deleteButton.SetActive(false);
+
+                return;
+            }
+
             folderButton.SetActive(RectTransformUtility.RectangleContainsScreenPoint(BackgroundRect, Input.mousePosition));
             journalButton.SetActive(RectTransformUtility.RectangleContainsScreenPoint(BackgroundRect, Input.mousePosition));
             deleteButton.SetActive(RectTransformUtility.RectangleContainsScreenPoint(BackgroundRect, Input.mousePosition));
-
-            GetComponent<RectTransform>().sizeDelta = new Vector2(300, (Content.gameObject.activeInHierarchy ? Content.GetComponent<RectTransform>().sizeDelta.y : 0) + 50);
         }
 
         public void LoadData(string _name, string _path, MasterPanel _masterPanel)
@@ -84,6 +93,8 @@ namespace RPG
 
             if (pointerData.clickCount == 2)
             {
+                if (Path == "shared") return;
+
                 input.Select();
                 return;
             }
@@ -93,7 +104,7 @@ namespace RPG
         }
         public void BeginDrag()
         {
-            if (startTransform != null) return;
+            if (startTransform != null || Path == "shared") return;
 
             if (Content.gameObject.activeInHierarchy)
             {
@@ -108,12 +119,14 @@ namespace RPG
         }
         public async void EndDrag()
         {
+            if (Path == "shared") return;
+
             bool moved = false;
             var dictionaries = FindObjectsOfType<FolderJournal>();
 
             for (int i = 0; i < dictionaries.Length; i++)
             {
-                if (dictionaries[i] != this)
+                if (dictionaries[i] != this && dictionaries[i].Path != "shared")
                 {
                     if (RectTransformUtility.RectangleContainsScreenPoint(dictionaries[i].BackgroundRect, Input.mousePosition))
                     {
@@ -136,6 +149,7 @@ namespace RPG
                                 path = $"{newPath}/{id}";
 
                                 UpdateChildren();
+                                startTransform = null;
                             }
                             else
                             {
@@ -177,6 +191,7 @@ namespace RPG
         }
         public void Drag()
         {
+            if (Path == "shared") return;
             transform.position = Input.mousePosition;
         }
 

@@ -21,6 +21,10 @@ namespace RPG
         [Header("Notes")]
         [SerializeField] private NoteManager noteManager;
 
+        [Header("Journals")]
+        [SerializeField]
+        private JournalManager journalManager;
+
         [Header("Tokens")]
         [SerializeField] private Token tokenPrefab;
         [SerializeField] private Transform tokenTransform;
@@ -73,7 +77,7 @@ namespace RPG
                 selectedToken++;
                 if (selectedToken > myTokens.Count - 1) selectedToken = 0;
                 myTokens[selectedToken].ToggleSelection();
-                FindObjectOfType<Camera2D>().MoveToPosition(myTokens[selectedToken].transform.position, false);
+                FindObjectOfType<Camera2D>().FollowTarget(myTokens[selectedToken].transform);
             }
         }
 
@@ -122,7 +126,6 @@ namespace RPG
                     WebManager.Download(settings.data.image, true, async (bytes) =>
                     {
                         await UniTask.SwitchToMainThread();
-                        Debug.Log("Image loaded");
                         Texture2D texture = new Texture2D(1, 1);
                         texture.LoadImage(bytes);
                         sprite.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
@@ -268,7 +271,6 @@ namespace RPG
         }
         public void ChangeFog(FogState state)
         {
-            Debug.Log(Settings.fogOfWar.globalLighting);
             if (Settings == null) return;
             if (!Settings.fogOfWar.enabled)
             {
@@ -419,5 +421,12 @@ namespace RPG
         public void SetNotePublic(string id, bool publicState) => noteManager.SetPublic(id, publicState);
         public void RemoveNote(string id) => noteManager.Remove(id);
         public void ShowNote(string id) => noteManager.Show(id);
+
+        public void ModifyJournalText(string id, string newText) => journalManager.ModifyText(id, newText);
+        public void ModifyJournalHeader(string id, string newText) => journalManager.ModifyHeader(id, newText);
+        public void ModifyJournalImage(string id, string newImage) => journalManager.ModifyImage(id, newImage);
+        public void RemoveJournal(string id) => journalManager.RemoveJournal(id);
+        public void ShowJournal(JournalData data) => journalManager.ShowJournal(data);
+        public void SetCollaborators(string id, List<Collaborator> collaborators) => journalManager.SetCollaborators(id, collaborators);
     }
 }

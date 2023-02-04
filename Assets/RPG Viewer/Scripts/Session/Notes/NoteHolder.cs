@@ -3,7 +3,6 @@ using System.IO;
 using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using LogicUI.FancyTextRendering;
-using Microsoft.VisualBasic;
 using Networking;
 using SFB;
 using TMPro;
@@ -40,6 +39,7 @@ namespace RPG
         [SerializeField] private GameObject content;
         [SerializeField] private RectTransform topPanel;
         [SerializeField] private GameObject resizeIcon;
+        [SerializeField] private LayoutElement layoutElement;
 
         public NoteData Data;
 
@@ -56,7 +56,6 @@ namespace RPG
         }
         private void Update()
         {
-
             if (Input.GetKey(KeyCode.LeftControl))
             {
                 if (Data.owner != SocketManager.UserId && !Data.isPublic) return;
@@ -108,6 +107,8 @@ namespace RPG
                 }
             }
             else if (manager.StateManager.NoteState == NoteState.Delete) Remove();
+
+            layoutElement.minHeight = Panel.GetComponent<RectTransform>().sizeDelta.y - 60.0f;
         }
 
         public void LoadData(NoteData data, NoteManager noteManager, bool toolActive)
@@ -256,6 +257,8 @@ namespace RPG
                     image.gameObject.SetActive(true);
                 }
             }
+
+            layoutElement.minHeight = Panel.GetComponent<RectTransform>().sizeDelta.y - 60.0f;
         }
 
 
@@ -328,6 +331,11 @@ namespace RPG
 
             Panel.transform.SetAsLastSibling();
             minimised = !minimised;
+            layoutElement.minHeight = Panel.GetComponent<RectTransform>().sizeDelta.y - 60.0f;
+        }
+        public void Resize()
+        {
+            layoutElement.minHeight = Panel.GetComponent<RectTransform>().sizeDelta.y - 60.0f;
         }
 
         public async void SelectImage() => await ImageTask();

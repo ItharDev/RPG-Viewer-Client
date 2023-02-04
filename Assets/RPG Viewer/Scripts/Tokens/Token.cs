@@ -414,7 +414,7 @@ namespace RPG
             if (grid.CellSize > 0)
             {
                 lightSource.size = Data.lightRadius * 0.2f * grid.CellSize + (grid.CellSize * 0.5f);
-                nightSource.size = 20.0f * 0.2f * grid.CellSize + (grid.CellSize * 0.5f);
+                nightSource.size = 40.0f * 0.2f * grid.CellSize + (grid.CellSize * 0.5f);
                 highlight.size = grid.CellSize * 0.65f;
                 visionSource.size = grid.CellSize * 40.5f;
             }
@@ -530,7 +530,7 @@ namespace RPG
             Selection.gameObject.SetActive(!Selection.gameObject.activeInHierarchy);
             if (SessionManager.IsMaster) panel.SetActive(Selection.gameObject.activeInHierarchy);
             rotateButton.SetActive(Selection.gameObject.activeInHierarchy);
-            if (SessionManager.IsMaster) SessionManager.session.SelectToken(Selection.gameObject.activeInHierarchy ? this : null);
+            if (SessionManager.IsMaster ) SessionManager.session.SelectToken(Selection.gameObject.activeInHierarchy ? this : null);
 
             SetHealth(Data.health);
         }

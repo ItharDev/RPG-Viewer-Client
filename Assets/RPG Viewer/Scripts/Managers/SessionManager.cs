@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Cysharp.Threading.Tasks;
 using Networking;
 using UnityEngine;
@@ -11,6 +12,7 @@ namespace RPG
         public static SessionManager Instance { get; private set; }
 
         public static bool IsMaster;
+        public static string MasterId;
 
         public static bool Synced;
         public static string Scene;
@@ -46,7 +48,6 @@ namespace RPG
             {
                 await UniTask.SwitchToMainThread();
                 Scene = data.GetValue().ToString();
-                Debug.Log("set-scene");
                 SocketManager.Socket.Emit("update-scene", Scene);
                 if (Synced || IsMaster) session.LoadScene(Scene);
             });
@@ -193,6 +194,54 @@ namespace RPG
                 var id = data.GetValue().GetString();
                 if (session != null) session.ShowNote(id);
             });
+
+            SocketManager.Socket.On("modify-journal-text", async (data) =>
+            {
+                await UniTask.SwitchToMainThread();
+                var id = data.GetValue().GetString();
+                var text = data.GetValue(1).GetString();
+                if (session != null) session.ModifyJournalText(id, text);
+            });
+            SocketManager.Socket.On("modify-journal-header", async (data) =>
+            {
+                await UniTask.SwitchToMainThread();
+                Debug.Log(data);
+                var id = data.GetValue().GetString();
+                var text = data.GetValue(1).GetString();
+                if (session != null) session.ModifyJournalHeader(id, text);
+            });
+            SocketManager.Socket.On("modify-journal-image", async (data) =>
+            {
+                await UniTask.SwitchToMainThread();
+                var id = data.GetValue().GetString();
+                var image = data.GetValue(1).GetString();
+                if (session != null) session.ModifyJournalImage(id, image);
+            });
+            SocketManager.Socket.On("set-collaborators", async (data) =>
+            {
+                await UniTask.SwitchToMainThread();
+                var id = data.GetValue().GetString();
+                var list = data.GetValue(1).EnumerateArray().ToArray();
+                List<Collaborator> collaborators = new List<Collaborator>();
+                for (int i = 0; i < list.Length; i++)
+                {
+                    collaborators.Add(JsonUtility.FromJson<Collaborator>(list[i].ToString()));
+                }
+                if (session != null) session.SetCollaborators(id, collaborators);
+            });
+            SocketManager.Socket.On("remove-journal", async (data) =>
+            {
+                await UniTask.SwitchToMainThread();
+                var id = data.GetValue().GetString();
+                if (session != null) session.RemoveJournal(id);
+            });
+            SocketManager.Socket.On("show-journal", async (data) =>
+            {
+                await UniTask.SwitchToMainThread();
+                Debug.Log(data);
+                var dournalData = JsonUtility.FromJson<JournalData>(data.GetValue().GetString());
+                if (session != null) session.ShowJournal(dournalData);
+            });
         }
         private void Update()
         {
@@ -217,6 +266,7 @@ namespace RPG
                 Synced = data.synced;
                 Scene = data.scene;
                 Users = data.users;
+                MasterId = data.masterId;
 
                 if (session == null) session = FindObjectOfType<Session>();
                 if (!IsMaster && !Synced) return;
@@ -235,6 +285,7 @@ namespace RPG
     {
         public string id;
         public List<string> users;
+        public string masterId;
         public bool master;
         public bool synced;
         public string scene;

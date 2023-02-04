@@ -43,6 +43,7 @@ namespace RPG
         public Transform JournalList;
         [SerializeField] private TMP_InputField journalSearch;
         [SerializeField] private GameObject createJournalPanel;
+        [SerializeField] private JournalManager journalManager;
 
         [SerializeField] private JournalHolder journalHolder;
         [SerializeField] private FolderJournal journalFolder;
@@ -64,7 +65,8 @@ namespace RPG
         private bool toggle;
         private bool loaded;
 
-        private string createPath;
+        private string scenePath;
+        private string journalPath;
         private byte[] bytes;
 
         private Action<bool> confirmCallback;
@@ -463,7 +465,7 @@ namespace RPG
         {
             createScenePanel.SetActive(true);
             createScenePanel.GetComponentInChildren<TMP_InputField>().text = "";
-            createPath = path;
+            scenePath = path;
         }
         public async void CreateScene()
         {
@@ -475,7 +477,7 @@ namespace RPG
             string name = createScenePanel.GetComponentInChildren<TMP_InputField>().text;
             SocketManager.SceneSettings = new SceneSettings()
             {
-                path = createPath,
+                path = scenePath,
                 bytes = bytes,
 
                 data = new SceneData() { name = name },
@@ -488,7 +490,7 @@ namespace RPG
                 tokens = new List<string>()
             };
 
-            createPath = null;
+            scenePath = null;
             bytes = null;
             await SocketManager.Socket.EmitAsync("set-scene", async (callback) =>
             {
@@ -624,7 +626,7 @@ namespace RPG
                 return;
             }
             var id = json.GetProperty("id").GetString();
-            var name = json.GetProperty("name").GetString();
+            var name = id == "shared" ? "Shared" : json.GetProperty("name").GetString();
             var contents = json.GetProperty("contents").EnumerateArray().ToArray();
             var subFolders = json.GetProperty("subFolders").EnumerateArray().ToArray();
 
@@ -640,7 +642,7 @@ namespace RPG
                 LoadJournal(contents[i].GetString(), string.IsNullOrEmpty(path) ? id : $"{path}/{id}");
             }
         }
-        private async void LoadJournal(string id, string path)
+        public async void LoadJournal(string id, string path)
         {
             await SocketManager.Socket.EmitAsync("get-journal", async (callback) =>
             {
@@ -648,11 +650,40 @@ namespace RPG
                 if (callback.GetValue().GetBoolean())
                 {
                     var data = JsonUtility.FromJson<JournalData>(callback.GetValue(1).ToString());
-                    data.id = callback.GetValue(2).GetString();
+                    data.id = id;
                     HandleJournalAdded(data, id, path);
                 }
                 else MessageManager.QueueMessage(callback.GetValue(1).GetString());
             }, id);
+        }
+        public void UpdateJournalText(string id, string text)
+        {
+            var journal = journals.FirstOrDefault(x => x.Id == id);
+            if (journal == null) return;
+
+            journal.UpdateText(text);
+        }
+        public void UpdateJournalHeader(string id, string text)
+        {
+            var journal = journals.FirstOrDefault(x => x.Id == id);
+            if (journal == null) return;
+
+            journal.UpdateHeader(text);
+        }
+        public void UpdateJournalImage(string id, string text)
+        {
+            var journal = journals.FirstOrDefault(x => x.Id == id);
+            if (journal == null) return;
+
+            journal.UpdateImage(text);
+        }
+        public void RemoveJournal(string id)
+        {
+            var journal = journals.FirstOrDefault(x => x.Id == id);
+            if (journal == null) return;
+
+            journals.Remove(journal);
+            Destroy(journal.gameObject);
         }
 
         public async void DeleteJournal(JournalHolder journal, string path)
@@ -691,7 +722,7 @@ namespace RPG
         {
             FolderJournal newF = journalFolders.FirstOrDefault(x => x.Path == newPath);
 
-            journal.transform.SetParent(newF == null ? SceneList : newF.Content);
+            journal.transform.SetParent(newF == null ? JournalList : newF.Content);
             journal.transform.SetAsLastSibling();
         }
 
@@ -699,10 +730,55 @@ namespace RPG
         {
             createJournalPanel.SetActive(true);
             createJournalPanel.GetComponentInChildren<TMP_InputField>().text = "";
+            journalPath = path;
         }
-        public void CreateJournal()
+        public async void CreateJournal()
         {
             string name = createJournalPanel.GetComponentInChildren<TMP_InputField>().text;
+            JournalData data = new JournalData()
+            {
+                owner = "",
+                header = name,
+                text = "",
+                image = "",
+            };
+
+            data.collaborators = new List<Collaborator>();
+            for (int i = 0; i < SessionManager.Users.Count; i++)
+            {
+                if (SessionManager.Users[i] == SocketManager.UserId) continue;
+
+                data.collaborators.Add(new Collaborator()
+                {
+                    user = SessionManager.Users[i],
+                    isCollaborator = false
+                });
+            }
+            if (!SessionManager.IsMaster)
+            {
+                data.collaborators.Add(new Collaborator()
+                {
+                    user = SessionManager.MasterId,
+                    isCollaborator = false
+                });
+            }
+
+            await SocketManager.Socket.EmitAsync("create-journal", async (callback) =>
+            {
+                await UniTask.SwitchToMainThread();
+                if (callback.GetValue().GetBoolean())
+                {
+                    data.id = callback.GetValue(1).GetProperty("_id").GetString();
+                    data.owner = SocketManager.UserId;
+
+                    HandleJournalAdded(data, data.id, journalPath);
+                    MessageManager.QueueMessage("Journal page created successfully");
+                }
+                else MessageManager.QueueMessage(callback.GetValue(1).GetString());
+
+                journalPath = "";
+            }, journalPath, JsonUtility.ToJson(data));
+
         }
 
         public void OpenJournalFolder()
@@ -785,14 +861,14 @@ namespace RPG
             if (string.IsNullOrEmpty(path))
             {
                 JournalHolder journal = Instantiate(journalHolder, JournalList);
-                journal.LoadData(data, id, path, this);
+                journal.LoadData(data, id, path, this, journalManager);
                 journal.transform.SetAsLastSibling();
                 journals.Add(journal);
             }
             else
             {
                 JournalHolder journal = Instantiate(journalHolder, JournalList);
-                journal.LoadData(data, id, path, this);
+                journal.LoadData(data, id, path, this, journalManager);
                 var f = journalFolders.FirstOrDefault(x => x.Path == path);
                 journals.Add(journal);
 

@@ -4,6 +4,7 @@ using Cysharp.Threading.Tasks;
 using Networking;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace RPG
 {
@@ -13,6 +14,7 @@ namespace RPG
 
         [SerializeField] private GameObject panel;
         [SerializeField] private CollaboratorPanel collaboratorPanel;
+        [SerializeField] private GameObject dragPanel;
 
         [SerializeField] private Color normalColor;
         [SerializeField] private Color activeColor;
@@ -23,6 +25,8 @@ namespace RPG
 
         private MasterPanel masterPanel;
         private GameObject dragObject;
+        private JournalManager manager;
+        private Transform startTransform;
 
         public string Id { get { return id; } }
 
@@ -39,13 +43,21 @@ namespace RPG
             }
         }
 
-        public void LoadData(JournalData _data, string _id, string _folder, MasterPanel _masterPanel)
+        public async void LoadData(JournalData _data, string _id, string _folder, MasterPanel _masterPanel, JournalManager manager)
         {
             data = _data;
+            this.manager = manager;
             id = _id;
             path = _folder;
             text.text = _data.header;
             masterPanel = _masterPanel;
+
+            if (data.owner != SocketManager.UserId) await SocketManager.Socket.EmitAsync("get-user", async (callback) =>
+            {
+                await UniTask.SwitchToMainThread();
+                if (callback.GetValue().GetBoolean()) text.text += $" ({callback.GetValue(1).GetProperty("name").GetString()})";
+                else MessageManager.QueueMessage(callback.GetValue(1).GetString());
+            }, data.owner);
         }
         public void UpdatePath(string newPath)
         {
@@ -59,13 +71,23 @@ namespace RPG
                 if (value) masterPanel.DeleteJournal(this, path);
             });
         }
-        public void TogglePanel()
+        public void TogglePanel(BaseEventData eventData)
         {
-            panel.transform.SetParent(transform);
-            panel.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
-            panel.transform.SetParent(GameObject.Find("Main Canvas").transform);
-            panel.transform.SetAsLastSibling();
-            panel.SetActive(!panel.gameObject.activeInHierarchy);
+            PointerEventData pointerData = eventData as PointerEventData;
+            if (pointerData.button == PointerEventData.InputButton.Left)
+            {
+                OpenPanel();
+            }
+            else if (pointerData.button == PointerEventData.InputButton.Right)
+            {
+                if (data.owner != SocketManager.UserId) return;
+
+                panel.transform.SetParent(transform);
+                panel.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
+                panel.transform.SetParent(GameObject.Find("Main Canvas").transform);
+                panel.transform.SetAsLastSibling();
+                panel.SetActive(!panel.gameObject.activeInHierarchy);
+            }
         }
         public void OpenSharing()
         {
@@ -93,42 +115,48 @@ namespace RPG
                 else MessageManager.QueueMessage(callback.GetValue(1).GetString());
             }, Id, jsonList);
         }
-
-        public async void ModifyHeader(string header)
+        public void OpenPanel()
         {
-            await SocketManager.Socket.EmitAsync("modify-journal-header", async (callback) =>
-            {
-                await UniTask.SwitchToMainThread();
+            manager.ShowJournal(data);
+        }
 
-                if (callback.GetValue().GetBoolean())
-                {
-                    data.header = header;
-                    text.text = header;
-                }
-                else
-                {
-                    MessageManager.QueueMessage(callback.GetValue(1).GetString());
-                }
-
-            }, id, header);
+        public void UpdateHeader(string header)
+        {
+            data.header = header;
+            text.text = header;
+        }
+        public void UpdateText(string text)
+        {
+            data.text = text;
+        }
+        public void UpdateImage(string image)
+        {
+            data.image = image;
         }
 
         public void BeginDrag()
         {
-            dragObject = Instantiate(text.gameObject);
+            if (startTransform != null || path == "shared") return;
+
+            startTransform = transform.parent;
+            dragObject = Instantiate(dragPanel);
             dragObject.transform.SetParent(GameObject.Find("Main Canvas").transform);
             dragObject.transform.SetAsLastSibling();
             dragObject.GetComponent<RectTransform>().pivot = new Vector2(0.5f, 0.5f);
+            dragObject.GetComponentInChildren<TMP_Text>(true).text = text.text;
+            dragObject.SetActive(true);
         }
         public async void EndDrag()
         {
+            if (path == "shared") return;
+
             Destroy(dragObject);
             bool moved = false;
             var dictionaries = FindObjectsOfType<FolderJournal>();
 
             for (int i = 0; i < dictionaries.Length; i++)
             {
-                if (dictionaries[i].Path != path)
+                if (dictionaries[i].Path != path && dictionaries[i].Path != "shared")
                 {
                     if (RectTransformUtility.RectangleContainsScreenPoint(dictionaries[i].BackgroundRect, Input.mousePosition))
                     {
@@ -147,6 +175,8 @@ namespace RPG
                             else
                             {
                                 MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                                transform.SetParent(startTransform);
+                                startTransform = null;
                             }
                         }, id, path, newPath);
                     }
@@ -156,6 +186,8 @@ namespace RPG
                     if (RectTransformUtility.RectangleContainsScreenPoint(dictionaries[i].BackgroundRect, Input.mousePosition))
                     {
                         moved = true;
+                        transform.SetParent(startTransform);
+                        startTransform = null;
                     }
                 }
             }
@@ -174,12 +206,21 @@ namespace RPG
                     else
                     {
                         MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                        transform.SetParent(startTransform);
+                        startTransform = null;
                     }
                 }, id, path, "");
+            }
+            else if (!moved)
+            {
+                transform.SetParent(startTransform);
+                startTransform = null;
             }
         }
         public void Drag()
         {
+            if (path == "shared") return;
+
             dragObject.transform.position = Input.mousePosition;
         }
     }
