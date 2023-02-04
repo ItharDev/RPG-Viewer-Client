@@ -4,6 +4,8 @@ Official cliend-side application for RPG Viewer VTT
 
 By reading this guide, you will understand everything you need to know about this application and its features
 
+![Downloads](https://img.shields.io/github/downloads/ItharDev/RPG-Viewer-Client/total)
+
 ## Table of contents
 
 <!--ts-->
@@ -33,8 +35,6 @@ By reading this guide, you will understand everything you need to know about thi
 You can find the latest release on the right hand panel
 
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/ItharDev/RPG-Viewer-Client)
-
-![Downloads](https://img.shields.io/github/downloads/ItharDev/RPG-Viewer-Client/total)
 
 1. Download `RPG-Viewer.zip`
 2. Extract all of the zip file's contents
