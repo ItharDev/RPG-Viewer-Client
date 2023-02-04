@@ -15,12 +15,13 @@ namespace RPG
     public class NoteHolder : MonoBehaviour
     {
         public GameObject Panel;
-        public GameObject confirmPanel;
+        public GameObject ConfirmPanel;
+
+        [SerializeField] private Canvas canvas;
 
         [SerializeField] private TMP_InputField headerInput;
         [SerializeField] private GameObject publicButton;
         [SerializeField] private GameObject showButton;
-        [SerializeField] private GameObject deleteButton;
         [SerializeField] private GameObject selectButton;
 
         [SerializeField] private GameObject viewButton;
@@ -38,6 +39,7 @@ namespace RPG
         [SerializeField] private GameObject content;
         [SerializeField] private RectTransform topPanel;
         [SerializeField] private GameObject resizeIcon;
+        [SerializeField] private LayoutElement layoutElement;
 
         public NoteData Data;
 
@@ -54,7 +56,6 @@ namespace RPG
         }
         private void Update()
         {
-
             if (Input.GetKey(KeyCode.LeftControl))
             {
                 if (Data.owner != SocketManager.UserId && !Data.isPublic) return;
@@ -90,44 +91,53 @@ namespace RPG
         public void Select(BaseEventData eventData)
         {
             PointerEventData pointerData = eventData as PointerEventData;
-            if (pointerData.button != PointerEventData.InputButton.Left || pointerData.clickCount < 2) return;
+            if (pointerData.button != PointerEventData.InputButton.Left) return;
 
-            if (minimised) Minimise();
-            else
+            if (pointerData.clickCount >= 2 && manager.StateManager.NoteState == NoteState.Create)
             {
-                Panel.SetActive(true);
-                Panel.transform.SetParent(GameObject.Find("Main Canvas").transform);
-                Panel.GetComponent<RectTransform>().sizeDelta = new Vector2(600.0f, 750.0f);
-                Panel.GetComponent<RectTransform>().anchoredPosition = new Vector2(660.0f, -165.0f);
-                Panel.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
-                Panel.transform.SetAsLastSibling();
+                if (minimised) Minimise();
+                else
+                {
+                    Panel.SetActive(true);
+                    Panel.transform.SetParent(GameObject.Find("Main Canvas").transform);
+                    Panel.GetComponent<RectTransform>().sizeDelta = new Vector2(600.0f, 750.0f);
+                    Panel.GetComponent<RectTransform>().anchoredPosition = new Vector2(660.0f, -165.0f);
+                    Panel.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
+                    Panel.transform.SetAsLastSibling();
+                }
             }
+            else if (manager.StateManager.NoteState == NoteState.Delete) Remove();
+
+            layoutElement.minHeight = Panel.GetComponent<RectTransform>().sizeDelta.y - 60.0f;
         }
 
-        public void LoadData(NoteData data, NoteManager noteManager)
+        public void LoadData(NoteData data, NoteManager noteManager, bool toolActive)
         {
             Data = data;
             manager = noteManager;
-            Data.type = NoteType.Text;
+            if (string.IsNullOrEmpty(Data.text))
+            {
+                Data.type = string.IsNullOrEmpty(Data.image) ? NoteType.Image : NoteType.Text;
+            }
+            else Data.type = NoteType.Image;
 
             transform.localPosition = new Vector3(data.position.x, data.position.y, -1);
             if (Data.owner == SocketManager.UserId)
             {
                 gameObject.SetActive(true);
                 publicButton.SetActive(true);
-                deleteButton.SetActive(true);
                 showButton.SetActive(true);
             }
             else
             {
                 gameObject.SetActive(Data.isPublic);
                 publicButton.SetActive(false);
-                deleteButton.SetActive(false);
                 showButton.SetActive(false);
             }
 
             headerInput.text = data.header;
             hoverText.text = data.header;
+            hoverText.transform.parent.GetComponent<Image>().enabled = !string.IsNullOrEmpty(Data.header);
 
             markdownInput.gameObject.SetActive(false);
             markdown.gameObject.SetActive(true);
@@ -141,8 +151,15 @@ namespace RPG
 
             viewButton.GetComponentInChildren<TMP_Text>(true).text = "View image";
             viewImage.sprite = imageSprite;
+            ShowNote(toolActive);
+
+            ChangeView();
 
             GetComponentInChildren<Canvas>(true).GetComponent<RectTransform>().localScale = new Vector3(SessionManager.session.Settings.grid.cellSize * 0.4f, SessionManager.session.Settings.grid.cellSize * 0.4f, 1.0f);
+        }
+        public void ShowNote(bool enabled)
+        {
+            canvas.enabled = enabled;
         }
 
         public void ChangeView()
@@ -175,33 +192,31 @@ namespace RPG
         {
             Data.image = id;
 
-            if (string.IsNullOrEmpty(id))
-            {
-                image.gameObject.SetActive(false);
-                return;
-            }
+            if (string.IsNullOrEmpty(id)) return;
 
             WebManager.Download(id, true, async (bytes) =>
-                {
-                    await UniTask.SwitchToMainThread();
-                    if (bytes != null)
-                    {
-                        Texture2D texture = new Texture2D(1, 1);
-                        texture.LoadImage(bytes);
-                        Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
-                        image.sprite = sprite;
-                        if (Data.type == NoteType.Image) image.gameObject.SetActive(true);
-                    }
-                });
+               {
+                   await UniTask.SwitchToMainThread();
+                   if (bytes != null)
+                   {
+                       Texture2D texture = new Texture2D(1, 1);
+                       texture.LoadImage(bytes);
+                       Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
+                       image.sprite = sprite;
+                       if (Data.type == NoteType.Image) image.gameObject.SetActive(true);
+                   }
+               });
         }
         public void UpdateText(string text)
         {
+            Data.text = text;
             markdownInput.text = text;
         }
         public void UpdateHeader(string text)
         {
             headerInput.text = text;
             hoverText.text = text;
+            hoverText.transform.parent.GetComponent<Image>().enabled = !string.IsNullOrEmpty(text);
         }
         public void SetPublic(bool isPublic)
         {
@@ -242,6 +257,8 @@ namespace RPG
                     image.gameObject.SetActive(true);
                 }
             }
+
+            layoutElement.minHeight = Panel.GetComponent<RectTransform>().sizeDelta.y - 60.0f;
         }
 
 
@@ -314,6 +331,11 @@ namespace RPG
 
             Panel.transform.SetAsLastSibling();
             minimised = !minimised;
+            layoutElement.minHeight = Panel.GetComponent<RectTransform>().sizeDelta.y - 60.0f;
+        }
+        public void Resize()
+        {
+            layoutElement.minHeight = Panel.GetComponent<RectTransform>().sizeDelta.y - 60.0f;
         }
 
         public async void SelectImage() => await ImageTask();
@@ -359,15 +381,17 @@ namespace RPG
         }
         public void Remove()
         {
-            confirmPanel.SetActive(true);
-            confirmPanel.transform.SetParent(GameObject.Find("Main Canvas").transform);
-            confirmPanel.transform.SetAsLastSibling();
-            confirmPanel.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
-            confirmPanel.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
+            Panel.SetActive(false);
+
+            ConfirmPanel.SetActive(true);
+            ConfirmPanel.transform.SetParent(GameObject.Find("Main Canvas").transform);
+            ConfirmPanel.transform.SetAsLastSibling();
+            ConfirmPanel.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
+            ConfirmPanel.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
         }
         public async void ConfirmDeletion()
         {
-            Destroy(confirmPanel);
+            Destroy(ConfirmPanel);
             await SocketManager.Socket.EmitAsync("remove-note", (callback) =>
             {
                 if (!callback.GetValue().GetBoolean()) MessageManager.QueueMessage(callback.GetValue(1).GetString());

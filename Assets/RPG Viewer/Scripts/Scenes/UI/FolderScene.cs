@@ -1,6 +1,5 @@
 ﻿using Cysharp.Threading.Tasks;
 using Networking;
-using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
@@ -148,7 +147,7 @@ namespace RPG
                 }
             }
 
-            if (!moved && RectTransformUtility.RectangleContainsScreenPoint(FindObjectOfType<MasterPanel>().ScenePanel.GetComponent<RectTransform>(), Input.mousePosition) && Path.Split("/").Length != 1)
+            if (!moved && RectTransformUtility.RectangleContainsScreenPoint(masterPanel.ScenePanel.GetComponent<RectTransform>(), Input.mousePosition) && Path.Split("/").Length != 1)
             {
                 if (path != "") await SocketManager.Socket.EmitAsync("move-scene-folder", async (callback) =>
                 {

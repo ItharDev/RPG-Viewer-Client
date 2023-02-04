@@ -96,7 +96,7 @@ namespace RPG
                     colorPicker.SetColor(lightColor.color);
                     break;
                 case 1:
-                    radius.text = "30";
+                    radius.text = "40";
                     intensityInput.text = "100";
                     flickerFrequencyInput.text = "15";
                     flickerAmountInput.text = "10";
@@ -105,7 +105,7 @@ namespace RPG
                     colorPicker.SetColor(lightColor.color);
                     break;
                 case 2:
-                    radius.text = "15";
+                    radius.text = "20";
                     intensityInput.text = "100";
                     lightColor.color = Color.HSVToRGB(200.0f / 360.0f, 0.3f, 1.0f);
                     lightColor.color = new Color(lightColor.color.r, lightColor.color.g, lightColor.color.b, 1.0f);
@@ -114,7 +114,7 @@ namespace RPG
                     colorPicker.SetColor(lightColor.color);
                     break;
                 case 3:
-                    radius.text = "40";
+                    radius.text = "45";
                     intensityInput.text = "100";
                     flickerFrequencyInput.text = "10";
                     flickerAmountInput.text = "5";
@@ -123,7 +123,7 @@ namespace RPG
                     colorPicker.SetColor(lightColor.color);
                     break;
                 case 4:
-                    radius.text = "10";
+                    radius.text = "15";
                     intensityInput.text = "50";
                     flickerFrequencyInput.text = "10";
                     flickerAmountInput.text = "5";

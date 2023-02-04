@@ -27,6 +27,9 @@ namespace RPG
                 case FolderType.Scene:
                     FindObjectOfType<MasterPanel>().AddSceneFolder(path, inputField.text);
                     break;
+                case FolderType.Journal:
+                    FindObjectOfType<MasterPanel>().AddJournalFolder(path, inputField.text);
+                    break;
             }
 
             gameObject.SetActive(false);
@@ -37,5 +40,6 @@ namespace RPG
     {
         Blueprint,
         Scene,
+        Journal,
     }
 }

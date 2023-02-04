@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Transactions;
 using Cinemachine;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -30,6 +31,7 @@ namespace RPG
                 {
                     panActive = true;
                     panPosition = (Vector2)Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                    FollowTarget(null);
                 }
                 if (Input.GetMouseButtonUp(1))
                 {
@@ -62,6 +64,10 @@ namespace RPG
         public void MoveToPosition(Vector2 position, bool zoom = true)
         {
             StartCoroutine(MoveCoroutine(position, 0.1f, zoom));
+        }
+        public void FollowTarget(Transform target)
+        {
+            mainVCam.m_Follow = target;
         }
 
         private IEnumerator MoveCoroutine(Vector2 position, float time, bool zoom)

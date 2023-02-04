@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using System;
+﻿using System;
+using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using Networking;
 using TMPro;
@@ -89,10 +89,8 @@ namespace RPG
             for (int i = 0; i < permissions.Count; i++)
             {
                 jsonList.Add(JsonUtility.ToJson(permissions[i]));
-                Debug.Log(jsonList[i]);
             }
 
-            Debug.Log("Sending permissions");
             await SocketManager.Socket.EmitAsync("set-permissions", async (callback) =>
             {
                 await UniTask.SwitchToMainThread();
@@ -130,7 +128,7 @@ namespace RPG
                 {
                     MessageManager.QueueMessage(callback.GetValue(1).GetString());
                 }
-                
+
             }, id, JsonUtility.ToJson(_data), _imageChanged ? Convert.ToBase64String(_bytes) : null);
         }
 
@@ -162,7 +160,7 @@ namespace RPG
 
                             if (callback.GetValue().GetBoolean())
                             {
-                                FindObjectOfType<MasterPanel>().MoveBlueprint(this, newPath);
+                                masterPanel.MoveBlueprint(this, newPath);
                                 path = newPath;
                             }
                             else
@@ -181,7 +179,7 @@ namespace RPG
                 }
             }
 
-            if (!moved && RectTransformUtility.RectangleContainsScreenPoint(FindObjectOfType<MasterPanel>().BlueprintPanel.GetComponent<RectTransform>(), Input.mousePosition))
+            if (!moved && RectTransformUtility.RectangleContainsScreenPoint(masterPanel.BlueprintPanel.GetComponent<RectTransform>(), Input.mousePosition))
             {
                 if (path != "") await SocketManager.Socket.EmitAsync("move-blueprint", async (callback) =>
                 {
@@ -189,7 +187,7 @@ namespace RPG
 
                     if (callback.GetValue().GetBoolean())
                     {
-                        FindObjectOfType<MasterPanel>().MoveBlueprint(this, "");
+                        masterPanel.MoveBlueprint(this, "");
                         path = "";
                     }
                     else
@@ -198,7 +196,7 @@ namespace RPG
                     }
                 }, id, path, "");
             }
-            else if (!moved && !RectTransformUtility.RectangleContainsScreenPoint(FindObjectOfType<MasterPanel>().BlueprintPanel.GetComponent<RectTransform>(), Input.mousePosition))
+            else if (!moved && !RectTransformUtility.RectangleContainsScreenPoint(masterPanel.BlueprintPanel.GetComponent<RectTransform>(), Input.mousePosition))
             {
                 Vector2 pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
                 TokenData newData = data;

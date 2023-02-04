@@ -12,16 +12,34 @@ namespace RPG
         [SerializeField] private Transform noteParent;
 
         private List<NoteHolder> notes = new List<NoteHolder>();
-        [SerializeField] private StateManager stateManager;
-        private Session session;
+        public StateManager StateManager;
+        private bool notesEnabled;
 
         private void Update()
         {
-            if (stateManager.ToolState == ToolState.Notes)
+            if (StateManager.ToolState == ToolState.Notes && !notesEnabled)
+            {
+                notesEnabled = true;
+                for (int i = 0; i < notes.Count; i++)
+                {
+                    notes[i].ShowNote(true);
+                }
+            }
+
+            if (StateManager.ToolState != ToolState.Notes && notesEnabled)
+            {
+                notesEnabled = false;
+                for (int i = 0; i < notes.Count; i++)
+                {
+                    notes[i].ShowNote(false);
+                }
+            }
+
+            if (StateManager.ToolState == ToolState.Notes)
             {
                 if (Input.GetMouseButtonUp(0) && !EventSystem.current.IsPointerOverGameObject())
                 {
-                    CreateNote(Camera.main.ScreenToWorldPoint(Input.mousePosition));
+                    if (StateManager.NoteState == NoteState.Create) CreateNote(Camera.main.ScreenToWorldPoint(Input.mousePosition));
                 }
             }
         }
@@ -58,7 +76,7 @@ namespace RPG
         public void AddNote(NoteData data)
         {
             var note = Instantiate(notePrefab, noteParent);
-            note.LoadData(data, this);
+            note.LoadData(data, this, StateManager.ToolState == ToolState.Notes);
             notes.Add(note);
         }
         public void ModifyText(string id, string newText)
@@ -103,7 +121,7 @@ namespace RPG
 
             notes.Remove(note);
             Destroy(note.Panel);
-            Destroy(note.confirmPanel);
+            Destroy(note.ConfirmPanel);
             Destroy(note.gameObject);
         }
         public void Show(string id)
