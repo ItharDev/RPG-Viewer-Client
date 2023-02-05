@@ -697,8 +697,8 @@ Canvas:
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
   m_AdditionalShaderChannelsFlag: 25
-  m_SortingLayerID: 0
-  m_SortingOrder: 0
+  m_SortingLayerID: 1503421513
+  m_SortingOrder: 2
   m_TargetDisplay: 0
 --- !u!114 &7539027673716569608
 MonoBehaviour:
@@ -740,99 +740,6 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
---- !u!1 &1575654517392179494
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 8095810927007364054}
-  - component: {fileID: 8327794558171354594}
-  m_Layer: 0
-  m_Name: Highlight
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &8095810927007364054
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1575654517392179494}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 859809730396544827}
-  m_RootOrder: 3
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8327794558171354594
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1575654517392179494}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 85a34663ca705a54eac3205e225a6d45, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  lightType: 0
-  lightPresetId: 0
-  eventPresetId: 0
-  lightLayer: 0
-  occlusionLayer: 0
-  translucentLayer: 0
-  translucentPresetId: 0
-  color: {r: 1, g: 1, b: 1, a: 0.5}
-  size: 1
-  spotAngleInner: 360
-  spotAngleOuter: 360
-  coreSize: 0.5
-  falloff: 0
-  lightStrength: 0.75
-  outerAngle: 25
-  lightRadius: 1
-  shadowDistanceClose: 0
-  shadowDistanceFar: 5
-  maskTranslucencyQuality: 0
-  maskTranslucencyStrength: 0.5
-  applyRotation: 0
-  textureSize: 1
-  meshMode:
-    enable: 0
-    alpha: 0.5
-    shader: 0
-    materials:
-    - {fileID: 0}
-    sortingLayer:
-      name: Default
-      Order: 0
-  bumpMap:
-    intensity: 1
-    depth: 1
-  whenInsideCollider: 0
-  lightSprite: 1
-  sprite: {fileID: 21300000, guid: d7dbaa2ab01aef74d93de26d9f96090a, type: 3}
-  spriteFlipX: 0
-  spriteFlipY: 0
-  freeFormFalloff: 1
-  freeFormPoint: 1
-  freeFormFalloffStrength: 1
-  freeFormPoints:
-    points:
-    - {x: 1, y: 0}
-    - {x: -0.50000006, y: 0.8660254}
-    - {x: -0.4999999, y: -0.86602545}
-  drawingEnabled: 1
-  drawingTranslucencyEnabled: 1
 --- !u!1 &1788426311596119062
 GameObject:
   m_ObjectHideFlags: 0
@@ -1727,7 +1634,6 @@ Transform:
   - {fileID: 6785482191763196872}
   - {fileID: 2378549120054925934}
   - {fileID: 5305934409544929328}
-  - {fileID: 8095810927007364054}
   m_Father: {fileID: 8704266109904137060}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -6609,7 +6515,6 @@ MonoBehaviour:
   healthPanel: {fileID: 8449070968420369447}
   nightSource: {fileID: 8827990109290636558}
   visionSource: {fileID: 1993348916159972067}
-  highlight: {fileID: 8327794558171354594}
   lightSource: {fileID: 6949827734368728207}
   lightHandler: {fileID: 5916217417070634754}
   blockingLayers:

@@ -8,6 +8,8 @@ namespace RPG
 {
     public class MeasurementManager : MonoBehaviour
     {
+        [SerializeField] private Camera2D camera2D;
+
         [Header("Measure Panel")]
         [SerializeField] private GameObject infoPanel;
         [SerializeField] private MeasurementType type;
@@ -21,7 +23,7 @@ namespace RPG
         private Vector2 startCell;
         private List<Vector2> wayPoints = new List<Vector2>();
         private bool useAction = false;
-        
+
         private SessionGrid grid;
         private StateManager stateManager;
 
@@ -57,6 +59,7 @@ namespace RPG
                 Measure();
                 if (Input.GetMouseButtonUp(0))
                 {
+                    camera2D.UsePan = true;
                     useAction = false;
                     wayPoints.Clear();
                     infoPanel.SetActive(false);
@@ -91,11 +94,12 @@ namespace RPG
                     line.points2 = list2D.ToList();
                 }
                 line.Draw();
-            }  
+            }
         }
 
         public void StartMeasurement(Vector2 startPosition, MeasurementType type)
         {
+            camera2D.UsePan = false;
             wayPoints.Add(type == MeasurementType.Grid ? FindObjectOfType<SessionGrid>().SnapToGrid(startPosition, new Vector2(5, 5)) : startPosition);
             useAction = true;
             this.type = type;

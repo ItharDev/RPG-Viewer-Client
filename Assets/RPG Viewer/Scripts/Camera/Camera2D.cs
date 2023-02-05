@@ -27,20 +27,21 @@ namespace RPG
 
             if (UsePan)
             {
-                if (Input.GetMouseButtonDown(1) && !EventSystem.current.IsPointerOverGameObject())
+                if (Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject())
                 {
                     panActive = true;
                     panPosition = (Vector2)Camera.main.ScreenToWorldPoint(Input.mousePosition);
                     FollowTarget(null);
                 }
-                if (Input.GetMouseButtonUp(1))
-                {
-                    panActive = false;
-                    panPosition = Vector2.zero;
-                }
-
-                if (panActive) HandleCameraPan();
             }
+
+            if (Input.GetMouseButtonUp(0))
+            {
+                panActive = false;
+                panPosition = Vector2.zero;
+            }
+
+            if (panActive) HandleCameraPan();
         }
 
         private void HandleCameraPan()

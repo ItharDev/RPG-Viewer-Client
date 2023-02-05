@@ -55,11 +55,12 @@ namespace RPG
             {
                 await UniTask.SwitchToMainThread();
 
+                var lastScene = Scene;
                 Synced = data.GetValue().GetBoolean();
                 Scene = data.GetValue(1).GetString();
 
                 SocketManager.Socket.Emit("update-scene", Scene);
-
+                if (IsMaster && Scene == lastScene) return;
                 if (Synced && !string.IsNullOrEmpty(Scene)) session.LoadScene(Scene);
                 else session.UnloadScene();
             });

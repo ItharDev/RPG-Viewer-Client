@@ -77,7 +77,6 @@ namespace RPG
                 selectedToken++;
                 if (selectedToken > myTokens.Count - 1) selectedToken = 0;
                 myTokens[selectedToken].ToggleSelection();
-                FindObjectOfType<Camera2D>().FollowTarget(myTokens[selectedToken].transform);
             }
         }
 
@@ -408,9 +407,8 @@ namespace RPG
                 }
 
                 Tokens[i].LoadLights();
+                Tokens[i].HandleSorting();
             }
-
-            FindObjectOfType<Camera2D>().FollowTarget(token == null ? null : token.transform);
         }
 
         public void CreateNote(NoteData data) => noteManager.AddNote(data);

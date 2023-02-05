@@ -25,7 +25,6 @@ namespace RPG
 
         public WallData Data;
 
-
         private void Update()
         {
             bool showDoor = false;

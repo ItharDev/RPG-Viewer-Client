@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Cysharp.Threading.Tasks;
@@ -44,7 +43,6 @@ namespace RPG
         [Header("Vision")]
         [SerializeField] private Light2D nightSource;
         [SerializeField] private Light2D visionSource;
-        [SerializeField] private Light2D highlight;
 
         [Header("Light")]
         [SerializeField] private Light2D lightSource;
@@ -175,7 +173,7 @@ namespace RPG
         {
             Data.position = data.points[data.points.Count - 1];
             if (gameObject.activeInHierarchy) movePoints = data.points;
-            else transform.localPosition = new Vector3(Data.position.x, Data.position.y, Data.locked ? -1 : -2);
+            else transform.localPosition = new Vector3(Data.position.x, Data.position.y, 0);
         }
 
         private bool CheckMovement(bool useEndPoint)
@@ -236,7 +234,6 @@ namespace RPG
             dragObject.lightSource.gameObject.SetActive(false);
             dragObject.nightSource.gameObject.SetActive(false);
             dragObject.visionSource.gameObject.SetActive(false);
-            dragObject.highlight.gameObject.SetActive(false);
             dragObject.GetComponent<BoxCollider2D>().enabled = false;
 
             dragObject.image.color = new Color(1, 1, 1, 0.5f);
@@ -249,7 +246,7 @@ namespace RPG
             if (dragObject != null)
             {
                 Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-                mousePos = new Vector3(mousePos.x, mousePos.y, -1);
+                mousePos = new Vector3(mousePos.x, mousePos.y, 0);
                 dragObject.transform.position = mousePos;
             }
         }
@@ -373,8 +370,6 @@ namespace RPG
             }
 
             transform.localPosition = new Vector3(data.position.x, data.position.y, 0);
-            if (Data.type == TokenType.Mount) transform.localPosition = new Vector3(Data.position.x, Data.position.y, 1);
-            else if (Data.type == TokenType.Item) transform.localPosition = new Vector3(Data.position.x, Data.position.y, 2);
 
             if (sprite != null)
             {
@@ -398,7 +393,43 @@ namespace RPG
             lockedImage.sprite = Data.locked ? lockedSprite : unlockedSprite;
 
             GetComponent<BoxCollider2D>().size = GetComponentInChildren<Canvas>(true).transform.localScale * 100.0f;
+
+            HandleSorting();
         }
+        public void HandleSorting()
+        {
+            switch (Data.type)
+            {
+                case TokenType.Character:
+                    canvas.sortingOrder = 2;
+                    break;
+                case TokenType.Mount:
+                    canvas.sortingOrder = 1;
+                    break;
+                case TokenType.Item:
+                    canvas.sortingOrder = 0;
+                    break;
+            }
+
+            switch (Permission.permission)
+            {
+                case PermissionType.None:
+                    canvas.sortingLayerName = "Tokens";
+                    if (Data.highlighted) canvas.sortingLayerName = "Highlighted";
+                    if (conditionFlags.HasFlag(deadCondition.condition.flag)) canvas.sortingLayerName = "Dead";
+                    break;
+                case PermissionType.Observer:
+                    canvas.sortingLayerName = "Tokens";
+                    if (Data.highlighted) canvas.sortingLayerName = "Highlighted";
+                    if (conditionFlags.HasFlag(deadCondition.condition.flag)) canvas.sortingLayerName = "Dead";
+                    break;
+                case PermissionType.Owner:
+                    canvas.sortingLayerName = "Owners";
+                    canvas.sortingOrder = 3;
+                    break;
+            }
+        }
+
         public void Resize(float cellSize)
         {
             canvas.transform.localScale = new Vector2(cellSize * (Data.dimensions.x / 5.0f), cellSize * (Data.dimensions.y / 5.0f));
@@ -410,12 +441,10 @@ namespace RPG
             visionSource.enabled = Data.enabled && Data.hasVision && Data.type == TokenType.Character && Permission.permission != PermissionType.None;
             lightSource.enabled = Data.enabled && Data.lightRadius > 0;
             nightSource.enabled = Data.enabled && Data.nightVision && Permission.permission != PermissionType.None;
-            highlight.enabled = Data.enabled && Data.highlighted;
             if (grid.CellSize > 0)
             {
                 lightSource.size = Data.lightRadius * 0.2f * grid.CellSize + (grid.CellSize * 0.5f);
                 nightSource.size = 40.0f * 0.2f * grid.CellSize + (grid.CellSize * 0.5f);
-                highlight.size = grid.CellSize * 0.65f;
                 visionSource.size = grid.CellSize * 40.5f;
             }
         }
@@ -426,7 +455,6 @@ namespace RPG
             visionSource.enabled = Data.enabled && Data.hasVision && Data.type == TokenType.Character && Permission.permission != PermissionType.None;
             lightSource.enabled = Data.enabled && Data.lightRadius > 0;
             nightSource.enabled = Data.enabled && Data.nightVision && Permission.permission != PermissionType.None;
-            highlight.enabled = Data.enabled && Data.highlighted;
         }
         public void SetElevation(string elevation)
         {
@@ -469,6 +497,8 @@ namespace RPG
                 con.gameObject.SetActive(conditionFlags.HasFlag(con.condition.flag));
             }
             deadCondition.gameObject.SetActive(conditionFlags.HasFlag(deadCondition.condition.flag));
+
+            HandleSorting();
         }
         public void UpdateRotation(float angle)
         {
@@ -530,7 +560,7 @@ namespace RPG
             Selection.gameObject.SetActive(!Selection.gameObject.activeInHierarchy);
             if (SessionManager.IsMaster) panel.SetActive(Selection.gameObject.activeInHierarchy);
             rotateButton.SetActive(Selection.gameObject.activeInHierarchy);
-            if (SessionManager.IsMaster ) SessionManager.session.SelectToken(Selection.gameObject.activeInHierarchy ? this : null);
+            SessionManager.session.SelectToken(Selection.gameObject.activeInHierarchy ? this : null);
 
             SetHealth(Data.health);
         }
