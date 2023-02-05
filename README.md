@@ -16,7 +16,8 @@ By reading this guide, you will understand everything you need to know about thi
   * [Sessions](#sessions)
   * [Game view](#game-view)
     * [Side buttons](#side-buttons)
-    * [Game master](#game-master)
+    * [Side panel](#side-panel)
+  * [Journal pages](#journal-pages)
   * [Scenes](#scenes)
     * [Creation & modification](#creating-and-modifying-scenes)
     * [Tokens](#tokens)
@@ -71,7 +72,7 @@ Account data is synchronised across all devices, including
 ![image](https://user-images.githubusercontent.com/70658690/214797913-3c4b2ded-23a3-40da-917d-9cd1634a69ee.png)
 
 * There is no limit to the number of sessions you can create.
-* Landing page will be visible if there are no scenes loaded or the session is not synced with players (more on this [later](#side-buttons)).
+* Landing page will be visible if there are no Scenes loaded or the session is not synced with players (more on this [later](#side-buttons)).
 * Click the button next to the Join panel drop down menu to copy the session ID to your clipboard.
 * Invite someone to this session by giving them this ID
 * Accept invitations by pasting a key you have received into the right hand panel
@@ -86,52 +87,51 @@ Account data is synchronised across all devices, including
 
 ### Side buttons
   
-  All buttons are only visible when a scene is active.
+  All buttons are only visible when a Scene is active.
   
   * ![image](https://user-images.githubusercontent.com/70658690/214668643-62a6a8a0-b93e-42c8-86e3-ec4aa5bfb505.png) 
-    Pan tool
-    * Quick select this tool by pressing `1` on your keyboard 
-    * Right-click to move the camera
-    * Left-click on doors, tokens and notes
+    Pan Tool
+    * Quick select this Tool by pressing `1` on your keyboard 
+    * Left-click to move the camera
   * ![image](https://user-images.githubusercontent.com/70658690/214668692-54e15ca9-6ead-4a3c-a8b8-70481f1c7e29.png)
-    Measure tool
-    * Quick select this tool by pressing `3` on your keyboard
+    Measure Tool
+    * Quick select this Tool by pressing `3` on your keyboard
     * ![image](https://user-images.githubusercontent.com/70658690/214667672-31709621-4d3c-45b0-9f8a-29c6b1ae0eb5.png)
       Precise. Measures every foot
     * ![image](https://user-images.githubusercontent.com/70658690/214667880-22d375dc-1d22-4eb9-8caa-bf18dfff73a0.png)
       Cell-based. Snaps measurement points to cells in a grid. Distances are calculated using D&D 5e's optional movement.
       Each cell counts as 5 feet, and every other diagonal counts as 10 feet.
     * Right-click while measuring to add waypoints
-    * Quick select this tool by pressing `2` on your keyboard
+    * Quick select this Tool by pressing `2` on your keyboard
   * ![image](https://user-images.githubusercontent.com/70658690/214668832-1b29f490-d61a-4cbc-854d-37bffc5473e0.png)
-    Ping tool
+    Ping Tool
     * The markers remain on the map for 10 seconds
     * Left-click and hold to move each players' camera to that location
   * ![image](https://user-images.githubusercontent.com/70658690/215039279-0a064a12-49ce-4842-855a-cdb7544d29e1.png)
     Note Tools
-    * Quick select this tool by pressing `4` on your keyboard
-    * Add notes by clicking left-clicking
-    * See [notes](#notes)
+    * Quick select this Tool by pressing `4` on your keyboard
+    * Add Notes by clicking left-clicking
+    * See [Notes](#notes)
 
   * ![image](https://user-images.githubusercontent.com/70658690/214669095-5fcb56cc-6761-445a-b79b-724a66db672e.png)
-    Fog tool (Game Master only)
-    * Quick select this tool by pressing `5` on your keyboard
+    Fog Tool (Game Master only)
+    * Quick select this Tool by pressing `5` on your keyboard
     * ![image](https://user-images.githubusercontent.com/70658690/214665922-02bbf0fb-7a02-4ef5-996c-f86ea6ebdf0a.png)
-      Player view. Clicking on a token with this enabled will simulate that player's view of the game.
+      Player view. Clicking on a Token with this enabled will simulate that player's view of the game.
     * ![image](https://user-images.githubusercontent.com/70658690/214666376-61d7809b-5965-4a11-8620-f1ab6350c443.png)
-       Vision only. Clicking a token with this enabled will show what that player can see. Everything else is shown opaque
+       Vision only. Clicking a Token with this enabled will show what that player can see. Everything else is shown opaque
     * ![image](https://user-images.githubusercontent.com/70658690/214666211-3869adb5-cef2-45bf-b5fa-4a1bc8ab94b4.png)
-      No Fog. This will remove all fog and allow you to see the entire map and tokens.
+      No Fog. This will remove all Fog and allow you to see the entire map and Tokens.
   * ![image](https://user-images.githubusercontent.com/70658690/214669164-d0685566-3deb-4e2f-8311-75b8eeb3f662.png)
-    Light tool (Game Master only)
-    * Quick select this tool by pressing `6` on your keyboard
+    Light Tool (Game Master only)
+    * Quick select this Tool by pressing `6` on your keyboard
     * Left-clicking on a map will add a light source on that location
     * More on lights can be found [here](#lights)
   * ![image](https://user-images.githubusercontent.com/70658690/214669185-852c161f-72f9-4e4c-92fa-4785320d9334.png)
     Sync (Game master only)
     * Sync session to players
     * While locked, players will only see the landing page.
-    * While syncing, players will see the active scene if there is one.
+    * While syncing, players will see the active Scene if there is one.
   * ![image](https://user-images.githubusercontent.com/70658690/214670372-ded947c8-111f-4d22-b477-d798084983f8.png)
     Centre camera
     * Move camera back to centre and reset zoom
@@ -140,22 +140,30 @@ Account data is synchronised across all devices, including
     * Leave session and return to main menu
     * Clicking this as a Game Master will set the sync state to locked, so that players will only see the landing page.
 
-### Game Master
-* Create and modify scenes and blueprints by opening the tab on the right
+### Side panel
+* Create and modify Scenes and Blueprints (Game Master only)
+* Create and modify Journal pages. More information [here](#journal-pages)
 * Scene configuration can be seen [here](#scenes)
-* Creating and managing blueprints can be seen [here](#blueprints)
-* While modifying or creating a scene, players will not be able to affect current scene, and will only see the laning page
+* Creating and managing Blueprints can be seen [here](#blueprints)
+
+## Journal pages
+
+* Create a new Journal pages from the right panel.
+* Right-clicking on a Journal page in the right panel allows you to delete, modify, or share it with others
+* Journal pages shared with you are located in the `Shared` folder
+* You can drag Journal pages and folders from one folder to another
+* Rename folders by double clicking them
 
 ## Scenes
 
-* Create and modify scenes by opening the tab on the right.
+* Create and modify Scenes by opening the tab on the right.
 * Scene configuration can be seen [here](#creating-and-modifying-scenes)
-* While modifying or creating a scene, players will not be able to affect the current scene and will only see the laning page.
+* While modifying or creating a Scene, players will not be able to affect the current Scene and will only see the landing page.
 
 ### Creating and modifying scenes
 
 * ![image](https://user-images.githubusercontent.com/70658690/214675341-8c7a686f-066c-4b0a-9f14-f18b092f62b9.png)
-  Wall tools
+  Wall Tools
   * Restrict players' vision and lighting. Create toggleable doors that can be hidden from players.
   * ![image](https://user-images.githubusercontent.com/70658690/214675899-47515036-173d-4898-96a2-0c3f6f4ff50a.png)
     Regular walls. Block player movement, light and vision
@@ -171,15 +179,15 @@ Account data is synchronised across all devices, including
   * Snap wall endpoints together by dragging one endpoint over another
 * ![image](https://user-images.githubusercontent.com/70658690/214675430-c027dc43-bb5f-448b-a735-1153f5692736.png)
   Grid configuration
-    * Configure the grid for this scene. Activate grid snap and measure tools
+    * Configure the grid for this Scene. Activate grid snap and measure Tools
     * ![image](https://user-images.githubusercontent.com/70658690/214678419-9204d23c-5d3d-46a0-ad91-b1024b82a583.png)
       Configure grid settings
       
       ![image](https://user-images.githubusercontent.com/70658690/214679711-45a6f21d-d819-4b42-aa9f-07338ee8c5bc.png)
       
-      * `Enable grid`: Enables / disables the grid for this scene
-      * `Snap to grid`: Snaps tokens to grid cells. Does nothing if grid is off.
-      * `Grid dimensions`: Grid size. Default size when creating the scene is `10x10`.
+      * `Enable grid`: Enables / disables the grid for this Scene
+      * `Snap to grid`: Snaps Tokens to grid cells. Does nothing if grid is off.
+      * `Grid dimensions`: Grid size. Default size when creating the Scene is `10x10`.
       * `Grid colour`: Opens a colour picker where you can choose the colour for your grid.
       
         There is currently a known bug where you have to click this button at least twice to update the colour of the colour picker.
@@ -191,64 +199,64 @@ Account data is synchronised across all devices, including
     * Scale grid by dragging one of its corners. Move grid around using `Arrow keys` or `W A S D`
 * ![image](https://user-images.githubusercontent.com/70658690/214675490-301ee42f-5a21-480c-bf64-7c95b8a17ff7.png)
   Fog configuration
-  * Restrict players' view. Add dynamic lighting and shadows to the scene
+  * Restrict players' view. Add dynamic lighting and shadows to the Scene
   
   ![image](https://user-images.githubusercontent.com/70658690/214681958-d89da85f-4b01-494e-b42c-af74ff1b5025.png)
   
-  * `Enable Fog of War`: Enables / disables fog of war for this scene.
-  * `Global lighting`: Light up the entire scene. Lights have no effect when this is enabled.
-  * `Fog colour`: Opens a colour picker where you can choose the colour for your fog.
+  * `Enable Fog of War`: Enables / disables Fog of War for this Scene.
+  * `Global lighting`: Light up the entire Scene. Lights have no effect when this is enabled.
+  * `Fog colour`: Opens a colour picker where you can choose the colour for your Fog.
       
       There is currently a known bug where you have to click this button at least twice to update the colour in the colour picker.
   * To save changes, click the `Save` button.
   * To discard changes, click `Close`
 * ![image](https://user-images.githubusercontent.com/70658690/214675517-3c7d468f-e4d9-4d97-bd9b-8f692b15110e.png)
   Night Filter
-    * Apply the Night filter to this scene to create the illusion of night lighting.
+    * Apply the Night filter to this Scene to create the illusion of night lighting.
 
   ![image](https://user-images.githubusercontent.com/70658690/214682559-c3151e92-1a7c-4150-af83-7e16d75bae12.png)
   
 * `Night effect strength` controls how much of the night filter is applied. 0 is no effect and 100 is the maximum effect.
-* Rename scene from the top left corner
+* Rename Scene from the top left corner
 * ![image](https://user-images.githubusercontent.com/70658690/214683961-78a3a849-83c5-4122-9d99-76a5a3bfebf5.png)
   Save and exit 
   
 ### Tokens
 
-While you are the owner of the token, you can do the following
-  * Switch between the tokens you own by clicking `Tab`.
-  * Move tokens using the left mouse button (with the Pan tool enabled)
-  * Click on a token to select it
-    * Press `Delete` or `Backspace` to delete the token 
-    * Move the token with the arrow keys
+While you are the owner of the Token, you can do the following
+  * Switch between the Tokens you own by clicking `Tab`.
+  * Move Tokens using the left mouse button (with the Pan Tool enabled)
+  * Click on a Token to select it
+    * Press `Delete` or `Backspace` to delete the Token 
+    * Move the Token with the arrow keys
   * Movement is blocked by walls (normal walls, doors, hidden doors, invisible walls)
-  * As the Game Master, you can move the token through walls. You will be notified if you collide with a wall.
+  * As the Game Master, you can move the Token through walls. You will be notified if you collide with a wall.
   * When dragging, right-click to add a waypoint. 
   
-    Releasing the left mouse button will move the token along its waypoints.
+    Releasing the left mouse button will move the Token along its waypoints.
     
-    If snap to grid is enabled. The token will snap to the nearest cell. To prevent this, press `Alt` while releasing the left mouse button.
+    If snap to grid is enabled. The Token will snap to the nearest cell. To prevent this, press `Alt` while releasing the left mouse button.
   * Move distance and path is displayed when dragging.
-  * Copy and paste tokens using `Ctrl + V` and `Ctrl + V`.
+  * Copy and paste Tokens using `Ctrl + V` and `Ctrl + V`.
   
-    Distance is calculated in the same way as the cell based measure tool (see [tools guide](#side buttons))
-  * Double-click on a token to open its configuration panel
+    Distance is calculated in the same way as the cell based measure Tool (see [Tools guide](#side buttons))
+  * Double-click on a Token to open its configuration panel
   
     ![image](https://user-images.githubusercontent.com/70658690/214686628-7673f0ba-f872-4e47-a28e-fce981703a55.png)
-    * `Display name`: The name of the token
+    * `Display name`: The name of the Token
     * `Token type`: Character type can have vision
     
-      Mount types can have vision and will grab other tokens on top of them when they move.
+      Mount types can have vision and will grab other Tokens on top of them when they move.
       
       Item types cannot have vision
-    * `Token size`: The dimensions of the token. Scales the token's image to fit (does not stretch).
+    * `Token size`: The dimensions of the Token. Scales the Token's image to fit (does not stretch).
     * `Image`: Token's sprite
     
     ![image](https://user-images.githubusercontent.com/70658690/214688869-dc7e69ef-bcc6-4a11-b4be-34cd9f5dea34.png)
-    * `Has vision`: Does this token have vision. Does nothing if the token type is set to `Item`.
-    * `Night vision`: A special light source that only you can see. Does nothing if the token does not have vision enabled
-    * `Token highlighted`: Small light source to show this token even if it's in total darkness.
-    * `Light Source`: Select the light source of the token. There are a few presets that will automatically change the light depending on the source.
+    * `Has vision`: Does this Token have vision. Does nothing if the Token type is set to `Item`.
+    * `Night vision`: A special light source that only you can see. Does nothing if the Token does not have vision enabled
+    * `Token highlighted`: Small light source to show this Token even if it's in total darkness.
+    * `Light Source`: Select the light source of the Token. There are a few presets that will automatically change the light depending on the source.
     
       By selecting `Flickering` or `Pulsing` you can fully configure the effect speed, strength etc.
       
@@ -265,7 +273,7 @@ While you are the owner of the token, you can do the following
       There is currently a known bug, where you have to click this button at least twice to update the color picker's color
     
     ![image](https://user-images.githubusercontent.com/70658690/214690354-349a14ad-f42e-4e89-bff9-0e1d26532054.png)
-    * Select possible conditions for this token. Conditions will be visible as small icons at the top of the token
+    * Select possible conditions for this Token. Conditions will be visible as small icons at the top of the Token
   
   * To save changes, click `Save`
   * To discard changes, click `Close`
@@ -292,48 +300,42 @@ While you are the owner of the token, you can do the following
   
 ### Notes
 
-* Create notes by selecting the `Notes` tool and clicking on a scene
-* By default, notes are set to be visible only for you
-* Double clicking on a note icon will open it
-* Modify note text by pressin `Ctrl + M`, and save edits by pressin `Ctrl + S`
-* Move notes around by dragging, and minimise by double clicking. Both actions can be done from the top left corner
-* Scale notes from bottom right corner
-* Top Panel buttons:
-  * `Cross` close note
-  * `Bin` delete note
-  * `Send arrow` show note to others
-  * `Eye` set note public / private 
-* Removing and changing note publicity can only be done by the note owner
+* Create Notes by selecting the `Notes` Tool and clicking on a Scene
+* By default, Notes are set to be visible only for you
+* Double clicking on a Note icon will open it
+* Modify Note text by pressin `Ctrl + M`, and save edits by pressin `Ctrl + S`
+* Move Notes around by dragging, and minimise by double clicking. Both actions can be done from the top left corner
+* Scale Notes from bottom right corner
 
 ## Blueprints
 
-* Create a new blueprint from the right panel. This will open a configuration panel. (see [token configuration](#tokens))
-* Add tokens to the scene by dragging blueprints out from the side panel
-* Right-clicking on a blueprint in the right panel allows you to delete, modify, or set permissions for it
-* Modifying blueprints doesn't update any tokens already on the scene. 
-* You can drag blueprints and folders from one folder to another
+* Create a new Blueprint from the right panel. This will open a configuration panel. (see [Token configuration](#tokens))
+* Add Tokens to the Scene by dragging Blueprints out from the side panel
+* Right-clicking on a Blueprint in the right panel allows you to delete, modify, or set permissions for it
+* Modifying Blueprints doesn't update any Tokens already on the Scene. 
+* You can drag Blueprints and folders from one folder to another
 * Rename folders by double clicking them
 
 ### Permissions
 
-* Open Permission panel by right-clicking on a blueprint, and selecting `Permissions`
+* Open Permission panel by right-clicking on a Blueprint, and selecting `Permissions`
 * Configure permissions for each user you have invited to this game session
-* Clicking on `Refresh` will add any missing users, who have been invited after this blueprint was created
+* Clicking on `Refresh` will add any missing users, who have been invited after this Blueprint was created
 
 #### Owner
 
-* This player can see through the eyes of the token, but cannot move or delete it.
+* This player can see through the eyes of the Token, but cannot move or delete it.
 * This option is useful for general NPCs.
 
 #### Observer
 
-* This player can see through the token's eyes, but have no permissions to move, or delete it
+* This player can see through the Token's eyes, but have no permissions to move, or delete it
 * This option is useful for general NPCs
 
 #### None
 
-* This player does not have permissions to move, edit, delete or see through the token's eyes.
-* This option is useful for enemies and tokens that you don't want the player to interact with.
+* This player does not have permissions to move, edit, delete or see through the Token's eyes.
+* This option is useful for enemies and Tokens that you don't want the player to interact with.
 
 # Keyboard shortcuts
 
@@ -344,15 +346,15 @@ While you are the owner of the token, you can do the following
 
 ### Tokens
 
-* `Tab`: Switch between tokens you own
-* `Arrow keys`: Moves selected token on the map, one cell at a time
-* `Alt`: Prevents token from snapping to grid when moved
+* `Tab`: Switch between Tokens you own
+* `Arrow keys`: Moves selected Token on the map, one cell at a time
+* `Alt`: Prevents Token from snapping to grid when moved
 
 ### Side panel
 
-* `Num 1`: Pan tool
-* `Num 2`: Measure tools
-* `Num 3`: Ping tool
-* `Num 4`: Note tool
-* `Num 5`: Fog tools (Game Master only)
-* `Num 6`: Light tools (Game Master only)
+* `Num 1`: Pan Tool
+* `Num 2`: Measure Tools
+* `Num 3`: Ping Tool
+* `Num 4`: Note Tool
+* `Num 5`: Fog Tools (Game Master only)
+* `Num 6`: Light Tools (Game Master only)
