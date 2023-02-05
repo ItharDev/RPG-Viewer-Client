@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -33,8 +34,11 @@ namespace RPG
 
             nameInput.placeholder.color = Data.visible ? new Color(visibleColor.r, visibleColor.g, visibleColor.b, 0.5f) : new Color(hiddenColor.r, hiddenColor.g, hiddenColor.b, 0.5f); nameInput.placeholder.color = Data.visible ? new Color(visibleColor.r, visibleColor.g, visibleColor.b, 0.5f) : new Color(hiddenColor.r, hiddenColor.g, hiddenColor.b, 0.5f);
             nameInput.textComponent.color = Data.visible ? visibleColor : hiddenColor;
-
-            transform.SetSiblingIndex(_data.index);
+        }
+        public void SetIndex(int index)
+        {
+            Data.index = index;
+            transform.SetSiblingIndex(index);
         }
         public void UpdateIndex()
         {

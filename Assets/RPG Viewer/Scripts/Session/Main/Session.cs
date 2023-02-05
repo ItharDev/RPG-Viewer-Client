@@ -90,7 +90,6 @@ namespace RPG
                 else MessageManager.QueueMessage(callback.GetValue(1).GetString());
             });
         }
-
         public void CopyToken(TokenData data)
         {
             copyData = data;
@@ -408,6 +407,12 @@ namespace RPG
 
                 Tokens[i].LoadLights();
                 Tokens[i].HandleSorting();
+            }
+
+            if (token != null)
+            {
+                var index = myTokens.IndexOf(token);
+                selectedToken = index;
             }
         }
 

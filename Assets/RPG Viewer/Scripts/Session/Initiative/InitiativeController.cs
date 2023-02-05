@@ -1,9 +1,9 @@
 using System.Collections.Generic;
+using System.Linq;
+using Cysharp.Threading.Tasks;
+using Networking;
 using UnityEngine;
 using UnityEngine.UI;
-using Networking;
-using Cysharp.Threading.Tasks;
-using System.Linq;
 
 namespace RPG
 {
@@ -11,7 +11,7 @@ namespace RPG
     {
         [SerializeField] private InitiativeHolder holderPrefab;
         [SerializeField] private Transform holderTransform;
-        
+
         private List<InitiativeHolder> holders = new List<InitiativeHolder>();
         private InitiativeHolder dragHolder;
 
@@ -25,8 +25,7 @@ namespace RPG
                 holders.Clear();
 
                 for (int i = 0; i < initiatives.Length; i++) CreateHolder(JsonUtility.FromJson<InitiativeData>(initiatives[i].ToString()));
-                for (int i = 0; i < holders.Count; i++) holders[i].LoadData(this, JsonUtility.FromJson<InitiativeData>(initiatives[i].ToString()));
-
+                for (int i = 0; i < holders.Count; i++) holders[i].SetIndex(holders[i].Data.index);
             });
         }
 
@@ -34,7 +33,7 @@ namespace RPG
         public async void LoadHolders(List<InitiativeData> list)
         {
             gameObject.SetActive(true);
-            
+
             for (int i = 0; i < holders.Count; i++) Destroy(holders[i].gameObject);
             holders.Clear();
 
@@ -44,7 +43,7 @@ namespace RPG
             holderTransform.GetComponent<GridLayoutGroup>().enabled = true;
 
             for (int i = 0; i < list.Count; i++) CreateHolder(list[i]);
-            for (int i = 0; i < holders.Count; i++) holders[i].LoadData(this, list[i]);
+            for (int i = 0; i < holders.Count; i++) holders[i].SetIndex(holders[i].Data.index);
 
             SessionManager.session.Loaders++;
         }
@@ -54,6 +53,53 @@ namespace RPG
             holders.Clear();
 
             gameObject.SetActive(false);
+        }
+
+        [System.Obsolete]
+        public void SortHolders()
+        {
+            holders.Sort(SortByRoll);
+            for (int i = 0; i < holders.Count; i++)
+            {
+                holders[i].SetIndex(i);
+            }
+
+            UpdateHolder();
+        }
+
+        public async void ResetInitiatives()
+        {
+            for (int i = 0; i < holders.Count; i++) Destroy(holders[i].gameObject);
+            holders.Clear();
+
+            for (int i = 0; i < SessionManager.Users.Count; i++)
+            {
+                var user = SessionManager.Users[i];
+                await SocketManager.Socket.EmitAsync("get-user", async (callback) =>
+                {
+                    await UniTask.SwitchToMainThread();
+                    if (callback.GetValue().GetBoolean())
+                    {
+                        var data = new InitiativeData()
+                        {
+                            index = holders.Count,
+                            name = callback.GetValue(1).GetProperty("name").GetString(),
+                            roll = "",
+                            visible = true
+                        };
+                        CreateHolder(data);
+                        if (holders.Count == SessionManager.Users.Count)
+                        {
+                            await SocketManager.Socket.EmitAsync("modify-initiatives", async (callback) =>
+                            {
+                                await UniTask.SwitchToMainThread();
+                                if (!callback.GetValue().GetBoolean()) MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                            }, GetHolderData());
+                        }
+                    }
+                    else MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                }, user);
+            }
         }
 
         [System.Obsolete]
@@ -133,6 +179,7 @@ namespace RPG
             Canvas.ForceUpdateCanvases();
             holderTransform.GetComponent<GridLayoutGroup>().enabled = false;
             holderTransform.GetComponent<GridLayoutGroup>().enabled = true;
+            holder.SetIndex(data.index);
         }
         private List<string> GetHolderData()
         {
@@ -143,6 +190,11 @@ namespace RPG
                 if (list.Count == holders.Count) return list;
             }
             return null;
+        }
+
+        private int SortByRoll(InitiativeHolder holderA, InitiativeHolder holderB)
+        {
+            return int.Parse(holderA.Data.roll).CompareTo(int.Parse(holderB.Data.roll));
         }
     }
 }
