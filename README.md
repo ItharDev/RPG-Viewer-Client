@@ -205,6 +205,7 @@ Account data is synchronised across all devices, including
   
   * `Enable Fog of War`: Enables / disables Fog of War for this Scene.
   * `Global lighting`: Light up the entire Scene. Lights have no effect when this is enabled.
+  * `Translucency`: Change global lighting translucency.
   * `Fog colour`: Opens a colour picker where you can choose the colour for your Fog.
       
       There is currently a known bug where you have to click this button at least twice to update the colour in the colour picker.
