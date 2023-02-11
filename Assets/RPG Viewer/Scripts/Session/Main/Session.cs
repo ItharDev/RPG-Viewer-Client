@@ -163,7 +163,7 @@ namespace RPG
         public void UnloadScene()
         {
             Loaders = 0;
-            if (background.gameObject != null) background.gameObject.SetActive(true);
+            if (background != null) background.gameObject.SetActive(true);
 
             Settings = null;
             for (int i = 0; i < Tokens.Count; i++) Destroy(Tokens[i].gameObject);
@@ -261,9 +261,9 @@ namespace RPG
         }
         public void LoadNight(float strength)
         {
-            float s = 0.004f * strength;
-            float v = 1.0f - 0.008f * strength;
-            sprite.color = Color.HSVToRGB(240.0f / 360.0f, s, v);
+            float saturation = 0.004f * strength;
+            float value = 1.0f - 0.008f * strength;
+            sprite.color = Color.HSVToRGB(240.0f / 360.0f, saturation, value);
 
             Loaders++;
         }
@@ -282,7 +282,7 @@ namespace RPG
                 Lighting2D.LightmapPresets[0].darknessColor = Settings.fogOfWar.color;
                 Lighting2D.LightmapPresets[1].darknessColor = Settings.fogOfWar.color;
 
-                if (Settings.fogOfWar.globalLighting) Lighting2D.LightmapPresets[0].darknessColor = new Color(Settings.fogOfWar.color.r, Settings.fogOfWar.color.g, Settings.fogOfWar.color.b, 0.0f);
+                if (Settings.fogOfWar.globalLighting) Lighting2D.LightmapPresets[0].darknessColor = new Color(Settings.fogOfWar.color.r, Settings.fogOfWar.color.g, Settings.fogOfWar.color.b, 1.0f - Settings.fogOfWar.translucency);
             }
             else if (state == FogState.Vision)
             {

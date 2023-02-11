@@ -1,7 +1,7 @@
-﻿using Cysharp.Threading.Tasks;
-using Networking;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
+using Networking;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -20,7 +20,6 @@ namespace RPG
         [SerializeField] private GameObject grid;
         [SerializeField] private GameObject gridPanel;
         [SerializeField] private GameObject gridSelection;
-
         [SerializeField] private GameObject gridConfig;
         [SerializeField] private Toggle enableGrid;
         [SerializeField] private Toggle snapToGrid;
@@ -34,7 +33,6 @@ namespace RPG
         [Header("Walls")]
         [SerializeField] private GameObject wallsPanel;
         [SerializeField] private GameObject wallsSelection;
-
         [SerializeField] private GameObject regularSelection;
         [SerializeField] private GameObject doorsSelection;
         [SerializeField] private GameObject invisibleSelection;
@@ -42,13 +40,12 @@ namespace RPG
 
         [Header("Fog Of War")]
         [SerializeField] private GameObject fowSelection;
-
         [SerializeField] private GameObject fowConfig;
         [SerializeField] private Toggle enableFow;
         [SerializeField] private Toggle globalLighting;
         [SerializeField] private Image fogColor;
-        [SerializeField] private Slider exploredOpacity;
-        [SerializeField] private TMP_InputField exploredOpacityInput;
+        [SerializeField] private Slider translucencySlider;
+        [SerializeField] private TMP_InputField translucenyInput;
         [SerializeField] private FlexibleColorPicker fogColorPicker;
 
         [Header("Lighting")]
@@ -87,7 +84,7 @@ namespace RPG
 
             nightSlider.value = Data.data.nightStrength;
             nightInput.text = Data.data.nightStrength.ToString();
-            
+
             if (string.IsNullOrEmpty(Data.id))
             {
                 Data.data.nightStrength = 0.0f;
@@ -129,6 +126,7 @@ namespace RPG
             {
                 enabled = enableFow.isOn,
                 globalLighting = globalLighting.isOn,
+                translucency = translucencySlider.value * 0.01f,
                 color = fogColor.color,
             };
 
@@ -174,6 +172,7 @@ namespace RPG
         {
             enableFow.isOn = data.enabled;
             globalLighting.isOn = data.globalLighting;
+            translucencySlider.value = data.translucency * 100;
             fogColor.color = new Color(data.color.r, data.color.g, data.color.b, 1.0f);
         }
         private void LoadWalls(List<WallData> walls)
@@ -310,7 +309,7 @@ namespace RPG
                 MessageManager.QueueMessage("Invalid dimensions");
                 return;
             }
-            
+
             GridData data = new GridData()
             {
                 enabled = enableGrid.isOn,
@@ -329,6 +328,7 @@ namespace RPG
             {
                 enabled = enableFow.isOn,
                 globalLighting = globalLighting.isOn,
+                translucency = translucencySlider.value * 0.01f,
                 color = fogColor.color,
             };
 
@@ -369,14 +369,14 @@ namespace RPG
             fogColor.color = fogColorPicker.color;
             fogColorPicker.gameObject.SetActive(false);
         }
-        public void ChangeFogSlider()
+        public void ChangeTranslucencySlider()
         {
-            exploredOpacityInput.text = exploredOpacity.value.ToString();
+            translucenyInput.text = translucencySlider.value.ToString();
         }
-        public void ChangeFogInput()
+        public void ChangeTranslucencyInput()
         {
-            if (float.Parse(exploredOpacityInput.text) > 100.0f || float.Parse(exploredOpacityInput.text) < 0.0f) ChangeFogSlider();
-            exploredOpacity.value = float.Parse(exploredOpacityInput.text);
+            if (float.Parse(translucenyInput.text) > 100.0f || float.Parse(translucenyInput.text) < 0.0f) ChangeTranslucencySlider();
+            translucencySlider.value = float.Parse(translucenyInput.text);
         }
 
         public void ChangeNightSlider()
@@ -391,6 +391,6 @@ namespace RPG
 
             LoadNight(nightSlider.value);
         }
-        #endregion      
+        #endregion
     }
 }
