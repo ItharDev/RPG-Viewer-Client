@@ -31,7 +31,7 @@ namespace RPG
             {
                 if (controllers[i] == null) controllers.RemoveAt(i);
             }
-            if (Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject() && Enabled)
+            if (Input.GetMouseButtonDown(1) && !EventSystem.current.IsPointerOverGameObject() && Enabled)
             {
                 LineController controller = Instantiate(controllerPrefab, Vector3.zero, Quaternion.identity, controllerParent);
                 controller.Init(wallType, this, color);

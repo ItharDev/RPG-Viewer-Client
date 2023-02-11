@@ -1,7 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using MongoDB.Bson;
 using UnityEngine;
 using Vectrosity;
-using MongoDB.Bson;
 
 namespace RPG
 {
@@ -12,6 +13,7 @@ namespace RPG
 
         [SerializeField] private Color selectedColor;
         [SerializeField] private Color normalColor;
+        [SerializeField] private Color multiColor;
 
         private Color color;
         private bool hidden;
@@ -54,7 +56,10 @@ namespace RPG
                 }
             }
 
-            if (Input.GetKeyDown(KeyCode.Escape)) SelectedPoint = null;
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                SelectedPoint = null;
+            }
         }
 
         private void LateUpdate()
@@ -64,7 +69,7 @@ namespace RPG
                 line.SetWidth((15.0f / Camera.main.orthographicSize) * (Screen.currentResolution.width / 1600));
             }
 
-            if (Input.GetKey(KeyCode.LeftControl) && hoverPoint != null && Input.GetMouseButtonDown(0))
+            if (Input.GetKey(KeyCode.LeftControl) && hoverPoint != null && Input.GetMouseButtonDown(1))
             {
                 if (points.IndexOf(hoverPoint) == points.Count - 1)
                 {
@@ -75,7 +80,8 @@ namespace RPG
                     dragPoint = AddPoint(GetMousePosition(), true);
                 }
             }
-            if (Input.GetMouseButtonDown(0))
+
+            if (Input.GetMouseButtonDown(1))
             {
                 if (SelectedPoint != null)
                 {
@@ -86,7 +92,7 @@ namespace RPG
                     }
                 }
             }
-            if (Input.GetMouseButton(0))
+            if (Input.GetMouseButton(1))
             {
                 if (startPos != Vector2.zero)
                 {
@@ -100,7 +106,7 @@ namespace RPG
 
                 if (dragPoint != null) MovePoint(dragPoint);
             }
-            if (Input.GetMouseButtonUp(0))
+            if (Input.GetMouseButtonUp(1))
             {
                 if (points.Count >= 2)
                 {
@@ -172,7 +178,6 @@ namespace RPG
             };
             point.OnExitEvent += (point) =>
             {
-                Debug.Log("F");
                 Tools.HoverPoint = null;
                 hoverPoint = null;
             };

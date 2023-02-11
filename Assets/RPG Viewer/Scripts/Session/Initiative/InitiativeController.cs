@@ -59,11 +59,12 @@ namespace RPG
         public void SortHolders()
         {
             holders.Sort(SortByRoll);
+            holders.Reverse();
+
             for (int i = 0; i < holders.Count; i++)
             {
                 holders[i].SetIndex(i);
             }
-
             UpdateHolder();
         }
 

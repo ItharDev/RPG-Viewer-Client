@@ -163,7 +163,7 @@ namespace RPG
         public void UnloadScene()
         {
             Loaders = 0;
-            background.gameObject.SetActive(true);
+            if (background.gameObject != null) background.gameObject.SetActive(true);
 
             Settings = null;
             for (int i = 0; i < Tokens.Count; i++) Destroy(Tokens[i].gameObject);

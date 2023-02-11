@@ -18,8 +18,8 @@ namespace RPG
 
         [Header("UI")]
         public Image image;
-        [SerializeField] private TMP_Text label;
         public Image Selection;
+        [SerializeField] private TMP_Text label;
         [SerializeField] private Canvas canvas;
         [SerializeField] private GameObject panel;
         [SerializeField] private GameObject confirmPanel;
@@ -35,6 +35,7 @@ namespace RPG
 
         [Header("Elevation")]
         [SerializeField] private TMP_InputField elevationInput;
+        [SerializeField] private GameObject elevationPanel;
 
         [Header("Health")]
         [SerializeField] private TMP_InputField healthInput;
@@ -99,17 +100,29 @@ namespace RPG
             {
                 if (state.ToolState != ToolState.Notes && state.ToolState != ToolState.Light) image.raycastTarget = true;
             }
-
-            if ((Input.GetKeyUp(KeyCode.Backspace) || Input.GetKeyUp(KeyCode.Delete)) && Selection.gameObject.activeInHierarchy)
+            if (Selection.gameObject.activeInHierarchy)
             {
-                DeleteToken();
-            }
+                if ((Input.GetKeyUp(KeyCode.Backspace) || Input.GetKeyUp(KeyCode.Delete)))
+                {
+                    DeleteToken();
+                }
 
-            if (Input.GetKeyDown(KeyCode.C) && Input.GetKey(KeyCode.LeftControl) && Selection.gameObject.activeInHierarchy)
-            {
-                SessionManager.session.CopyToken(this.Data);
-            }
+                if (Input.GetKeyDown(KeyCode.C) && Input.GetKey(KeyCode.LeftControl))
+                {
+                    SessionManager.session.CopyToken(this.Data);
+                }
 
+                if (Input.GetKeyDown(KeyCode.PageUp) || Input.GetKeyDown(KeyCode.PageDown))
+                {
+                    var elevation = elevationInput.text.TrimEnd('f', 't', ' ');
+                    int elevationValue = int.Parse(elevation);
+                    elevationValue += Input.GetKey(KeyCode.PageUp) ? 5 : -5;
+                    string newElevation = $"{elevationValue} ft";
+                    elevationInput.text = newElevation;
+
+                    UpdateElevation();
+                }
+            }
             if (dragObject != null && Input.GetMouseButtonDown(1))
             {
                 waypoints.Add(Camera.main.ScreenToWorldPoint(Input.mousePosition));
@@ -460,6 +473,9 @@ namespace RPG
         {
             Data.elevation = elevation;
             elevationInput.text = elevation.ToString();
+
+            if (Data.elevation.Contains("0")) elevationPanel.SetActive(Selection.gameObject.activeInHierarchy);
+            else elevationPanel.SetActive(true);
         }
         public void SetLocked(bool locked)
         {
@@ -563,6 +579,7 @@ namespace RPG
             SessionManager.session.SelectToken(Selection.gameObject.activeInHierarchy ? this : null);
 
             SetHealth(Data.health);
+            SetElevation(Data.elevation);
         }
         public void OpenConfig()
         {
@@ -627,6 +644,7 @@ namespace RPG
             {
                 if (config.gameObject.activeInHierarchy || editInput) return;
             }
+            if (elevationInput.isFocused || healthInput.isFocused) return;
 
             bool askConfirmation = false;
             for (int i = 0; i < Data.permissions.Count; i++)

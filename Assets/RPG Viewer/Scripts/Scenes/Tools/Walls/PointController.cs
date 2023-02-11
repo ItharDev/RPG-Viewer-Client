@@ -53,7 +53,7 @@ namespace RPG
         {
             if (!Line.Tools.Enabled) return;
 
-            if (eventData.button == PointerEventData.InputButton.Left && !eventData.dragging)
+            if (eventData.button == PointerEventData.InputButton.Right && !eventData.dragging)
             {
                 OnClickEvent?.Invoke(this);
             }
@@ -62,20 +62,20 @@ namespace RPG
         {
             if (!Line.Tools.Enabled) return;
 
-            if (eventData.pointerId == -1 && Line.SelectedPoint == this) OnDragEvent?.Invoke(this);
+            if (eventData.pointerId == -2 && Line.SelectedPoint == this) OnDragEvent?.Invoke(this);
         }
 
         public void OnBeginDrag(PointerEventData eventData)
         {
             if (!Line.Tools.Enabled) return;
 
-            if (eventData.pointerId == -1 && !Input.GetKey(KeyCode.LeftControl)) OnBeginDragEvent?.Invoke(this);
+            if (eventData.pointerId == -2 && !Input.GetKey(KeyCode.LeftControl)) OnBeginDragEvent?.Invoke(this);
         }
         public void OnEndDrag(PointerEventData eventData)
         {
             if (!Line.Tools.Enabled) return;
 
-            if (eventData.pointerId == -1 && !Input.GetKey(KeyCode.LeftControl)) OnEndDragEvent?.Invoke(this);
+            if (eventData.pointerId == -2 && !Input.GetKey(KeyCode.LeftControl)) OnEndDragEvent?.Invoke(this);
         }
     }
 }

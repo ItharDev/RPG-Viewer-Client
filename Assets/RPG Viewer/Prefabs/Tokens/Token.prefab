@@ -2682,7 +2682,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &8333934224712369450
 RectTransform:
   m_ObjectHideFlags: 0
@@ -6500,8 +6500,8 @@ MonoBehaviour:
     locked: 0
     rotation: 0
   image: {fileID: 4265945942628296817}
-  label: {fileID: 55829306754363330}
   Selection: {fileID: 2768840334384379416}
+  label: {fileID: 55829306754363330}
   canvas: {fileID: 1212976555955231601}
   panel: {fileID: 1474519081600306550}
   confirmPanel: {fileID: 7102588846421532515}
@@ -6511,6 +6511,7 @@ MonoBehaviour:
   unlockedSprite: {fileID: 21300000, guid: dedfdceb3b163e749ad3d2f4bcb95427, type: 3}
   configPanel: {fileID: 4586961313350804840, guid: bc6aec7df5cdaef4b9fbca9af7a3e07a, type: 3}
   elevationInput: {fileID: 58758148499618648}
+  elevationPanel: {fileID: 4558490561331533043}
   healthInput: {fileID: 2652368235766714932}
   healthPanel: {fileID: 8449070968420369447}
   nightSource: {fileID: 8827990109290636558}
@@ -6726,14 +6727,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 0.5019608}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 7482667652216324306, guid: 48e93eef0688c4a259cb0eddcd8661f7, type: 3}
+  m_Sprite: {fileID: 21300000, guid: ad2802eb9f7fc3649871ad45c2e23052, type: 3}
   m_Type: 2
   m_PreserveAspect: 0
   m_FillCenter: 1
