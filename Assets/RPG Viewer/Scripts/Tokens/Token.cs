@@ -576,7 +576,8 @@ namespace RPG
             Selection.gameObject.SetActive(!Selection.gameObject.activeInHierarchy);
             if (SessionManager.IsMaster) panel.SetActive(Selection.gameObject.activeInHierarchy);
             rotateButton.SetActive(Selection.gameObject.activeInHierarchy);
-            SessionManager.session.SelectToken(Selection.gameObject.activeInHierarchy ? this : null);
+            if (Selection.gameObject.activeInHierarchy) SessionManager.session.SelectToken(this);
+            else if (SessionManager.IsMaster) SessionManager.session.SelectToken(null);
 
             SetHealth(Data.health);
             SetElevation(Data.elevation);
