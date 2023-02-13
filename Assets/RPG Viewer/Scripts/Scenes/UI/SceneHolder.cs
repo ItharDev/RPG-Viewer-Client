@@ -14,7 +14,7 @@ namespace RPG
 
         [SerializeField] private GameObject panel;
 
-        private SceneSettings data;
+        public SceneSettings Data;
         private string id;
         private string path;
 
@@ -35,12 +35,12 @@ namespace RPG
 
         public void LoadData(SceneSettings _data, string _id, string _path, byte[] _image, MasterPanel _masterPanel)
         {
-            data = _data;
+            Data = _data;
             id = _id;
-            data.id = _id;
-            data.bytes = _image;
+            Data.id = _id;
+            Data.bytes = _image;
             path = _path;
-            data.path = _path;
+            Data.path = _path;
             text.text = _data.data.name;
             masterPanel = _masterPanel;
 
@@ -62,7 +62,7 @@ namespace RPG
                 await UniTask.SwitchToMainThread();
                 if (!callback.GetValue().GetBoolean()) MessageManager.QueueMessage(callback.GetValue(1).GetString());
             }, "");
-            SocketManager.SceneSettings = data;
+            SocketManager.SceneSettings = Data;
             SceneManager.LoadScene("Scene");
         }
         public void DeleteScene()
@@ -153,7 +153,7 @@ namespace RPG
                 {
                     await UniTask.SwitchToMainThread();
                     if (!callback.GetValue().GetBoolean()) MessageManager.QueueMessage(callback.GetValue(1).GetString());
-                }, data.id);
+                }, Data.id);
             }
         }
         public void Drag()

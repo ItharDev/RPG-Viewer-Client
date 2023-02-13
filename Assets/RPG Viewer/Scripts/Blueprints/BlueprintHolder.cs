@@ -16,7 +16,7 @@ namespace RPG
         [SerializeField] private GameObject panel;
         [SerializeField] private PermissionPanel permissionPanel;
 
-        private TokenData data;
+        public TokenData Data;
         private string id;
         private string path;
 
@@ -38,7 +38,7 @@ namespace RPG
 
         public void LoadData(TokenData _data, string _id, string _folder, byte[] _image, MasterPanel _masterPanel)
         {
-            data = _data;
+            Data = _data;
             id = _id;
             path = _folder;
             text.text = _data.name;
@@ -58,7 +58,7 @@ namespace RPG
 
         public void OpenConfig()
         {
-            masterPanel.OpenBlueprintConfig(data, this, path, image.sprite.texture.GetRawTextureData());
+            masterPanel.OpenBlueprintConfig(Data, this, path, image.sprite.texture.GetRawTextureData());
         }
         public void DeleteBlueprint()
         {
@@ -81,7 +81,7 @@ namespace RPG
             permissionPanel.transform.SetParent(GameObject.Find("Main Canvas").transform);
             permissionPanel.transform.SetAsLastSibling();
             permissionPanel.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
-            permissionPanel.LoadPermissions(data.permissions, this);
+            permissionPanel.LoadPermissions(Data.permissions, this);
         }
         public async void ClosePermissions(List<Permission> permissions)
         {
@@ -96,7 +96,7 @@ namespace RPG
                 await UniTask.SwitchToMainThread();
                 if (callback.GetValue().GetBoolean())
                 {
-                    data.permissions = permissions;
+                    Data.permissions = permissions;
                 }
                 else MessageManager.QueueMessage(callback.GetValue(1).GetString());
             }, Id, jsonList);
@@ -110,11 +110,11 @@ namespace RPG
 
                 if (callback.GetValue().GetBoolean())
                 {
-                    data = _data;
+                    Data = _data;
 
                     if (_imageChanged)
                     {
-                        data.image = callback.GetValue(1).GetString();
+                        Data.image = callback.GetValue(1).GetString();
 
                         Texture2D texture = new Texture2D(1, 1);
                         texture.LoadImage(_bytes);
@@ -199,7 +199,7 @@ namespace RPG
             else if (!moved && !RectTransformUtility.RectangleContainsScreenPoint(masterPanel.BlueprintPanel.GetComponent<RectTransform>(), Input.mousePosition))
             {
                 Vector2 pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-                TokenData newData = data;
+                TokenData newData = Data;
                 newData.position = pos;
                 newData.enabled = false;
 

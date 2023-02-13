@@ -992,5 +992,62 @@ namespace RPG
             RotateToggle();
         }
         #endregion
+
+        #region Search
+        public void HandleSearch(string type)
+        {
+            switch (type)
+            {
+                case "Blueprints":
+                    for (int i = 0; i < blueprints.Count; i++)
+                    {
+                        blueprints[i].gameObject.SetActive(blueprints[i].Data.name.ToLower().Contains(blueprintSearch.text.ToLower()));
+                    }
+                    for (int i = 0; i < blueprintFolders.Count; i++)
+                    {
+                        var active = blueprintFolders[i].GetComponentsInChildren<BlueprintHolder>(false);
+                        var all = blueprintFolders[i].GetComponentsInChildren<BlueprintHolder>(true);
+                        if (all.Length >= 1)
+                        {
+                            blueprintFolders[i].gameObject.SetActive(active.Length > 0);
+                        }
+                        else blueprintFolders[i].gameObject.SetActive(true);
+                    }
+                    break;
+                case "Scenes":
+                    for (int i = 0; i < scenes.Count; i++)
+                    {
+                        scenes[i].gameObject.SetActive(scenes[i].Data.data.name.ToLower().Contains(sceneSearch.text.ToLower()));
+                    }
+                    for (int i = 0; i < sceneFolders.Count; i++)
+                    {
+                        var active = sceneFolders[i].GetComponentsInChildren<SceneHolder>(false);
+                        var all = sceneFolders[i].GetComponentsInChildren<SceneHolder>(true);
+                        if (all.Length >= 1)
+                        {
+                            sceneFolders[i].gameObject.SetActive(active.Length > 0);
+                        }
+                        else sceneFolders[i].gameObject.SetActive(true);
+                    }
+                    break;
+                case "Journals":
+                    for (int i = 0; i < journals.Count; i++)
+                    {
+                        journals[i].gameObject.SetActive(journals[i].Data.header.ToLower().Contains(journalSearch.text.ToLower()));
+                    }
+                    for (int i = 0; i < journalFolders.Count; i++)
+                    {
+                        var active = journalFolders[i].GetComponentsInChildren<JournalHolder>(false);
+                        var all = journalFolders[i].GetComponentsInChildren<JournalHolder>(true);
+                        if (all.Length >= 1)
+                        {
+                            journalFolders[i].gameObject.SetActive(active.Length > 0);
+                        }
+                        else journalFolders[i].gameObject.SetActive(true);
+                    }
+                    break;
+            }
+        }
+        #endregion
     }
 }
