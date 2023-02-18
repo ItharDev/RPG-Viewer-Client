@@ -77,6 +77,7 @@ namespace RPG
                 selectedToken++;
                 if (selectedToken > myTokens.Count - 1) selectedToken = 0;
                 myTokens[selectedToken].ToggleSelection();
+                FindObjectOfType<Camera2D>().FollowTarget(myTokens[selectedToken].transform);
             }
         }
 
