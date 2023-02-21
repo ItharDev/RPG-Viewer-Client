@@ -174,7 +174,7 @@ namespace RPG
             lightManager.UnloadLights();
             noteManager.UnloadNotes();
 
-            sprite.sprite = null;
+            if (sprite != null) sprite.sprite = null;
 
             grid.UpdateColor(Color.black);
             grid.GenerateGrid(Vector2Int.zero, Vector2.zero, 0);

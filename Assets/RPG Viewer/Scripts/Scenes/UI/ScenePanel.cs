@@ -60,10 +60,6 @@ namespace RPG
             Data = SocketManager.SceneSettings;
             LoadData();
         }
-        private void Update()
-        {
-            if (Input.GetKeyDown(KeyCode.F12)) SaveData();
-        }
 
         #region Data
         public void LoadData()
@@ -71,11 +67,6 @@ namespace RPG
             Texture2D texture = new Texture2D(1, 1);
             texture.LoadImage(Data.bytes);
             sprite.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
-            if (Data.grid.cellSize == 0.0f)
-            {
-                Data.grid.cellSize = texture.width * 0.001f;
-                Data.grid.position = new Vector2(-(texture.width * 0.005f), -(texture.height * 0.005f));
-            }
 
             nameInput.text = Data.data.name;
             LoadGridConfig(Data.grid);
@@ -153,6 +144,10 @@ namespace RPG
                     else MessageManager.QueueMessage(callback.GetValue(1).GetString());
                 }, Data.id, JsonUtility.ToJson(Data));
             }
+        }
+        public void CancelChanges()
+        {
+            SceneManager.LoadScene("Session");
         }
 
         private void LoadGridConfig(GridData data)

@@ -475,6 +475,11 @@ namespace RPG
                 return;
             }
             string name = createScenePanel.GetComponentInChildren<TMP_InputField>().text;
+            Texture2D texture = new Texture2D(1, 1);
+            texture.LoadImage(bytes);
+            var cellSize = texture.width * 0.0004f;
+            var rows = Mathf.RoundToInt(texture.height * 0.01f / cellSize);
+
             SocketManager.SceneSettings = new SceneSettings()
             {
                 path = scenePath,
@@ -483,7 +488,9 @@ namespace RPG
                 data = new SceneData() { name = name },
                 grid = new GridData()
                 {
-                    dimensions = new Vector2Int(10, 10)
+                    dimensions = new Vector2Int(25, rows),
+                    cellSize = cellSize,
+                    position = new Vector2(-(texture.width * 0.005f), -(texture.height * 0.005f))
                 },
                 fogOfWar = new FogOfWarData(),
                 walls = new List<WallData>(),
