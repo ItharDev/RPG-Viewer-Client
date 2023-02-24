@@ -1,5 +1,5 @@
-﻿using System.Linq;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Cysharp.Threading.Tasks;
 using FunkyCode;
 using Networking;
@@ -30,9 +30,9 @@ namespace RPG
             bool showDoor = false;
             if (!SessionManager.IsMaster)
             {
-                for (int i = 0; i < SessionManager.session.Tokens.Count; i++)
+                for (int i = 0; i < SessionManager.Session.Tokens.Count; i++)
                 {
-                    if (SessionManager.session.Tokens[i].Permission.permission == PermissionType.Owner && Vector2.Distance(GetComponentInChildren<Canvas>(true).transform.position, SessionManager.session.Tokens[i].transform.position) <= SessionManager.session.Settings.grid.cellSize) showDoor = true;
+                    if (SessionManager.Session.Tokens[i].Permission.permission == PermissionType.Owner && Vector2.Distance(GetComponentInChildren<Canvas>(true).transform.position, SessionManager.Session.Tokens[i].transform.position) <= SessionManager.Session.Settings.grid.cellSize) showDoor = true;
                 }
             }
             GetComponentInChildren<Canvas>(true).sortingOrder = (showDoor || SessionManager.IsMaster) ? 1 : 0;

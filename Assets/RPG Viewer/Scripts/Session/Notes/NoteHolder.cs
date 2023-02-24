@@ -155,7 +155,7 @@ namespace RPG
 
             ChangeView();
 
-            GetComponentInChildren<Canvas>(true).GetComponent<RectTransform>().localScale = new Vector3(SessionManager.session.Settings.grid.cellSize * 0.4f, SessionManager.session.Settings.grid.cellSize * 0.4f, 1.0f);
+            GetComponentInChildren<Canvas>(true).GetComponent<RectTransform>().localScale = new Vector3(SessionManager.Session.Settings.grid.cellSize * 0.4f, SessionManager.Session.Settings.grid.cellSize * 0.4f, 1.0f);
         }
         public void ShowNote(bool enabled)
         {

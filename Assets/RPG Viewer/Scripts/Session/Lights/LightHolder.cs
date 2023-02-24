@@ -68,7 +68,7 @@ namespace RPG
             manager = lightManager;
 
             transform.localPosition = new Vector3(data.position.x, data.position.y, -1);
-            lightSource.size = (data.radius / 5.0f) * SessionManager.session.Settings.grid.cellSize;
+            lightSource.size = (data.radius / 5.0f) * SessionManager.Session.Settings.grid.cellSize;
             lightSource.enabled = data.enabled;
 
             if (SessionManager.IsMaster) ShowLight(toolActive);

@@ -46,6 +46,8 @@ namespace RPG
         [SerializeField] private Image fogColor;
         [SerializeField] private Slider translucencySlider;
         [SerializeField] private TMP_InputField translucenyInput;
+        [SerializeField] private Slider visionSlider;
+        [SerializeField] private TMP_InputField visionInput;
         [SerializeField] private FlexibleColorPicker fogColorPicker;
 
         [Header("Lighting")]
@@ -118,6 +120,7 @@ namespace RPG
                 enabled = enableFow.isOn,
                 globalLighting = globalLighting.isOn,
                 translucency = translucencySlider.value * 0.01f,
+                nightVisionStrength = visionSlider.value * 0.01f,
                 color = fogColor.color,
             };
 
@@ -168,6 +171,7 @@ namespace RPG
             enableFow.isOn = data.enabled;
             globalLighting.isOn = data.globalLighting;
             translucencySlider.value = data.translucency * 100;
+            visionSlider.value = data.nightVisionStrength * 100;
             fogColor.color = new Color(data.color.r, data.color.g, data.color.b, 1.0f);
         }
         private void LoadWalls(List<WallData> walls)
@@ -324,6 +328,7 @@ namespace RPG
                 enabled = enableFow.isOn,
                 globalLighting = globalLighting.isOn,
                 translucency = translucencySlider.value * 0.01f,
+                nightVisionStrength = visionSlider.value * 0.01f,
                 color = fogColor.color,
             };
 
@@ -372,6 +377,15 @@ namespace RPG
         {
             if (float.Parse(translucenyInput.text) > 100.0f || float.Parse(translucenyInput.text) < 0.0f) ChangeTranslucencySlider();
             translucencySlider.value = float.Parse(translucenyInput.text);
+        }
+        public void ChangeVisionSlider()
+        {
+            visionInput.text = visionSlider.value.ToString();
+        }
+        public void ChangeVisionInput()
+        {
+            if (float.Parse(visionInput.text) > 100.0f || float.Parse(visionInput.text) < 0.0f) ChangeVisionSlider();
+            visionSlider.value = float.Parse(visionInput.text);
         }
 
         public void ChangeNightSlider()

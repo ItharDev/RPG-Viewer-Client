@@ -320,6 +320,8 @@ namespace RPG
                 token.LoadData(data, s);
                 Tokens.Add(token);
                 if (token.Permission.permission == PermissionType.Owner) myTokens.Add(token);
+
+                if (myTokens.Count == 1) SelectToken(SessionManager.IsMaster ? null : myTokens[0]);
             });
         }
         public void MoveToken(string id, MovementData data)
@@ -400,10 +402,10 @@ namespace RPG
         {
             for (int i = 0; i < Tokens.Count; i++)
             {
-                Tokens[i].Permission.permission = PermissionType.Owner;
+                Tokens[i].Selected = true;
                 if (Tokens[i] != token && token != null)
                 {
-                    Tokens[i].Permission.permission = PermissionType.None;
+                    Tokens[i].Selected = false;
                 }
 
                 Tokens[i].LoadLights();

@@ -70,6 +70,7 @@ namespace RPG
         private bool editInput;
         private List<Vector2> waypoints = new List<Vector2>();
         public Permission Permission;
+        public bool Selected;
 
         private List<Vector2> movePoints = new List<Vector2>();
         private int currentWaypoint = 0;
@@ -109,7 +110,7 @@ namespace RPG
 
                 if (Input.GetKeyDown(KeyCode.C) && Input.GetKey(KeyCode.LeftControl))
                 {
-                    SessionManager.session.CopyToken(this.Data);
+                    SessionManager.Session.CopyToken(this.Data);
                 }
 
                 if (Input.GetKeyDown(KeyCode.PageUp) || Input.GetKeyDown(KeyCode.PageDown))
@@ -451,13 +452,14 @@ namespace RPG
         {
             lightHandler.Init(Data.lightEffect, Data.lightColor, Data.lightIntensity, Data.flickerFrequency, Data.flickerAmount, Data.pulseInterval, Data.pulseAmount);
 
-            visionSource.enabled = Data.enabled && Data.hasVision && Data.type == TokenType.Character && Permission.permission != PermissionType.None;
+            visionSource.enabled = Data.enabled && Data.hasVision && Data.type == TokenType.Character && Permission.permission != PermissionType.None && Selected;
             lightSource.enabled = Data.enabled && Data.lightRadius > 0;
-            nightSource.enabled = Data.enabled && Data.nightVision && Permission.permission != PermissionType.None;
+            nightSource.enabled = Data.enabled && Data.nightVision && Permission.permission != PermissionType.None && Selected;
+            nightSource.color.a = SessionManager.Session.Settings.fogOfWar.nightVisionStrength;
             if (grid.CellSize > 0)
             {
                 lightSource.size = Data.lightRadius * 0.2f * grid.CellSize + (grid.CellSize * 0.5f);
-                nightSource.size = 40.0f * 0.2f * grid.CellSize + (grid.CellSize * 0.5f);
+                nightSource.size = 35.0f * 0.2f * grid.CellSize + (grid.CellSize * 0.5f);
                 visionSource.size = grid.CellSize * 40.5f;
             }
         }
@@ -465,9 +467,9 @@ namespace RPG
         {
             Data.enabled = enabled;
             image.color = new Color(1, 1, 1, enabled ? 1.0f : 0.5f);
-            visionSource.enabled = Data.enabled && Data.hasVision && Data.type == TokenType.Character && Permission.permission != PermissionType.None;
+            visionSource.enabled = Data.enabled && Data.hasVision && Data.type == TokenType.Character && Permission.permission != PermissionType.None && Selected;
             lightSource.enabled = Data.enabled && Data.lightRadius > 0;
-            nightSource.enabled = Data.enabled && Data.nightVision && Permission.permission != PermissionType.None;
+            nightSource.enabled = Data.enabled && Data.nightVision && Permission.permission != PermissionType.None && Selected;
         }
         public void SetElevation(string elevation)
         {
@@ -576,8 +578,8 @@ namespace RPG
             Selection.gameObject.SetActive(!Selection.gameObject.activeInHierarchy);
             if (SessionManager.IsMaster) panel.SetActive(Selection.gameObject.activeInHierarchy);
             rotateButton.SetActive(Selection.gameObject.activeInHierarchy);
-            if (Selection.gameObject.activeInHierarchy) SessionManager.session.SelectToken(this);
-            else if (SessionManager.IsMaster) SessionManager.session.SelectToken(null);
+            if (Selection.gameObject.activeInHierarchy) SessionManager.Session.SelectToken(this);
+            else if (SessionManager.IsMaster) SessionManager.Session.SelectToken(null);
 
             SetHealth(Data.health);
             SetElevation(Data.elevation);

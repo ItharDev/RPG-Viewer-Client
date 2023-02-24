@@ -19,7 +19,7 @@ namespace RPG
         public static List<string> Users = new List<string>();
         public static Sprite BackgroundSprite;
 
-        public static Session session;
+        public static Session Session;
 
         private void Awake()
         {
@@ -49,7 +49,7 @@ namespace RPG
                 await UniTask.SwitchToMainThread();
                 Scene = data.GetValue().ToString();
                 SocketManager.Socket.Emit("update-scene", Scene);
-                if (Synced || IsMaster) session.LoadScene(Scene);
+                if (Synced || IsMaster) Session.LoadScene(Scene);
             });
             SocketManager.Socket.On("change-state", async (data) =>
             {
@@ -61,84 +61,84 @@ namespace RPG
 
                 SocketManager.Socket.Emit("update-scene", Scene);
                 if (IsMaster && Scene == lastScene) return;
-                if (Synced && !string.IsNullOrEmpty(Scene)) session.LoadScene(Scene);
-                else session.UnloadScene();
+                if (Synced && !string.IsNullOrEmpty(Scene)) Session.LoadScene(Scene);
+                else Session.UnloadScene();
             });
             SocketManager.Socket.On("toggle-door", async (data) =>
             {
                 await UniTask.SwitchToMainThread();
-                if (session != null) session.ToggleDoor(data.GetValue().GetString(), data.GetValue(1).GetBoolean());
+                if (Session != null) Session.ToggleDoor(data.GetValue().GetString(), data.GetValue(1).GetBoolean());
             });
             SocketManager.Socket.On("modify-door", async (data) =>
             {
                 await UniTask.SwitchToMainThread();
-                if (session != null) session.ModifyWall(JsonUtility.FromJson<WallData>(data.GetValue().GetString()));
+                if (Session != null) Session.ModifyWall(JsonUtility.FromJson<WallData>(data.GetValue().GetString()));
             });
             SocketManager.Socket.On("create-light", async (data) =>
             {
                 await UniTask.SwitchToMainThread();
-                if (session != null) session.CreateLight(JsonUtility.FromJson<LightData>(data.GetValue().GetString()));
+                if (Session != null) Session.CreateLight(JsonUtility.FromJson<LightData>(data.GetValue().GetString()));
             }); SocketManager.Socket.On("modify-light", async (data) =>
             {
                 await UniTask.SwitchToMainThread();
-                if (session != null) session.ModifyLight(JsonUtility.FromJson<LightData>(data.GetValue().GetString()));
+                if (Session != null) Session.ModifyLight(JsonUtility.FromJson<LightData>(data.GetValue().GetString()));
             }); SocketManager.Socket.On("remove-light", async (data) =>
             {
                 await UniTask.SwitchToMainThread();
-                if (session != null) session.RemoveLight(data.GetValue().GetString());
+                if (Session != null) Session.RemoveLight(data.GetValue().GetString());
             });
             SocketManager.Socket.On("create-token", async (data) =>
             {
                 await UniTask.SwitchToMainThread();
                 var token = JsonUtility.FromJson<TokenData>(data.GetValue().ToString());
                 token.id = data.GetValue(1).GetString();
-                if (session != null) session.CreateToken(token);
+                if (Session != null) Session.CreateToken(token);
             });
             SocketManager.Socket.On("move-token", async (data) =>
             {
                 await UniTask.SwitchToMainThread();
                 MovementData movement = JsonUtility.FromJson<MovementData>(data.GetValue(1).GetString());
-                if (session != null) session.MoveToken(data.GetValue().GetString(), movement);
+                if (Session != null) Session.MoveToken(data.GetValue().GetString(), movement);
             });
             SocketManager.Socket.On("modify-token", async (data) =>
             {
                 await UniTask.SwitchToMainThread();
-                if (session != null) session.ModifyToken(data.GetValue().GetString(), JsonUtility.FromJson<TokenData>(data.GetValue(1).ToString()));
+                if (Session != null) Session.ModifyToken(data.GetValue().GetString(), JsonUtility.FromJson<TokenData>(data.GetValue(1).ToString()));
             });
             SocketManager.Socket.On("remove-token", async (data) =>
             {
                 await UniTask.SwitchToMainThread();
-                if (session != null) session.RemoveToken(data.GetValue().GetString());
+                if (Session != null) Session.RemoveToken(data.GetValue().GetString());
             });
             SocketManager.Socket.On("update-visibility", async (data) =>
             {
                 await UniTask.SwitchToMainThread();
-                if (session != null) session.UpdateVisibility(data.GetValue(0).GetString(), data.GetValue(1).GetBoolean());
+                if (Session != null) Session.UpdateVisibility(data.GetValue(0).GetString(), data.GetValue(1).GetBoolean());
             });
             SocketManager.Socket.On("update-conditions", async (data) =>
             {
                 await UniTask.SwitchToMainThread();
-                if (session != null) session.UpdateConditions(data.GetValue().GetString(), data.GetValue(1).GetInt32());
+                if (Session != null) Session.UpdateConditions(data.GetValue().GetString(), data.GetValue(1).GetInt32());
             });
             SocketManager.Socket.On("lock-token", async (data) =>
             {
                 await UniTask.SwitchToMainThread();
-                if (session != null) session.LockToken(data.GetValue().GetString(), data.GetValue(1).GetBoolean());
+                if (Session != null) Session.LockToken(data.GetValue().GetString(), data.GetValue(1).GetBoolean());
             });
             SocketManager.Socket.On("update-health", async (data) =>
             {
                 await UniTask.SwitchToMainThread();
-                if (session != null) session.UpdateHealth(data.GetValue().GetString(), data.GetValue(1).GetInt32());
+                if (Session != null) Session.UpdateHealth(data.GetValue().GetString(), data.GetValue(1).GetInt32());
             });
             SocketManager.Socket.On("update-elevation", async (data) =>
             {
                 await UniTask.SwitchToMainThread();
-                if (session != null) session.UpdateElevation(data.GetValue().GetString(), data.GetValue(1).GetString());
+                if (Session != null) Session.UpdateElevation(data.GetValue().GetString(), data.GetValue(1).GetString());
             });
             SocketManager.Socket.On("rotate-token", async (data) =>
             {
                 await UniTask.SwitchToMainThread();
-                if (session != null) session.RotateToken(data.GetValue().GetString(), (float)data.GetValue(1).GetDouble());
+                if (Session != null) Session.RotateToken(data.GetValue().GetString(), (float)data.GetValue(1).GetDouble());
             });
 
             SocketManager.Socket.On("create-note", async (data) =>
@@ -146,54 +146,54 @@ namespace RPG
                 await UniTask.SwitchToMainThread();
                 var note = JsonUtility.FromJson<NoteData>(data.GetValue().ToString());
                 note.id = data.GetValue(1).GetString();
-                if (session != null) session.CreateNote(note);
+                if (Session != null) Session.CreateNote(note);
             });
             SocketManager.Socket.On("modify-note-text", async (data) =>
             {
                 await UniTask.SwitchToMainThread();
                 var id = data.GetValue().GetString();
                 var text = data.GetValue(1).GetString();
-                if (session != null) session.ModifyNoteText(id, text);
+                if (Session != null) Session.ModifyNoteText(id, text);
             });
             SocketManager.Socket.On("modify-note-header", async (data) =>
             {
                 await UniTask.SwitchToMainThread();
                 var id = data.GetValue().GetString();
                 var text = data.GetValue(1).GetString();
-                if (session != null) session.ModifyNoteHeader(id, text);
+                if (Session != null) Session.ModifyNoteHeader(id, text);
             });
             SocketManager.Socket.On("modify-note-image", async (data) =>
             {
                 await UniTask.SwitchToMainThread();
                 var id = data.GetValue().GetString();
                 var image = data.GetValue(1).GetString();
-                if (session != null) session.ModifyNoteImage(id, image);
+                if (Session != null) Session.ModifyNoteImage(id, image);
             });
             SocketManager.Socket.On("set-note-state", async (data) =>
             {
                 await UniTask.SwitchToMainThread();
                 var id = data.GetValue().GetString();
                 var state = data.GetValue(1).GetBoolean();
-                if (session != null) session.SetNotePublic(id, state);
+                if (Session != null) Session.SetNotePublic(id, state);
             });
             SocketManager.Socket.On("move-note", async (data) =>
             {
                 await UniTask.SwitchToMainThread();
                 var id = data.GetValue().GetString();
                 var pos = JsonUtility.FromJson<Vector2>(data.GetValue(1).GetString());
-                if (session != null) session.MoveNote(id, pos);
+                if (Session != null) Session.MoveNote(id, pos);
             });
             SocketManager.Socket.On("remove-note", async (data) =>
             {
                 await UniTask.SwitchToMainThread();
                 var id = data.GetValue().GetString();
-                if (session != null) session.RemoveNote(id);
+                if (Session != null) Session.RemoveNote(id);
             });
             SocketManager.Socket.On("show-note", async (data) =>
             {
                 await UniTask.SwitchToMainThread();
                 var id = data.GetValue().GetString();
-                if (session != null) session.ShowNote(id);
+                if (Session != null) Session.ShowNote(id);
             });
 
             SocketManager.Socket.On("modify-journal-text", async (data) =>
@@ -201,7 +201,7 @@ namespace RPG
                 await UniTask.SwitchToMainThread();
                 var id = data.GetValue().GetString();
                 var text = data.GetValue(1).GetString();
-                if (session != null) session.ModifyJournalText(id, text);
+                if (Session != null) Session.ModifyJournalText(id, text);
             });
             SocketManager.Socket.On("modify-journal-header", async (data) =>
             {
@@ -209,14 +209,14 @@ namespace RPG
                 Debug.Log(data);
                 var id = data.GetValue().GetString();
                 var text = data.GetValue(1).GetString();
-                if (session != null) session.ModifyJournalHeader(id, text);
+                if (Session != null) Session.ModifyJournalHeader(id, text);
             });
             SocketManager.Socket.On("modify-journal-image", async (data) =>
             {
                 await UniTask.SwitchToMainThread();
                 var id = data.GetValue().GetString();
                 var image = data.GetValue(1).GetString();
-                if (session != null) session.ModifyJournalImage(id, image);
+                if (Session != null) Session.ModifyJournalImage(id, image);
             });
             SocketManager.Socket.On("set-collaborators", async (data) =>
             {
@@ -228,25 +228,25 @@ namespace RPG
                 {
                     collaborators.Add(JsonUtility.FromJson<Collaborator>(list[i].ToString()));
                 }
-                if (session != null) session.SetCollaborators(id, collaborators);
+                if (Session != null) Session.SetCollaborators(id, collaborators);
             });
             SocketManager.Socket.On("remove-journal", async (data) =>
             {
                 await UniTask.SwitchToMainThread();
                 var id = data.GetValue().GetString();
-                if (session != null) session.RemoveJournal(id);
+                if (Session != null) Session.RemoveJournal(id);
             });
             SocketManager.Socket.On("show-journal", async (data) =>
             {
                 await UniTask.SwitchToMainThread();
                 Debug.Log(data);
                 var dournalData = JsonUtility.FromJson<JournalData>(data.GetValue().GetString());
-                if (session != null) session.ShowJournal(dournalData);
+                if (Session != null) Session.ShowJournal(dournalData);
             });
         }
         private void Update()
         {
-            if (session == null) session = FindObjectOfType<Session>();
+            if (Session == null) Session = FindObjectOfType<Session>();
         }
 
         [System.Obsolete]
@@ -269,13 +269,13 @@ namespace RPG
                 Users = data.users;
                 MasterId = data.masterId;
 
-                if (session == null) session = FindObjectOfType<Session>();
+                if (Session == null) Session = FindObjectOfType<Session>();
                 if (!IsMaster && !Synced) return;
 
                 if (!string.IsNullOrEmpty(data.scene))
                 {
                     SocketManager.Socket.Emit("update-scene", Scene);
-                    session.LoadScene(data.scene);
+                    Session.LoadScene(data.scene);
                 }
             });
         }

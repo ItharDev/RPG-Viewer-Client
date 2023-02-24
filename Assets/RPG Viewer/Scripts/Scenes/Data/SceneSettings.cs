@@ -35,6 +35,7 @@ namespace RPG
         public bool globalLighting;
         public Color color;
         public float translucency;
+        public float nightVisionStrength;
     }
 
     [Serializable]

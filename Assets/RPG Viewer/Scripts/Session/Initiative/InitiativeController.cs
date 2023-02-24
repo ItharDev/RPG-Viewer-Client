@@ -45,7 +45,7 @@ namespace RPG
             for (int i = 0; i < list.Count; i++) CreateHolder(list[i]);
             for (int i = 0; i < holders.Count; i++) holders[i].SetIndex(holders[i].Data.index);
 
-            SessionManager.session.Loaders++;
+            SessionManager.Session.Loaders++;
         }
         public void UnloadHolders()
         {

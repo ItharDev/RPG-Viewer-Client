@@ -73,7 +73,7 @@ namespace RPG
 
         private void Update()
         {
-            if (!loaded && SessionManager.session != null)
+            if (!loaded && SessionManager.Session != null)
             {
                 loaded = true;
 
@@ -431,7 +431,7 @@ namespace RPG
                     scenes.Remove(scene);
                     Destroy(scene.gameObject);
 
-                    if (callback.GetValue(1).GetBoolean()) SessionManager.session.UnloadScene();
+                    if (callback.GetValue(1).GetBoolean()) SessionManager.Session.UnloadScene();
                 }
                 else
                 {
@@ -448,7 +448,7 @@ namespace RPG
                 if (callback.GetValue().GetBoolean())
                 {
                     HandleFolderSceneRemoved(path);
-                    if (callback.GetValue(1).GetBoolean()) SessionManager.session.UnloadScene();
+                    if (callback.GetValue(1).GetBoolean()) SessionManager.Session.UnloadScene();
                 }
                 else MessageManager.QueueMessage(callback.GetValue(1).GetString());
             }, path);
@@ -720,7 +720,7 @@ namespace RPG
                 if (callback.GetValue().GetBoolean())
                 {
                     HandleFolderJournalRemoved(path);
-                    if (callback.GetValue(1).GetBoolean()) SessionManager.session.UnloadScene();
+                    if (callback.GetValue(1).GetBoolean()) SessionManager.Session.UnloadScene();
                 }
                 else MessageManager.QueueMessage(callback.GetValue(1).GetString());
             }, path);

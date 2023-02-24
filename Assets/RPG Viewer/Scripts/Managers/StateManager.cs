@@ -65,7 +65,7 @@ namespace RPG
         {
             var isMaster = SessionManager.IsMaster;
 
-            if (hiddenButtons[0].activeInHierarchy && SessionManager.session.sprite.sprite == null)
+            if (hiddenButtons[0].activeInHierarchy && SessionManager.Session.sprite.sprite == null)
             {
                 for (int i = 0; i < hiddenButtons.Count; i++)
                 {
@@ -73,7 +73,7 @@ namespace RPG
                 }
             }
 
-            if (!hiddenButtons[0].activeInHierarchy && SessionManager.session.sprite.sprite != null)
+            if (!hiddenButtons[0].activeInHierarchy && SessionManager.Session.sprite.sprite != null)
             {
                 for (int i = 0; i < hiddenButtons.Count; i++)
                 {
