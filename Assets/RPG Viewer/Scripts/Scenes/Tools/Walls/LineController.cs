@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using MongoDB.Bson;
 using UnityEngine;
 using Vectrosity;
@@ -15,8 +14,8 @@ namespace RPG
         [SerializeField] private Color normalColor;
         [SerializeField] private Color multiColor;
 
-        private Color color;
-        private bool hidden;
+        public Color Color;
+        public bool Hidden;
 
         private VectorLine line;
         private new EdgeCollider2D collider2D;
@@ -28,7 +27,7 @@ namespace RPG
         private PointController hoverPoint;
 
         private Vector2 startPos = Vector2.zero;
-        private WallType type;
+        public WallType Type;
 
         public WallTools Tools;
 
@@ -119,30 +118,38 @@ namespace RPG
                 }
             }
 
-            if (Input.GetKeyDown(KeyCode.Backspace) && SelectedPoint != null)
+            if (SelectedPoint != null)
             {
-                RemovePoint(SelectedPoint);
-                SelectedPoint = null;
+                if (Input.GetKeyDown(KeyCode.Backspace))
+                {
+                    RemovePoint(SelectedPoint);
+                    SelectedPoint = null;
+                }
+                if (Input.GetKeyDown(KeyCode.Space))
+                {
+                    Tools.SplitWall(this, SelectedPoint);
+                    SelectedPoint = null;
+                }
             }
         }
 
         public void Init(WallType type, WallTools tools, Color color)
         {
-            this.type = type;
+            Type = type;
             Tools = tools;
-            this.color = color;
-            hidden = false;
+            this.Color = color;
+            Hidden = false;
 
             collider2D = GetComponent<EdgeCollider2D>();
             startPos = GetMousePosition();
         }
         public void Load(WallType type, bool hidden, WallTools tools, Color color)
         {
-            this.type = type;
+            Type = type;
             Tools = tools;
-            this.color = color;
+            this.Color = color;
             collider2D = GetComponent<EdgeCollider2D>();
-            this.hidden = hidden;
+            Hidden = hidden;
         }
         public void Hide(bool active)
         {
@@ -164,7 +171,7 @@ namespace RPG
         {
             PointController point = Instantiate(dotPrefab, pos, Quaternion.identity, transform);
 
-            point.Image.color = color;
+            point.Image.color = Color;
             point.Line = this;
 
             point.OnBeginDragEvent += BeginDrag;
@@ -208,9 +215,13 @@ namespace RPG
             {
                 wallId = ObjectId.GenerateNewId().ToString(),
                 points = pts,
-                model = type,
-                open = this.hidden
+                model = Type,
+                open = this.Hidden
             };
+        }
+        public void ResetLine()
+        {
+            line = null;
         }
 
         private void BeginDrag(PointController point)
@@ -254,7 +265,8 @@ namespace RPG
                 }
                 if (line == null)
                 {
-                    line = VectorLine.SetLine3D(color, list3D.ToArray());
+                    Debug.Log("Updating points: " + name);
+                    line = VectorLine.SetLine3D(Color, list3D.ToArray());
                     line.SetWidth(7.0f);
                     line.lineType = LineType.Continuous;
                     line.Draw3DAuto();

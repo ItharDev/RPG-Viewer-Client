@@ -46,6 +46,27 @@ namespace RPG
                 controller.SendTop(controller == line);
             }
         }
+        public void SplitWall(LineController line, PointController point)
+        {
+            var index = line.points.IndexOf(point);
+
+            if (index == line.points.Count - 1 || index == 0) return;
+
+            LineController controller = Instantiate(controllerPrefab, Vector3.zero, Quaternion.identity, controllerParent);
+            controller.Load(line.Type, line.Hidden, this, line.Color);
+            var firstRemove = line.points.Count - 1;
+
+            for (int i = index; i < line.points.Count; i++)
+            {
+                controller.AddPoint(line.points[i].transform.position);
+            }
+            for (int i = firstRemove; i > index; i--)
+            {
+                line.RemovePoint(line.points[i]);
+            }
+
+            controllers.Add(controller);
+        }
 
         public void EnableWalls(bool enabled)
         {

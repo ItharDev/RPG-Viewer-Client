@@ -15,6 +15,7 @@ namespace RPG
     {
         [Header("Data")]
         public TokenData Data;
+        [SerializeField] private float moveSpeed;
 
         [Header("UI")]
         public Image image;
@@ -75,6 +76,14 @@ namespace RPG
         private List<Vector2> movePoints = new List<Vector2>();
         private int currentWaypoint = 0;
 
+        public float MovementSpeed
+        {
+            get
+            {
+                return (grid.CellSize * 0.2f) * moveSpeed;
+            }
+        }
+
 
         private void OnValidate()
         {
@@ -116,7 +125,7 @@ namespace RPG
                 if (Input.GetKeyDown(KeyCode.PageUp) || Input.GetKeyDown(KeyCode.PageDown))
                 {
                     var elevation = elevationInput.text.TrimEnd('f', 't', ' ');
-                    int elevationValue = int.Parse(elevation);
+                    int elevationValue = elevation == "" ? 0 : int.Parse(elevation);
                     elevationValue += Input.GetKey(KeyCode.PageUp) ? 5 : -5;
                     string newElevation = $"{elevationValue} ft";
                     elevationInput.text = newElevation;
@@ -186,7 +195,11 @@ namespace RPG
         public void Move(MovementData data)
         {
             Data.position = data.points[data.points.Count - 1];
-            if (gameObject.activeInHierarchy) movePoints = data.points;
+            if (gameObject.activeInHierarchy)
+            {
+                currentWaypoint = 1;
+                movePoints = data.points;
+            }
             else transform.localPosition = new Vector3(Data.position.x, Data.position.y, 0);
         }
 
@@ -476,8 +489,12 @@ namespace RPG
             Data.elevation = elevation;
             elevationInput.text = elevation.ToString();
 
-            if (Data.elevation.Contains("0")) elevationPanel.SetActive(Selection.gameObject.activeInHierarchy);
-            else elevationPanel.SetActive(true);
+            if (Data.elevation.ToCharArray().Length >= 1)
+            {
+                if (Data.elevation.ToCharArray()[0].ToString() == "0") elevationPanel.SetActive(Selection.gameObject.activeInHierarchy);
+                else elevationPanel.SetActive(true);
+            }
+            else elevationPanel.SetActive(Selection.gameObject.activeInHierarchy);
         }
         public void SetLocked(bool locked)
         {
@@ -550,24 +567,13 @@ namespace RPG
                 currentWaypoint++;
                 if (currentWaypoint >= movePoints.Count)
                 {
-                    currentWaypoint = 0;
+                    currentWaypoint = 1;
                     movePoints.Clear();
                 }
             }
             if (movePoints.Count > 0)
             {
-                bool moveFast = true;
-                for (int i = 0; i < Data.permissions.Count; i++)
-                {
-                    if (Data.permissions[i].permission == PermissionType.Owner)
-                    {
-                        moveFast = false;
-                        break;
-                    }
-                }
-
-                if (!moveFast || currentWaypoint == 0) transform.position = Vector3.MoveTowards(transform.position, movePoints[currentWaypoint], Time.fixedDeltaTime * grid.CellSize * 4.0f);
-                else transform.position = Vector3.MoveTowards(transform.position, movePoints[currentWaypoint], Time.fixedDeltaTime * Vector2.Distance(movePoints[currentWaypoint], movePoints[currentWaypoint - 1]) * 4.0f);
+                transform.position = Vector3.MoveTowards(transform.position, movePoints[currentWaypoint], Time.fixedDeltaTime * MovementSpeed);
             }
         }
         #endregion

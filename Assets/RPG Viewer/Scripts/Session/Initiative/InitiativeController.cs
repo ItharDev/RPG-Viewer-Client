@@ -85,7 +85,7 @@ namespace RPG
                         {
                             index = holders.Count,
                             name = callback.GetValue(1).GetProperty("name").GetString(),
-                            roll = "",
+                            roll = "0",
                             visible = true
                         };
                         CreateHolder(data);
@@ -111,7 +111,7 @@ namespace RPG
             {
                 index = holders.Count,
                 name = "",
-                roll = "",
+                roll = "0",
                 visible = visible
             };
 

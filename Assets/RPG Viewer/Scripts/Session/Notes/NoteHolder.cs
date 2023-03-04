@@ -111,7 +111,7 @@ namespace RPG
             layoutElement.minHeight = Panel.GetComponent<RectTransform>().sizeDelta.y - 60.0f;
         }
 
-        public void LoadData(NoteData data, NoteManager noteManager, bool toolActive)
+        public void LoadData(NoteData data, NoteManager noteManager)
         {
             Data = data;
             manager = noteManager;
@@ -151,7 +151,7 @@ namespace RPG
 
             viewButton.GetComponentInChildren<TMP_Text>(true).text = "View image";
             viewImage.sprite = imageSprite;
-            ShowNote(toolActive);
+            ShowNote(true);
 
             ChangeView();
 

@@ -13,27 +13,9 @@ namespace RPG
 
         private List<NoteHolder> notes = new List<NoteHolder>();
         public StateManager StateManager;
-        private bool notesEnabled;
 
         private void Update()
         {
-            if (StateManager.ToolState == ToolState.Notes && !notesEnabled)
-            {
-                notesEnabled = true;
-                for (int i = 0; i < notes.Count; i++)
-                {
-                    notes[i].ShowNote(true);
-                }
-            }
-
-            if (StateManager.ToolState != ToolState.Notes && notesEnabled)
-            {
-                notesEnabled = false;
-                for (int i = 0; i < notes.Count; i++)
-                {
-                    notes[i].ShowNote(false);
-                }
-            }
 
             if (StateManager.ToolState == ToolState.Notes)
             {
@@ -76,7 +58,7 @@ namespace RPG
         public void AddNote(NoteData data)
         {
             var note = Instantiate(notePrefab, noteParent);
-            note.LoadData(data, this, StateManager.ToolState == ToolState.Notes);
+            note.LoadData(data, this);
             notes.Add(note);
         }
         public void ModifyText(string id, string newText)

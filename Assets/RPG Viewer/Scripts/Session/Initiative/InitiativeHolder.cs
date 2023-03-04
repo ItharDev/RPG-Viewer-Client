@@ -29,7 +29,7 @@ namespace RPG
             Data = _data;
 
             nameInput.text = _data.name;
-            valueInput.text = _data.roll;
+            valueInput.text = string.IsNullOrEmpty(_data.roll) ? "0" : _data.roll;
             visibilityImage.sprite = Data.visible ? visibleImage : hiddenImage;
 
             nameInput.placeholder.color = Data.visible ? new Color(visibleColor.r, visibleColor.g, visibleColor.b, 0.5f) : new Color(hiddenColor.r, hiddenColor.g, hiddenColor.b, 0.5f); nameInput.placeholder.color = Data.visible ? new Color(visibleColor.r, visibleColor.g, visibleColor.b, 0.5f) : new Color(hiddenColor.r, hiddenColor.g, hiddenColor.b, 0.5f);
@@ -59,7 +59,7 @@ namespace RPG
         public void ModifyData()
         {
             Data.name = nameInput.text;
-            Data.roll = valueInput.text;
+            Data.roll = string.IsNullOrEmpty(valueInput.text) ? "0" : valueInput.text;
             controller.UpdateHolder();
         }
 

@@ -1,8 +1,8 @@
 using System.Collections;
-using UnityEngine;
-using Networking;
-using UnityEngine.EventSystems;
 using Cysharp.Threading.Tasks;
+using Networking;
+using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace RPG
 {
@@ -14,12 +14,12 @@ namespace RPG
 
         private void Start()
         {
-           SocketManager.Socket.On("ping", async (data) =>
-            {
-                await UniTask.SwitchToMainThread();
-                Vector2 pos = JsonUtility.FromJson<Vector2>(data.GetValue().GetString());
-                HandlePing(pos, data.GetValue(1).GetBoolean());
-            });
+            SocketManager.Socket.On("ping", async (data) =>
+             {
+                 await UniTask.SwitchToMainThread();
+                 Vector2 pos = JsonUtility.FromJson<Vector2>(data.GetValue().GetString());
+                 HandlePing(pos, data.GetValue(1).GetBoolean());
+             });
         }
         private void Update()
         {
@@ -40,6 +40,7 @@ namespace RPG
         {
             if (strong) FindObjectOfType<Camera2D>().MoveToPosition(location);
             var ping = Instantiate(pingPrefab, location, Quaternion.identity);
+            ping.GetComponent<Canvas>().sortingLayerName = "Doors";
             await UniTask.Delay(10000);
             if (ping != null) Destroy(ping);
         }
