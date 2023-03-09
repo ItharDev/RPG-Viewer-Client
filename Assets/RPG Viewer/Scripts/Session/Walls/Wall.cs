@@ -35,7 +35,16 @@ namespace RPG
                     if (SessionManager.Session.Tokens[i].Permission.permission == PermissionType.Owner && Vector2.Distance(GetComponentInChildren<Canvas>(true).transform.position, SessionManager.Session.Tokens[i].transform.position) <= SessionManager.Session.Settings.grid.cellSize) showDoor = true;
                 }
             }
-            GetComponentInChildren<Canvas>(true).sortingOrder = (showDoor || SessionManager.IsMaster) ? 1 : 0;
+            if (showDoor || SessionManager.IsMaster)
+            {
+                GetComponentInChildren<Canvas>(true).sortingOrder = 1;
+                GetComponentInChildren<Canvas>(true).sortingLayerName = "Doors";
+            }
+            else
+            {
+                GetComponentInChildren<Canvas>(true).sortingOrder = 0;
+                GetComponentInChildren<Canvas>(true).sortingLayerName = "Default";
+            }
         }
 
         public void GenerateWall(WallData wall)
