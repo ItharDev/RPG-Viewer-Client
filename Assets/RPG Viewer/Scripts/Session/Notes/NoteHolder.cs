@@ -56,6 +56,25 @@ namespace RPG
         }
         private void Update()
         {
+            bool showNote = false;
+            if (!SessionManager.IsMaster)
+            {
+                for (int i = 0; i < SessionManager.Session.Tokens.Count; i++)
+                {
+                    if (SessionManager.Session.Tokens[i].Permission.permission == PermissionType.Owner && Vector2.Distance(GetComponentInChildren<Canvas>(true).transform.position, SessionManager.Session.Tokens[i].transform.position) <= SessionManager.Session.Settings.grid.cellSize) showNote = true;
+                }
+            }
+            if (showNote || SessionManager.IsMaster)
+            {
+                canvas.sortingOrder = 1;
+                canvas.sortingLayerName = "Doors";
+            }
+            else
+            {
+                canvas.sortingOrder = 0;
+                canvas.sortingLayerName = "Default";
+            }
+
             if (Input.GetKey(KeyCode.LeftControl))
             {
                 if (Data.owner != SocketManager.UserId && !Data.isPublic) return;
