@@ -67,7 +67,7 @@ namespace RPG
             if (showNote || SessionManager.IsMaster)
             {
                 canvas.sortingOrder = 1;
-                canvas.sortingLayerName = "Doors";
+                canvas.sortingLayerName = "Above Fog";
             }
             else
             {

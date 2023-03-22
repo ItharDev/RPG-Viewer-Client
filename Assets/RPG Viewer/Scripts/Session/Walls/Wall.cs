@@ -38,7 +38,7 @@ namespace RPG
             if (showDoor || SessionManager.IsMaster)
             {
                 GetComponentInChildren<Canvas>(true).sortingOrder = 1;
-                GetComponentInChildren<Canvas>(true).sortingLayerName = "Doors";
+                GetComponentInChildren<Canvas>(true).sortingLayerName = "Above Fog";
             }
             else
             {

@@ -659,7 +659,7 @@ RectTransform:
   m_GameObject: {fileID: 1531507109261874040}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.3, y: 0.3, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7102588846421532516}
@@ -698,7 +698,7 @@ Canvas:
   m_SortingBucketNormalizedSize: 0
   m_AdditionalShaderChannelsFlag: 25
   m_SortingLayerID: 1503421513
-  m_SortingOrder: 2
+  m_SortingOrder: 0
   m_TargetDisplay: 0
 --- !u!114 &7539027673716569608
 MonoBehaviour:
@@ -6522,6 +6522,9 @@ MonoBehaviour:
   blockingLayers:
     serializedVersion: 2
     m_Bits: 384
+  mountLayers:
+    serializedVersion: 2
+    m_Bits: 1
   conditionHolders:
   - {fileID: 4575894673617759599}
   - {fileID: 6874128499897313315}

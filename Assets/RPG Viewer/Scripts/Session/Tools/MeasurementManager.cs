@@ -97,7 +97,7 @@ namespace RPG
             }
         }
 
-        public void StartMeasurement(Vector2 startPosition, MeasurementType type)
+        public MeasurementType StartMeasurement(Vector2 startPosition, MeasurementType type)
         {
             camera2D.UsePan = false;
             wayPoints.Add(type == MeasurementType.Grid ? FindObjectOfType<SessionGrid>().SnapToGrid(startPosition, new Vector2(5, 5)) : startPosition);
@@ -105,10 +105,11 @@ namespace RPG
             this.type = type;
 
             infoPanel.SetActive(true);
+            return type;
         }
-        public void ToggleTools()
+        public void ChangeType(MeasurementType newType)
         {
-
+            type = newType;
         }
 
         private void Measure()

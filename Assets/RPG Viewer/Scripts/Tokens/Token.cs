@@ -53,6 +53,7 @@ namespace RPG
 
         [Header("Movement")]
         [SerializeField] private LayerMask blockingLayers;
+        [SerializeField] private LayerMask mountLayers;
 
         [Header("Conditions")]
         [SerializeField] private List<ConditionHolder> conditionHolders = new List<ConditionHolder>();
@@ -75,6 +76,7 @@ namespace RPG
 
         private List<Vector2> movePoints = new List<Vector2>();
         private int currentWaypoint = 0;
+        private MeasurementType currentType;
 
         public float MovementSpeed
         {
@@ -133,9 +135,23 @@ namespace RPG
                     UpdateElevation();
                 }
             }
-            if (dragObject != null && Input.GetMouseButtonDown(1))
+            if (dragObject != null)
             {
-                waypoints.Add(Camera.main.ScreenToWorldPoint(Input.mousePosition));
+                if (currentType == MeasurementType.Grid && Input.GetKeyDown(KeyCode.LeftAlt))
+                {
+                    FindObjectOfType<MeasurementManager>().ChangeType(MeasurementType.Precise);
+                    currentType = MeasurementType.Precise;
+                }
+                if (currentType == MeasurementType.Precise && Input.GetKeyUp(KeyCode.LeftAlt))
+                {
+                    FindObjectOfType<MeasurementManager>().ChangeType(MeasurementType.Grid);
+                    currentType = MeasurementType.Grid;
+                }
+                if (Input.GetMouseButtonDown(1))
+                {
+                    var point = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                    waypoints.Add(currentType == MeasurementType.Grid ? grid.SnapToGrid(point, Data.dimensions) : point);
+                }
             }
 
             if (Input.GetMouseButtonDown(0) && !RectTransformUtility.RectangleContainsScreenPoint(Selection.GetComponent<RectTransform>(), Camera.main.ScreenToWorldPoint(Input.mousePosition)) && !RectTransformUtility.RectangleContainsScreenPoint(rotateButton.GetComponent<RectTransform>(), Camera.main.ScreenToWorldPoint(Input.mousePosition)) && Selection.gameObject.activeInHierarchy)
@@ -163,25 +179,34 @@ namespace RPG
                         return;
                     }
 
-                    MoveToken(waypoints);
-                    for (int i = 0; i < mountedTokens.Count; i++)
+                    if (Data.type == TokenType.Mount)
                     {
-                        var token = mountedTokens[i].GetComponent<Token>();
-                        var wp = waypoints;
-
-                        if (token == null) continue;
-                        if (token.Data.type != TokenType.Mount && token.Data.type != TokenType.Item)
+                        var colliders = Physics2D.OverlapBoxAll(transform.localPosition, new Vector2(0.009f * canvas.GetComponent<RectTransform>().sizeDelta.x, 0.009f * canvas.GetComponent<RectTransform>().sizeDelta.y), 360, mountLayers);
+                        var tokens = new List<Token>();
+                        for (var i = 0; i < colliders.Length; i++)
                         {
-                            Vector2 offset = token.transform.localPosition - transform.localPosition;
-                            for (int j = 0; j < wp.Count; j++)
-                            {
-                                wp[j] += offset;
-                            }
-                            token.MoveToken(wp);
+                            if (colliders[i].GetComponent<Token>() != this && colliders[i].GetComponent<Token>() != null) tokens.Add(colliders[i].GetComponent<Token>());
                         }
+
+                        for (int i = 0; i < tokens.Count; i++)
+                        {
+                            var token = tokens[i].GetComponent<Token>();
+                            List<Vector2> wp = new List<Vector2>(waypoints);
+                            if (token == null) continue;
+                            if (token.Data.type == TokenType.Character)
+                            {
+                                Vector2 offset = token.transform.localPosition - transform.localPosition;
+                                for (int j = 0; j < wp.Count; j++)
+                                {
+                                    wp[j] += offset;
+                                }
+                                token.MoveToken(wp);
+                            }
+                        }
+                        tokens.Clear();
                     }
 
-                    mountedTokens.Clear();
+                    MoveToken(waypoints);
                     waypoints.Clear();
                 }
             }
@@ -239,18 +264,6 @@ namespace RPG
             if (Data.locked || (Permission.permission != PermissionType.Owner && !SessionManager.IsMaster)) return;
             ClosePanel();
 
-            if (Data.type == TokenType.Mount)
-            {
-                var colliders = Physics2D.OverlapBoxAll(transform.position, new Vector2(100 * transform.localScale.x, 100 * transform.localScale.y), 360);
-                var tokens = new List<Token>();
-                for (var i = 0; i < colliders.Length; i++)
-                {
-                    if (colliders[i].GetComponent<Token>() != this && colliders[i].GetComponent<Token>() != null) tokens.Add(colliders[i].GetComponent<Token>());
-                }
-
-                mountedTokens = tokens;
-            }
-
             if (Selection.gameObject.activeInHierarchy) ToggleSelection();
             PointerEventData pointerData = eventData as PointerEventData;
 
@@ -266,7 +279,7 @@ namespace RPG
             dragObject.image.color = new Color(1, 1, 1, 0.5f);
             waypoints.Add(transform.position);
 
-            FindObjectOfType<MeasurementManager>().StartMeasurement(Camera.main.ScreenToWorldPoint(Input.mousePosition), MeasurementType.Grid);
+            currentType = FindObjectOfType<MeasurementManager>().StartMeasurement(Camera.main.ScreenToWorldPoint(Input.mousePosition), Input.GetKey(KeyCode.LeftAlt) ? MeasurementType.Precise : MeasurementType.Grid);
         }
         public void OnDrag(BaseEventData eventData)
         {
@@ -284,31 +297,41 @@ namespace RPG
                 Vector2 pos = dragObject.transform.position;
                 if (!Input.GetKey(KeyCode.LeftAlt)) pos = grid.SnapToGrid(dragObject.transform.position, Data.dimensions);
                 Destroy(dragObject.gameObject);
-                if (!CheckMovement(true))
+                if (!CheckMovement(false))
                 {
                     waypoints.Clear();
                     return;
                 }
                 waypoints.Add(pos);
-                MoveToken(waypoints);
-                for (int i = 0; i < mountedTokens.Count; i++)
+
+
+                if (Data.type == TokenType.Mount)
                 {
-                    var token = mountedTokens[i].GetComponent<Token>();
-                    var wp = waypoints;
-
-                    if (token == null) continue;
-                    if (token.Data.type != TokenType.Mount && token.Data.type != TokenType.Item)
+                    var colliders = Physics2D.OverlapBoxAll(transform.localPosition, new Vector2(0.009f * canvas.GetComponent<RectTransform>().sizeDelta.x, 0.009f * canvas.GetComponent<RectTransform>().sizeDelta.y), 360);
+                    var tokens = new List<Token>();
+                    for (var i = 0; i < colliders.Length; i++)
                     {
-                        Vector2 offset = token.transform.localPosition - transform.localPosition;
-                        for (int j = 0; j < wp.Count; j++)
-                        {
-                            wp[j] += offset;
-                        }
-                        token.MoveToken(wp);
+                        if (colliders[i].GetComponent<Token>() != this && colliders[i].GetComponent<Token>() != null) tokens.Add(colliders[i].GetComponent<Token>());
                     }
-                }
 
-                mountedTokens.Clear();
+                    for (int i = 0; i < tokens.Count; i++)
+                    {
+                        var token = tokens[i].GetComponent<Token>();
+                        List<Vector2> wp = new List<Vector2>(waypoints);
+                        if (token == null) continue;
+                        if (token.Data.type == TokenType.Character)
+                        {
+                            Vector2 offset = token.transform.localPosition - transform.localPosition;
+                            for (int j = 0; j < wp.Count; j++)
+                            {
+                                wp[j] += offset;
+                            }
+                            token.MoveToken(wp);
+                        }
+                    }
+                    tokens.Clear();
+                }
+                MoveToken(waypoints);
                 waypoints.Clear();
             }
         }
@@ -395,7 +418,11 @@ namespace RPG
                 }
                 else Permission = perm;
             }
-
+            if (Permission.permission != PermissionType.Owner && !SessionManager.IsMaster)
+            {
+                canvas.GetComponent<GraphicRaycaster>().enabled = false;
+            }
+            else canvas.GetComponent<GraphicRaycaster>().enabled = true;
             transform.localPosition = new Vector3(data.position.x, data.position.y, 0);
 
             if (sprite != null)
@@ -419,7 +446,7 @@ namespace RPG
 
             lockedImage.sprite = Data.locked ? lockedSprite : unlockedSprite;
 
-            GetComponent<BoxCollider2D>().size = GetComponentInChildren<Canvas>(true).transform.localScale * 100.0f;
+            GetComponent<BoxCollider2D>().size = canvas.GetComponent<RectTransform>().sizeDelta;
 
             HandleSorting();
         }
@@ -428,38 +455,30 @@ namespace RPG
             switch (Data.type)
             {
                 case TokenType.Character:
-                    canvas.sortingOrder = 2;
+                    canvas.sortingLayerName = "Characters";
+                    if (Data.highlighted) canvas.sortingLayerName = "Highlighted Characters";
+                    if (conditionFlags.HasFlag(deadCondition.condition.flag)) canvas.sortingLayerName = "Dead Characters";
+                    if (Permission.permission == PermissionType.Owner) canvas.sortingLayerName = "Owned Characters";
                     break;
                 case TokenType.Mount:
-                    canvas.sortingOrder = 1;
+                    canvas.sortingLayerName = "Mounts";
+                    if (Data.highlighted) canvas.sortingLayerName = "Highlighted Mounts";
+                    if (conditionFlags.HasFlag(deadCondition.condition.flag)) canvas.sortingLayerName = "Dead Mounts";
+                    if (Permission.permission == PermissionType.Owner) canvas.sortingLayerName = "Owned Mounts";
+
                     break;
                 case TokenType.Item:
-                    canvas.sortingOrder = 0;
-                    break;
-            }
+                    canvas.sortingLayerName = "Items";
+                    if (Data.highlighted) canvas.sortingLayerName = "Highlighted Items";
+                    if (Permission.permission == PermissionType.Owner) canvas.sortingLayerName = "Owned Items";
 
-            switch (Permission.permission)
-            {
-                case PermissionType.None:
-                    canvas.sortingLayerName = "Tokens";
-                    if (Data.highlighted) canvas.sortingLayerName = "Highlighted";
-                    if (conditionFlags.HasFlag(deadCondition.condition.flag)) canvas.sortingLayerName = "Dead";
-                    break;
-                case PermissionType.Observer:
-                    canvas.sortingLayerName = "Tokens";
-                    if (Data.highlighted) canvas.sortingLayerName = "Highlighted";
-                    if (conditionFlags.HasFlag(deadCondition.condition.flag)) canvas.sortingLayerName = "Dead";
-                    break;
-                case PermissionType.Owner:
-                    canvas.sortingLayerName = "Owners";
-                    canvas.sortingOrder = 3;
                     break;
             }
         }
 
         public void Resize(float cellSize)
         {
-            canvas.transform.localScale = new Vector2(cellSize * (Data.dimensions.x / 5.0f), cellSize * (Data.dimensions.y / 5.0f));
+            canvas.GetComponent<RectTransform>().sizeDelta = new Vector2(100 * cellSize * (Data.dimensions.x / 5.0f), 100 * cellSize * (Data.dimensions.y / 5.0f));
         }
         public void LoadLights()
         {
@@ -562,7 +581,7 @@ namespace RPG
 
         private void MoveToPosition()
         {
-            if (Vector3.Distance(movePoints[currentWaypoint], transform.position) < 0.01f)
+            if (Vector2.Distance(movePoints[currentWaypoint], transform.position) < 0.01f)
             {
                 currentWaypoint++;
                 if (currentWaypoint >= movePoints.Count)
@@ -573,7 +592,7 @@ namespace RPG
             }
             if (movePoints.Count > 0)
             {
-                transform.position = Vector3.MoveTowards(transform.position, movePoints[currentWaypoint], Time.fixedDeltaTime * MovementSpeed);
+                transform.position = Vector2.MoveTowards(transform.position, movePoints[currentWaypoint], Time.fixedDeltaTime * MovementSpeed);
             }
         }
         #endregion

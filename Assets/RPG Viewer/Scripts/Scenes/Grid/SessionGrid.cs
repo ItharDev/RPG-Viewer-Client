@@ -119,7 +119,7 @@ namespace RPG
             foreach (var cell in Cells)
             {
                 Vector2 finalPoint = cell.position;
-                if (tokenSize.x % 10 == 0 || tokenSize.y % 10 == 0) finalPoint -= new Vector2(CellSize * 0.5f, CellSize * 0.5f);
+                if (tokenSize.x % 10 < 2.5f || tokenSize.y % 10 < 2.5f) finalPoint -= new Vector2(CellSize * 0.5f, CellSize * 0.5f);
                 float distance = Vector2.Distance(point, finalPoint);
 
                 if ((closest == 0) || distance < closest)

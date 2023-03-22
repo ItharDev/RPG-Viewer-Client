@@ -40,7 +40,7 @@ namespace RPG
         {
             if (strong) FindObjectOfType<Camera2D>().MoveToPosition(location);
             var ping = Instantiate(pingPrefab, location, Quaternion.identity);
-            ping.GetComponent<Canvas>().sortingLayerName = "Doors";
+            ping.GetComponent<Canvas>().sortingLayerName = "Above Fog";
             await UniTask.Delay(10000);
             if (ping != null) Destroy(ping);
         }
