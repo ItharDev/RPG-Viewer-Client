@@ -138,7 +138,7 @@ namespace RPG
         private IEnumerator StartPing()
         {
             yield return new WaitForSeconds(1.0f);
-            if (Input.GetMouseButton(0) && Vector2.Distance(pingStartPos, Input.mousePosition) < 5.0f) Ping(true);
+            if (Input.GetMouseButton(1) && Vector2.Distance(pingStartPos, Input.mousePosition) < 5.0f) Ping(true);
         }
 
         private void InitialisePointer(Vector2 pos)
