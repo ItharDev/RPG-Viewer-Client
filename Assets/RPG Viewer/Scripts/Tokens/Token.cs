@@ -104,14 +104,9 @@ namespace RPG
             }
             if (state == null) state = FindObjectOfType<StateManager>(true);
 
-            if (image.raycastTarget)
-            {
-                if (state.ToolState == ToolState.Notes || state.ToolState == ToolState.Light) image.raycastTarget = false;
-            }
-            else
-            {
-                if (state.ToolState != ToolState.Notes && state.ToolState != ToolState.Light) image.raycastTarget = true;
-            }
+            if (image.raycastTarget && state.ToolState != ToolState.Pan) image.raycastTarget = false;
+            else if (!image.raycastTarget && state.ToolState == ToolState.Pan) image.raycastTarget = true;
+
             if (Selection.gameObject.activeInHierarchy)
             {
                 if ((Input.GetKeyUp(KeyCode.Backspace) || Input.GetKeyUp(KeyCode.Delete)))

@@ -31,7 +31,7 @@ public class Settings : MonoBehaviour
         {
             if (fpsInput == null)
             {
-                fpsInput = GameObject.Find("Fps Input").GetComponent<TMP_InputField>();
+                fpsInput = GameObject.Find("FPS Input").GetComponent<TMP_InputField>();
                 fpsInput.text = PlayerPrefs.GetString("target-fps");
                 fpsInput.onDeselect.AddListener(UpdateFPS);
                 fpsInput.onEndEdit.AddListener(UpdateFPS);

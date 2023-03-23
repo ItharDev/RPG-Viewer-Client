@@ -7,6 +7,7 @@ using Networking;
 using SFB;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace RPG
 {
@@ -14,6 +15,9 @@ namespace RPG
     {
         [Header("Status")]
         [SerializeField] private TMP_Text statusText;
+        [SerializeField] private Image statusIcon;
+        [SerializeField] private Sprite connectedIcon;
+        [SerializeField] private Sprite disconnectedIcon;
 
         [Header("Address")]
         [SerializeField] private TMP_InputField ipInput;
@@ -54,7 +58,11 @@ namespace RPG
         }
         private void Update()
         {
-            if (SocketManager.Socket != null) statusText.text = SocketManager.Socket.Connected ? "Online" : "Offline";
+            if (SocketManager.Socket != null)
+            {
+                statusText.text = SocketManager.Socket.Connected ? "Online" : "Offline";
+                statusIcon.sprite = SocketManager.Socket.Connected ? connectedIcon : disconnectedIcon;
+            }
         }
 
 

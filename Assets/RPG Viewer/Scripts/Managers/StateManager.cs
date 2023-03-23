@@ -33,6 +33,9 @@ namespace RPG
 
         [Header("Ping")]
         [SerializeField] private GameObject pingSelection;
+        [SerializeField] private GameObject pingPanel;
+        [SerializeField] private GameObject regularSelection;
+        [SerializeField] private GameObject pointerSelection;
 
         [Header("Notes")]
         [SerializeField] private GameObject noteSelection;
@@ -52,6 +55,7 @@ namespace RPG
         public LightState LightState;
         public NoteState NoteState;
         public MeasurementType MeasureType;
+        public PingType PingType;
         public bool allowMeaure;
 
         [SerializeField] private List<GameObject> hiddenButtons = new List<GameObject>();
@@ -120,6 +124,7 @@ namespace RPG
             noteSelection.SetActive(false);
             notePanel.SetActive(false);
             lightPanel.SetActive(false);
+            pingPanel.SetActive(false);
         }
 
         public void UseMeasure()
@@ -135,6 +140,7 @@ namespace RPG
             noteSelection.SetActive(false);
             notePanel.SetActive(false);
             lightPanel.SetActive(false);
+            pingPanel.SetActive(false);
 
             if (!preciseSelection.activeInHierarchy && !gridSelection.activeInHierarchy) SelectPrecise();
         }
@@ -166,6 +172,7 @@ namespace RPG
             noteSelection.SetActive(false);
             notePanel.SetActive(false);
             lightPanel.SetActive(false);
+            pingPanel.SetActive(false);
 
             if (!playerSelection.activeInHierarchy && !visionSelection.activeInHierarchy && !hiddenSelection.activeInHierarchy) playerSelection.SetActive(true);
         }
@@ -210,6 +217,23 @@ namespace RPG
             noteSelection.SetActive(false);
             notePanel.SetActive(false);
             lightPanel.SetActive(false);
+            pingPanel.SetActive(true);
+
+            if (!regularSelection.activeInHierarchy && !pointerSelection.activeInHierarchy) SelectPing();
+        }
+        public void SelectPing()
+        {
+            pointerSelection.SetActive(false);
+            regularSelection.SetActive(true);
+
+            PingType = PingType.Ping;
+        }
+        public void SelectPointer()
+        {
+            pointerSelection.SetActive(true);
+            regularSelection.SetActive(false);
+
+            PingType = PingType.Pointer;
         }
 
         public void UseLight()
@@ -225,6 +249,7 @@ namespace RPG
             noteSelection.SetActive(false);
             notePanel.SetActive(false);
             lightPanel.SetActive(true);
+            pingPanel.SetActive(false);
 
             if (!createLightSelection.activeInHierarchy && !deleteLightSelection.activeInHierarchy) CreateLight();
         }
@@ -256,6 +281,7 @@ namespace RPG
             noteSelection.SetActive(true);
             notePanel.SetActive(true);
             lightPanel.SetActive(false);
+            pingPanel.SetActive(false);
 
             if (!createNoteSelection.activeInHierarchy && !deleteNoteSelection.activeInHierarchy) CreateNote();
         }
