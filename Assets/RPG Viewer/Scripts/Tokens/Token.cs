@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Cysharp.Threading.Tasks;
 using FunkyCode;
@@ -22,6 +23,7 @@ namespace RPG
         public Image Selection;
         [SerializeField] private TMP_Text label;
         [SerializeField] private Canvas canvas;
+        [SerializeField] private Canvas uiCanvas;
         [SerializeField] private GameObject panel;
         [SerializeField] private GameObject confirmPanel;
         [SerializeField] private GameObject rotateButton;
@@ -69,6 +71,8 @@ namespace RPG
         private StateManager state;
         private float angleoffset;
         private float initialRotation;
+        private List<Token> rotatedTokens = new List<Token>();
+        private Vector2 startPos;
         private bool editInput;
         private List<Vector2> waypoints = new List<Vector2>();
         public Permission Permission;
@@ -98,6 +102,10 @@ namespace RPG
         }
         private void Update()
         {
+            uiCanvas.sortingLayerName = canvas.sortingLayerName;
+            if (startPos != Vector2.zero) transform.eulerAngles = new Vector3(0, 0, 0);
+
+
             if (config != null)
             {
                 if (!config.gameObject.activeInHierarchy) Destroy(config.gameObject);
@@ -176,7 +184,7 @@ namespace RPG
 
                     if (Data.type == TokenType.Mount)
                     {
-                        var colliders = Physics2D.OverlapBoxAll(transform.localPosition, new Vector2(0.009f * canvas.GetComponent<RectTransform>().sizeDelta.x, 0.009f * canvas.GetComponent<RectTransform>().sizeDelta.y), 360, mountLayers);
+                        var colliders = Physics2D.OverlapBoxAll(transform.localPosition, new Vector2(0.009f * Data.dimensions.x >= Data.dimensions.y ? canvas.GetComponent<RectTransform>().sizeDelta.x : canvas.GetComponent<RectTransform>().sizeDelta.y, 0.009f * Data.dimensions.x >= Data.dimensions.y ? canvas.GetComponent<RectTransform>().sizeDelta.x : canvas.GetComponent<RectTransform>().sizeDelta.y), 360, mountLayers);
                         var tokens = new List<Token>();
                         for (var i = 0; i < colliders.Length; i++)
                         {
@@ -302,7 +310,7 @@ namespace RPG
 
                 if (Data.type == TokenType.Mount)
                 {
-                    var colliders = Physics2D.OverlapBoxAll(transform.localPosition, new Vector2(0.009f * canvas.GetComponent<RectTransform>().sizeDelta.x, 0.009f * canvas.GetComponent<RectTransform>().sizeDelta.y), 360);
+                    var colliders = Physics2D.OverlapBoxAll(transform.localPosition, new Vector2(0.009f * Data.dimensions.x >= Data.dimensions.y ? canvas.GetComponent<RectTransform>().sizeDelta.x : canvas.GetComponent<RectTransform>().sizeDelta.y, 0.009f * Data.dimensions.x >= Data.dimensions.y ? canvas.GetComponent<RectTransform>().sizeDelta.x : canvas.GetComponent<RectTransform>().sizeDelta.y), 360, mountLayers);
                     var tokens = new List<Token>();
                     for (var i = 0; i < colliders.Length; i++)
                     {
@@ -351,6 +359,24 @@ namespace RPG
             screenPos = Camera.main.WorldToScreenPoint(transform.position);
             Vector3 vec3 = Input.mousePosition - screenPos;
             angleoffset = (Mathf.Atan2(transform.right.y, transform.right.x) - Mathf.Atan2(vec3.y, vec3.x)) * Mathf.Rad2Deg;
+
+            var colliders = Physics2D.OverlapBoxAll(transform.localPosition, new Vector2(0.009f * (Data.dimensions.x >= Data.dimensions.y ? canvas.GetComponent<RectTransform>().sizeDelta.x : canvas.GetComponent<RectTransform>().sizeDelta.y), 0.009f * (Data.dimensions.x >= Data.dimensions.y ? canvas.GetComponent<RectTransform>().sizeDelta.x : canvas.GetComponent<RectTransform>().sizeDelta.y)), 360, mountLayers);
+            rotatedTokens = new List<Token>();
+            for (var i = 0; i < colliders.Length; i++)
+            {
+                if (colliders[i].GetComponent<Token>() != this && colliders[i].GetComponent<Token>() != null) rotatedTokens.Add(colliders[i].GetComponent<Token>());
+            }
+
+            for (int i = 0; i < rotatedTokens.Count; i++)
+            {
+                var token = rotatedTokens[i].GetComponent<Token>();
+                if (token == null) continue;
+                if (token.Data.type == TokenType.Character)
+                {
+                    token.InitialiseRotation();
+                    token.transform.parent = image.transform;
+                }
+            }
         }
         public void Rotate(BaseEventData eventData)
         {
@@ -360,6 +386,16 @@ namespace RPG
         }
         public async void EndRotate(BaseEventData eventData)
         {
+            for (int i = 0; i < rotatedTokens.Count; i++)
+            {
+                var token = rotatedTokens[i].GetComponent<Token>();
+                if (token == null) continue;
+                token.transform.parent = transform.parent;
+                token.MoveRotation();
+            }
+
+            rotatedTokens.Clear();
+
             await SocketManager.Socket.EmitAsync("rotate-token", (callback) =>
             {
                 if (!callback.GetValue().GetBoolean())
@@ -384,6 +420,20 @@ namespace RPG
                 await UniTask.SwitchToMainThread();
                 if (!callback.GetValue().GetBoolean()) MessageManager.QueueMessage(callback.GetValue(1).GetString());
             }, Data.id, JsonUtility.ToJson(movement));
+        }
+
+        public void InitialiseRotation()
+        {
+            startPos = transform.position;
+        }
+        public void MoveRotation()
+        {
+            var points = new List<Vector2>();
+            points.Add(startPos);
+            points.Add(transform.position);
+            startPos = Vector2.zero;
+
+            MoveToken(points);
         }
 
         #region Data
@@ -474,6 +524,14 @@ namespace RPG
         public void Resize(float cellSize)
         {
             canvas.GetComponent<RectTransform>().sizeDelta = new Vector2(100 * cellSize * (Data.dimensions.x / 5.0f), 100 * cellSize * (Data.dimensions.y / 5.0f));
+            if (Data.dimensions.x >= Data.dimensions.y)
+            {
+                uiCanvas.transform.localScale = new Vector3(cellSize * (Data.dimensions.y / 5.0f), cellSize * (Data.dimensions.y / 5.0f), 1.0f);
+            }
+            else
+            {
+                uiCanvas.transform.localScale = new Vector3(cellSize * (Data.dimensions.x / 5.0f), cellSize * (Data.dimensions.x / 5.0f), 1.0f);
+            }
         }
         public void LoadLights()
         {
@@ -552,6 +610,7 @@ namespace RPG
         public void UpdateRotation(float angle)
         {
             image.transform.eulerAngles = new Vector3(0, 0, angle);
+            Data.rotation = angle;
         }
 
         public async void ModifyToken(TokenData _data, byte[] _bytes, bool _imageChanged)
