@@ -537,7 +537,7 @@ namespace RPG
         {
             lightHandler.Init(Data.lightEffect, Data.lightColor, Data.lightIntensity, Data.flickerFrequency, Data.flickerAmount, Data.pulseInterval, Data.pulseAmount);
 
-            visionSource.enabled = Data.enabled && Data.hasVision && Data.type == TokenType.Character && Permission.permission != PermissionType.None && Selected;
+            visionSource.enabled = Data.enabled && Data.hasVision && Permission.permission != PermissionType.None && Selected;
             lightSource.enabled = Data.enabled && Data.lightRadius > 0;
             nightSource.enabled = Data.enabled && Data.nightVision && Permission.permission != PermissionType.None && Selected;
             nightSource.color.a = SessionManager.Session.Settings.fogOfWar.nightVisionStrength;
@@ -552,7 +552,7 @@ namespace RPG
         {
             Data.enabled = enabled;
             image.color = new Color(1, 1, 1, enabled ? 1.0f : 0.5f);
-            visionSource.enabled = Data.enabled && Data.hasVision && Data.type == TokenType.Character && Permission.permission != PermissionType.None && Selected;
+            visionSource.enabled = Data.enabled && Data.hasVision && Permission.permission != PermissionType.None && Selected;
             lightSource.enabled = Data.enabled && Data.lightRadius > 0;
             nightSource.enabled = Data.enabled && Data.nightVision && Permission.permission != PermissionType.None && Selected;
         }
