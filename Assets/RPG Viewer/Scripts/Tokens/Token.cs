@@ -184,7 +184,7 @@ namespace RPG
 
                     if (Data.type == TokenType.Mount)
                     {
-                        var colliders = Physics2D.OverlapBoxAll(transform.localPosition, new Vector2(0.009f * Data.dimensions.x >= Data.dimensions.y ? canvas.GetComponent<RectTransform>().sizeDelta.x : canvas.GetComponent<RectTransform>().sizeDelta.y, 0.009f * Data.dimensions.x >= Data.dimensions.y ? canvas.GetComponent<RectTransform>().sizeDelta.x : canvas.GetComponent<RectTransform>().sizeDelta.y), 360, mountLayers);
+                        var colliders = Physics2D.OverlapBoxAll(transform.localPosition, new Vector2(0.009f * (Data.dimensions.x >= Data.dimensions.y ? canvas.GetComponent<RectTransform>().sizeDelta.x : canvas.GetComponent<RectTransform>().sizeDelta.y), 0.009f * (Data.dimensions.x >= Data.dimensions.y ? canvas.GetComponent<RectTransform>().sizeDelta.x : canvas.GetComponent<RectTransform>().sizeDelta.y)), 360, mountLayers);
                         var tokens = new List<Token>();
                         for (var i = 0; i < colliders.Length; i++)
                         {
@@ -310,7 +310,7 @@ namespace RPG
 
                 if (Data.type == TokenType.Mount)
                 {
-                    var colliders = Physics2D.OverlapBoxAll(transform.localPosition, new Vector2(0.009f * Data.dimensions.x >= Data.dimensions.y ? canvas.GetComponent<RectTransform>().sizeDelta.x : canvas.GetComponent<RectTransform>().sizeDelta.y, 0.009f * Data.dimensions.x >= Data.dimensions.y ? canvas.GetComponent<RectTransform>().sizeDelta.x : canvas.GetComponent<RectTransform>().sizeDelta.y), 360, mountLayers);
+                    var colliders = Physics2D.OverlapBoxAll(transform.localPosition, new Vector2(0.009f * (Data.dimensions.x >= Data.dimensions.y ? canvas.GetComponent<RectTransform>().sizeDelta.x : canvas.GetComponent<RectTransform>().sizeDelta.y), 0.009f * (Data.dimensions.x >= Data.dimensions.y ? canvas.GetComponent<RectTransform>().sizeDelta.x : canvas.GetComponent<RectTransform>().sizeDelta.y)), 360, mountLayers);
                     var tokens = new List<Token>();
                     for (var i = 0; i < colliders.Length; i++)
                     {
@@ -662,6 +662,9 @@ namespace RPG
 
             SetHealth(Data.health);
             SetElevation(Data.elevation);
+
+            if (Selection.gameObject.activeInHierarchy) canvas.sortingLayerName = "Above Fog";
+            else HandleSorting();
         }
         public void OpenConfig()
         {

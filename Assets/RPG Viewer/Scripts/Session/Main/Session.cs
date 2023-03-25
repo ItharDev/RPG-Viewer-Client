@@ -167,7 +167,10 @@ namespace RPG
             if (background != null) background.gameObject.SetActive(true);
 
             Settings = null;
-            for (int i = 0; i < Tokens.Count; i++) Destroy(Tokens[i].gameObject);
+            for (int i = 0; i < Tokens.Count; i++)
+            {
+                if (Tokens[i] != null) Destroy(Tokens[i].gameObject);
+            }
             Tokens.Clear();
             myTokens.Clear();
             wallManager.UnloadWalls();
