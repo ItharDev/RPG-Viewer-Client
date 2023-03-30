@@ -300,13 +300,13 @@ namespace RPG
                 Vector2 pos = dragObject.transform.position;
                 if (!Input.GetKey(KeyCode.LeftAlt)) pos = grid.SnapToGrid(dragObject.transform.position, Data.dimensions);
                 Destroy(dragObject.gameObject);
+                
+                waypoints.Add(pos);
                 if (!CheckMovement(false))
                 {
                     waypoints.Clear();
                     return;
                 }
-                waypoints.Add(pos);
-
 
                 if (Data.type == TokenType.Mount)
                 {
@@ -359,6 +359,8 @@ namespace RPG
             screenPos = Camera.main.WorldToScreenPoint(transform.position);
             Vector3 vec3 = Input.mousePosition - screenPos;
             angleoffset = (Mathf.Atan2(transform.right.y, transform.right.x) - Mathf.Atan2(vec3.y, vec3.x)) * Mathf.Rad2Deg;
+
+            if (Data.type != TokenType.Mount) return;
 
             var colliders = Physics2D.OverlapBoxAll(transform.localPosition, new Vector2(0.009f * (Data.dimensions.x >= Data.dimensions.y ? canvas.GetComponent<RectTransform>().sizeDelta.x : canvas.GetComponent<RectTransform>().sizeDelta.y), 0.009f * (Data.dimensions.x >= Data.dimensions.y ? canvas.GetComponent<RectTransform>().sizeDelta.x : canvas.GetComponent<RectTransform>().sizeDelta.y)), 360, mountLayers);
             rotatedTokens = new List<Token>();
