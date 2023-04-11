@@ -156,6 +156,7 @@ namespace RPG
                         ChangeFog(FogState.Player);
                         if (SessionManager.IsMaster) FindObjectOfType<StateManager>(true).SelectHidden();
                         MessageManager.RemoveMessage("Loading scene");
+                        FindObjectOfType<ScenePanel>(false).LoadData();
                     });
                 }
                 else MessageManager.QueueMessage(callback.GetValue(1).GetString());
@@ -182,6 +183,7 @@ namespace RPG
             grid.UpdateColor(Color.black);
             grid.GenerateGrid(Vector2Int.zero, Vector2.zero, 0);
             FindObjectOfType<InitiativeController>(true).UnloadHolders();
+            FindObjectOfType<ScenePanel>(false).LoadData();
         }
         public void MoveCenter()
         {

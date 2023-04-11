@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using Cysharp.Threading.Tasks;
 using FunkyCode;
@@ -100,7 +99,7 @@ namespace RPG
 
             UpdateConditions((int)conditionFlags);
         }
-        private void Update()
+        private async void Update()
         {
             uiCanvas.sortingLayerName = canvas.sortingLayerName;
             if (startPos != Vector2.zero) transform.eulerAngles = new Vector3(0, 0, 0);
@@ -117,11 +116,6 @@ namespace RPG
 
             if (Selection.gameObject.activeInHierarchy)
             {
-                if ((Input.GetKeyUp(KeyCode.Backspace) || Input.GetKeyUp(KeyCode.Delete)))
-                {
-                    DeleteToken();
-                }
-
                 if (Input.GetKeyDown(KeyCode.C) && Input.GetKey(KeyCode.LeftControl))
                 {
                     SessionManager.Session.CopyToken(this.Data);
@@ -137,7 +131,114 @@ namespace RPG
 
                     UpdateElevation();
                 }
+
+                if ((Input.GetKeyUp(KeyCode.Backspace) || Input.GetKeyUp(KeyCode.Delete)))
+                {
+                    if (config != null)
+                    {
+                        if (config.gameObject.activeInHierarchy || editInput) return;
+                    }
+                    if (elevationInput.isFocused || healthInput.isFocused) return;
+                    DeleteToken();
+                }
+
+                if (Input.GetKeyDown(KeyCode.A))
+                {
+                    if (config != null)
+                    {
+                        if (config.gameObject.activeInHierarchy || editInput) return;
+                    }
+                    if (elevationInput.isFocused || healthInput.isFocused) return;
+
+                    var colliders = Physics2D.OverlapBoxAll(transform.localPosition, new Vector2(0.009f * (Data.dimensions.x >= Data.dimensions.y ? canvas.GetComponent<RectTransform>().sizeDelta.x : canvas.GetComponent<RectTransform>().sizeDelta.y), 0.009f * (Data.dimensions.x >= Data.dimensions.y ? canvas.GetComponent<RectTransform>().sizeDelta.x : canvas.GetComponent<RectTransform>().sizeDelta.y)), 360, mountLayers);
+                    rotatedTokens = new List<Token>();
+                    for (var i = 0; i < colliders.Length; i++)
+                    {
+                        if (colliders[i].GetComponent<Token>() != this && colliders[i].GetComponent<Token>() != null) rotatedTokens.Add(colliders[i].GetComponent<Token>());
+                    }
+
+                    for (int i = 0; i < rotatedTokens.Count; i++)
+                    {
+                        var token = rotatedTokens[i].GetComponent<Token>();
+                        if (token == null) continue;
+                        if (token.Data.type == TokenType.Character)
+                        {
+                            token.InitialiseRotation();
+                            token.transform.parent = image.transform;
+                        }
+                    }
+
+                    UpdateRotation(Data.rotation + 45.0f);
+
+                    for (int i = 0; i < rotatedTokens.Count; i++)
+                    {
+                        var token = rotatedTokens[i].GetComponent<Token>();
+                        if (token == null) continue;
+                        token.transform.parent = transform.parent;
+                        token.MoveRotation();
+                    }
+
+                    rotatedTokens.Clear();
+
+                    await SocketManager.Socket.EmitAsync("rotate-token", (callback) =>
+                    {
+                        if (!callback.GetValue().GetBoolean())
+                        {
+                            MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                            UpdateRotation(initialRotation);
+                        }
+                    }, Data.id, image.transform.eulerAngles.z);
+                }
+
+                if (Input.GetKeyDown(KeyCode.D))
+                {
+                    if (config != null)
+                    {
+                        if (config.gameObject.activeInHierarchy || editInput) return;
+                    }
+                    if (elevationInput.isFocused || healthInput.isFocused) return;
+
+                    var colliders = Physics2D.OverlapBoxAll(transform.localPosition, new Vector2(0.009f * (Data.dimensions.x >= Data.dimensions.y ? canvas.GetComponent<RectTransform>().sizeDelta.x : canvas.GetComponent<RectTransform>().sizeDelta.y), 0.009f * (Data.dimensions.x >= Data.dimensions.y ? canvas.GetComponent<RectTransform>().sizeDelta.x : canvas.GetComponent<RectTransform>().sizeDelta.y)), 360, mountLayers);
+                    rotatedTokens = new List<Token>();
+                    for (var i = 0; i < colliders.Length; i++)
+                    {
+                        if (colliders[i].GetComponent<Token>() != this && colliders[i].GetComponent<Token>() != null) rotatedTokens.Add(colliders[i].GetComponent<Token>());
+                    }
+
+                    for (int i = 0; i < rotatedTokens.Count; i++)
+                    {
+                        var token = rotatedTokens[i].GetComponent<Token>();
+                        if (token == null) continue;
+                        if (token.Data.type == TokenType.Character)
+                        {
+                            token.InitialiseRotation();
+                            token.transform.parent = image.transform;
+                        }
+                    }
+
+                    UpdateRotation(Data.rotation - 45.0f);
+
+                    for (int i = 0; i < rotatedTokens.Count; i++)
+                    {
+                        var token = rotatedTokens[i].GetComponent<Token>();
+                        if (token == null) continue;
+                        token.transform.parent = transform.parent;
+                        token.MoveRotation();
+                    }
+
+                    rotatedTokens.Clear();
+
+                    await SocketManager.Socket.EmitAsync("rotate-token", (callback) =>
+                    {
+                        if (!callback.GetValue().GetBoolean())
+                        {
+                            MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                            UpdateRotation(initialRotation);
+                        }
+                    }, Data.id, image.transform.eulerAngles.z);
+                }
             }
+
             if (dragObject != null)
             {
                 if (currentType == MeasurementType.Grid && Input.GetKeyDown(KeyCode.LeftAlt))
@@ -300,7 +401,7 @@ namespace RPG
                 Vector2 pos = dragObject.transform.position;
                 if (!Input.GetKey(KeyCode.LeftAlt)) pos = grid.SnapToGrid(dragObject.transform.position, Data.dimensions);
                 Destroy(dragObject.gameObject);
-                
+
                 waypoints.Add(pos);
                 if (!CheckMovement(false))
                 {
@@ -727,12 +828,6 @@ namespace RPG
         }
         public void DeleteToken()
         {
-            if (config != null)
-            {
-                if (config.gameObject.activeInHierarchy || editInput) return;
-            }
-            if (elevationInput.isFocused || healthInput.isFocused) return;
-
             bool askConfirmation = false;
             for (int i = 0; i < Data.permissions.Count; i++)
             {

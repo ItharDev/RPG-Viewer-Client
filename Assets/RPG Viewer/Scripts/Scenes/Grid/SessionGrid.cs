@@ -78,7 +78,7 @@ namespace RPG
             CellSize = cellSize;
 
             var scene = FindObjectOfType<ScenePanel>();
-            if (scene == null) return;
+            if (scene.Data == null) return;
             scene.Data.grid.position = position;
             scene.Data.grid.cellSize = cellSize;
         }

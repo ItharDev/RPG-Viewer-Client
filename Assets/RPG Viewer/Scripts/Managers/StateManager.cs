@@ -16,6 +16,18 @@ namespace RPG
         [SerializeField] private GameObject preciseSelection;
         [SerializeField] private GameObject gridSelection;
 
+        [Header("Ping")]
+        [SerializeField] private GameObject pingSelection;
+        [SerializeField] private GameObject pingPanel;
+        [SerializeField] private GameObject regularSelection;
+        [SerializeField] private GameObject pointerSelection;
+
+        [Header("Notes")]
+        [SerializeField] private GameObject noteSelection;
+        [SerializeField] private GameObject notePanel;
+        [SerializeField] private GameObject createNoteSelection;
+        [SerializeField] private GameObject deleteNoteSelection;
+
         [Header("Fog")]
         [SerializeField] private GameObject fogSelection;
         [SerializeField] private GameObject fogPanel;
@@ -30,18 +42,6 @@ namespace RPG
         [SerializeField] private GameObject lightButton;
         [SerializeField] private GameObject createLightSelection;
         [SerializeField] private GameObject deleteLightSelection;
-
-        [Header("Ping")]
-        [SerializeField] private GameObject pingSelection;
-        [SerializeField] private GameObject pingPanel;
-        [SerializeField] private GameObject regularSelection;
-        [SerializeField] private GameObject pointerSelection;
-
-        [Header("Notes")]
-        [SerializeField] private GameObject noteSelection;
-        [SerializeField] private GameObject notePanel;
-        [SerializeField] private GameObject createNoteSelection;
-        [SerializeField] private GameObject deleteNoteSelection;
 
         [Header("Sync")]
         [SerializeField] private GameObject stateButton;
@@ -59,6 +59,11 @@ namespace RPG
         public bool allowMeaure;
 
         [SerializeField] private List<GameObject> hiddenButtons = new List<GameObject>();
+        [SerializeField] private GameObject gmTools;
+        [SerializeField] private Vector2 gmToolsSize;
+
+        private bool gmToolsOpen = true;
+        private bool loaded;
 
         private void Start()
         {
@@ -67,6 +72,14 @@ namespace RPG
         }
         private void Update()
         {
+            if (!loaded && SessionManager.Session != null)
+            {
+                loaded = true;
+                if (!SessionManager.IsMaster) gmTools.gameObject.SetActive(false);
+
+                ToggleGM();
+            }
+
             var isMaster = SessionManager.IsMaster;
 
             if (hiddenButtons[0].activeInHierarchy && SessionManager.Session.sprite.sprite == null)
@@ -102,6 +115,20 @@ namespace RPG
             stateSprite.sprite = SessionManager.Synced ? openState : closeState;
         }
 
+        public void ToggleGM()
+        {
+            if (gmToolsOpen)
+            {
+                gmToolsOpen = false;
+                LeanTween.size(gmTools.GetComponent<RectTransform>(), new Vector2(gmToolsSize.x, 30), 0.1f);
+            }
+            else
+            {
+                gmToolsOpen = true;
+                LeanTween.size(gmTools.GetComponent<RectTransform>(), new Vector2(gmToolsSize.x, gmToolsSize.y), 0.1f);
+            }
+        }
+
         public void BlockMeasure()
         {
             allowMeaure = false;
@@ -117,13 +144,9 @@ namespace RPG
             measurePanel.SetActive(false);
             measureSelection.SetActive(false);
             panSelection.SetActive(true);
-            fogSelection.SetActive(false);
             pingSelection.SetActive(false);
-            lightSelection.SetActive(false);
-            fogPanel.SetActive(false);
             noteSelection.SetActive(false);
             notePanel.SetActive(false);
-            lightPanel.SetActive(false);
             pingPanel.SetActive(false);
         }
 
@@ -133,13 +156,9 @@ namespace RPG
             measurePanel.SetActive(true);
             panSelection.SetActive(false);
             measureSelection.SetActive(true);
-            fogSelection.SetActive(false);
             pingSelection.SetActive(false);
-            fogPanel.SetActive(false);
-            lightSelection.SetActive(false);
             noteSelection.SetActive(false);
             notePanel.SetActive(false);
-            lightPanel.SetActive(false);
             pingPanel.SetActive(false);
 
             if (!preciseSelection.activeInHierarchy && !gridSelection.activeInHierarchy) SelectPrecise();
@@ -162,17 +181,10 @@ namespace RPG
         public void UseFog()
         {
             ToolState = ToolState.Pan;
-            measurePanel.SetActive(false);
-            measureSelection.SetActive(false);
-            panSelection.SetActive(false);
             fogSelection.SetActive(true);
-            pingSelection.SetActive(false);
             lightSelection.SetActive(false);
             fogPanel.SetActive(true);
-            noteSelection.SetActive(false);
-            notePanel.SetActive(false);
             lightPanel.SetActive(false);
-            pingPanel.SetActive(false);
 
             if (!playerSelection.activeInHierarchy && !visionSelection.activeInHierarchy && !hiddenSelection.activeInHierarchy) playerSelection.SetActive(true);
         }
@@ -210,13 +222,9 @@ namespace RPG
             measurePanel.SetActive(false);
             measureSelection.SetActive(false);
             panSelection.SetActive(false);
-            fogSelection.SetActive(false);
-            fogPanel.SetActive(false);
-            lightSelection.SetActive(false);
             pingSelection.SetActive(true);
             noteSelection.SetActive(false);
             notePanel.SetActive(false);
-            lightPanel.SetActive(false);
             pingPanel.SetActive(true);
 
             if (!regularSelection.activeInHierarchy && !pointerSelection.activeInHierarchy) SelectPing();
@@ -239,17 +247,10 @@ namespace RPG
         public void UseLight()
         {
             ToolState = ToolState.Light;
-            measurePanel.SetActive(false);
-            measureSelection.SetActive(false);
-            panSelection.SetActive(false);
             fogSelection.SetActive(false);
             fogPanel.SetActive(false);
-            pingSelection.SetActive(false);
             lightSelection.SetActive(true);
-            noteSelection.SetActive(false);
-            notePanel.SetActive(false);
             lightPanel.SetActive(true);
-            pingPanel.SetActive(false);
 
             if (!createLightSelection.activeInHierarchy && !deleteLightSelection.activeInHierarchy) CreateLight();
         }
@@ -274,13 +275,9 @@ namespace RPG
             measurePanel.SetActive(false);
             measureSelection.SetActive(false);
             panSelection.SetActive(false);
-            fogSelection.SetActive(false);
-            fogPanel.SetActive(false);
             pingSelection.SetActive(false);
-            lightSelection.SetActive(false);
             noteSelection.SetActive(true);
             notePanel.SetActive(true);
-            lightPanel.SetActive(false);
             pingPanel.SetActive(false);
 
             if (!createNoteSelection.activeInHierarchy && !deleteNoteSelection.activeInHierarchy) CreateNote();

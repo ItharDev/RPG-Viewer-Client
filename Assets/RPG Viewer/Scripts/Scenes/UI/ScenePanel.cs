@@ -14,7 +14,7 @@ namespace RPG
         public SceneSettings Data = default;
 
         [SerializeField] private SpriteRenderer sprite;
-        [SerializeField] private TMP_InputField nameInput;
+        [SerializeField] private StateManager stateManager;
 
         [Header("Grid")]
         [SerializeField] private GameObject grid;
@@ -56,21 +56,12 @@ namespace RPG
         [SerializeField] private Slider nightSlider;
         [SerializeField] private TMP_InputField nightInput;
 
-
-        private void Start()
-        {
-            Data = SocketManager.SceneSettings;
-            LoadData();
-        }
-
         #region Data
         public void LoadData()
         {
-            Texture2D texture = new Texture2D(1, 1);
-            texture.LoadImage(Data.bytes);
-            sprite.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
+            Data = SessionManager.Session.Settings;
+            if (Data == null) return;
 
-            nameInput.text = Data.data.name;
             LoadGridConfig(Data.grid);
             LoadFowConfig(Data.fogOfWar);
             LoadWalls(Data.walls);
@@ -83,16 +74,14 @@ namespace RPG
                 Data.data.nightStrength = 0.0f;
             }
             LoadNight(Data.data.nightStrength);
-
-            grid.SetActive(false);
         }
         public async void SaveData()
         {
-            MessageManager.QueueMessage("Uploading scene. This may take a while");
+            MessageManager.QueueMessage("Uploading changes. This may take a while");
 
             SceneData data = new SceneData()
             {
-                name = nameInput.text,
+                name = Data.data.name,
                 image = Data.data.image,
                 nightStrength = nightSlider.value
             };
@@ -150,7 +139,7 @@ namespace RPG
         }
         public void CancelChanges()
         {
-            SceneManager.LoadScene("Session");
+            // TODO
         }
 
         private void LoadGridConfig(GridData data)
@@ -250,7 +239,7 @@ namespace RPG
         }
         public void ShowGrid()
         {
-            grid.SetActive(!grid.activeInHierarchy);
+            grid.transform.GetChild(0).gameObject.SetActive(!grid.transform.GetChild(0).gameObject.activeInHierarchy);
         }
         public void ToggleFow()
         {
