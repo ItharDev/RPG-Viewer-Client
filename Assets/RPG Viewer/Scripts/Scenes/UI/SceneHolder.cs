@@ -2,7 +2,6 @@
 using Networking;
 using TMPro;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 namespace RPG
@@ -10,6 +9,7 @@ namespace RPG
     public class SceneHolder : MonoBehaviour
     {
         [SerializeField] private Image image;
+        [SerializeField] private TMP_InputField input;
         [SerializeField] private TMP_Text text;
 
         [SerializeField] private GameObject panel;
@@ -42,6 +42,8 @@ namespace RPG
             path = _path;
             Data.path = _path;
             text.text = _data.data.name;
+            input.text = text.text;
+            input.gameObject.SetActive(false);
             masterPanel = _masterPanel;
 
             Texture2D texture = new Texture2D(1, 1);
@@ -55,15 +57,23 @@ namespace RPG
             path = newPath;
         }
 
-        public async void ModifyScene()
+        public void ActivateRename()
         {
-            await SocketManager.Socket.EmitAsync("set-scene", async (callback) =>
+            text.gameObject.SetActive(false);
+            input.gameObject.SetActive(true);
+            input.ActivateInputField();
+        }
+        public async void RenameScene()
+        {
+            await SocketManager.Socket.EmitAsync("rename-scene", async (callback) =>
             {
                 await UniTask.SwitchToMainThread();
-                if (!callback.GetValue().GetBoolean()) MessageManager.QueueMessage(callback.GetValue(1).GetString());
-            }, "");
-            SocketManager.SceneSettings = Data;
-            SceneManager.LoadScene("Scene");
+                if (callback.GetValue().GetBoolean()) text.text = input.text;
+                else MessageManager.QueueMessage(callback.GetValue(1).GetString());
+
+                text.gameObject.SetActive(true);
+                input.gameObject.SetActive(false);
+            }, Id, input.text);
         }
         public void DeleteScene()
         {

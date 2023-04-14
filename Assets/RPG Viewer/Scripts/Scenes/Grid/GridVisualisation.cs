@@ -29,6 +29,7 @@ namespace RPG
         {
             if (Input.GetButton("Horizontal") || Input.GetButton("Vertical"))
             {
+                if (!Input.GetKey(KeyCode.LeftShift) && !Input.GetKey(KeyCode.LeftAlt)) return;
                 if (corners.Count != 4) return;
 
                 Vector2 dist = new(Input.GetAxis("Horizontal") * 0.01f, Input.GetAxis("Vertical") * 0.01f);

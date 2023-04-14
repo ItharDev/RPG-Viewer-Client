@@ -82,10 +82,26 @@ namespace RPG
             {
                 await UniTask.SwitchToMainThread();
                 if (Session != null) Session.ModifyLight(JsonUtility.FromJson<LightData>(data.GetValue().GetString()));
-            }); SocketManager.Socket.On("remove-light", async (data) =>
+            });
+            SocketManager.Socket.On("remove-light", async (data) =>
             {
                 await UniTask.SwitchToMainThread();
                 if (Session != null) Session.RemoveLight(data.GetValue().GetString());
+            });
+            SocketManager.Socket.On("create-preset", async (data) =>
+            {
+                await UniTask.SwitchToMainThread();
+                if (Session != null) LightingPresets.AddPreset(data.GetValue().GetString(), JsonUtility.FromJson<LightPreset>(data.GetValue(1).GetString()));
+            });
+            SocketManager.Socket.On("modify-preset", async (data) =>
+            {
+                await UniTask.SwitchToMainThread();
+                if (Session != null) LightingPresets.ModifyPreset(data.GetValue().GetString(), JsonUtility.FromJson<LightPreset>(data.GetValue(1).GetString()));
+            });
+            SocketManager.Socket.On("remove-preset", async (data) =>
+            {
+                await UniTask.SwitchToMainThread();
+                if (Session != null) LightingPresets.RemovePreset(data.GetValue().GetString());
             });
             SocketManager.Socket.On("create-token", async (data) =>
             {
@@ -256,6 +272,11 @@ namespace RPG
             {
                 await UniTask.SwitchToMainThread();
 
+                for (int i = 0; i < data.lightingPresets.Count; i++)
+                {
+                    LoadPreset(data.lightingPresets[i]);
+                }
+
                 Texture2D texture = new Texture2D(1, 1);
                 texture.LoadImage(bytes);
                 BackgroundSprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
@@ -279,6 +300,20 @@ namespace RPG
                 }
             });
         }
+
+        private static async void LoadPreset(string id)
+        {
+            await SocketManager.Socket.EmitAsync("load-preset", async (callback) =>
+            {
+                await UniTask.SwitchToMainThread();
+                if (callback.GetValue().GetBoolean())
+                {
+                    var data = JsonUtility.FromJson<LightPreset>(callback.GetValue(1).ToString());
+                    LightingPresets.AddPreset(id, data);
+                }
+                else MessageManager.QueueMessage(callback.GetValue(1).GetString());
+            }, id);
+        }
     }
 
     [System.Serializable]
@@ -291,5 +326,6 @@ namespace RPG
         public bool synced;
         public string scene;
         public string background;
+        public List<string> lightingPresets;
     }
 }

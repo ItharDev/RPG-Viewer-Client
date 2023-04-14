@@ -1,6 +1,9 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
+using Networking;
 using SFB;
 using TMPro;
 using UnityEngine;
@@ -40,6 +43,7 @@ namespace RPG
         [SerializeField] private TMP_InputField flickerAmountInput;
         [SerializeField] private TMP_InputField pulseIntervalInput;
         [SerializeField] private TMP_InputField pulseAmountInput;
+        [SerializeField] private TMP_InputField presetInput;
         [SerializeField] private TMP_Dropdown effectDropdown;
         [SerializeField] private Image lightColor;
         [SerializeField] private FlexibleColorPicker colorPicker;
@@ -54,6 +58,8 @@ namespace RPG
         private TokenData data;
         private string folder;
         public ConditionFlag ConditionFlags;
+
+        private LightPreset selectedPreset;
 
         private void Start()
         {
@@ -129,14 +135,15 @@ namespace RPG
                     highlighted = highlightToggle.isOn,
                     lightRadius = int.Parse(radiusInput.text),
                     lightIntensity = int.Parse(intensityInput.text) * 0.01f,
-                    lightEffect = (LightEffect)effectDropdown.value,
+                    lightEffect = effectDropdown.value,
                     lightColor = lightColor.color,
                     flickerFrequency = int.Parse(flickerFrequencyInput.text),
                     flickerAmount = int.Parse(flickerAmountInput.text) * 0.01f,
                     pulseInterval = int.Parse(pulseIntervalInput.text),
                     pulseAmount = int.Parse(pulseAmountInput.text) * 0.01f,
                     image = data.image,
-                    conditions = (int)ConditionFlags
+                    conditions = (int)ConditionFlags,
+                    preset = string.IsNullOrEmpty(selectedPreset.id) ? "" : selectedPreset.id
                 };
 
                 (Reference as Token).ModifyToken(newData, bytes, imageChanged);
@@ -165,13 +172,14 @@ namespace RPG
                     highlighted = highlightToggle.isOn,
                     lightRadius = int.Parse(radiusInput.text),
                     lightIntensity = int.Parse(intensityInput.text) * 0.01f,
-                    lightEffect = (LightEffect)effectDropdown.value,
+                    lightEffect = effectDropdown.value,
                     lightColor = lightColor.color,
                     flickerFrequency = int.Parse(flickerFrequencyInput.text),
                     flickerAmount = int.Parse(flickerAmountInput.text) * 0.01f,
                     pulseInterval = int.Parse(pulseIntervalInput.text),
                     pulseAmount = int.Parse(pulseAmountInput.text) * 0.01f,
-                    image = ""
+                    image = "",
+                    preset = string.IsNullOrEmpty(selectedPreset.id) ? "" : selectedPreset.id
                 };
 
 
@@ -197,14 +205,15 @@ namespace RPG
                     highlighted = highlightToggle.isOn,
                     lightRadius = int.Parse(radiusInput.text),
                     lightIntensity = int.Parse(intensityInput.text) * 0.01f,
-                    lightEffect = (LightEffect)effectDropdown.value,
+                    lightEffect = effectDropdown.value,
                     lightColor = lightColor.color,
                     flickerFrequency = int.Parse(flickerFrequencyInput.text),
                     flickerAmount = int.Parse(flickerAmountInput.text) * 0.01f,
                     pulseInterval = int.Parse(pulseIntervalInput.text),
                     pulseAmount = int.Parse(pulseAmountInput.text) * 0.01f,
                     image = data.image,
-                    permissions = data.permissions
+                    permissions = data.permissions,
+                    preset = string.IsNullOrEmpty(selectedPreset.id) ? "" : selectedPreset.id
                 };
 
                 (Reference as BlueprintHolder).ModifyBlueprint(newData, bytes, imageChanged);
@@ -288,10 +297,17 @@ namespace RPG
 
         private void LoadLighting()
         {
+            var presets = LightingPresets.Presets;
+            for (int i = 0; i < presets.Values.ToArray().Length; i++)
+            {
+                var name = presets.Values.ToArray()[i].name;
+                effectDropdown.AddOptions(new List<string>() { name });
+            }
+
             visionToggle.isOn = data.hasVision;
             nightVisionToggle.isOn = data.nightVision;
             highlightToggle.isOn = data.highlighted;
-            effectDropdown.value = (int)data.lightEffect;
+            effectDropdown.value = data.lightEffect;
             lightColor.color = new Color(data.lightColor.r, data.lightColor.g, data.lightColor.b, 1.0f);
             radiusInput.text = data.lightRadius.ToString();
             intensityInput.text = (Mathf.RoundToInt(data.lightIntensity * 100.0f)).ToString();
@@ -299,6 +315,59 @@ namespace RPG
             flickerAmountInput.text = (Mathf.RoundToInt(data.flickerAmount * 100.0f)).ToString();
             pulseIntervalInput.text = data.pulseInterval.ToString();
             pulseAmountInput.text = (Mathf.RoundToInt(data.pulseAmount * 100.0f)).ToString();
+        }
+
+        private void LoadPreset(string id)
+        {
+            if (string.IsNullOrEmpty(id)) return;
+
+            var presets = LightingPresets.Presets;
+            var preset = presets[id];
+
+            flickerAmountInput.transform.parent.gameObject.SetActive(false);
+            flickerFrequencyInput.transform.parent.gameObject.SetActive(false);
+            pulseIntervalInput.transform.parent.gameObject.SetActive(false);
+            pulseAmountInput.transform.parent.gameObject.SetActive(false);
+            intensityInput.transform.parent.gameObject.SetActive(false);
+            radiusInput.transform.parent.gameObject.SetActive(false);
+            presetInput.transform.parent.gameObject.SetActive(false);
+
+            switch (preset.effect)
+            {
+                case LightEffect.No_source:
+                    break;
+                case LightEffect.No_effect:
+                    intensityInput.transform.parent.gameObject.SetActive(true);
+                    radiusInput.transform.parent.gameObject.SetActive(true);
+                    presetInput.transform.parent.gameObject.SetActive(true);
+                    selectedPreset.effect = LightEffect.No_effect;
+                    break;
+                case LightEffect.Pulsing:
+                    pulseIntervalInput.transform.parent.gameObject.SetActive(true);
+                    pulseAmountInput.transform.parent.gameObject.SetActive(true);
+                    intensityInput.transform.parent.gameObject.SetActive(true);
+                    radiusInput.transform.parent.gameObject.SetActive(true);
+                    presetInput.transform.parent.gameObject.SetActive(true);
+                    selectedPreset.effect = LightEffect.Pulsing;
+                    break;
+                case LightEffect.Flickering:
+                    flickerAmountInput.transform.parent.gameObject.SetActive(true);
+                    flickerFrequencyInput.transform.parent.gameObject.SetActive(true);
+                    intensityInput.transform.parent.gameObject.SetActive(true);
+                    radiusInput.transform.parent.gameObject.SetActive(true);
+                    presetInput.transform.parent.gameObject.SetActive(true);
+                    selectedPreset.effect = LightEffect.Flickering;
+                    break;
+            }
+
+            lightColor.color = new Color(preset.color.r, preset.color.g, preset.color.b, 1.0f);
+            radiusInput.text = preset.radius.ToString();
+            intensityInput.text = (Mathf.RoundToInt(preset.intensity * 100.0f)).ToString();
+            flickerFrequencyInput.text = preset.flickerFrequency.ToString();
+            flickerAmountInput.text = (Mathf.RoundToInt(preset.flickerAmount * 100.0f)).ToString();
+            pulseIntervalInput.text = preset.pulseInterval.ToString();
+            pulseAmountInput.text = (Mathf.RoundToInt(preset.pulseAmount * 100.0f)).ToString();
+            presetInput.text = preset.name;
         }
 
         public void ChangeEffect()
@@ -309,82 +378,94 @@ namespace RPG
             pulseAmountInput.transform.parent.gameObject.SetActive(false);
             intensityInput.transform.parent.gameObject.SetActive(false);
             radiusInput.transform.parent.gameObject.SetActive(false);
+            presetInput.transform.parent.gameObject.SetActive(false);
+            presetInput.text = "";
 
+            selectedPreset.id = "";
             switch (effectDropdown.value)
             {
                 case 0:
                     radiusInput.text = "0";
                     intensityInput.text = "0";
-                    flickerFrequencyInput.text = "0";
-                    flickerAmountInput.text = "0";
                     lightColor.color = Color.HSVToRGB(0, 0, 0);
                     lightColor.color = new Color(lightColor.color.r, lightColor.color.g, lightColor.color.b, 1.0f);
                     colorPicker.SetColor(lightColor.color);
+                    selectedPreset.effect = LightEffect.No_source;
                     break;
                 case 1:
-                    radiusInput.text = "40";
-                    intensityInput.text = "100";
-                    flickerFrequencyInput.text = "15";
-                    flickerAmountInput.text = "10";
-                    lightColor.color = Color.HSVToRGB(50.0f / 360.0f, 0.5f, 1.0f);
-                    lightColor.color = new Color(lightColor.color.r, lightColor.color.g, lightColor.color.b, 1.0f);
-                    colorPicker.SetColor(lightColor.color);
+                    intensityInput.transform.parent.gameObject.SetActive(true);
+                    radiusInput.transform.parent.gameObject.SetActive(true);
+                    presetInput.transform.parent.gameObject.SetActive(true);
+                    selectedPreset.effect = LightEffect.No_effect;
                     break;
                 case 2:
-                    radiusInput.text = "20";
-                    intensityInput.text = "100";
-                    lightColor.color = Color.HSVToRGB(200.0f / 360.0f, 0.3f, 1.0f);
-                    lightColor.color = new Color(lightColor.color.r, lightColor.color.g, lightColor.color.b, 1.0f);
-                    pulseIntervalInput.text = "2";
-                    pulseAmountInput.text = "60";
-                    colorPicker.SetColor(lightColor.color);
+                    pulseIntervalInput.transform.parent.gameObject.SetActive(true);
+                    pulseAmountInput.transform.parent.gameObject.SetActive(true);
+                    intensityInput.transform.parent.gameObject.SetActive(true);
+                    radiusInput.transform.parent.gameObject.SetActive(true);
+                    presetInput.transform.parent.gameObject.SetActive(true);
+                    selectedPreset.effect = LightEffect.Pulsing;
                     break;
                 case 3:
-                    radiusInput.text = "45";
-                    intensityInput.text = "100";
-                    flickerFrequencyInput.text = "10";
-                    flickerAmountInput.text = "5";
-                    lightColor.color = Color.HSVToRGB(50.0f / 360.0f, 0.2f, 1.0f);
-                    lightColor.color = new Color(lightColor.color.r, lightColor.color.g, lightColor.color.b, 1.0f);
-                    colorPicker.SetColor(lightColor.color);
+                    flickerAmountInput.transform.parent.gameObject.SetActive(true);
+                    flickerFrequencyInput.transform.parent.gameObject.SetActive(true);
+                    intensityInput.transform.parent.gameObject.SetActive(true);
+                    radiusInput.transform.parent.gameObject.SetActive(true);
+                    presetInput.transform.parent.gameObject.SetActive(true);
+                    selectedPreset.effect = LightEffect.Flickering;
                     break;
-                case 4:
-                    radiusInput.text = "15";
-                    intensityInput.text = "50";
-                    flickerFrequencyInput.text = "10";
-                    flickerAmountInput.text = "5";
-                    lightColor.color = Color.HSVToRGB(50.0f / 360.0f, 0.3f, 1.0f);
-                    lightColor.color = new Color(lightColor.color.r, lightColor.color.g, lightColor.color.b, 1.0f);
-                    colorPicker.SetColor(lightColor.color);
-                    break;
-                case 5:
-                    if (lightingText.color == selectedColor)
-                    {
-                        pulseIntervalInput.transform.parent.gameObject.SetActive(true);
-                        pulseAmountInput.transform.parent.gameObject.SetActive(true);
-                        intensityInput.transform.parent.gameObject.SetActive(true);
-                        radiusInput.transform.parent.gameObject.SetActive(true);
-                    }
-
-                    colorPicker.SetColor(lightColor.color);
-                    break;
-                case 6:
-                    if (lightingText.color == selectedColor)
-                    {
-                        flickerAmountInput.transform.parent.gameObject.SetActive(true);
-                        flickerFrequencyInput.transform.parent.gameObject.SetActive(true);
-                        intensityInput.transform.parent.gameObject.SetActive(true);
-                        radiusInput.transform.parent.gameObject.SetActive(true);
-                    }
-                    break;
-                case 7:
-                    if (lightingText.color == selectedColor)
-                    {
-                        intensityInput.transform.parent.gameObject.SetActive(true);
-                        radiusInput.transform.parent.gameObject.SetActive(true);
-                    }
+                default:
+                    selectedPreset.id = LightingPresets.Presets.Values.ToArray()[effectDropdown.value - 4].id;
+                    LoadPreset(selectedPreset.id);
                     break;
             }
+        }
+
+        public async void CreatePreset()
+        {
+            if (string.IsNullOrEmpty(presetInput.text)) return;
+
+            var preset = new LightPreset()
+            {
+                name = presetInput.text,
+                radius = float.Parse(radiusInput.text),
+                color = lightColor.color,
+                intensity = float.Parse(intensityInput.text) * 0.01f,
+                flickerFrequency = float.Parse(flickerFrequencyInput.text),
+                flickerAmount = float.Parse(flickerAmountInput.text) * 0.01f,
+                pulseInterval = float.Parse(pulseIntervalInput.text),
+                pulseAmount = float.Parse(pulseAmountInput.text) * 0.01f,
+                effect = selectedPreset.effect
+            };
+            if (string.IsNullOrEmpty(selectedPreset.id))
+            {
+                await SocketManager.Socket.EmitAsync("create-preset", async (callback) =>
+                {
+                    await UniTask.SwitchToMainThread();
+                    if (callback.GetValue().GetBoolean()) MessageManager.QueueMessage("Preset created");
+                    else MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                }, JsonUtility.ToJson(preset));
+            }
+            else
+            {
+                await SocketManager.Socket.EmitAsync("modify-preset", async (callback) =>
+                {
+                    await UniTask.SwitchToMainThread();
+                    if (callback.GetValue().GetBoolean()) MessageManager.QueueMessage("Preset modified");
+                    else MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                }, selectedPreset.id, JsonUtility.ToJson(preset));
+            }
+        }
+
+        public async void DeletePreset()
+        {
+            if (string.IsNullOrEmpty(selectedPreset.id)) return;
+            await SocketManager.Socket.EmitAsync("remove-preset", async (callback) =>
+            {
+                await UniTask.SwitchToMainThread();
+                if (callback.GetValue().GetBoolean()) MessageManager.QueueMessage("Preset deleted");
+                else MessageManager.QueueMessage(callback.GetValue(1).GetString());
+            }, selectedPreset.id);
         }
         #endregion
 

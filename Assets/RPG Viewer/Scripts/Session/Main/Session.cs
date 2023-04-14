@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using Cysharp.Threading.Tasks;
 using FunkyCode;
 using Networking;
@@ -51,11 +52,6 @@ namespace RPG
         private void Start()
         {
             background.sprite = SessionManager.BackgroundSprite;
-            if (SocketManager.SceneSettings != null)
-            {
-                SocketManager.SceneSettings = null;
-                if (!String.IsNullOrEmpty(SessionManager.Scene)) LoadScene(SessionManager.Scene);
-            }
         }
         private void Update()
         {
@@ -198,6 +194,7 @@ namespace RPG
         }
         private void LoadWalls(List<WallData> data)
         {
+            Debug.Log(data.Count);
             wallManager.GenerateWalls(data);
             Loaders++;
         }
@@ -285,6 +282,7 @@ namespace RPG
 
             if (state == FogState.Player)
             {
+                Debug.Log(Settings.fogOfWar.translucency);
                 Lighting2D.LightmapPresets[0].darknessColor = Settings.fogOfWar.color;
                 Lighting2D.LightmapPresets[1].darknessColor = Settings.fogOfWar.color;
 

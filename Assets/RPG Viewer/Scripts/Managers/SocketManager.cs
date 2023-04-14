@@ -15,7 +15,6 @@ namespace Networking
 
         public static SocketIOUnity Socket;
 
-        public static SceneSettings SceneSettings;
         public static string UserId;
 
         public UnityEvent OnConnectedEvent = new UnityEvent();

@@ -74,6 +74,7 @@ namespace RPG
                 Data.data.nightStrength = 0.0f;
             }
             LoadNight(Data.data.nightStrength);
+            grid.transform.GetChild(0).gameObject.SetActive(false);
         }
         public async void SaveData()
         {
@@ -123,8 +124,7 @@ namespace RPG
                 await SocketManager.Socket.EmitAsync("upload-scene", async (callback) =>
                 {
                     await UniTask.SwitchToMainThread();
-                    if (callback.GetValue().GetBoolean()) SceneManager.LoadScene("Session");
-                    else MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                    if (!callback.GetValue().GetBoolean()) MessageManager.QueueMessage(callback.GetValue(1).GetString());
                 }, Data.path, JsonUtility.ToJson(Data), string.IsNullOrEmpty(data.image) ? Convert.ToBase64String(Data.bytes) : null);
             }
             else
@@ -132,14 +132,14 @@ namespace RPG
                 await SocketManager.Socket.EmitAsync("modify-scene", async (callback) =>
                 {
                     await UniTask.SwitchToMainThread();
-                    if (callback.GetValue().GetBoolean()) SceneManager.LoadScene("Session");
-                    else MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                    if (!callback.GetValue().GetBoolean()) MessageManager.QueueMessage(callback.GetValue(1).GetString());
                 }, Data.id, JsonUtility.ToJson(Data));
             }
         }
+
         public void CancelChanges()
         {
-            // TODO
+            SessionManager.Session.LoadScene(SessionManager.Scene);
         }
 
         private void LoadGridConfig(GridData data)

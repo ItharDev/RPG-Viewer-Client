@@ -638,17 +638,41 @@ namespace RPG
         }
         public void LoadLights()
         {
-            lightHandler.Init(Data.lightEffect, Data.lightColor, Data.lightIntensity, Data.flickerFrequency, Data.flickerAmount, Data.pulseInterval, Data.pulseAmount);
-
-            visionSource.enabled = Data.enabled && Data.hasVision && Permission.permission != PermissionType.None && Selected;
-            lightSource.enabled = Data.enabled && Data.lightRadius > 0;
-            nightSource.enabled = Data.enabled && Data.nightVision && Permission.permission != PermissionType.None && Selected;
-            nightSource.color.a = SessionManager.Session.Settings.fogOfWar.nightVisionStrength;
-            if (grid.CellSize > 0)
+            Debug.Log(Data.preset);
+            if (!string.IsNullOrEmpty(Data.preset))
             {
-                lightSource.size = Data.lightRadius * 0.2f * grid.CellSize + (grid.CellSize * 0.5f);
-                nightSource.size = 35.0f * 0.2f * grid.CellSize + (grid.CellSize * 0.5f);
-                visionSource.size = grid.CellSize * 40.5f;
+                Debug.Log("Runs");
+                if (!LightingPresets.Presets.ContainsKey(Data.preset)) return;
+                LightingPresets.MoveActor(this, Data.preset);
+                var preset = LightingPresets.Presets[Data.preset];
+
+                lightHandler.Init(preset.effect, preset.color, preset.intensity, preset.flickerFrequency, preset.flickerAmount, preset.pulseInterval, preset.pulseAmount);
+
+                visionSource.enabled = Data.enabled && Data.hasVision && Permission.permission != PermissionType.None && Selected;
+                lightSource.enabled = Data.enabled && preset.radius > 0;
+                nightSource.enabled = Data.enabled && Data.nightVision && Permission.permission != PermissionType.None && Selected;
+                nightSource.color.a = SessionManager.Session.Settings.fogOfWar.nightVisionStrength;
+                if (grid.CellSize > 0)
+                {
+                    lightSource.size = preset.radius * 0.2f * grid.CellSize + (grid.CellSize * 0.5f);
+                    nightSource.size = 35.0f * 0.2f * grid.CellSize + (grid.CellSize * 0.5f);
+                    visionSource.size = grid.CellSize * 40.5f;
+                }
+            }
+            else
+            {
+                lightHandler.Init((LightEffect)Data.lightEffect, Data.lightColor, Data.lightIntensity, Data.flickerFrequency, Data.flickerAmount, Data.pulseInterval, Data.pulseAmount);
+
+                visionSource.enabled = Data.enabled && Data.hasVision && Permission.permission != PermissionType.None && Selected;
+                lightSource.enabled = Data.enabled && Data.lightRadius > 0;
+                nightSource.enabled = Data.enabled && Data.nightVision && Permission.permission != PermissionType.None && Selected;
+                nightSource.color.a = SessionManager.Session.Settings.fogOfWar.nightVisionStrength;
+                if (grid.CellSize > 0)
+                {
+                    lightSource.size = Data.lightRadius * 0.2f * grid.CellSize + (grid.CellSize * 0.5f);
+                    nightSource.size = 35.0f * 0.2f * grid.CellSize + (grid.CellSize * 0.5f);
+                    visionSource.size = grid.CellSize * 40.5f;
+                }
             }
         }
         public void EnableToken(bool enabled)
@@ -873,13 +897,14 @@ namespace RPG
         public bool nightVision;
         public bool highlighted;
         public int lightRadius;
-        public LightEffect lightEffect;
+        public int lightEffect;
         public Color lightColor;
         public float lightIntensity;
         public float flickerFrequency;
         public float flickerAmount;
         public float pulseInterval;
         public float pulseAmount;
+        public string preset;
         public string image;
         public Vector2 position;
         public bool enabled;

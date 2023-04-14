@@ -63,7 +63,15 @@ namespace RPG
 
         public void LoadData(LightData data, LightManager lightManager, bool toolActive)
         {
-            lightHandler.Init(data.effect, data.color, data.intensity, data.flickerFrequency, data.flickerAmount, data.pulseInterval, data.pulseAmount);
+            if (!string.IsNullOrEmpty(data.preset))
+            {
+                if (!LightingPresets.Presets.ContainsKey(data.preset)) return;
+                LightingPresets.MoveActor(this, Data.preset);
+                var preset = LightingPresets.Presets[data.preset];
+
+                lightHandler.Init((LightEffect)preset.effect, preset.color, preset.intensity, preset.flickerFrequency, preset.flickerAmount, preset.pulseInterval, preset.pulseAmount);
+            }
+            else lightHandler.Init((LightEffect)data.effect, data.color, data.intensity, data.flickerFrequency, data.flickerAmount, data.pulseInterval, data.pulseAmount);
             Data = data;
             manager = lightManager;
 
@@ -74,6 +82,26 @@ namespace RPG
             if (SessionManager.IsMaster) ShowLight(toolActive);
 
             icon.color = Data.enabled ? activeColor : normalColor;
+        }
+        public void UpdatePreset(LightPreset preset)
+        {
+            Data = new LightData()
+            {
+                id = Data.id,
+                radius = preset.radius,
+                enabled = Data.enabled,
+                position = Data.position,
+                intensity = preset.intensity,
+                flickerFrequency = preset.flickerFrequency,
+                flickerAmount = preset.flickerAmount,
+                pulseInterval = preset.pulseInterval,
+                pulseAmount = preset.pulseAmount,
+                effect = (int)preset.effect,
+                color = preset.color,
+                preset = Data.preset
+            };
+
+            lightHandler.Init((LightEffect)Data.effect, Data.color, Data.intensity, Data.flickerFrequency, Data.flickerAmount, Data.pulseInterval, Data.pulseAmount);
         }
         public void ShowLight(bool enabled)
         {
@@ -148,7 +176,8 @@ namespace RPG
         public float flickerAmount;
         public float pulseInterval;
         public float pulseAmount;
-        public LightEffect effect;
+        public int effect;
         public Color color;
+        public string preset;
     }
 }

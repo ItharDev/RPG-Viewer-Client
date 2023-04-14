@@ -1,7 +1,7 @@
-using UnityEngine;
+using System.Collections;
 using FunkyCode;
 using FunkyCode.Utilities;
-using System.Collections;
+using UnityEngine;
 
 namespace RPG
 {
@@ -40,15 +40,6 @@ namespace RPG
                 case LightEffect.No_source:
                     LightSource.color.a = 0;
                     break;
-                case LightEffect.Torch:
-                    break;
-                case LightEffect.Wakka_nut:
-                    if (pulseInterval > 0) StartCoroutine(PulseCoroutine());
-                    break;
-                case LightEffect.Oil_lamp:
-                    break;
-                case LightEffect.Candle:
-                    break;
                 case LightEffect.Pulsing:
                     if (pulseInterval > 0) StartCoroutine(PulseCoroutine());
                     break;
@@ -67,7 +58,7 @@ namespace RPG
                 return;
             }
 
-            if ((lightEffect == LightEffect.Torch || lightEffect == LightEffect.Oil_lamp || lightEffect == LightEffect.Flickering) && flickerFrequency > 0)
+            if (lightEffect == LightEffect.Flickering && flickerFrequency > 0)
             {
                 if (timer.GetMillisecs() > 1000f / flickerFrequency)
                 {
@@ -76,7 +67,7 @@ namespace RPG
                     LightSource.color.a = tempAlpha;
                     timer.Reset();
                 }
-            }            
+            }
         }
 
         private IEnumerator PulseCoroutine()
@@ -85,7 +76,7 @@ namespace RPG
             float originalAlpha = LightSource.color.a;
             float targetTime = pulseInterval * 0.5f;
 
-            for (float t = 0f; t < targetTime; t += Time.fixedDeltaTime)
+            for (float t = 0f; t < targetTime; t += Time.deltaTime)
             {
                 float normalizedTime = t / targetTime;
                 LightSource.color.a = Mathf.Lerp(originalAlpha, targetAlpha, normalizedTime);
@@ -93,12 +84,14 @@ namespace RPG
             }
             LightSource.color.a = targetAlpha;
 
-            for (float t = 0f; t < targetTime; t += Time.fixedDeltaTime)
+            for (float t = 0f; t < targetTime; t += Time.deltaTime)
             {
                 float normalizedTime = t / targetTime;
                 LightSource.color.a = Mathf.Lerp(targetAlpha, originalAlpha, normalizedTime);
                 yield return null;
             }
+
+            LightSource.color.a = originalAlpha;
 
             StartCoroutine(PulseCoroutine());
         }
@@ -108,12 +101,8 @@ namespace RPG
     public enum LightEffect
     {
         No_source,
-        Torch,
-        Wakka_nut,
-        Oil_lamp,
-        Candle,
+        No_effect,
         Pulsing,
         Flickering,
-        No_effect,
     }
 }

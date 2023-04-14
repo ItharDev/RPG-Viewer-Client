@@ -78,11 +78,12 @@ namespace RPG
                 position = pos,
                 intensity = 1.0f,
                 color = new Color(1, 1, 1, 1),
-                effect = LightEffect.No_effect,
+                effect = 0,
                 flickerFrequency = 15.0f,
                 flickerAmount = 0.1f,
                 pulseInterval = 2.0f,
-                pulseAmount = 0.6f
+                pulseAmount = 0.6f,
+                preset = ""
             };
 
             await SocketManager.Socket.EmitAsync("create-light", (callback) =>
@@ -113,6 +114,7 @@ namespace RPG
         }
         public async void ModifyLight(LightHolder holder)
         {
+            Debug.Log(holder.Data.effect);
             await SocketManager.Socket.EmitAsync("modify-light", (callback) =>
             {
                 if (!callback.GetValue().GetBoolean()) MessageManager.QueueMessage(callback.GetValue(1).GetString());

@@ -206,6 +206,16 @@ namespace RPG
                 Destroy(gameObject);
             }
         }
+        public void Destroy()
+        {
+            for (int i = points.Count - 1; i >= 0; i--)
+            {
+                Destroy(points[i].gameObject);
+            }
+            
+            Destroy(line.rectTransform.gameObject);
+            Destroy(gameObject);
+        }
         public WallData SaveData()
         {
             List<Vector2> pts = new List<Vector2>();

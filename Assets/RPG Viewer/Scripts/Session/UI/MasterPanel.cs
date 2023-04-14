@@ -480,7 +480,7 @@ namespace RPG
             var cellSize = texture.width * 0.0004f;
             var rows = Mathf.RoundToInt(texture.height * 0.01f / cellSize);
 
-            SocketManager.SceneSettings = new SceneSettings()
+            var settings = new SceneSettings()
             {
                 path = scenePath,
                 bytes = bytes,
@@ -499,12 +499,20 @@ namespace RPG
 
             scenePath = null;
             bytes = null;
-            await SocketManager.Socket.EmitAsync("set-scene", async (callback) =>
+
+            MessageManager.QueueMessage("Uploading scene. This may take a while");
+            createScenePanel.SetActive(false);
+
+            await SocketManager.Socket.EmitAsync("upload-scene", async (callback) =>
             {
                 await UniTask.SwitchToMainThread();
-                if (!callback.GetValue().GetBoolean()) MessageManager.QueueMessage(callback.GetValue(1).GetString());
-            }, "");
-            SceneManager.LoadScene("Scene");
+                if (callback.GetValue().GetBoolean())
+                {
+                    settings.id = callback.GetValue(1).GetString();
+                    HandleSceneAdded(settings, settings.id, settings.path, settings.bytes);
+                }
+                else MessageManager.QueueMessage(callback.GetValue(1).GetString());
+            }, settings.path, JsonUtility.ToJson(settings), string.IsNullOrEmpty(settings.data.image) ? Convert.ToBase64String(settings.bytes) : null);
         }
 
         public void OpenSceneFolder()

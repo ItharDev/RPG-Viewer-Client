@@ -108,6 +108,11 @@ namespace RPG
         }
         public void LoadWalls(List<WallData> walls)
         {
+            for (int i = controllers.Count - 1; i >= 0; i--)
+            {
+                controllers[i].Destroy();
+            }
+
             if (walls == null) return;
 
             foreach (var wall in walls)
