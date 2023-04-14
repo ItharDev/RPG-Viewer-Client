@@ -63,18 +63,19 @@ namespace RPG
 
         public void LoadData(LightData data, LightManager lightManager, bool toolActive)
         {
+            manager = lightManager;
+            lightHandler.Init((LightEffect)data.effect, data.color, data.intensity, data.flickerFrequency, data.flickerAmount, data.pulseInterval, data.pulseAmount);
             if (!string.IsNullOrEmpty(data.preset))
             {
-                if (!LightingPresets.Presets.ContainsKey(data.preset)) return;
-                LightingPresets.MoveActor(this, Data.preset);
-                var preset = LightingPresets.Presets[data.preset];
+                if (LightingPresets.Presets.ContainsKey(data.preset))
+                {
+                    LightingPresets.MoveActor(this, Data.preset);
+                    var preset = LightingPresets.Presets[data.preset];
 
-                lightHandler.Init((LightEffect)preset.effect, preset.color, preset.intensity, preset.flickerFrequency, preset.flickerAmount, preset.pulseInterval, preset.pulseAmount);
+                    lightHandler.Init((LightEffect)preset.effect, preset.color, preset.intensity, preset.flickerFrequency, preset.flickerAmount, preset.pulseInterval, preset.pulseAmount);
+                }
             }
-            else lightHandler.Init((LightEffect)data.effect, data.color, data.intensity, data.flickerFrequency, data.flickerAmount, data.pulseInterval, data.pulseAmount);
             Data = data;
-            manager = lightManager;
-
             transform.localPosition = new Vector3(data.position.x, data.position.y, -1);
             lightSource.size = (data.radius / 5.0f) * SessionManager.Session.Settings.grid.cellSize;
             lightSource.enabled = data.enabled;

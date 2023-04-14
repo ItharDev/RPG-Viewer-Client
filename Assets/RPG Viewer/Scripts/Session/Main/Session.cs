@@ -194,7 +194,6 @@ namespace RPG
         }
         private void LoadWalls(List<WallData> data)
         {
-            Debug.Log(data.Count);
             wallManager.GenerateWalls(data);
             Loaders++;
         }
@@ -282,7 +281,6 @@ namespace RPG
 
             if (state == FogState.Player)
             {
-                Debug.Log(Settings.fogOfWar.translucency);
                 Lighting2D.LightmapPresets[0].darknessColor = Settings.fogOfWar.color;
                 Lighting2D.LightmapPresets[1].darknessColor = Settings.fogOfWar.color;
 

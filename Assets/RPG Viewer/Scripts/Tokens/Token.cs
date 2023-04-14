@@ -638,10 +638,9 @@ namespace RPG
         }
         public void LoadLights()
         {
-            Debug.Log(Data.preset);
             if (!string.IsNullOrEmpty(Data.preset))
             {
-                Debug.Log("Runs");
+                Debug.Log("Loading preset");
                 if (!LightingPresets.Presets.ContainsKey(Data.preset)) return;
                 LightingPresets.MoveActor(this, Data.preset);
                 var preset = LightingPresets.Presets[Data.preset];

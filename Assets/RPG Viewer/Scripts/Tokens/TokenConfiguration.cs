@@ -143,7 +143,7 @@ namespace RPG
                     pulseAmount = int.Parse(pulseAmountInput.text) * 0.01f,
                     image = data.image,
                     conditions = (int)ConditionFlags,
-                    preset = string.IsNullOrEmpty(selectedPreset.id) ? "" : selectedPreset.id
+                    preset = selectedPreset.id
                 };
 
                 (Reference as Token).ModifyToken(newData, bytes, imageChanged);
@@ -179,7 +179,7 @@ namespace RPG
                     pulseInterval = int.Parse(pulseIntervalInput.text),
                     pulseAmount = int.Parse(pulseAmountInput.text) * 0.01f,
                     image = "",
-                    preset = string.IsNullOrEmpty(selectedPreset.id) ? "" : selectedPreset.id
+                    preset = selectedPreset.id
                 };
 
 
@@ -213,7 +213,7 @@ namespace RPG
                     pulseAmount = int.Parse(pulseAmountInput.text) * 0.01f,
                     image = data.image,
                     permissions = data.permissions,
-                    preset = string.IsNullOrEmpty(selectedPreset.id) ? "" : selectedPreset.id
+                    preset = selectedPreset.id
                 };
 
                 (Reference as BlueprintHolder).ModifyBlueprint(newData, bytes, imageChanged);
