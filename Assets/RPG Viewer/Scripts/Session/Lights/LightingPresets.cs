@@ -17,6 +17,7 @@ namespace RPG
         }
         public static void ModifyPreset(string id, LightPreset preset)
         {
+            preset.id = id;
             Presets[id] = preset;
             var actors = PresetActors.Keys.ToArray();
 

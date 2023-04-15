@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using Networking;
@@ -319,6 +320,7 @@ namespace RPG
 
         private void LoadPreset(string id)
         {
+            Debug.Log(id);
             if (string.IsNullOrEmpty(id)) return;
 
             var presets = LightingPresets.Presets;
