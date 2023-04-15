@@ -76,11 +76,6 @@ namespace RPG
             Dimensions = dimensions;
             Position = position;
             CellSize = cellSize;
-
-            var scene = FindObjectOfType<ScenePanel>();
-            if (scene.Data == null) return;
-            scene.Data.grid.position = position;
-            scene.Data.grid.cellSize = cellSize;
         }
         public void UpdateColor(Color color)
         {

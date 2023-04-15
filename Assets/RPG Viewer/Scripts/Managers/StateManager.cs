@@ -91,6 +91,7 @@ namespace RPG
 
         [Header("State")]
         public ToolState ToolState;
+        private ToolState lastState;
         public FogState FogState;
         public LightState LightState;
         public NoteState NoteState;
@@ -500,6 +501,12 @@ namespace RPG
 
             lightSelection.SetActive(!lightSelection.activeInHierarchy);
             lightPanel.SetActive(lightSelection.activeInHierarchy);
+            if (lightSelection.activeInHierarchy)
+            {
+                lastState = ToolState;
+                ToolState = ToolState.Light;
+            }
+            else ToolState = lastState;
 
             if (!createLightSelection.activeInHierarchy && !deleteLightSelection.activeInHierarchy) CreateLight();
         }

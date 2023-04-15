@@ -640,7 +640,6 @@ namespace RPG
         {
             if (!string.IsNullOrEmpty(Data.preset))
             {
-                Debug.Log("Loading preset");
                 if (!LightingPresets.Presets.ContainsKey(Data.preset)) return;
                 LightingPresets.MoveActor(this, Data.preset);
                 var preset = LightingPresets.Presets[Data.preset];
@@ -654,7 +653,7 @@ namespace RPG
                 if (grid.CellSize > 0)
                 {
                     lightSource.size = preset.radius * 0.2f * grid.CellSize + (grid.CellSize * 0.5f);
-                    nightSource.size = 35.0f * 0.2f * grid.CellSize + (grid.CellSize * 0.5f);
+                    nightSource.size = 25.0f * 0.2f * grid.CellSize + (grid.CellSize * 0.5f);
                     visionSource.size = grid.CellSize * 40.5f;
                 }
             }
@@ -669,7 +668,7 @@ namespace RPG
                 if (grid.CellSize > 0)
                 {
                     lightSource.size = Data.lightRadius * 0.2f * grid.CellSize + (grid.CellSize * 0.5f);
-                    nightSource.size = 35.0f * 0.2f * grid.CellSize + (grid.CellSize * 0.5f);
+                    nightSource.size = 25.0f * 0.2f * grid.CellSize + (grid.CellSize * 0.5f);
                     visionSource.size = grid.CellSize * 40.5f;
                 }
             }
