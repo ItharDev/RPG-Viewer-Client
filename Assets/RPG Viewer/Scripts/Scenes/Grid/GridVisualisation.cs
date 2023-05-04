@@ -10,7 +10,7 @@ namespace RPG
         [SerializeField] private Transform cornerParent;
         private readonly List<GameObject> corners = new();
 
-        private SessionGrid grid;
+        private Grid grid;
         private int corner = -1;
 
         public float CellSize;
@@ -18,7 +18,7 @@ namespace RPG
 
         private void Awake()
         {
-            if (grid == null) grid = GetComponent<SessionGrid>();
+            if (grid == null) grid = GetComponent<Grid>();
         }
         private void Update()
         {

@@ -212,7 +212,7 @@ namespace RPG
             {
                 Destroy(points[i].gameObject);
             }
-            
+
             Destroy(line.rectTransform.gameObject);
             Destroy(gameObject);
         }
@@ -223,7 +223,7 @@ namespace RPG
 
             return new WallData()
             {
-                wallId = ObjectId.GenerateNewId().ToString(),
+                id = ObjectId.GenerateNewId().ToString(),
                 points = pts,
                 model = Type,
                 open = this.Hidden
@@ -275,7 +275,6 @@ namespace RPG
                 }
                 if (line == null)
                 {
-                    Debug.Log("Updating points: " + name);
                     line = VectorLine.SetLine3D(Color, list3D.ToArray());
                     line.SetWidth(7.0f);
                     line.lineType = LineType.Continuous;

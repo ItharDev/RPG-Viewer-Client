@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
 using FunkyCode.LightingSettings;
 using FunkyCode.Utilities;
+using UnityEngine;
 
 namespace FunkyCode.EventHandling
 {
@@ -9,11 +9,11 @@ namespace FunkyCode.EventHandling
     {
         static public void GetCollisions(List<LightCollision2D> collisions, Light2D lightingSource)
         {
-           var colliderList = LightCollider2D.ListEventReceivers;
+            var colliderList = LightCollider2D.ListEventReceivers;
 
             // why all and not selected? + Specific layer
 
-            for(int i = 0; i < colliderList.Count; i++)
+            for (int i = 0; i < colliderList.Count; i++)
             {
                 var id = colliderList[i];
 
@@ -28,13 +28,13 @@ namespace FunkyCode.EventHandling
                     continue;
 
                 var polygon = polygons[0];
-       
+
                 var collision = new LightCollision2D();
                 collision.light = lightingSource;
                 collision.collider = id;
                 collision.points = new List<Vector2>();
-      
-                foreach(var point in polygon.points)
+
+                foreach (var point in polygon.points)
                 {
                     var p = point;
 
@@ -73,18 +73,18 @@ namespace FunkyCode.EventHandling
 
         public static LightCollision2D[] removeCollisions = new LightCollision2D[100];
         public static int removeCollisionsCount = 0;
-  
+
         public static List<LightCollision2D> RemoveHiddenPoints(List<LightCollision2D> collisions, Light2D light, EventPreset eventPreset)
         {
             float lightSize = Mathf.Sqrt(light.size * light.size + light.size * light.size);
-            float rotLeft, rotRight;	
-            
+            float rotLeft, rotRight;
+
             Polygon2 testPolygon = GetPolygon();
 
-            Vector2 lightPosition = - light.transform.position;
+            Vector2 lightPosition = -light.transform.position;
             int next;
 
-            for(int iid = 0; iid < eventPreset.layerSetting.list.Length; iid++)
+            for (int iid = 0; iid < eventPreset.layerSetting.list.Length; iid++)
             {
                 int layerId = eventPreset.layerSetting.list[iid].layerID;
 
@@ -92,7 +92,7 @@ namespace FunkyCode.EventHandling
 
                 int colliderCount = colliderList.Count;
 
-                for(int ci = 0; ci < colliderCount; ci++)
+                for (int ci = 0; ci < colliderCount; ci++)
                 {
                     var id = colliderList[ci];
                     if (!id.InLight(light))
@@ -104,16 +104,16 @@ namespace FunkyCode.EventHandling
                     var polygons = id.mainShape.GetPolygonsWorld();
                     if (polygons.Count < 1)
                         continue;
-                    
+
                     removePointsCollidingCount = 0;
                     removeCollisionsCount = 0;
-                    
-                    for(int i = 0; i < polygons.Count; i++)
+
+                    for (int i = 0; i < polygons.Count; i++)
                     {
                         var pointsList = polygons[i].points;
                         int pointsCount = pointsList.Length;
 
-                        for(int x = 0; x < pointsCount; x++)
+                        for (int x = 0; x < pointsCount; x++)
                         {
                             next = (x + 1) % pointsCount;
 
@@ -126,9 +126,9 @@ namespace FunkyCode.EventHandling
                             edgeRight.x = right.x + lightPosition.x;
                             edgeRight.y = right.y + lightPosition.y;
 
-                            rotLeft = (float)System.Math.Atan2 (edgeLeft.y, edgeLeft.x);
-                            rotRight = (float)System.Math.Atan2 (edgeRight.y, edgeRight.x);
-                        
+                            rotLeft = (float)System.Math.Atan2(edgeLeft.y, edgeLeft.x);
+                            rotRight = (float)System.Math.Atan2(edgeRight.y, edgeRight.x);
+
                             projectionLeft.x = edgeLeft.x + (float)System.Math.Cos(rotLeft) * lightSize;
                             projectionLeft.y = edgeLeft.y + (float)System.Math.Sin(rotLeft) * lightSize;
 
@@ -142,16 +142,16 @@ namespace FunkyCode.EventHandling
 
                             float collisionCount = collisions.Count;
 
-                            for(int c = 0; c < collisionCount; c++)
+                            for (int c = 0; c < collisionCount; c++)
                             {
                                 var col = collisions[c];
                                 if (col.collider == id)
                                     continue;
 
-                                // Check if event handling objects are inside shadow
+                                // check if the event handling objects are inside shadow
                                 // Add it to remove list
                                 int pCount = col.points.Count;
-                                for(int p = 0; p < pCount; p++)
+                                for (int p = 0; p < pCount; p++)
                                 {
                                     var point = col.points[p];
 
@@ -163,7 +163,7 @@ namespace FunkyCode.EventHandling
                                 }
 
                                 // Remove Event Handling points with remove list
-                                for(int p = 0; p < removePointsCollidingCount; p++)
+                                for (int p = 0; p < removePointsCollidingCount; p++)
                                 {
                                     col.points.Remove(removePointsColliding[p]);
                                 }
@@ -175,22 +175,22 @@ namespace FunkyCode.EventHandling
                                 if (col.points.Count < 1)
                                 {
                                     removeCollisions[removeCollisionsCount] = col;
-                                    removeCollisionsCount ++;
+                                    removeCollisionsCount++;
                                 }
                             }
 
-                            for(int p = 0; p < removeCollisionsCount; p++)
+                            for (int p = 0; p < removeCollisionsCount; p++)
                             {
                                 collisions.Remove(removeCollisions[p]);
                             }
-                            
+
                             removeCollisionsCount = 0;
                         }
                     }
                 }
             }
 
-            return(collisions);
+            return (collisions);
         }
     }
 }

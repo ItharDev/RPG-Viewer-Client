@@ -60,7 +60,6 @@ namespace RPG
         {
             camZoomMin = (texture.width >= texture.height ? texture.width : texture.height) * 0.01f;
             camZoomMax = (texture.width >= texture.height ? texture.width : texture.height) * 0.0004f;
-            SessionManager.Session.Loaders++;
         }
         public void MoveToPosition(Vector2 position, bool zoom = true)
         {

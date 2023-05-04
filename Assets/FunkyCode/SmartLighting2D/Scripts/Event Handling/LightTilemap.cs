@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
 using FunkyCode.LightingSettings;
 using FunkyCode.Utilities;
+using UnityEngine;
 
 namespace FunkyCode.EventHandling
 {
@@ -19,20 +19,20 @@ namespace FunkyCode.EventHandling
             float rotLeft, rotRight;
 
             Polygon2 testPolygon = GetPolygon();
-            Vector2 lightPosition = - light.transform.position;
+            Vector2 lightPosition = -light.transform.position;
             int next;
 
-            for(int iid = 0; iid < eventPreset.layerSetting.list.Length; iid++)
+            for (int iid = 0; iid < eventPreset.layerSetting.list.Length; iid++)
             {
                 int layerId = eventPreset.layerSetting.list[iid].layerID;
 
                 var tilemapColliderList = LightTilemapCollider2D.GetShadowList(layerId);
-                foreach(var id in tilemapColliderList)
+                foreach (var id in tilemapColliderList)
                 {
                     var tilemapCollider = id.GetCurrentTilemap();
                     int count = tilemapCollider.chunkManager.GetTiles(light.transform2D.WorldRect);
 
-                    for(int t = 0; t < count; t++)
+                    for (int t = 0; t < count; t++)
                     {
                         var tile = tilemapCollider.chunkManager.display[t];
 
@@ -41,17 +41,17 @@ namespace FunkyCode.EventHandling
                             continue;
                         }
 
-                        switch(id.shadowTileType)
+                        switch (id.shadowTileType)
                         {
                             case ShadowTileType.AllTiles:
-                            break;
+                                break;
 
                             case ShadowTileType.ColliderOnly:
 
                                 if (tile.colliderType == UnityEngine.Tilemaps.Tile.ColliderType.None)
                                     continue;
 
-                            break;
+                                break;
                         }
 
                         var polygons = tile.GetWorldPolygons(tilemapCollider);
@@ -65,12 +65,12 @@ namespace FunkyCode.EventHandling
                         removePointsCollidingCount = 0;
                         removeCollisionsCount = 0;
 
-                        for(int i = 0; i < polygons.Count; i++)
+                        for (int i = 0; i < polygons.Count; i++)
                         {
                             Vector2[] pointsList = polygons[i].points;
                             int pointsCount = pointsList.Length;
 
-                            for(int x = 0; x < pointsCount; x++)
+                            for (int x = 0; x < pointsCount; x++)
                             {
                                 next = (x + 1) % pointsCount;
 
@@ -83,9 +83,9 @@ namespace FunkyCode.EventHandling
                                 edgeRight.x = right.x + lightPosition.x;
                                 edgeRight.y = right.y + lightPosition.y;
 
-                                rotLeft = (float)System.Math.Atan2 (edgeLeft.y, edgeLeft.x);
-                                rotRight = (float)System.Math.Atan2 (edgeRight.y, edgeRight.x);
-                            
+                                rotLeft = (float)System.Math.Atan2(edgeLeft.y, edgeLeft.x);
+                                rotRight = (float)System.Math.Atan2(edgeRight.y, edgeRight.x);
+
                                 projectionLeft.x = edgeLeft.x + (float)System.Math.Cos(rotLeft) * lightSizeSquared;
                                 projectionLeft.y = edgeLeft.y + (float)System.Math.Sin(rotLeft) * lightSizeSquared;
 
@@ -98,7 +98,7 @@ namespace FunkyCode.EventHandling
                                 testPolygon.points[3] = edgeLeft;
 
                                 float collisionCount = collisions.Count;
-                                for(int c = 0; c < collisionCount; c++)
+                                for (int c = 0; c < collisionCount; c++)
                                 {
                                     var col = collisions[c];
                                     if (col.collider == id)
@@ -106,10 +106,10 @@ namespace FunkyCode.EventHandling
                                         continue;
                                     }
 
-                                    // Check if event handling objects are inside shadow
+                                    // check if the event handling objects are inside shadow
                                     // Add it to remove list
                                     int pCount = col.points.Count;
-                                    for(int p = 0; p < pCount; p++)
+                                    for (int p = 0; p < pCount; p++)
                                     {
                                         Vector2 point = col.points[p];
 
@@ -121,7 +121,7 @@ namespace FunkyCode.EventHandling
                                     }
 
                                     // Remove Event Handling points with remove list
-                                    for(int p = 0; p < removePointsCollidingCount; p++)
+                                    for (int p = 0; p < removePointsCollidingCount; p++)
                                     {
                                         col.points.Remove(removePointsColliding[p]);
                                     }
@@ -133,11 +133,11 @@ namespace FunkyCode.EventHandling
                                     if (col.points.Count < 1)
                                     {
                                         removeCollisions[removeCollisionsCount] = col;
-                                        removeCollisionsCount ++;
+                                        removeCollisionsCount++;
                                     }
                                 }
 
-                                for(int p = 0; p < removeCollisionsCount; p++)
+                                for (int p = 0; p < removeCollisionsCount; p++)
                                 {
                                     collisions.Remove(removeCollisions[p]);
                                 }
@@ -148,8 +148,8 @@ namespace FunkyCode.EventHandling
                     }
                 }
             }
-            
-            return(collisions);
+
+            return (collisions);
         }
     }
 }

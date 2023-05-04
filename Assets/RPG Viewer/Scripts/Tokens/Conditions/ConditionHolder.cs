@@ -13,8 +13,6 @@ namespace RPG
         [SerializeField] private Color disabledIconColor;
         [SerializeField] private Color disabledTextColor;
 
-        public TokenConfiguration Config;
-
         private Token token;
 
         private void OnValidate()
@@ -27,6 +25,8 @@ namespace RPG
                 if (text != null) text.text = condition.name;
             }
         }
+
+        /* TODO: 
         private void Update()
         {
             if (token == null) token = GetComponentInParent<Token>(true);
@@ -47,5 +47,7 @@ namespace RPG
         {
             Config.ToggleCondition(condition);
         }
+
+        */
     }
 }

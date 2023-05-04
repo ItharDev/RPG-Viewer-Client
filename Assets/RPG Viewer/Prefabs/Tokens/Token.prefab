@@ -6538,6 +6538,7 @@ GameObject:
   - component: {fileID: 7936020948834940923}
   - component: {fileID: 6998573779148631894}
   - component: {fileID: 5639555280222284950}
+  - component: {fileID: 6107494227489519486}
   m_Layer: 0
   m_Name: Token
   m_TagString: Token
@@ -6607,6 +6608,7 @@ MonoBehaviour:
   label: {fileID: 55829306754363330}
   canvas: {fileID: 1212976555955231601}
   uiCanvas: {fileID: 9058732096516770718}
+  canvasGroup: {fileID: 6107494227489519486}
   panel: {fileID: 1474519081600306550}
   confirmPanel: {fileID: 7102588846421532515}
   rotateButton: {fileID: 3711481860987423220}
@@ -6757,6 +6759,18 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!225 &6107494227489519486
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8704266109904137083}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &8967692217670290663
 GameObject:
   m_ObjectHideFlags: 0
