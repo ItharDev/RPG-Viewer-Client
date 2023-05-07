@@ -1,7 +1,8 @@
-﻿using UnityEngine;
+﻿using System;
 using System.IO;
-using System;
+using Cysharp.Threading.Tasks;
 using RPG;
+using UnityEngine;
 
 namespace Networking
 {
@@ -9,19 +10,20 @@ namespace Networking
     {
         public static async void Download(string id, bool useCache, Action<byte[]> callback)
         {
+            await UniTask.SwitchToMainThread();
             string path = $"{Application.persistentDataPath}{Path.DirectorySeparatorChar}{id}";
             if (useCache)
             {
                 if (File.Exists(path))
                 {
-                    await File.ReadAllBytesAsync(path).ContinueWith((bytes) => 
+                    await File.ReadAllBytesAsync(path).ContinueWith((bytes) =>
                     {
                         callback(bytes.Result);
                     });
                 }
                 else
                 {
-                    await SocketManager.Socket.EmitAsync("download-image", async (callback1) =>
+                    SocketManager.EmitAsync("download-image", async (callback1) =>
                     {
                         if (callback1.GetValue().GetBoolean())
                         {
@@ -39,7 +41,7 @@ namespace Networking
             }
             else
             {
-                await SocketManager.Socket.EmitAsync("download-image", (callback1) =>
+                SocketManager.EmitAsync("download-image", (callback1) =>
                 {
                     if (callback1.GetValue().GetBoolean())
                     {
@@ -52,7 +54,7 @@ namespace Networking
                         callback(null);
                     }
                 }, id);
-            }       
+            }
         }
     }
 }

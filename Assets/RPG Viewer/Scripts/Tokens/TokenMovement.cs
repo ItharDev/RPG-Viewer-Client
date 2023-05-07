@@ -27,11 +27,12 @@ namespace RPG
         private List<Vector2> dragPoints = new List<Vector2>();
         private int currentWaypoint = 0;
 
-        private void OnValidate()
+        private void OnEnable()
         {
             // Get reference of main class
             if (token == null) token = GetComponent<Token>();
         }
+
         private void Update()
         {
             // Return if token is not selected or we are edting any fields
@@ -293,7 +294,7 @@ namespace RPG
         private bool CheckCollisions(List<Vector2> points)
         {
             // Allow movement if we are the master client
-            if (SessionManager.Info.isMaster) return false;
+            if (ConnectionManager.Info.isMaster) return false;
 
             // Loop through each waypoint
             for (int i = 0; i < points.Count - 1; i++)

@@ -15,7 +15,7 @@ namespace RPG
 
         private Token token;
 
-        private void OnValidate()
+        private void OnEnable()
         {
             if (text == null) text = GetComponentInChildren<TMP_Text>(true);
             if (condition != null)

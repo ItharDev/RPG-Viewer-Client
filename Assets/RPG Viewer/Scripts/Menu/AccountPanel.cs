@@ -28,13 +28,11 @@ namespace RPG
 
         private RectTransform rect;
 
-        private void OnValidate()
+        private void OnEnable()
         {
             // Get reference of our rect transform
             if (rect == null) rect = GetComponent<RectTransform>();
-        }
-        private void OnEnable()
-        {
+            
             // Add event listeners
             Events.OnSignIn.AddListener(SignIn);
             Events.OnSignOut.AddListener(SignOut);
@@ -54,6 +52,7 @@ namespace RPG
 
         public void OpenSignIn()
         {
+            Debug.Log("Runs");
             // Close panel if it's open
             if (rect.sizeDelta.x != 0 && signInPanel.activeInHierarchy)
             {

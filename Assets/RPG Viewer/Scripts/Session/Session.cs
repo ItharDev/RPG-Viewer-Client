@@ -42,13 +42,13 @@ namespace RPG
         private void Start()
         {
             // Update landing page
-            landingPage.sprite = SessionManager.Info.background;
+            landingPage.sprite = ConnectionManager.Info.background;
         }
 
         private void ChangeState(SessionState oldState, SessionState newState)
         {
             // Check if we are the master client
-            if (SessionManager.Info.isMaster)
+            if (ConnectionManager.Info.isMaster)
             {
                 // Activate or deactivate landing page based on state
                 landingPage.gameObject.SetActive(!string.IsNullOrEmpty(newState.scene));
@@ -84,8 +84,7 @@ namespace RPG
                         await UniTask.SwitchToMainThread();
 
                         // Generate and apply texture
-                        Texture2D texture = new Texture2D(1, 1);
-                        texture.LoadImage(bytes);
+                        Texture2D texture = await AsyncImageLoader.CreateFromImageAsync(bytes);
                         sceneSprite.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
 
                         // Remove message when loading is completed

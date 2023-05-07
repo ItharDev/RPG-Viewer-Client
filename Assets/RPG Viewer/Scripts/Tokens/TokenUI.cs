@@ -38,14 +38,11 @@ namespace RPG
         private Vector2 screenPos;
         private List<Token> rotatedTokens = new List<Token>();
 
-        private void OnValidate()
+        private void OnEnable()
         {
             // Get reference of main class
             if (token == null) token = GetComponent<Token>();
-        }
-
-        private void OnEnable()
-        {
+            
             // Add event listeners
             Events.OnToolChanged.AddListener(HandleRaycast);
             Events.OnTokenSelected.AddListener(UpdateSorting);

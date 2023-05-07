@@ -26,7 +26,7 @@ namespace RPG
         public Permission Permission;
         public bool Selected;
 
-        private void OnValidate()
+        private void OnEnable()
         {
             // Get child references
             if (Movement == null) Movement = GetComponent<TokenMovement>();
@@ -34,6 +34,7 @@ namespace RPG
             if (UI == null) UI = GetComponent<TokenUI>();
             if (Conditions == null) Conditions = GetComponent<TokenConditions>();
         }
+        
         private void Update()
         {
             // Return if token is not selected or we are edting any fields
@@ -104,7 +105,7 @@ namespace RPG
         private void SetPermission()
         {
             // Set as owner if we are the master client
-            if (SessionManager.Info.isMaster)
+            if (ConnectionManager.Info.isMaster)
             {
                 Permission = new Permission(GameData.User.id, PermissionType.Owner);
                 return;

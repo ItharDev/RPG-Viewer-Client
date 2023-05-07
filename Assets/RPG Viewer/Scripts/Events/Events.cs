@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -9,6 +8,7 @@ namespace RPG
         // Connection
         public static UnityEvent OnConnected = new UnityEvent();
         public static UnityEvent OnDisconnected = new UnityEvent();
+        public static UnityEvent OnSessionJoined = new UnityEvent();
 
         // Accounts
         public static UnityEvent<string, string> OnSignIn = new UnityEvent<string, string>();

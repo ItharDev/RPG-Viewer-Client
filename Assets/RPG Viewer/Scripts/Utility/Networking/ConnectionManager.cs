@@ -6,10 +6,15 @@ using UnityEngine.SceneManagement;
 
 namespace RPG
 {
-    public class SessionManager : MonoBehaviour
+    public class ConnectionManager : MonoBehaviour
     {
         public static SessionInfo Info;
         public static SessionState State;
+
+        private void Awake()
+        {
+            DontDestroyOnLoad(gameObject);
+        }
 
         public static void JoinSession(JoinData data)
         {
@@ -25,8 +30,7 @@ namespace RPG
                 await UniTask.SwitchToMainThread();
 
                 // Create landing page texture
-                Texture2D texture = new Texture2D(1, 1);
-                texture.LoadImage(bytes);
+                Texture2D texture = await AsyncImageLoader.CreateFromImageAsync(bytes);
                 Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
 
                 // Generate list of users
@@ -50,6 +54,7 @@ namespace RPG
                 await UniTask.WaitUntil(() => Loader.isDone);
 
                 Events.OnStateChanged?.Invoke(oldState, State);
+                Events.OnSessionJoined?.Invoke();
             });
         }
 

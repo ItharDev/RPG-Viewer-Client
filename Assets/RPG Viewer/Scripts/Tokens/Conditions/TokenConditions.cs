@@ -16,7 +16,7 @@ namespace RPG
         private Token token;
         private ConditionFlag conditionFlags;
 
-        private void OnValidate()
+        private void OnEnable()
         {
             // Get reference of main class
             if (token == null) token = GetComponent<Token>();

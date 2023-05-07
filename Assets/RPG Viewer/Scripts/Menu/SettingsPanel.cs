@@ -14,13 +14,11 @@ namespace RPG
 
         private RectTransform rect;
 
-        private void OnValidate()
+        private void OnEnable()
         {
             // Get reference of our rect transform
             if (rect == null) rect = GetComponent<RectTransform>();
-        }
-        private void OnEnable()
-        {
+            
             // Add event listeners
             Events.OnConnected.AddListener(OnConnected);
         }

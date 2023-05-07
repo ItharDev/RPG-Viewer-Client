@@ -78,7 +78,7 @@ namespace Networking
                 bool synced = data.GetValue().GetBoolean();
                 string scene = data.GetValue(1).GetString();
                 SessionState newState = new SessionState(synced, scene);
-                SessionState oldState = SessionManager.State;
+                SessionState oldState = ConnectionManager.State;
 
                 await UniTask.SwitchToMainThread();
                 Events.OnStateChanged?.Invoke(oldState, newState);

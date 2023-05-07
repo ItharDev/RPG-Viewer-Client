@@ -94,15 +94,14 @@ namespace RPG
                 await UniTask.SwitchToMainThread();
 
                 // Create texture
-                Texture2D texture = new Texture2D(1, 1);
-                texture.LoadImage(bytes);
+                Texture2D texture = await AsyncImageLoader.CreateFromImageAsync(bytes);
                 Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
 
                 // Instantiate token and attach it to correct parent
                 Token token = Instantiate(tokenPrefab, data.position, Quaternion.identity, tokenParent);
 
                 // Disable token if needed
-                if (!SessionManager.Info.isMaster && !data.enabled) token.gameObject.SetActive(false);
+                if (!ConnectionManager.Info.isMaster && !data.enabled) token.gameObject.SetActive(false);
 
                 // Load data and add it to dictionary
                 token.LoadData(data, sprite);
@@ -112,7 +111,7 @@ namespace RPG
                 if (token.Permission.type == PermissionType.Owner) myTokens.Add(token);
 
                 // Select this token if it's the first token we instantiate and this client is player
-                if (myTokens.Count == 1) SelectToken(SessionManager.Info.isMaster ? null : myTokens[0]);
+                if (myTokens.Count == 1) SelectToken(ConnectionManager.Info.isMaster ? null : myTokens[0]);
             });
         }
         private void MoveToken(string id, MovementData data)
@@ -141,8 +140,7 @@ namespace RPG
                     await UniTask.SwitchToMainThread();
 
                     // Generate new texture
-                    Texture2D texture = new Texture2D(1, 1);
-                    texture.LoadImage(bytes);
+                    Texture2D texture = await AsyncImageLoader.CreateFromImageAsync(bytes);
                     Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
 
                     // Load data with the new image
@@ -177,7 +175,7 @@ namespace RPG
             if (token == null) return;
 
             // Check if we are the master client
-            if (SessionManager.Info.isMaster) token.EnableToken(enabled);
+            if (ConnectionManager.Info.isMaster) token.EnableToken(enabled);
             else token.gameObject.SetActive(enabled);
         }
         private void UpdateElevation(string id, string elevation)
@@ -242,7 +240,7 @@ namespace RPG
         private void ReloadTokens(SessionState oldState, SessionState newState)
         {
             // Check if we are the master client
-            if (SessionManager.Info.isMaster)
+            if (ConnectionManager.Info.isMaster)
             {
                 // Return if scene was not changed
                 if (oldState.scene == newState.scene) return;

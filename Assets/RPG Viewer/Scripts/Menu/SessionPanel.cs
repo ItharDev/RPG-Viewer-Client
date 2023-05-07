@@ -1,12 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using Networking;
 using SFB;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace RPG
 {
@@ -15,21 +17,25 @@ namespace RPG
         [SerializeField] private MenuHandler menu;
         [SerializeField] private GameObject button;
 
+        [Space]
         [SerializeField] private TMP_InputField createInput;
         [SerializeField] private TMP_InputField licenceInput;
         [SerializeField] private TMP_Dropdown joinDropdown;
 
+        [Space]
+        [SerializeField] private Image continueImage;
+        [SerializeField] private GameObject continuePanel;
+        [SerializeField] private RectTransform header;
+
         private RectTransform rect;
-        private List<string> sessions = new List<string>();
+        private Dictionary<string, string> sessions = new Dictionary<string, string>();
         private byte[] landingPage;
 
-        private void OnValidate()
+        private void OnEnable()
         {
             // Get reference of our rect transform
             if (rect == null) rect = GetComponent<RectTransform>();
-        }
-        private void OnEnable()
-        {
+
             // Add event listeners
             Events.OnDisconnected.AddListener(SignOut);
             Events.OnSignIn.AddListener(SignIn);
@@ -74,6 +80,7 @@ namespace RPG
             joinDropdown.ClearOptions();
             sessions.Clear();
             button.SetActive(false);
+            continuePanel.SetActive(false);
         }
 
         private void FetchLicences()
@@ -84,30 +91,51 @@ namespace RPG
                 if (callback.GetValue().GetBoolean())
                 {
                     await UniTask.SwitchToMainThread();
+
                     // Enumerate session array
-                    var list = callback.GetValue(1).EnumerateArray();
+                    var list = callback.GetValue(1).EnumerateArray().ToArray();
                     int length = callback.GetValue(1).GetArrayLength();
 
-                    for (int i = 0; i < length; i++)
+                    for (int i = 0; i < list.Length; i++)
                     {
-                        // Move to next element in array
-                        list.MoveNext();
-
                         // Read session data
-                        string id = list.Current.GetProperty("id").GetString();
-                        string name = list.Current.GetProperty("name").GetString();
+                        string id = list[i].GetProperty("id").GetString();
+                        string name = list[i].GetProperty("name").GetString();
 
                         // Add session and update dropdown
-                        sessions.Add(id);
+                        sessions.Add(id, name);
                         joinDropdown.AddOptions(new List<string>() { name });
                         joinDropdown.RefreshShownValue();
                     }
-
                     return;
                 }
 
+                LoadLastSession();
+
                 // Send error message
                 MessageManager.QueueMessage(callback.GetValue(1).GetString());
+            });
+        }
+
+        private void LoadLastSession()
+        {
+            string id = PlayerPrefs.GetString("Last Session");
+            header.sizeDelta = new Vector2(0.0f, string.IsNullOrEmpty(id) ? 0.0f : 300.0f);
+
+            // Return if last session data was not found
+            if (string.IsNullOrEmpty(id)) return;
+
+            WebManager.Download(id, true, async (bytes) =>
+            {
+                // Return if image was not found
+                if (bytes == null) return;
+
+                await UniTask.SwitchToMainThread();
+
+                // Create and apply texture
+                Texture2D texture = await AsyncImageLoader.CreateFromImageAsync(bytes);
+                continueImage.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
+                continuePanel.SetActive(true);
             });
         }
 
@@ -170,7 +198,7 @@ namespace RPG
             if (joinDropdown.options.Count == 0) return;
 
             // Read current session's id
-            string id = sessions[joinDropdown.value];
+            string id = sessions.Values.ElementAt(joinDropdown.value);
 
             // Create new text editor
             TextEditor editor = new TextEditor
@@ -232,18 +260,41 @@ namespace RPG
             if (joinDropdown.options.Count == 0) return;
 
             // Read current session's id
-            string id = sessions[joinDropdown.value];
+            string id = sessions.Keys.ElementAt(joinDropdown.value);
 
             SocketManager.EmitAsync("join-session", (callback) =>
             {
                 // Check if the event was successful
                 if (callback.GetValue().GetBoolean())
                 {
-                    MessageManager.QueueMessage($"Joining game session {joinDropdown.captionText.text}");
+                    MessageManager.QueueMessage($"Connecting to {joinDropdown.captionText.text}");
 
                     // Read join data
                     JoinData data = JsonUtility.FromJson<JoinData>(callback.GetValue(1).ToString());
-                    SessionManager.JoinSession(data);
+                    ConnectionManager.JoinSession(data);
+                    return;
+                }
+
+                // Send error message
+                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+            }, id);
+        }
+        public void ContinueSession()
+        {
+            // Return if last session data was not found
+            string id = PlayerPrefs.GetString("Last Session");
+            if (string.IsNullOrEmpty(id)) return;
+
+            SocketManager.EmitAsync("join-session", (callback) =>
+            {
+                // Check if the event was successful
+                if (callback.GetValue().GetBoolean())
+                {
+                    MessageManager.QueueMessage($"Connecting to {sessions[id]}");
+
+                    // Read join data
+                    JoinData data = JsonUtility.FromJson<JoinData>(callback.GetValue(1).ToString());
+                    ConnectionManager.JoinSession(data);
                     return;
                 }
 

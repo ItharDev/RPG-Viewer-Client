@@ -16,6 +16,10 @@ namespace RPG
         private static Queue<string> messageQueue = new Queue<string>();
         private static Queue<Confirmation> confirmationQueue = new Queue<Confirmation>();
 
+        private void Awake()
+        {
+            DontDestroyOnLoad(gameObject);
+        }
         private void Update()
         {
             // Check if there is any messages to show
