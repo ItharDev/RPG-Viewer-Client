@@ -21,6 +21,21 @@ namespace RPG
         public static UnityEvent<SessionState, SessionState> OnStateChanged = new UnityEvent<SessionState, SessionState>();
         public static UnityEvent<SceneSettings> OnSceneLoaded = new UnityEvent<SceneSettings>();
 
+        // Side panel
+        public static UnityEvent<SceneFolder> OnSceneFolderClicked = new UnityEvent<SceneFolder>();
+        public static UnityEvent<SceneFolder> OnSceneFolderSelected = new UnityEvent<SceneFolder>();
+        public static UnityEvent OnSceneFolderDeselected = new UnityEvent();
+        public static UnityEvent OnSceneFolderMoved = new UnityEvent();
+        public static UnityEvent<SceneHolder> OnSceneClicked = new UnityEvent<SceneHolder>();
+        public static UnityEvent<SceneHolder> OnSceneSelected = new UnityEvent<SceneHolder>();
+        public static UnityEvent OnSceneDeselected = new UnityEvent();
+        public static UnityEvent OnSceneMoved = new UnityEvent();
+
+        public static UnityEvent<TokenFolder> OnTokenFolderClicked = new UnityEvent<TokenFolder>();
+        public static UnityEvent<TokenFolder> OnTokenFolderMoveInit = new UnityEvent<TokenFolder>();
+        public static UnityEvent OnTokenFolderMoveCancel = new UnityEvent();
+        public static UnityEvent OnTokenFolderMoveFinish = new UnityEvent();
+
         // Doors
         public static UnityEvent<string, bool> OnDoorOpened = new UnityEvent<string, bool>();
         public static UnityEvent<string, WallData> OnDoorModified = new UnityEvent<string, WallData>();

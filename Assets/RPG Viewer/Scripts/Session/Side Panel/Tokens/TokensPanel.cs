@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using Cysharp.Threading.Tasks;
 using Networking;
@@ -15,7 +14,9 @@ namespace RPG
 
         private Dictionary<string, TokenFolder> folders = new Dictionary<string, TokenFolder>();
         private Dictionary<string, TokenHolder> tokens = new Dictionary<string, TokenHolder>();
+
         private bool loaded;
+        private TokenFolder movedFolder;
 
         private void OnEnable()
         {
@@ -84,7 +85,7 @@ namespace RPG
             // Instantiate folder
             TokenFolder targetFolder = GetDirectoryByPath(path);
             TokenFolder folder = Instantiate(folderPrefab, targetFolder == null ? rootTransform : targetFolder.Content);
-            folder.LoadData(data);
+            folder.LoadData(data, this);
 
             // Add folder to dictionary
             folders.Add(id, folder);
@@ -117,6 +118,60 @@ namespace RPG
         {
             // Find folder with specified id
             return folders[id];
+        }
+        public bool IsSubFolderOf(TokenFolder folderToCheck, TokenFolder parentFolder)
+        {
+            List<TokenFolder> subFolders = parentFolder.GetComponentsInChildren<TokenFolder>(true).ToList();
+            subFolders.Remove(parentFolder);
+            return subFolders.Contains(folderToCheck);
+        }
+
+        public void InitFolderMove(TokenFolder folder)
+        {
+            // Store selected folder
+            movedFolder = folder;
+            Events.OnTokenFolderMoveInit?.Invoke(folder);
+        }
+        public void MoveRoot()
+        {
+            if (movedFolder == null) return;
+
+            Debug.Log($"Moving folder from {movedFolder.Path} to root");
+
+            // Set new transform
+            movedFolder.transform.SetParent(rootTransform);
+            movedFolder.transform.SetAsFirstSibling();
+
+            // Calculate new path
+            movedFolder.CalculatePath("");
+
+            // Send cancel event
+            movedFolder = null;
+            Events.OnTokenFolderMoveCancel?.Invoke();
+        }
+        public void CancelFolderMove()
+        {
+            // Send cancel event
+            movedFolder = null;
+            Events.OnTokenFolderMoveCancel?.Invoke();
+        }
+        public void FinishFolderMove(TokenFolder folder)
+        {
+            // Return if there's no folder selected
+            if (movedFolder == null) return;
+
+            Debug.Log($"Moving folder from {movedFolder.Path} to {folder.Path}");
+
+            // Set new transform
+            movedFolder.transform.SetParent(folder.Content);
+            movedFolder.transform.SetAsFirstSibling();
+
+            // Calculate new path
+            movedFolder.CalculatePath(folder.Path);
+
+            // Send move finish move event
+            movedFolder = null;
+            Events.OnTokenFolderMoveFinish?.Invoke();
         }
     }
 }

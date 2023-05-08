@@ -11,6 +11,11 @@ namespace RPG
         [SerializeField] private TMP_Text header;
         [SerializeField] private Image icon;
 
+        public string Path { get { return _path; } }
+
+        private TokenData data;
+        private string _path;
+
         public void LoadData(string id, string path)
         {
             SocketManager.EmitAsync("get-blueprint", async (callback) =>
@@ -20,8 +25,10 @@ namespace RPG
                 {
                     // Load Data
                     await UniTask.SwitchToMainThread();
+
                     TokenData data = JsonUtility.FromJson<TokenData>(callback.GetValue(1).ToString());
                     data.id = id;
+                    this._path = path;
                     LoadData(data);
                     return;
                 }
@@ -29,11 +36,16 @@ namespace RPG
                 MessageManager.QueueMessage(callback.GetValue().GetString());
             }, id);
         }
-
-        private void LoadData(TokenData data)
+        public void UpdatePath(string newPath)
         {
-            header.text = data.name;
-            WebManager.Download(data.image, true, async (bytes) =>
+            _path = newPath;
+        }
+
+        private void LoadData(TokenData settings)
+        {
+            data = settings;
+            header.text = settings.name;
+            WebManager.Download(settings.image, true, async (bytes) =>
             {
                 // Return if image couldn't be loaded
                 if (bytes == null) return;

@@ -96,4 +96,20 @@ namespace RPG
             LeanTween.size(panelRect, new Vector2(210.0f, 1000.0f), 0.2f);
         }
     }
+
+    public struct Folder
+    {
+        public string id;
+        public string path;
+        public string name;
+        public Color color;
+
+        public Folder(string _id, string _path, string _name, Color _color)
+        {
+            id = _id;
+            path = _path;
+            name = _name;
+            color = _color;
+        }
+    }
 }

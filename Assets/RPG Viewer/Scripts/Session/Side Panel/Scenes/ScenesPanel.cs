@@ -14,7 +14,10 @@ namespace RPG
 
         private Dictionary<string, SceneFolder> folders = new Dictionary<string, SceneFolder>();
         private Dictionary<string, SceneHolder> scenes = new Dictionary<string, SceneHolder>();
+
         private bool loaded;
+        private SceneFolder selectedFolder;
+        private SceneHolder selectedScene;
 
         private void OnEnable()
         {
@@ -63,7 +66,7 @@ namespace RPG
             // Instantiate scene
             SceneHolder scene = Instantiate(scenePrefab, targetFolder == null ? rootTransform : targetFolder.Content);
             scene.transform.SetAsLastSibling();
-            scene.LoadData(id, path);
+            scene.LoadData(id, path, this);
 
             // Add scene to dictionary
             scenes.Add(id, scene);
@@ -83,7 +86,7 @@ namespace RPG
             // Instantiate folder
             SceneFolder targetFolder = GetDirectoryByPath(path);
             SceneFolder folder = Instantiate(folderPrefab, targetFolder == null ? rootTransform : targetFolder.Content);
-            folder.LoadData(data);
+            folder.LoadData(data, this);
 
             // Add folder to dictionary
             folders.Add(id, folder);
@@ -100,7 +103,7 @@ namespace RPG
                 LoadScene(contents[i].GetString(), pathToThisFolder);
             }
         }
-        private Color GetColor()
+        public Color GetColor()
         {
             // Generate random color with 13 variants
             float randomHue = Random.Range(0, 12) * (1.0f / 12.0f);
@@ -116,6 +119,116 @@ namespace RPG
         {
             // Find folder with specified id
             return folders[id];
+        }
+        public bool IsSubFolderOf(SceneFolder folderToCheck, SceneFolder parentFolder)
+        {
+            if (parentFolder == null || folderToCheck == null) return false;
+            List<SceneFolder> subFolders = parentFolder.GetComponentsInChildren<SceneFolder>(true).ToList();
+            subFolders.Remove(parentFolder);
+            return subFolders.Contains(folderToCheck);
+        }
+
+        public void SelectFolder(SceneFolder folder)
+        {
+            // Deselect scene
+            selectedScene = null;
+
+            // Store selected folder
+            selectedFolder = folder;
+            Events.OnSceneFolderSelected?.Invoke(folder);
+            Events.OnSceneSelected?.Invoke(null);
+        }
+        public void MoveFolderRoot()
+        {
+            if (selectedFolder == null) return;
+
+            Debug.Log($"Moving folder from {selectedFolder.Path} to root");
+
+            // Set new transform
+            selectedFolder.transform.SetParent(rootTransform);
+            selectedFolder.transform.SetAsFirstSibling();
+
+            // Calculate new path
+            selectedFolder.CalculatePath("");
+
+            // Send cancel event
+            selectedFolder = null;
+            Events.OnSceneFolderDeselected?.Invoke();
+            Events.OnSceneDeselected?.Invoke();
+        }
+        public void DeselectFolder()
+        {
+            // Send cancel event
+            selectedFolder = null;
+            Events.OnSceneFolderDeselected?.Invoke();
+            Events.OnSceneDeselected?.Invoke();
+        }
+        public void MoveSelected(SceneFolder folder)
+        {
+            if (selectedFolder != null)
+            {
+                Debug.Log($"Moving folder from {selectedFolder.Path} to {folder.Path}");
+
+                // Set new transform
+                selectedFolder.transform.SetParent(folder.Content);
+                selectedFolder.transform.SetAsFirstSibling();
+
+                // Calculate new path
+                selectedFolder.CalculatePath(folder.Path);
+                selectedFolder = null;
+            }
+            else
+            {
+                Debug.Log($"Moving scene from {selectedScene.Path} to {folder.Path}");
+
+                // Set new transform
+                selectedScene.transform.SetParent(folder.Content);
+                selectedScene.transform.SetAsFirstSibling();
+
+                // Calculate new path
+                selectedScene.UpdatePath(folder.Path);
+                selectedScene = null;
+            }
+
+            // Send move finish move event
+            Events.OnSceneFolderMoved?.Invoke();
+            Events.OnSceneMoved?.Invoke();
+        }
+
+        public void SelectScene(SceneHolder scene)
+        {
+            // Deselect folder
+            selectedFolder = null;
+
+            // Store selected folder
+            selectedScene = scene;
+            Events.OnSceneSelected?.Invoke(scene);
+            Events.OnSceneFolderSelected?.Invoke(null);
+        }
+        public void MoveSceneRoot()
+        {
+            if (selectedScene == null) return;
+
+            Debug.Log($"Moving scene from {selectedScene.Path} to root");
+
+            // Set new transform
+            selectedScene.transform.SetParent(rootTransform);
+            selectedScene.transform.SetAsFirstSibling();
+
+            // Calculate new path
+            selectedScene.UpdatePath("");
+
+            // Send cancel event
+            selectedScene = null;
+            Events.OnSceneDeselected?.Invoke();
+            Events.OnSceneFolderDeselected?.Invoke();
+        }
+        public void DeselectScene()
+        {
+            // Send cancel event
+            selectedScene = null;
+            Events.OnSceneDeselected?.Invoke();
+            Events.OnSceneFolderDeselected?.Invoke();
         }
     }
 }
