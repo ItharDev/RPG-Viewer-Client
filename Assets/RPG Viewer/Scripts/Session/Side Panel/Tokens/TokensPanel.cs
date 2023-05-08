@@ -16,8 +16,8 @@ namespace RPG
         private Dictionary<string, TokenHolder> tokens = new Dictionary<string, TokenHolder>();
 
         private bool loaded;
-        private TokenFolder movedFolder;
-
+        private TokenFolder selectedFolder;
+        private TokenHolder selectedToken;
         private void OnEnable()
         {
             if (!loaded)
@@ -65,7 +65,7 @@ namespace RPG
             // Instantiate token
             TokenHolder token = Instantiate(tokenPrefab, targetFolder == null ? rootTransform : targetFolder.Content);
             token.transform.SetAsLastSibling();
-            token.LoadData(id, path);
+            token.LoadData(id, path, this);
 
             // Add token to dictionary
             tokens.Add(id, token);
@@ -102,7 +102,7 @@ namespace RPG
                 LoadToken(contents[i].GetString(), pathToThisFolder);
             }
         }
-        private Color GetColor()
+        public Color GetColor()
         {
             // Generate random color with 13 variants
             float randomHue = Random.Range(0, 12) * (1.0f / 12.0f);
@@ -121,57 +121,114 @@ namespace RPG
         }
         public bool IsSubFolderOf(TokenFolder folderToCheck, TokenFolder parentFolder)
         {
+            if (parentFolder == null || folderToCheck == null) return false;
+
             List<TokenFolder> subFolders = parentFolder.GetComponentsInChildren<TokenFolder>(true).ToList();
             subFolders.Remove(parentFolder);
             return subFolders.Contains(folderToCheck);
         }
 
-        public void InitFolderMove(TokenFolder folder)
+        public void SelectFolder(TokenFolder folder)
         {
+            // Deselect token
+            selectedToken = null;
+
             // Store selected folder
-            movedFolder = folder;
-            Events.OnTokenFolderMoveInit?.Invoke(folder);
+            selectedFolder = folder;
+            Events.OnBlueprintFolderSelected?.Invoke(folder);
+            Events.OnBlueprintSelected?.Invoke(null);
         }
-        public void MoveRoot()
+        public void MoveFolderRoot()
         {
-            if (movedFolder == null) return;
+            if (selectedFolder == null) return;
 
-            Debug.Log($"Moving folder from {movedFolder.Path} to root");
+            Debug.Log($"Moving folder from {selectedFolder.Path} to root");
 
             // Set new transform
-            movedFolder.transform.SetParent(rootTransform);
-            movedFolder.transform.SetAsFirstSibling();
+            selectedFolder.transform.SetParent(rootTransform);
+            selectedFolder.transform.SetAsFirstSibling();
 
             // Calculate new path
-            movedFolder.CalculatePath("");
+            selectedFolder.CalculatePath("");
 
             // Send cancel event
-            movedFolder = null;
-            Events.OnTokenFolderMoveCancel?.Invoke();
+            selectedFolder = null;
+            Events.OnBlueprintFolderDeselected?.Invoke();
+            Events.OnBlueprintDeselected?.Invoke();
         }
-        public void CancelFolderMove()
+        public void DeselectFolder()
         {
             // Send cancel event
-            movedFolder = null;
-            Events.OnTokenFolderMoveCancel?.Invoke();
+            selectedFolder = null;
+            Events.OnBlueprintFolderDeselected?.Invoke();
+            Events.OnBlueprintDeselected?.Invoke();
         }
-        public void FinishFolderMove(TokenFolder folder)
+        public void MoveSelected(TokenFolder folder)
         {
-            // Return if there's no folder selected
-            if (movedFolder == null) return;
+            if (selectedFolder != null)
+            {
+                Debug.Log($"Moving folder from {selectedFolder.Path} to {folder.Path}");
 
-            Debug.Log($"Moving folder from {movedFolder.Path} to {folder.Path}");
+                // Set new transform
+                selectedFolder.transform.SetParent(folder.Content);
+                selectedFolder.transform.SetAsFirstSibling();
 
-            // Set new transform
-            movedFolder.transform.SetParent(folder.Content);
-            movedFolder.transform.SetAsFirstSibling();
+                // Calculate new path
+                selectedFolder.CalculatePath(folder.Path);
+                selectedFolder = null;
+            }
+            else
+            {
+                Debug.Log($"Moving token from {selectedToken.Path} to {folder.Path}");
 
-            // Calculate new path
-            movedFolder.CalculatePath(folder.Path);
+                // Set new transform
+                selectedToken.transform.SetParent(folder.Content);
+                selectedToken.transform.SetAsLastSibling();
+
+                // Calculate new path
+                selectedToken.UpdatePath(folder.Path);
+                selectedToken = null;
+            }
 
             // Send move finish move event
-            movedFolder = null;
-            Events.OnTokenFolderMoveFinish?.Invoke();
+            Events.OnBlueprintFolderMoved?.Invoke();
+            Events.OnBlueprintMoved?.Invoke();
+        }
+
+        public void SelectToken(TokenHolder token)
+        {
+            // Deselect folder
+            selectedFolder = null;
+
+            // Store selected token
+            selectedToken = token;
+            Events.OnBlueprintSelected?.Invoke(token);
+            Events.OnBlueprintFolderSelected?.Invoke(null);
+        }
+        public void MoveTokenRoot()
+        {
+            if (selectedToken == null) return;
+
+            Debug.Log($"Moving token from {selectedToken.Path} to root");
+
+            // Set new transform
+            selectedToken.transform.SetParent(rootTransform);
+            selectedToken.transform.SetAsFirstSibling();
+
+            // Calculate new path
+            selectedToken.UpdatePath("");
+
+            // Send cancel event
+            selectedToken = null;
+            Events.OnBlueprintDeselected?.Invoke();
+            Events.OnBlueprintFolderDeselected?.Invoke();
+        }
+        public void DeselectScene()
+        {
+            // Send cancel event
+            selectedToken = null;
+            Events.OnBlueprintDeselected?.Invoke();
+            Events.OnBlueprintFolderDeselected?.Invoke();
         }
     }
 }

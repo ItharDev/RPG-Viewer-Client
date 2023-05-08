@@ -23,7 +23,7 @@ namespace RPG
                 // Check if landing page exists
                 if (bytes == null)
                 {
-                    MessageManager.QueueMessage("Failed to load landing page, try again");
+                    MessageManager.QueueMessage("Failed to load landing page, please try again");
                     return;
                 }
 
@@ -55,6 +55,8 @@ namespace RPG
 
                 Events.OnStateChanged?.Invoke(oldState, State);
                 Events.OnSessionJoined?.Invoke();
+
+                PlayerPrefs.SetString("Last Session", data.id);
             });
         }
 

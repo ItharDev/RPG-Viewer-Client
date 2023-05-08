@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.IO;
 using System.Transactions;
 using Cinemachine;
 using UnityEngine;
@@ -21,6 +22,14 @@ namespace RPG
         private Vector2 panPosition;
         private float targetOrthographicSize = 5;
 
+        private void OnEnable()
+        {
+            StartCoroutine(SaveView());
+        }
+        private void OnDisable()
+        {
+            StopAllCoroutines();
+        }
         private void Update()
         {
             HandleCameraZoom();
@@ -68,6 +77,14 @@ namespace RPG
         public void FollowTarget(Transform target)
         {
             mainVCam.m_Follow = target;
+        }
+        private IEnumerator SaveView()
+        {
+            string path = $"{Application.persistentDataPath}{Path.DirectorySeparatorChar}last_session.png";
+            ScreenCapture.CaptureScreenshot(path);
+
+            yield return new WaitForSeconds(5.0f);
+            StartCoroutine(SaveView());
         }
 
         private IEnumerator MoveCoroutine(Vector2 position, float time, bool zoom)

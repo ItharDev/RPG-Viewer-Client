@@ -123,6 +123,7 @@ namespace RPG
         public bool IsSubFolderOf(SceneFolder folderToCheck, SceneFolder parentFolder)
         {
             if (parentFolder == null || folderToCheck == null) return false;
+
             List<SceneFolder> subFolders = parentFolder.GetComponentsInChildren<SceneFolder>(true).ToList();
             subFolders.Remove(parentFolder);
             return subFolders.Contains(folderToCheck);
@@ -195,12 +196,12 @@ namespace RPG
             Events.OnSceneMoved?.Invoke();
         }
 
-        public void SelectScene(SceneHolder scene)
+        public void SelectToken(SceneHolder scene)
         {
             // Deselect folder
             selectedFolder = null;
 
-            // Store selected folder
+            // Store selected scene
             selectedScene = scene;
             Events.OnSceneSelected?.Invoke(scene);
             Events.OnSceneFolderSelected?.Invoke(null);

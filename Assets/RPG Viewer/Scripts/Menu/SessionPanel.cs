@@ -107,10 +107,10 @@ namespace RPG
                         joinDropdown.AddOptions(new List<string>() { name });
                         joinDropdown.RefreshShownValue();
                     }
+
+                    LoadLastSession();
                     return;
                 }
-
-                LoadLastSession();
 
                 // Send error message
                 MessageManager.QueueMessage(callback.GetValue(1).GetString());
@@ -119,18 +119,14 @@ namespace RPG
 
         private void LoadLastSession()
         {
-            string id = PlayerPrefs.GetString("Last Session");
-            header.sizeDelta = new Vector2(0.0f, string.IsNullOrEmpty(id) ? 0.0f : 300.0f);
-
-            // Return if last session data was not found
-            if (string.IsNullOrEmpty(id)) return;
-
-            WebManager.Download(id, true, async (bytes) =>
+            WebManager.Download("last_session.png", true, async (bytes) =>
             {
+                await UniTask.SwitchToMainThread();
+
+                header.anchoredPosition = new Vector2(0.0f, bytes == null ? 0.0f : 300.0f);
+
                 // Return if image was not found
                 if (bytes == null) return;
-
-                await UniTask.SwitchToMainThread();
 
                 // Create and apply texture
                 Texture2D texture = await AsyncImageLoader.CreateFromImageAsync(bytes);

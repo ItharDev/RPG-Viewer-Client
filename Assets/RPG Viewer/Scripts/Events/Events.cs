@@ -31,10 +31,14 @@ namespace RPG
         public static UnityEvent OnSceneDeselected = new UnityEvent();
         public static UnityEvent OnSceneMoved = new UnityEvent();
 
-        public static UnityEvent<TokenFolder> OnTokenFolderClicked = new UnityEvent<TokenFolder>();
-        public static UnityEvent<TokenFolder> OnTokenFolderMoveInit = new UnityEvent<TokenFolder>();
-        public static UnityEvent OnTokenFolderMoveCancel = new UnityEvent();
-        public static UnityEvent OnTokenFolderMoveFinish = new UnityEvent();
+        public static UnityEvent<TokenFolder> OnBlueprintFolderClicked = new UnityEvent<TokenFolder>();
+        public static UnityEvent<TokenFolder> OnBlueprintFolderSelected = new UnityEvent<TokenFolder>();
+        public static UnityEvent OnBlueprintFolderDeselected = new UnityEvent();
+        public static UnityEvent OnBlueprintFolderMoved = new UnityEvent();
+        public static UnityEvent<TokenHolder> OnBlueprintClicked = new UnityEvent<TokenHolder>();
+        public static UnityEvent<TokenHolder> OnBlueprintSelected = new UnityEvent<TokenHolder>();
+        public static UnityEvent OnBlueprintDeselected = new UnityEvent();
+        public static UnityEvent OnBlueprintMoved = new UnityEvent();
 
         // Doors
         public static UnityEvent<string, bool> OnDoorOpened = new UnityEvent<string, bool>();

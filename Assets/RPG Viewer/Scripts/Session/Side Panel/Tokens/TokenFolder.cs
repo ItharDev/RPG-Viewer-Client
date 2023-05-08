@@ -1,4 +1,3 @@
-using Nobi.UiRoundedCorners;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -32,12 +31,12 @@ namespace RPG
 
         public string Path
         {
-            get { return string.IsNullOrEmpty(data.path) ? Id : $"{data.path}/{Id}"; }
+            get { return string.IsNullOrEmpty(Data.path) ? Id : $"{Data.path}/{Id}"; }
         }
-        public string Id { get { return data.id; } }
+        public string Id { get { return Data.id; } }
         public Transform Content { get { return content.transform; } }
 
-        private Folder data;
+        public Folder Data;
         private TokensPanel tokensPanel;
         private RectTransform rect;
 
@@ -51,28 +50,24 @@ namespace RPG
             if (rect == null) rect = GetComponent<RectTransform>();
 
             // Add event listeners
-            Events.OnTokenFolderClicked.AddListener(Resize);
-            Events.OnTokenFolderMoveInit.AddListener(HandleFolderMoveInit);
-            Events.OnTokenFolderMoveCancel.AddListener(HandleFolderMoveCancel);
-            Events.OnTokenFolderMoveFinish.AddListener(HandleFolderMoveFinish);
+            Events.OnBlueprintFolderClicked.AddListener(HandleClick);
+            Events.OnBlueprintFolderSelected.AddListener(HandleSelect);
+            Events.OnBlueprintFolderDeselected.AddListener(HandleDeselect);
+            Events.OnBlueprintFolderMoved.AddListener(HandleMoved);
         }
         private void OnDisable()
         {
             // Remove event listeners
-            Events.OnTokenFolderClicked.RemoveListener(Resize);
-            Events.OnTokenFolderMoveInit.RemoveListener(HandleFolderMoveInit);
-            Events.OnTokenFolderMoveCancel.RemoveListener(HandleFolderMoveCancel);
-            Events.OnTokenFolderMoveFinish.RemoveListener(HandleFolderMoveFinish);
+            Events.OnBlueprintFolderClicked.RemoveListener(HandleClick);
+            Events.OnBlueprintFolderSelected.RemoveListener(HandleSelect);
+            Events.OnBlueprintFolderDeselected.RemoveListener(HandleDeselect);
+            Events.OnBlueprintFolderMoved.RemoveListener(HandleMoved);
         }
 
-        private void Resize(TokenFolder folder)
+        private void HandleClick(TokenFolder folder)
         {
             // Close options panel if it's open and not ours
             if (optionsOpen && folder != this) ToggleOptions();
-
-            // Resize rect
-            rect.sizeDelta = new Vector2(0.0f, folderOpen ? 40.0f + content.sizeDelta.y : 40.0f);
-            rect.sizeDelta = new Vector2(0.0f, folderOpen ? 40.0f + content.sizeDelta.y : 40.0f);
 
             // Refresh rounded corners
             background.enabled = false;
@@ -80,8 +75,13 @@ namespace RPG
 
             border.enabled = false;
             border.enabled = true;
+
+            VerticalLayoutGroup layout = content.GetComponent<VerticalLayoutGroup>();
+            layout.CalculateLayoutInputVertical();
+            layout.SetLayoutVertical();
+            rect.sizeDelta = new Vector2(0.0f, folderOpen ? 40.0f + content.sizeDelta.y : 40.0f);
         }
-        private void HandleFolderMoveInit(TokenFolder folder)
+        private void HandleSelect(TokenFolder folder)
         {
             // This folder was selected
             if (folder == this)
@@ -106,22 +106,26 @@ namespace RPG
             // Check if we are children of the selected folder
             if (tokensPanel.IsSubFolderOf(this, folder)) moveHereButton.SetActive(false);
         }
-        private void HandleFolderMoveCancel()
+        private void HandleDeselect()
         {
+            // Allow folder selection
             selectButton.SetActive(true);
             moveHereButton.SetActive(false);
             deselectButton.SetActive(false);
             rootButton.SetActive(false);
 
+            // Reset background color
             background.color = normalColor;
         }
-        private void HandleFolderMoveFinish()
+        private void HandleMoved()
         {
+            // Allow folder selection
             selectButton.SetActive(true);
             moveHereButton.SetActive(false);
             deselectButton.SetActive(false);
             rootButton.SetActive(false);
 
+            // Reset background color
             background.color = normalColor;
         }
 
@@ -137,7 +141,7 @@ namespace RPG
             else if (pointerData.button == PointerEventData.InputButton.Right) ToggleOptions();
 
             // Send folder toggled event
-            Events.OnTokenFolderClicked?.Invoke(this);
+            Events.OnBlueprintFolderClicked?.Invoke(this);
         }
         private void ToggleFolder()
         {
@@ -158,6 +162,7 @@ namespace RPG
                 optionsPanel.SetAsLastSibling();
             }
 
+            // Calculate panel's target height
             float targetSize = 60.0f;
             if (selectButton.activeInHierarchy) targetSize += 30.0f;
             if (moveHereButton.activeInHierarchy) targetSize += 30.0f;
@@ -191,38 +196,38 @@ namespace RPG
             ToggleOptions();
             Debug.Log($"Delete folder");
         }
-        public void InitMove()
+        public void Select()
         {
             ToggleOptions();
-            tokensPanel.InitFolderMove(this);
+            tokensPanel.SelectFolder(this);
         }
         public void MoveRoot()
         {
             ToggleOptions();
-            tokensPanel.MoveRoot();
+            tokensPanel.MoveFolderRoot();
         }
-        public void CancelMove()
+        public void Deselect()
         {
             ToggleOptions();
-            tokensPanel.CancelFolderMove();
+            tokensPanel.DeselectFolder();
         }
-        public void FinishMove()
+        public void Move()
         {
             ToggleOptions();
-            tokensPanel.FinishFolderMove(this);
+            tokensPanel.MoveSelected(this);
         }
         public void ConfirmRename()
         {
             headerInput.gameObject.SetActive(false);
             header.gameObject.SetActive(true);
-            string newName = string.IsNullOrEmpty(headerInput.text) ? data.name : headerInput.text;
+            string newName = string.IsNullOrEmpty(headerInput.text) ? Data.name : headerInput.text;
 
             Debug.Log($"Renamed folder to: {newName}");
         }
         public void LoadData(Folder folder, TokensPanel panel)
         {
             // Update fields
-            data = folder;
+            Data = folder;
             header.text = folder.name;
             border.color = folder.color;
             headerInput.placeholder.GetComponent<TMP_Text>().text = folder.name;
@@ -234,7 +239,7 @@ namespace RPG
 
         public void CalculatePath(string parentPath)
         {
-            data.path = parentPath;
+            Data.path = parentPath;
 
             TokenFolder[] folders = GetComponentsInChildren<TokenFolder>();
             TokenHolder[] tokens = GetComponentsInChildren<TokenHolder>();

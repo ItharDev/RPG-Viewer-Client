@@ -165,7 +165,7 @@ namespace RPG
         public void Select()
         {
             ToggleOptions();
-            scenesPanel.SelectScene(this);
+            scenesPanel.SelectToken(this);
         }
         public void MoveRoot()
         {
@@ -203,7 +203,7 @@ namespace RPG
         public void UpdatePath(string newPath)
         {
             data.path = newPath;
-            selectedColor = string.IsNullOrEmpty(newPath) ? scenesPanel.GetColor() : scenesPanel.GetDirectoryById(newPath).Data.color;
+            selectedColor = string.IsNullOrEmpty(newPath) ? scenesPanel.GetColor() : scenesPanel.GetDirectoryByPath(newPath).Data.color;
         }
 
         private void LoadData(SceneSettings settings)
