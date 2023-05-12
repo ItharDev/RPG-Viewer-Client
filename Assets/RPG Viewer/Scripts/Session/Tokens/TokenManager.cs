@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Cysharp.Threading.Tasks;
 using Networking;
 using UnityEngine;
@@ -10,10 +11,9 @@ namespace RPG
         [SerializeField] private Token tokenPrefab;
         [SerializeField] private Transform tokenParent;
 
-        public Dictionary<string, Token> Tokens = new Dictionary<string, Token>();
+        private Dictionary<string, Token> tokens = new Dictionary<string, Token>();
         private List<Token> myTokens = new List<Token>();
 
-        private TokenData copyData;
         private int selectedToken = -1;
 
         private void OnEnable()
@@ -101,12 +101,11 @@ namespace RPG
                 Token token = Instantiate(tokenPrefab, data.position, Quaternion.identity, tokenParent);
 
                 // Disable token if needed
-                if (!ConnectionManager.Info.isMaster && !data.enabled) token.gameObject.SetActive(false);
+                if (!ConnectionManager.Info.isMaster && !data.enabled) token.UI.SetAlpha(0.0f);
 
                 // Load data and add it to dictionary
                 token.LoadData(data, sprite);
-                Tokens.Add(data.id, token);
-
+                tokens.Add(data.id, token);
                 // Check token's permissions
                 if (token.Permission.type == PermissionType.Owner) myTokens.Add(token);
 
@@ -117,7 +116,7 @@ namespace RPG
         private void MoveToken(string id, MovementData data)
         {
             // Find the correct token
-            Token token = Tokens[id];
+            Token token = tokens[id];
 
             // Check if token was found
             if (token == null) return;
@@ -127,7 +126,7 @@ namespace RPG
         private void ModifyToken(string id, TokenData data)
         {
             // Find the correct token
-            Token token = Tokens[id];
+            Token token = tokens[id];
 
             // Check if token was found
             if (token == null) return;
@@ -156,20 +155,20 @@ namespace RPG
         private void RemoveToken(string id)
         {
             // Find the correct token
-            Token token = Tokens[id];
+            Token token = tokens[id];
 
             // Check if token was found
             if (token == null) return;
 
             // Remove token from lists and destroy it
             if (myTokens.Contains(token)) myTokens.Remove(token);
-            Tokens.Remove(id);
+            tokens.Remove(id);
             Destroy(token.gameObject);
         }
         private void EnableToken(string id, bool enabled)
         {
             // Find the correct token
-            Token token = Tokens[id];
+            Token token = tokens[id];
 
             // Check if token was found
             if (token == null) return;
@@ -181,7 +180,7 @@ namespace RPG
         private void UpdateElevation(string id, string elevation)
         {
             // Find the correct token
-            Token token = Tokens[id];
+            Token token = tokens[id];
 
             // Check if token was found
             if (token == null) return;
@@ -191,7 +190,7 @@ namespace RPG
         private void UpdateConditions(string id, int conditions)
         {
             // Find the correct token
-            Token token = Tokens[id];
+            Token token = tokens[id];
 
             // Check if token was found
             if (token == null) return;
@@ -201,7 +200,7 @@ namespace RPG
         private void LockToken(string id, bool locked)
         {
             // Find the correct token
-            Token token = Tokens[id];
+            Token token = tokens[id];
 
             // Check if token was found
             if (token == null) return;
@@ -211,7 +210,7 @@ namespace RPG
         private void UpdateHealth(string id, int health)
         {
             // Find the correct token
-            Token token = Tokens[id];
+            Token token = tokens[id];
 
             // Check if token was found
             if (token == null) return;
@@ -221,7 +220,7 @@ namespace RPG
         private void RotateToken(string id, float angle)
         {
             // Find the correct token
-            Token token = Tokens[id];
+            Token token = tokens[id];
 
             // Check if token was found
             if (token == null) return;
@@ -231,11 +230,29 @@ namespace RPG
 
         private void LoadTokens(SceneSettings settings)
         {
-            List<string> list = settings.tokens;
             SocketManager.EmitAsync("get-tokens", (callback) =>
             {
-                // TODO: Load all tokens at once
+                // Check if the event was successful
+                if (callback.GetValue().GetBoolean())
+                {
+                    // Enumerate tokens array
+                    var list = callback.GetValue(1).EnumerateArray().ToArray();
+
+                    for (int i = 0; i < list.Length; i++)
+                    {
+                        LoadToken(list[i]);
+                    }
+                    return;
+                }
+
+                // Send error message
+                MessageManager.QueueMessage(callback.GetValue(1).GetString());
             }, settings.id);
+        }
+        private void LoadToken(System.Text.Json.JsonElement json)
+        {
+            TokenData data = JsonUtility.FromJson<TokenData>(json.ToString());
+            CreateToken(data);
         }
         private void ReloadTokens(SessionState oldState, SessionState newState)
         {
@@ -244,7 +261,6 @@ namespace RPG
             {
                 // Return if scene was not changed
                 if (oldState.scene == newState.scene) return;
-
                 UnloadTokens();
             }
             else
@@ -258,7 +274,6 @@ namespace RPG
 
                 // Return if scene was not changed
                 if (oldState.scene == newState.scene) return;
-
                 UnloadTokens();
             }
         }
@@ -266,7 +281,7 @@ namespace RPG
         private void UnloadTokens()
         {
             // Loop through each token
-            foreach (var item in Tokens)
+            foreach (var item in tokens)
             {
                 // Continue if token is null
                 if (item.Value == null) continue;
@@ -274,14 +289,14 @@ namespace RPG
             }
 
             // Clear lists
-            Tokens.Clear();
+            tokens.Clear();
             myTokens.Clear();
         }
 
         public void SelectToken(Token token)
         {
             // Loop through each token
-            foreach (var item in Tokens)
+            foreach (var item in tokens)
             {
                 // Set token as selected
                 item.Value.Selected = true;
@@ -300,22 +315,6 @@ namespace RPG
             // Update index of selected token
             int index = myTokens.IndexOf(token);
             selectedToken = index;
-        }
-
-        public void CopyToken(TokenData data)
-        {
-            // Update data in clipboard
-            copyData = data;
-        }
-        private void PasteToken(Vector2 pos)
-        {
-            // Update pasted token's position
-            copyData.position = pos;
-
-            SocketManager.EmitAsync("create-token", (callback) =>
-            {
-                if (!callback.GetValue().GetBoolean()) MessageManager.QueueMessage(callback.GetValue(1).GetString());
-            }, JsonUtility.ToJson(copyData));
         }
     }
 }

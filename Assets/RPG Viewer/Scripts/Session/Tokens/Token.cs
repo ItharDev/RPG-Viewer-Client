@@ -34,7 +34,7 @@ namespace RPG
             if (UI == null) UI = GetComponent<TokenUI>();
             if (Conditions == null) Conditions = GetComponent<TokenConditions>();
         }
-        
+
         private void Update()
         {
             // Return if token is not selected or we are edting any fields
@@ -169,7 +169,7 @@ namespace RPG
 
             SocketManager.EmitAsync("remove-token", (callback) =>
             {
-                // Check if event was successful
+                // Check if the event was successful
                 if (callback.GetValue().GetBoolean()) return;
 
                 // Send error message

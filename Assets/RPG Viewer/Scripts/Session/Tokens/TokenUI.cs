@@ -10,7 +10,7 @@ namespace RPG
     {
         [Header("Canvas")]
         [SerializeField] private Canvas canvas;
-        [SerializeField] private Canvas uiCanvas;
+        [SerializeField] private Canvas uICanvas;
         [SerializeField] private CanvasGroup canvasGroup;
 
         [Header("UI")]
@@ -42,7 +42,7 @@ namespace RPG
         {
             // Get reference of main class
             if (token == null) token = GetComponent<Token>();
-            
+
             // Add event listeners
             Events.OnToolChanged.AddListener(HandleRaycast);
             Events.OnTokenSelected.AddListener(UpdateSorting);
@@ -98,8 +98,9 @@ namespace RPG
         }
         public void SetImage(Sprite sprite)
         {
-            // Update image
+            // Update image sprite and color
             image.sprite = sprite;
+            image.color = Color.white;
         }
         public void Reload()
         {
@@ -243,13 +244,13 @@ namespace RPG
         public void Resize()
         {
             // Calculate correct canvas scale
-            float cellSize = Session.Instance.Grid.CellSize;
+            float cellSize = 1;
             Vector2Int dimensions = token.Data.dimensions;
             float targetSize = dimensions.x >= dimensions.y ? cellSize * (dimensions.y / 5.0f) : cellSize * (dimensions.x / 5.0f);
 
             // Apply scaling
             Rect.sizeDelta = new Vector2(100 * cellSize * (dimensions.x / 5.0f), 100 * cellSize * (dimensions.y / 5.0f));
-            uiCanvas.transform.localScale = new Vector3(targetSize, targetSize, 1.0f);
+            uICanvas.transform.localScale = new Vector3(targetSize, targetSize, 1.0f);
         }
     }
 }

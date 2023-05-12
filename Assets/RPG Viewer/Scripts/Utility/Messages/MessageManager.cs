@@ -58,7 +58,7 @@ namespace RPG
 
             // Remove message from list and destroy it
             listOfMessages.Remove(msg);
-            Destroy(msg);
+            Destroy(msg.gameObject);
         }
         public void CloseMessage(Message message)
         {

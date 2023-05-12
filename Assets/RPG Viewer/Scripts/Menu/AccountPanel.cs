@@ -52,7 +52,6 @@ namespace RPG
 
         public void OpenSignIn()
         {
-            Debug.Log("Runs");
             // Close panel if it's open
             if (rect.sizeDelta.x != 0 && signInPanel.activeInHierarchy)
             {

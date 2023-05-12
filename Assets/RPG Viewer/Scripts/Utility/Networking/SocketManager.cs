@@ -102,14 +102,14 @@ namespace Networking
             });
 
             // Lights
-            Socket.On("create-light", async (data) =>
+            Socket.On("create-light", (data) =>
             {
                 // LightData light = JsonUtility.FromJson<LightData>(data.GetValue().GetString());
 
                 // await UniTask.SwitchToMainThread();
                 // Events.OnLightCreated?.Invoke(light);
             });
-            Socket.On("modify-light", async (data) =>
+            Socket.On("modify-light", (data) =>
             {
                 // LightData light = JsonUtility.FromJson<LightData>(data.GetValue().GetString());
 
@@ -125,7 +125,7 @@ namespace Networking
             });
 
             // Presets
-            Socket.On("create-preset", async (data) =>
+            Socket.On("create-preset", (data) =>
             {
                 // string id = data.GetValue().GetString();
                 // LightPreset preset = JsonUtility.FromJson<LightPreset>(data.GetValue(1).ToString());
@@ -133,7 +133,7 @@ namespace Networking
                 // await UniTask.SwitchToMainThread();
                 // Events.OnPresetCreated?.Invoke(id, preset);
             });
-            Socket.On("modify-preset", async (data) =>
+            Socket.On("modify-preset", (data) =>
             {
                 // string id = data.GetValue().GetString();
                 // LightPreset preset = JsonUtility.FromJson<LightPreset>(data.GetValue(1).ToString());
@@ -232,7 +232,7 @@ namespace Networking
             });
 
             // Notes
-            Socket.On("create-note", async (data) =>
+            Socket.On("create-note", (data) =>
             {
                 // string id = data.GetValue().GetString();
                 // NoteData note = JsonUtility.FromJson<NoteData>(data.GetValue(1).ToString());
@@ -321,7 +321,7 @@ namespace Networking
                 await UniTask.SwitchToMainThread();
                 Events.OnJournalHeaderModified?.Invoke(id, header);
             });
-            Socket.On("set-collaborators", async (data) =>
+            Socket.On("set-collaborators", (data) =>
             {
                 string id = data.GetValue().GetString();
                 var list = data.GetValue(1).EnumerateArray().ToArray();
@@ -342,7 +342,7 @@ namespace Networking
                 await UniTask.SwitchToMainThread();
                 Events.OnJournalRemoved?.Invoke(id);
             });
-            Socket.On("show-journal", async (data) =>
+            Socket.On("show-journal", (data) =>
             {
                 // JournalData journal = JsonUtility.FromJson<JournalData>(data.GetValue().GetString());
 

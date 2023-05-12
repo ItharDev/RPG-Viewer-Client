@@ -15,6 +15,19 @@ namespace RPG
         {
             DontDestroyOnLoad(gameObject);
         }
+        private void OnEnable()
+        {
+            Events.OnStateChanged.AddListener(SetState);
+        }
+        private void OnDisable()
+        {
+            Events.OnStateChanged.RemoveListener(SetState);
+        }
+
+        private void SetState(SessionState oldState, SessionState newState)
+        {
+            State = newState;
+        }
 
         public static void JoinSession(JoinData data)
         {
@@ -42,7 +55,7 @@ namespace RPG
                 }
 
                 // Generate session info and state
-                Info = new SessionInfo(data.id, data.master, data.master == GameData.User.id, users, sprite);
+                Info = new SessionInfo(data.id, data.masterId, data.master, users, sprite);
                 State = new SessionState(data.synced, data.scene);
                 SessionState oldState = new SessionState(false, "");
 
@@ -68,7 +81,7 @@ namespace RPG
                 string id = list[i];
                 SocketManager.EmitAsync("load-preset", (callback) =>
                 {
-                    // Check if event was successful
+                    // Check if the event was successful
                     if (callback.GetValue().GetBoolean())
                     {
                         // TODO: Load preset data and add it to the list

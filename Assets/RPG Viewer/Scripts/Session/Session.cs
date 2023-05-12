@@ -1,4 +1,5 @@
-﻿using Cysharp.Threading.Tasks;
+﻿using System.Runtime.CompilerServices;
+using Cysharp.Threading.Tasks;
 using Networking;
 using UnityEngine;
 using UnityEngine.UI;
@@ -10,10 +11,9 @@ namespace RPG
         [SerializeField] private SpriteRenderer sceneSprite;
         [SerializeField] private Image landingPage;
 
-        // TODO: public LightingManager LightingManager { get; private set; }
+        public LightingManager LightingManager { get; private set; }
         public TokenManager TokenManager { get; private set; }
-        // TODO: public WallManager WallManager { get; private set; }
-        public Grid Grid { get; private set; }
+        public GridManager Grid { get; private set; }
         public SceneSettings Settings { get; private set; }
         public static Session Instance { get; private set; }
 
@@ -33,11 +33,10 @@ namespace RPG
             if (Instance == null) Instance = this;
             else Destroy(gameObject);
 
-            // Get reference of managers
-            // TODO: LightingManager = GetComponent<LightingManager>();
-            TokenManager = GetComponent<TokenManager>();
-            // TODO: WallManager = GetComponent<WallManager>();
-            Grid = FindObjectOfType<Grid>();
+            // Get reference of the managers
+            LightingManager = GetComponentInChildren<LightingManager>();
+            TokenManager = GetComponentInChildren<TokenManager>();
+            Grid = GetComponentInChildren<GridManager>();
         }
         private void Start()
         {
@@ -47,29 +46,48 @@ namespace RPG
 
         private void ChangeState(SessionState oldState, SessionState newState)
         {
-            // Check if we are the master client
-            if (ConnectionManager.Info.isMaster)
+            if (newState.scene == null)
             {
-                // Activate or deactivate landing page based on state
-                landingPage.gameObject.SetActive(!string.IsNullOrEmpty(newState.scene));
-                return;
-            }
-            else if (!newState.synced)
-            {
-                // Return if syncing is disabled
+                // Return if there's no scene active
                 landingPage.gameObject.SetActive(true);
                 return;
             }
 
-            if (!string.IsNullOrEmpty(newState.scene)) LoadScene(newState.scene);
+            // Check if we are the master client
+            if (ConnectionManager.Info.isMaster)
+            {
+                // Activate or deactivate landing page based on state
+                landingPage.gameObject.SetActive(string.IsNullOrEmpty(newState.scene));
+
+                // Return if no scene was changed
+                if (oldState.scene == newState.scene) return;
+
+                // Load new scene
+                if (!string.IsNullOrEmpty(newState.scene)) LoadScene(newState.scene);
+            }
+            else
+            {
+                // Return if syncing is disabled
+                if (!newState.synced)
+                {
+                    landingPage.gameObject.SetActive(true);
+                    return;
+                }
+
+                // Load new scene
+                if (!string.IsNullOrEmpty(newState.scene)) LoadScene(newState.scene);
+            }
         }
 
         private void LoadScene(string id)
         {
-            SocketManager.EmitAsync("get-scene", (callback) =>
+            landingPage.gameObject.SetActive(true);
+            SocketManager.EmitAsync("get-scene", async (callback) =>
             {
                 if (callback.GetValue().GetBoolean())
                 {
+                    await UniTask.SwitchToMainThread();
+
                     // Load scene data
                     SceneSettings settings = JsonUtility.FromJson<SceneSettings>(callback.GetValue(1).ToString());
                     settings.id = id;
@@ -78,7 +96,6 @@ namespace RPG
                     Settings = settings;
 
                     // Send load event
-                    Events.OnSceneLoaded?.Invoke(settings);
                     WebManager.Download(settings.data.image, true, async (bytes) =>
                     {
                         await UniTask.SwitchToMainThread();
@@ -87,8 +104,12 @@ namespace RPG
                         Texture2D texture = await AsyncImageLoader.CreateFromImageAsync(bytes);
                         sceneSprite.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
 
+                        Events.OnSceneLoaded?.Invoke(settings);
+
                         // Remove message when loading is completed
                         MessageManager.RemoveMessage("Loading scene");
+
+                        landingPage.gameObject.SetActive(false);
                     });
 
                     return;

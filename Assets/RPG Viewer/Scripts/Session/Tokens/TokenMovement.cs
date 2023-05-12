@@ -101,7 +101,7 @@ namespace RPG
             float targetAngle = addAngle ? token.Data.rotation + angle : angle;
             SocketManager.EmitAsync("rotate-token", (callback) =>
             {
-                // Check if event was successful
+                // Check if the event was successful
                 if (callback.GetValue().GetBoolean()) return;
 
                 // Send error message
@@ -131,8 +131,8 @@ namespace RPG
             float inputY = Input.GetAxisRaw("Vertical");
 
             // Get current and target cells
-            Cell currentCell = Session.Instance.Grid.PointToCell(token.Data.position);
-            Cell targetCell = Session.Instance.Grid.GetCell(currentCell.gridPosition.x + Mathf.RoundToInt(inputX), currentCell.gridPosition.y + Mathf.RoundToInt(inputY));
+            Cell currentCell = Session.Instance.Grid.WorldPosToCell(token.Data.position);
+            Cell targetCell =  currentCell/*Session.Instance.Grid.GetCell(currentCell.gridPosition.x + Mathf.RoundToInt(inputX), currentCell.gridPosition.y + Mathf.RoundToInt(inputY))*/;
 
             // Return if no target cell was found
             if (targetCell.worldPosition == Vector2.zero) return;
@@ -321,7 +321,7 @@ namespace RPG
 
             SocketManager.EmitAsync("move-token", (callback) =>
             {
-                // Check if event was successful
+                // Check if the event was successful
                 if (callback.GetValue().GetBoolean()) return;
 
                 // Send error message

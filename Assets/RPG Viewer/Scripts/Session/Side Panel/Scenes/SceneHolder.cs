@@ -140,7 +140,14 @@ namespace RPG
         public void Play()
         {
             ToggleOptions();
-            Debug.Log($"Played scene: {data.id}");
+            SocketManager.EmitAsync("set-scene", (callback) =>
+            {
+                // Check if the event was successful
+                if (callback.GetValue().GetBoolean()) return;
+
+                // Send error message
+                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+            }, data.id);
         }
         public void Rename()
         {

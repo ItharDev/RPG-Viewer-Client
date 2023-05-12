@@ -45,8 +45,8 @@ namespace RPG
         public static UnityEvent<string, WallData> OnDoorModified = new UnityEvent<string, WallData>();
 
         // Lights
-        // public static UnityEvent<LightData> OnLightCreated = new UnityEvent<LightData>();
-        // public static UnityEvent<string, LightData> OnLightModified = new UnityEvent<string, LightData>();
+        public static UnityEvent<LightData> OnLightCreated = new UnityEvent<LightData>();
+        public static UnityEvent<string, LightData> OnLightModified = new UnityEvent<string, LightData>();
         public static UnityEvent<string> OnLightRemoved = new UnityEvent<string>();
         public static UnityEvent<FogState> OnFogStateChanged = new UnityEvent<FogState>();
         public static UnityEvent<ToolState> OnToolChanged = new UnityEvent<ToolState>();

@@ -8,16 +8,15 @@ namespace RPG
     {
         public SceneData data;
         public GridData grid;
-        public FogOfWarData fogOfWar;
+        public LightingSettings fogOfWar;
         public List<WallData> walls;
         public List<string> tokens;
         public List<InitiativeData> initiatives;
-        // TODO: public List<LightData> lights;
+        public List<LightData> lights;
         // TODO: public List<NoteData> notes;
 
         [NonSerialized] public string path;
         [NonSerialized] public string id;
-        [NonSerialized] public byte[] bytes;
     }
 
     [Serializable]
@@ -32,58 +31,6 @@ namespace RPG
             name = _name;
             image = _image;
             nightStrength = _nightStrength;
-        }
-    }
-
-    [Serializable]
-    public struct FogOfWarData
-    {
-        public bool enabled;
-        public bool globalLighting;
-        public Color color;
-        public float translucency;
-        public float nightVisionStrength;
-
-        public FogOfWarData(bool _enabled, bool _globalLighting, Color _color, float _translucency, float _nightVisionStrength)
-        {
-            enabled = _enabled;
-            globalLighting = _globalLighting;
-            color = _color;
-            translucency = _translucency;
-            nightVisionStrength = _nightVisionStrength;
-        }
-    }
-
-    [Serializable]
-    public struct GridData
-    {
-        public bool enabled;
-        public bool snapToGrid;
-        public Vector2Int dimensions;
-        public float cellSize;
-        public Vector2 position;
-        public Color color;
-
-        public GridData(bool _enabled, bool _snapToGrid, Vector2Int _dimensions, float _cellSize, Vector2 _position, Color _color)
-        {
-            enabled = _enabled;
-            snapToGrid = _snapToGrid;
-            dimensions = _dimensions;
-            cellSize = _cellSize;
-            position = _position;
-            color = _color;
-        }
-    }
-    [Serializable]
-    public struct Cell
-    {
-        public Vector2 worldPosition;
-        public Vector2Int gridPosition;
-
-        public Cell(Vector2 _worldPosition, Vector2Int _gridPosition)
-        {
-            worldPosition = _worldPosition;
-            gridPosition = _gridPosition;
         }
     }
 

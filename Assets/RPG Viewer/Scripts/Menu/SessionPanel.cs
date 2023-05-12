@@ -94,7 +94,6 @@ namespace RPG
 
                     // Enumerate session array
                     var list = callback.GetValue(1).EnumerateArray().ToArray();
-                    int length = callback.GetValue(1).GetArrayLength();
 
                     for (int i = 0; i < list.Length; i++)
                     {
@@ -304,10 +303,11 @@ namespace RPG
     public struct JoinData
     {
         public string id;
-        public string master;
-        public List<string> users;
+        public bool master;
+        public string masterId;
         public bool synced;
         public string scene;
+        public List<string> users;
         public string background;
         public List<string> lightingPresets;
     }
