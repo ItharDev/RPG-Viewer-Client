@@ -55,12 +55,9 @@ namespace RPG
                 }
 
                 // Generate session info and state
-                Info = new SessionInfo(data.id, data.masterId, data.master, users, sprite);
+                Info = new SessionInfo(data.id, data.master, data.isMaster, users, sprite);
                 State = new SessionState(data.synced, data.scene);
                 SessionState oldState = new SessionState(false, "");
-
-                // Load lighting presets
-                LoadPresets(data.lightingPresets);
 
                 // Load session in background
                 AsyncOperation Loader = SceneManager.LoadSceneAsync("Session");

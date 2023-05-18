@@ -73,10 +73,11 @@ namespace Networking
                 await UniTask.SwitchToMainThread();
                 Events.OnUserDisconnected?.Invoke(name);
             });
-            Socket.On("change-state", async (data) =>
+            Socket.On("set-state", async (data) =>
             {
-                bool synced = data.GetValue().GetBoolean();
-                string scene = data.GetValue(1).GetString();
+                string scene = data.GetValue().GetString();
+                bool synced = data.GetValue(1).GetBoolean();
+
                 SessionState newState = new SessionState(synced, scene);
                 SessionState oldState = ConnectionManager.State;
 
