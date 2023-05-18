@@ -98,7 +98,7 @@ namespace Networking
                 WallData wall = JsonUtility.FromJson<WallData>(data.GetValue().GetString());
 
                 await UniTask.SwitchToMainThread();
-                Events.OnDoorModified?.Invoke(wall.id, wall);
+                Events.OnDoorModified?.Invoke(wall.wallId, wall);
             });
 
             // Lights
@@ -109,12 +109,12 @@ namespace Networking
                 // await UniTask.SwitchToMainThread();
                 // Events.OnLightCreated?.Invoke(light);
             });
-            Socket.On("modify-light", (data) =>
+            Socket.On("modify-light", async (data) =>
             {
-                // LightData light = JsonUtility.FromJson<LightData>(data.GetValue().GetString());
+                LightData light = JsonUtility.FromJson<LightData>(data.GetValue().GetString());
 
-                // await UniTask.SwitchToMainThread();
-                // Events.OnLightModified?.Invoke(light.id, light);
+                await UniTask.SwitchToMainThread();
+                Events.OnLightModified?.Invoke(light.id, light);
             });
             Socket.On("remove-light", async (data) =>
             {

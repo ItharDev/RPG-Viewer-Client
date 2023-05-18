@@ -34,14 +34,14 @@ namespace RPG
             else Destroy(gameObject);
 
             // Get reference of the managers
-            LightingManager = GetComponentInChildren<LightingManager>();
-            TokenManager = GetComponentInChildren<TokenManager>();
-            Grid = GetComponentInChildren<GridManager>();
+            LightingManager = FindObjectOfType<LightingManager>();
+            TokenManager = FindObjectOfType<TokenManager>();
+            Grid = FindObjectOfType<GridManager>();
         }
         private void Start()
         {
             // Update landing page
-            landingPage.sprite = ConnectionManager.Info.background;
+            if (ConnectionManager.Info.background != null) landingPage.sprite = ConnectionManager.Info.background;
         }
 
         private void ChangeState(SessionState oldState, SessionState newState)

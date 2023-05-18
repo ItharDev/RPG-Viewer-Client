@@ -3,8 +3,6 @@ namespace RPG
     public static class GameData
     {
         public static UserInfo User;
-        public static ToolState ActiveTool;
-        public static FogState ActiveFog;
         public static int FrameRate;
     }
 

@@ -127,6 +127,7 @@ namespace RPG
 
             return Grid[x, y];
         }
+
         public Cell GetCell(int row, int column)
         {
             // Find cell in the specified grid position

@@ -69,7 +69,7 @@ namespace RPG
                 Events.OnStateChanged?.Invoke(oldState, State);
                 Events.OnSessionJoined?.Invoke();
 
-                PlayerPrefs.SetString("Last Session", data.id);
+                PlayerPrefs.SetString($"{GameData.User.id}_last_session", data.id);
             });
         }
 

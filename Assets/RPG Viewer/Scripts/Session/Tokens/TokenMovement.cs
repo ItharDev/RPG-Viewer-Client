@@ -193,7 +193,7 @@ namespace RPG
             if (pointerData.button != PointerEventData.InputButton.Left) return;
 
             // Close configuration panel
-            token.UI.CloseConfig();
+            // TODO: token.UI.CloseConfig();
 
             // Create clone of this token
             dragObject = Instantiate(token, Camera.main.ScreenToWorldPoint(Input.mousePosition), Quaternion.identity);

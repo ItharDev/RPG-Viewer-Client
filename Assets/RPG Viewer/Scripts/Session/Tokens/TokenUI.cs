@@ -14,7 +14,8 @@ namespace RPG
         [SerializeField] private CanvasGroup canvasGroup;
 
         [Header("UI")]
-        [SerializeField] Image image;
+        [SerializeField] private Image image;
+        [SerializeField] private Image outlineImage;
         [SerializeField] private TMP_Text label;
         [SerializeField] private GameObject rotateButton;
 
@@ -36,12 +37,19 @@ namespace RPG
 
         private Token token;
         private Vector2 screenPos;
+        private Outline outline;
         private List<Token> rotatedTokens = new List<Token>();
+
+        private Shader outlineShader;
+        private Shader regularShader;
 
         private void OnEnable()
         {
-            // Get reference of main class
+            // Get reference of main class and outline
             if (token == null) token = GetComponent<Token>();
+            if (outline == null) outline = outlineImage.GetComponent<Outline>();
+
+            outlineShader = Shader.Find("GUI/Text Shader");
 
             // Add event listeners
             Events.OnToolChanged.AddListener(HandleRaycast);
@@ -51,7 +59,7 @@ namespace RPG
         {
             // Remove event listeners
             Events.OnToolChanged.RemoveListener(HandleRaycast);
-            Events.OnTokenSelected.AddListener(UpdateSorting);
+            Events.OnTokenSelected.RemoveListener(UpdateSorting);
         }
         private void Update()
         {
@@ -61,17 +69,17 @@ namespace RPG
             HandleElevation();
         }
 
-        private void HandleRaycast(ToolState state)
+        private void HandleRaycast(Tool tool)
         {
             // Return if we aren't the owner
-            if (token.IsOwner)
+            if (!token.IsOwner)
             {
                 image.raycastTarget = false;
                 return;
             }
 
             // Enable / disable raycasting
-            image.raycastTarget = state == ToolState.Pan;
+            image.raycastTarget = tool == Tool.Move;
         }
         private void HandleElevation()
         {
@@ -100,6 +108,8 @@ namespace RPG
         {
             // Update image sprite and color
             image.sprite = sprite;
+            outlineImage.sprite = sprite;
+            outlineImage.material.shader = outlineShader;
             image.color = Color.white;
         }
         public void Reload()
@@ -111,23 +121,6 @@ namespace RPG
 
             // TODO: Update all elements
         }
-        public void CloseConfig()
-        {
-            // Destroy config panel (remember to save changes before this)
-            // TODO: if (activeConfig != null) Destroy(activeConfig.gameObject);
-        }
-        public void OpenConfig()
-        {
-            /* TODO: 
-            // Return if config is already opened
-            if (activeConfig == null) return;
-
-            // Instantiate config panel
-            activeConfig = Instantiate(configPrefab, GameObject.Find("Main Canvas").transform);
-            activeConfig.transform.SetAsLastSibling();
-            activeConfig.LoadData(token.Data, token, image.sprite.texture.GetRawTextureData());
-            */
-        }
         public void EnableRaycasting(bool enable)
         {
             // Enable / disable raycasting
@@ -138,16 +131,16 @@ namespace RPG
         {
             // Get pointer data
             PointerEventData pointerData = eventData as PointerEventData;
-
-            // Open config panel when double clicking
-            if (pointerData.clickCount == 2)
-            {
-                OpenConfig();
-                return;
-            }
-
-            // TODO: Token selection
         }
+        public void OnPointerEnter(BaseEventData eventData)
+        {
+            outline.enabled = true;
+        }
+        public void OnPointerExit(BaseEventData eventData)
+        {
+            outline.enabled = false;
+        }
+
         public void BeginRotate(BaseEventData eventData)
         {
             // Clear previous nearby tokens

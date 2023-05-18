@@ -27,17 +27,40 @@ namespace RPG
         [SerializeField] private Image currentIcon;
         [SerializeField] private TMP_Text currentText;
 
-        public Tool ActiveTool;
+        public static ToolHandler Instance { get; private set; }
 
+        private Tool activeTool;
+        private Tool lastTool = Tool.Move;
         private Tool lastMeasure = Tool.Measure_Precise;
         private Tool lastPing = Tool.Ping_Marker;
         private Tool lastNotes = Tool.Notes_Create;
         private RectTransform rect;
+        private float targetHeight = 170.0f;
 
+        private void Awake()
+        {
+            // Create instance
+            if (Instance == null) Instance = this;
+            else Destroy(gameObject);
+        }
         private void OnEnable()
         {
             // Get reference of our rect transform
             if (rect == null) rect = GetComponent<RectTransform>();
+
+            SelectMove();
+        }
+        private void Update()
+        {
+            // Send tool change event whenever the user changes the tool
+            if (activeTool != lastTool)
+            {
+                lastTool = activeTool;
+                targetHeight = activeTool == Tool.Move ? 170.0f : 240.0f;
+                LeanTween.size(rect, new Vector2(140.0f, targetHeight), 0.2f);
+
+                Events.OnToolChanged?.Invoke(activeTool);
+            }
         }
 
         public void SelectMove()
@@ -51,6 +74,9 @@ namespace RPG
             CloseMeasure();
             ClosePing();
             CloseNotes();
+
+            // Update tool state
+            activeTool = Tool.Move;
         }
         public void SelectPrecise()
         {
@@ -63,7 +89,7 @@ namespace RPG
             gridButton.Deselect();
 
             // Update tool states
-            ActiveTool = Tool.Measure_Precise;
+            activeTool = Tool.Measure_Precise;
             lastMeasure = Tool.Measure_Precise;
         }
         public void SelectGrid()
@@ -77,8 +103,8 @@ namespace RPG
             preciseButton.Deselect();
 
             // Update tool states
-            ActiveTool = Tool.Measure_Grid;
-            lastMeasure = Tool.Measure_Grid;
+            activeTool = Tool.Measure_Grid;
+            lastMeasure = activeTool;
         }
         public void SelectMark()
         {
@@ -91,8 +117,8 @@ namespace RPG
             pointerButton.Deselect();
 
             // Update tool states
-            ActiveTool = Tool.Ping_Marker;
-            lastPing = Tool.Ping_Marker;
+            activeTool = Tool.Ping_Marker;
+            lastPing = activeTool;
         }
         public void SelectPointer()
         {
@@ -105,8 +131,8 @@ namespace RPG
             markButton.Deselect();
 
             // Update tool states
-            ActiveTool = Tool.Ping_Pointer;
-            lastPing = Tool.Ping_Pointer;
+            activeTool = Tool.Ping_Pointer;
+            lastPing = activeTool;
         }
         public void SelectCreate()
         {
@@ -119,8 +145,8 @@ namespace RPG
             deleteButton.Deselect();
 
             // Update tool states
-            ActiveTool = Tool.Notes_Create;
-            lastNotes = Tool.Notes_Create;
+            activeTool = Tool.Notes_Create;
+            lastNotes = activeTool;
         }
         public void SelectDelete()
         {
@@ -133,15 +159,15 @@ namespace RPG
             createButton.Deselect();
 
             // Update tool states
-            ActiveTool = Tool.Notes_Create;
-            lastNotes = Tool.Notes_Delete;
+            activeTool = Tool.Notes_Create;
+            lastNotes = activeTool;
         }
 
         public void OpenPanel()
         {
             // Update rect size
-            if (rect.sizeDelta.y == 0) LeanTween.size(rect, new Vector2(140.0f, 380.0f), 0.2f);
-            else LeanTween.size(rect, new Vector2(140.0f, 0.0f), 0.2f);
+            if (rect.sizeDelta.y == 30.0f) LeanTween.size(rect, new Vector2(140.0f, targetHeight), 0.2f);
+            else LeanTween.size(rect, new Vector2(140.0f, 30.0f), 0.2f);
         }
         public void OpenMeasure()
         {

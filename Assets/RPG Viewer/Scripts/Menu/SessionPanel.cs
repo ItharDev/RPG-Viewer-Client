@@ -118,7 +118,8 @@ namespace RPG
 
         private void LoadLastSession()
         {
-            WebManager.Download("last_session.png", true, async (bytes) =>
+            string path = $"{GameData.User.id}_last_session.png";
+            WebManager.DownloadLocal(path, async (bytes) =>
             {
                 await UniTask.SwitchToMainThread();
 
@@ -277,8 +278,11 @@ namespace RPG
         public void ContinueSession()
         {
             // Return if last session data was not found
-            string id = PlayerPrefs.GetString("Last Session");
+            string id = PlayerPrefs.GetString($"{GameData.User.id}_last_session");
             if (string.IsNullOrEmpty(id)) return;
+
+            // Check if are invited to that session
+            if (!sessions.ContainsKey(id)) return;
 
             SocketManager.EmitAsync("join-session", (callback) =>
             {

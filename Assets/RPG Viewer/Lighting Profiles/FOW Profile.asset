@@ -72,10 +72,10 @@ MonoBehaviour:
         list:
         - layerID: 0
   qualitySettings:
-    lightTextureSize: 2
-    lightEffectTextureSize: 2
-    lightFilterMode: 2
-    lightmapFilterMode: 2
+    lightTextureSize: 1
+    lightEffectTextureSize: 1
+    lightFilterMode: 1
+    lightmapFilterMode: 1
     updateMethod: 0
     coreAxis: 0
     projection: 0
@@ -89,8 +89,7 @@ MonoBehaviour:
   layers:
     colliderLayers:
       names:
-      - Block Vision
-      - Block Everything
+      - Block Light
     lightLayers:
       names:
       - Regular Lights

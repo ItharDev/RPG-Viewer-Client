@@ -4,15 +4,11 @@ namespace RPG
 {
     public class UICanvas : MonoBehaviour
     {
-        public static UICanvas Instance;
+        public static UICanvas Instance { get; private set; }
 
         private void Awake()
         {
-            if (Instance == null)
-            {
-                Instance = this;
-                DontDestroyOnLoad(gameObject);
-            }
+            if (Instance == null) Instance = this;
             else Destroy(gameObject);
         }
     }

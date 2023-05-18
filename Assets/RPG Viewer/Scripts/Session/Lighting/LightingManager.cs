@@ -9,6 +9,8 @@ namespace RPG
         [SerializeField] private Transform lightParent;
 
         private Dictionary<string, Light> lights = new Dictionary<string, Light>();
+        private bool canCreate;
+        private bool canRemove;
 
         private void OnEnable()
         {
@@ -26,7 +28,7 @@ namespace RPG
             Events.OnLightModified.RemoveListener(ModifyLight);
             Events.OnLightRemoved.RemoveListener(RemoveLight);
             Events.OnStateChanged.RemoveListener(ReloadLights);
-            Events.OnSceneLoaded.AddListener(LoadLights);
+            Events.OnSceneLoaded.RemoveListener(LoadLights);
         }
 
         private void CreateLight(LightData data)

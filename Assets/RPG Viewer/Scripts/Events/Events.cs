@@ -48,8 +48,10 @@ namespace RPG
         public static UnityEvent<LightData> OnLightCreated = new UnityEvent<LightData>();
         public static UnityEvent<string, LightData> OnLightModified = new UnityEvent<string, LightData>();
         public static UnityEvent<string> OnLightRemoved = new UnityEvent<string>();
-        public static UnityEvent<FogState> OnFogStateChanged = new UnityEvent<FogState>();
-        public static UnityEvent<ToolState> OnToolChanged = new UnityEvent<ToolState>();
+
+        // Tools
+        public static UnityEvent<Tool> OnToolChanged = new UnityEvent<Tool>();
+        public static UnityEvent<Setting> OnSettingChanged = new UnityEvent<Setting>();
 
         // Presets
         // public static UnityEvent<string, LightPreset> OnPresetCreated = new UnityEvent<string, LightPreset>();

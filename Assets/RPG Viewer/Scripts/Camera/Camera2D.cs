@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using System.IO;
-using System.Transactions;
 using Cinemachine;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -9,9 +8,9 @@ namespace RPG
 {
     public class Camera2D : MonoBehaviour
     {
-        public Color BackgroundColor;
-        public bool UsePan = false;
+        public float Zoom { get { return mainVCam.m_Lens.OrthographicSize; } }
 
+        [SerializeField] private bool UsePan = false;
         [SerializeField] private CinemachineVirtualCamera mainVCam;
 
         [SerializeField] private float camZoomMax = 2.0f;
@@ -80,7 +79,7 @@ namespace RPG
         }
         private IEnumerator SaveView()
         {
-            string path = $"{Application.persistentDataPath}{Path.DirectorySeparatorChar}last_session.png";
+            string path = $"{Application.persistentDataPath}{Path.DirectorySeparatorChar}{GameData.User.id}_last_session.png";
             ScreenCapture.CaptureScreenshot(path);
 
             yield return new WaitForSeconds(5.0f);
