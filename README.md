@@ -6,6 +6,10 @@ By reading this guide, you will understand everything you need to know about thi
 
 ![Downloads](https://img.shields.io/github/downloads/ItharDev/RPG-Viewer-Client/total)
 
+## Disclaimer
+
+This guide is highly outdated, and will be updated in the next major update.
+
 ## Table of contents
 
 <!--ts-->
