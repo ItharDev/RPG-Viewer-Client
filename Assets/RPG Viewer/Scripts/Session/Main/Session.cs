@@ -118,7 +118,7 @@ namespace RPG
                     MessageManager.QueueMessage("Loading scene");
                     Settings = settings;
 
-                    WebManager.Download(settings.data.image, true, async (bytes) =>
+                    WebManager.Download(settings.info.image, true, async (bytes) =>
                     {
                         await UniTask.SwitchToMainThread();
                         Texture2D texture = new Texture2D(1, 1);
@@ -139,7 +139,7 @@ namespace RPG
                         LoadTokens();
 
                         await UniTask.WaitUntil(() => Loaders == 5);
-                        LoadNight(settings.data.nightStrength);
+                        LoadNight(settings.info.nightStrength);
 
                         await UniTask.WaitUntil(() => Loaders == 6);
                         FindObjectOfType<InitiativeController>(true).LoadHolders(settings.initiatives);
@@ -271,7 +271,7 @@ namespace RPG
         public void ChangeFog(FogState state)
         {
             if (Settings == null) return;
-            if (!Settings.fogOfWar.enabled)
+            if (!Settings.darkness.enabled)
             {
                 Lighting2D.LightmapPresets[0].darknessColor = new Color(0.0f, 0.0f, 0.0f, 0.0f);
                 Lighting2D.LightmapPresets[1].darknessColor = new Color(0.0f, 0.0f, 0.0f, 0.0f);
@@ -280,15 +280,15 @@ namespace RPG
 
             if (state == FogState.Player)
             {
-                Lighting2D.LightmapPresets[0].darknessColor = Settings.fogOfWar.color;
-                Lighting2D.LightmapPresets[1].darknessColor = Settings.fogOfWar.color;
+                Lighting2D.LightmapPresets[0].darknessColor = Settings.darkness.color;
+                Lighting2D.LightmapPresets[1].darknessColor = Settings.darkness.color;
 
-                if (Settings.fogOfWar.globalLighting) Lighting2D.LightmapPresets[0].darknessColor = new Color(Settings.fogOfWar.color.r, Settings.fogOfWar.color.g, Settings.fogOfWar.color.b, 1.0f - Settings.fogOfWar.translucency);
+                if (Settings.darkness.globalLighting) Lighting2D.LightmapPresets[0].darknessColor = new Color(Settings.darkness.color.r, Settings.darkness.color.g, Settings.darkness.color.b, 1.0f - Settings.darkness.translucency);
             }
             else if (state == FogState.Vision)
             {
-                Lighting2D.LightmapPresets[0].darknessColor = new Color(Settings.fogOfWar.color.r, Settings.fogOfWar.color.g, Settings.fogOfWar.color.b, 0.0f);
-                Lighting2D.LightmapPresets[1].darknessColor = new Color(Settings.fogOfWar.color.r, Settings.fogOfWar.color.g, Settings.fogOfWar.color.b, 0.9f);
+                Lighting2D.LightmapPresets[0].darknessColor = new Color(Settings.darkness.color.r, Settings.darkness.color.g, Settings.darkness.color.b, 0.0f);
+                Lighting2D.LightmapPresets[1].darknessColor = new Color(Settings.darkness.color.r, Settings.darkness.color.g, Settings.darkness.color.b, 0.9f);
             }
             else
             {

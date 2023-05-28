@@ -62,17 +62,17 @@ namespace RPG
             if (Data == null) return;
 
             LoadGridConfig(Data.grid);
-            LoadFowConfig(Data.fogOfWar);
+            LoadFowConfig(Data.darkness);
             LoadWalls(Data.walls);
 
-            nightSlider.value = Data.data.nightStrength;
-            nightInput.text = Data.data.nightStrength.ToString();
+            nightSlider.value = Data.info.nightStrength;
+            nightInput.text = Data.info.nightStrength.ToString();
 
             if (string.IsNullOrEmpty(Data.id))
             {
-                Data.data.nightStrength = 0.0f;
+                Data.info.nightStrength = 0.0f;
             }
-            LoadNight(Data.data.nightStrength);
+            LoadNight(Data.info.nightStrength);
             grid.transform.GetChild(0).gameObject.SetActive(false);
         }
         public async void SaveData()
@@ -81,8 +81,8 @@ namespace RPG
 
             SceneData data = new SceneData()
             {
-                name = Data.data.name,
-                image = Data.data.image,
+                name = Data.info.name,
+                image = Data.info.image,
                 nightStrength = nightSlider.value
             };
             GridData gridData = default;
@@ -113,9 +113,9 @@ namespace RPG
                 color = fogColor.color,
             };
 
-            Data.data = data;
+            Data.info = data;
             Data.grid = gridData;
-            Data.fogOfWar = fogData;
+            Data.darkness = fogData;
             Data.walls = wallData;
 
             if (string.IsNullOrEmpty(Data.id))
@@ -249,7 +249,7 @@ namespace RPG
             fowSelection.SetActive(!fowSelection.activeInHierarchy);
             fowConfig.SetActive(fowSelection.activeInHierarchy);
 
-            LoadFowConfig(Data.fogOfWar);
+            LoadFowConfig(Data.darkness);
         }
 
         public void SelectWalls()
@@ -320,11 +320,11 @@ namespace RPG
                 color = fogColor.color,
             };
 
-            Data.fogOfWar = data;
+            Data.darkness = data;
         }
         public void SaveNightConfiguration()
         {
-            Data.data.nightStrength = nightSlider.value;
+            Data.info.nightStrength = nightSlider.value;
         }
 
         public void OpenGridColor()

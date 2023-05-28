@@ -58,7 +58,7 @@ namespace RPG
             lightCollider.maskType = LightCollider2D.MaskType.None;
             GetComponentInChildren<Canvas>(true).sortingOrder = SessionManager.IsMaster ? 1 : 0;
 
-            switch (Data.model)
+            switch (Data.type)
             {
                 case WallType.Wall:
                     gameObject.layer = 8;
@@ -111,7 +111,7 @@ namespace RPG
             lightCollider.maskType = LightCollider2D.MaskType.None;
             GetComponentInChildren<Canvas>(true).sortingOrder = SessionManager.IsMaster ? 1 : 0;
 
-            switch (Data.model)
+            switch (Data.type)
             {
                 case WallType.Wall:
                     gameObject.layer = 8;
@@ -163,7 +163,7 @@ namespace RPG
                 {
                     await UniTask.SwitchToMainThread();
                     if (!callback.GetValue().GetBoolean()) MessageManager.QueueMessage(callback.GetValue(1).GetString());
-                }, Data.wallId, !Data.open);
+                }, Data.id, !Data.open);
             }
             else if (pointerData.button == PointerEventData.InputButton.Right)
             {
@@ -173,7 +173,7 @@ namespace RPG
         public async void ChangeData(WallData data)
         {
             data.points = Data.points;
-            data.wallId = Data.wallId;
+            data.id = Data.id;
             data.open = Data.open;
 
             await SocketManager.Socket.EmitAsync("modify-door", async (callback) =>
@@ -191,14 +191,14 @@ namespace RPG
             configPanel.transform.SetAsLastSibling();
 
             configPanel.GetComponentInChildren<Toggle>(true).isOn = Data.locked;
-            configPanel.GetComponentInChildren<TMP_Dropdown>(true).value = Data.model == WallType.Door ? 0 : 1;
+            configPanel.GetComponentInChildren<TMP_Dropdown>(true).value = Data.type == WallType.Door ? 0 : 1;
         }
         public void SaveConfig()
         {
             WallData data = new WallData()
             {
                 locked = configPanel.GetComponentInChildren<Toggle>(true).isOn,
-                model = configPanel.GetComponentInChildren<TMP_Dropdown>(true).value == 0 ? WallType.Door : WallType.Hidden_Door
+                type = configPanel.GetComponentInChildren<TMP_Dropdown>(true).value == 0 ? WallType.Door : WallType.Hidden_Door
             };
 
             ChangeData(data);

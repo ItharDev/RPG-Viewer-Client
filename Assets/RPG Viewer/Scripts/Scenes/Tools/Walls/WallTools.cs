@@ -118,19 +118,19 @@ namespace RPG
             foreach (var wall in walls)
             {
                 LineController controller = Instantiate(controllerPrefab, Vector3.zero, Quaternion.identity, controllerParent);
-                switch (wall.model)
+                switch (wall.type)
                 {
                     case WallType.Wall:
-                        controller.Load(wall.model, wall.open, this, wallColor);
+                        controller.Load(wall.type, wall.open, this, wallColor);
                         break;
                     case WallType.Door:
-                        controller.Load(wall.model, wall.open, this, doorColor);
+                        controller.Load(wall.type, wall.open, this, doorColor);
                         break;
                     case WallType.Invisible:
-                        controller.Load(wall.model, wall.open, this, invisibleColor);
+                        controller.Load(wall.type, wall.open, this, invisibleColor);
                         break;
                     case WallType.Hidden_Door:
-                        controller.Load(wall.model, wall.open, this, hiddenDoorColor);
+                        controller.Load(wall.type, wall.open, this, hiddenDoorColor);
                         break;
                 }
                 foreach (var point in wall.points)

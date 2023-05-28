@@ -6,9 +6,9 @@ namespace RPG
 {
     public class SceneSettings
     {
-        public SceneData data;
+        public SceneData info;
         public GridData grid;
-        public FogOfWarData fogOfWar;
+        public FogOfWarData darkness;
         public List<WallData> walls;
         public List<string> tokens;
         public List<InitiativeData> initiatives;
@@ -64,9 +64,9 @@ namespace RPG
     [Serializable]
     public struct WallData
     {
-        public string wallId;
+        public string id;
         public List<Vector2> points;
-        public WallType model;
+        public WallType type;
         public bool open;
         public bool locked;
     }

@@ -212,7 +212,7 @@ namespace RPG
             {
                 Destroy(points[i].gameObject);
             }
-            
+
             Destroy(line.rectTransform.gameObject);
             Destroy(gameObject);
         }
@@ -223,9 +223,9 @@ namespace RPG
 
             return new WallData()
             {
-                wallId = ObjectId.GenerateNewId().ToString(),
+                id = ObjectId.GenerateNewId().ToString(),
                 points = pts,
-                model = Type,
+                type = Type,
                 open = this.Hidden
             };
         }

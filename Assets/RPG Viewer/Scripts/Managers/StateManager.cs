@@ -163,17 +163,17 @@ namespace RPG
         public void LoadData()
         {
             LoadGridConfig(SessionManager.Session.Settings.grid);
-            LoadFowConfig(SessionManager.Session.Settings.fogOfWar);
+            LoadFowConfig(SessionManager.Session.Settings.darkness);
             LoadWalls(SessionManager.Session.Settings.walls);
 
-            nightSlider.value = SessionManager.Session.Settings.data.nightStrength;
-            nightInput.text = SessionManager.Session.Settings.data.nightStrength.ToString();
+            nightSlider.value = SessionManager.Session.Settings.info.nightStrength;
+            nightInput.text = SessionManager.Session.Settings.info.nightStrength.ToString();
 
             if (string.IsNullOrEmpty(SessionManager.Session.Settings.id))
             {
-                SessionManager.Session.Settings.data.nightStrength = 0.0f;
+                SessionManager.Session.Settings.info.nightStrength = 0.0f;
             }
-            LoadNight(SessionManager.Session.Settings.data.nightStrength);
+            LoadNight(SessionManager.Session.Settings.info.nightStrength);
             grid.transform.GetChild(0).gameObject.SetActive(false);
         }
         public async void SaveData()
@@ -182,8 +182,8 @@ namespace RPG
 
             SceneData data = new SceneData()
             {
-                name = SessionManager.Session.Settings.data.name,
-                image = SessionManager.Session.Settings.data.image,
+                name = SessionManager.Session.Settings.info.name,
+                image = SessionManager.Session.Settings.info.image,
                 nightStrength = nightSlider.value
             };
             GridData gridData = default;
@@ -214,9 +214,9 @@ namespace RPG
                 color = fogColor.color,
             };
 
-            SessionManager.Session.Settings.data = data;
+            SessionManager.Session.Settings.info = data;
             SessionManager.Session.Settings.grid = gridData;
-            SessionManager.Session.Settings.fogOfWar = fogData;
+            SessionManager.Session.Settings.darkness = fogData;
             SessionManager.Session.Settings.walls = wallData;
 
             if (string.IsNullOrEmpty(SessionManager.Session.Settings.id))
@@ -547,7 +547,7 @@ namespace RPG
         public void ConfigFog()
         {
             fowConfig.SetActive(!fowConfig.activeInHierarchy);
-            if (fowConfig.activeInHierarchy) LoadFowConfig(SessionManager.Session.Settings.fogOfWar);
+            if (fowConfig.activeInHierarchy) LoadFowConfig(SessionManager.Session.Settings.darkness);
         }
 
         public void SelectWalls()
@@ -618,11 +618,11 @@ namespace RPG
                 color = fogColor.color,
             };
 
-            SessionManager.Session.Settings.fogOfWar = data;
+            SessionManager.Session.Settings.darkness = data;
         }
         public void SaveNightConfiguration()
         {
-            SessionManager.Session.Settings.data.nightStrength = nightSlider.value;
+            SessionManager.Session.Settings.info.nightStrength = nightSlider.value;
         }
 
         public void OpenGridColor()

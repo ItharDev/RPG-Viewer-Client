@@ -41,7 +41,7 @@ namespace RPG
             Data.bytes = _image;
             path = _path;
             Data.path = _path;
-            text.text = _data.data.name;
+            text.text = _data.info.name;
             input.text = text.text;
             input.gameObject.SetActive(false);
             masterPanel = _masterPanel;

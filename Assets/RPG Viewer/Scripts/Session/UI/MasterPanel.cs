@@ -409,7 +409,7 @@ namespace RPG
                 {
                     var data = JsonUtility.FromJson<SceneSettings>(callback.GetValue(1).ToString());
                     data.id = callback.GetValue(2).GetString();
-                    WebManager.Download(data.data.image, true, async (bytes) =>
+                    WebManager.Download(data.info.image, true, async (bytes) =>
                     {
                         await UniTask.SwitchToMainThread();
                         HandleSceneAdded(data, id, path, bytes);
@@ -485,14 +485,14 @@ namespace RPG
                 path = scenePath,
                 bytes = bytes,
 
-                data = new SceneData() { name = name },
+                info = new SceneData() { name = name },
                 grid = new GridData()
                 {
                     dimensions = new Vector2Int(25, rows),
                     cellSize = cellSize,
                     position = new Vector2(-(texture.width * 0.005f), -(texture.height * 0.005f))
                 },
-                fogOfWar = new FogOfWarData(),
+                darkness = new FogOfWarData(),
                 walls = new List<WallData>(),
                 tokens = new List<string>()
             };
@@ -512,7 +512,7 @@ namespace RPG
                     HandleSceneAdded(settings, settings.id, settings.path, settings.bytes);
                 }
                 else MessageManager.QueueMessage(callback.GetValue(1).GetString());
-            }, settings.path, JsonUtility.ToJson(settings), string.IsNullOrEmpty(settings.data.image) ? Convert.ToBase64String(settings.bytes) : null);
+            }, settings.path, JsonUtility.ToJson(settings), string.IsNullOrEmpty(settings.info.image) ? Convert.ToBase64String(settings.bytes) : null);
         }
 
         public void OpenSceneFolder()
@@ -1032,7 +1032,7 @@ namespace RPG
                 case "Scenes":
                     for (int i = 0; i < scenes.Count; i++)
                     {
-                        scenes[i].gameObject.SetActive(scenes[i].Data.data.name.ToLower().Contains(sceneSearch.text.ToLower()));
+                        scenes[i].gameObject.SetActive(scenes[i].Data.info.name.ToLower().Contains(sceneSearch.text.ToLower()));
                     }
                     for (int i = 0; i < sceneFolders.Count; i++)
                     {

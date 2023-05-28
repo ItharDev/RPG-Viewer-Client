@@ -26,7 +26,7 @@ namespace RPG
         }
         public void ToggleWall(string id, bool state)
         {
-            Wall wall = walls.FirstOrDefault(x => x.Data.wallId == id);
+            Wall wall = walls.FirstOrDefault(x => x.Data.id == id);
             if (wall != null)
             {
                 wall.SetState(state);
@@ -34,7 +34,7 @@ namespace RPG
         }
         public void ModifyWall(WallData data)
         {
-            Wall wall = walls.FirstOrDefault(x => x.Data.wallId == data.wallId);
+            Wall wall = walls.FirstOrDefault(x => x.Data.id == data.id);
             if (wall != null)
             {
                 wall.ModifyDoor(data);

@@ -649,7 +649,7 @@ namespace RPG
                 visionSource.enabled = Data.enabled && Data.hasVision && Permission.permission != PermissionType.None && Selected;
                 lightSource.enabled = Data.enabled && preset.radius > 0;
                 nightSource.enabled = Data.enabled && Data.nightVision && Permission.permission != PermissionType.None && Selected;
-                nightSource.color.a = SessionManager.Session.Settings.fogOfWar.nightVisionStrength;
+                nightSource.color.a = SessionManager.Session.Settings.darkness.nightVisionStrength;
                 if (grid.CellSize > 0)
                 {
                     lightSource.size = preset.radius * 0.2f * grid.CellSize + (grid.CellSize * 0.5f);
@@ -664,7 +664,7 @@ namespace RPG
                 visionSource.enabled = Data.enabled && Data.hasVision && Permission.permission != PermissionType.None && Selected;
                 lightSource.enabled = Data.enabled && Data.lightRadius > 0;
                 nightSource.enabled = Data.enabled && Data.nightVision && Permission.permission != PermissionType.None && Selected;
-                nightSource.color.a = SessionManager.Session.Settings.fogOfWar.nightVisionStrength;
+                nightSource.color.a = SessionManager.Session.Settings.darkness.nightVisionStrength;
                 if (grid.CellSize > 0)
                 {
                     lightSource.size = Data.lightRadius * 0.2f * grid.CellSize + (grid.CellSize * 0.5f);
