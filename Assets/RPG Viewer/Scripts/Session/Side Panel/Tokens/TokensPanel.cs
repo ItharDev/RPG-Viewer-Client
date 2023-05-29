@@ -18,6 +18,9 @@ namespace RPG
         private bool loaded;
         private TokenFolder selectedFolder;
         private TokenHolder selectedToken;
+        private float lastCount;
+        private float lastColor;
+
         private void OnEnable()
         {
             if (!loaded)
@@ -26,7 +29,40 @@ namespace RPG
                 LoadTokens();
             }
         }
+        private void Update()
+        {
+            if (lastCount != rootTransform.childCount)
+            {
+                lastCount = rootTransform.childCount;
+                SortContent();
+            }
+        }
 
+        private void SortContent()
+        {
+            List<TokenFolder> listOfFolders = folders.Values.ToList();
+            List<TokenHolder> listOfTokens = tokens.Values.ToList();
+
+            listOfFolders.Sort(SortByName);
+            listOfTokens.Sort(SortByName);
+
+            for (int i = 0; i < folders.Count; i++)
+            {
+                listOfFolders[i].transform.SetSiblingIndex(i);
+            }
+            for (int i = 0; i < listOfTokens.Count; i++)
+            {
+                listOfTokens[i].transform.SetSiblingIndex(i + folders.Count);
+            }
+        }
+        private int SortByName(TokenFolder folderA, TokenFolder folderB)
+        {
+            return folderA.Data.name.CompareTo(folderB.Data.name);
+        }
+        private int SortByName(TokenHolder holderA, TokenHolder holderB)
+        {
+            return holderA.Data.name.CompareTo(holderB.Data.name);
+        }
         private void LoadTokens()
         {
             SocketManager.EmitAsync("get-blueprints", async (callback) =>
@@ -37,12 +73,19 @@ namespace RPG
                     await UniTask.SwitchToMainThread();
 
                     // Enumerate tokens array
-                    var list = callback.GetValue(1).EnumerateArray().ToArray();
+                    var folders = callback.GetValue(1).GetProperty("folders").EnumerateObject().ToArray();
+                    var contents = callback.GetValue(1).GetProperty("contents").EnumerateArray().ToArray();
 
-                    // Load elements
-                    for (int i = 0; i < list.Length; i++)
+                    // Load folders
+                    for (int i = 0; i < folders.Length; i++)
                     {
-                        LoadElement(list[i], "");
+                        LoadDirectory(folders[i].Value, folders[i].Name, "");
+                    }
+
+                    // Load tokens
+                    for (int i = 0; i < contents.Length; i++)
+                    {
+                        LoadToken(contents[i].GetString(), "");
                     }
                     return;
                 }
@@ -50,12 +93,6 @@ namespace RPG
                 // Send error message
                 MessageManager.QueueMessage(callback.GetValue(1).GetString());
             });
-        }
-        private void LoadElement(System.Text.Json.JsonElement json, string path)
-        {
-            // Check if this element is a token or a directory
-            if (json.ValueKind == System.Text.Json.JsonValueKind.String) LoadToken(json.GetString(), path);
-            else LoadDirectory(json, path);
         }
         private void LoadToken(string id, string path)
         {
@@ -70,12 +107,11 @@ namespace RPG
             // Add token to dictionary
             tokens.Add(id, token);
         }
-        private void LoadDirectory(System.Text.Json.JsonElement json, string path)
+        private void LoadDirectory(System.Text.Json.JsonElement json, string id, string path)
         {
             // Load folder's data
-            string id = json.GetProperty("id").GetString();
             string name = json.GetProperty("name").GetString();
-            var subFolders = json.GetProperty("subFolders").EnumerateArray().ToArray();
+            var folders = json.GetProperty("folders").EnumerateObject().ToArray();
             var contents = json.GetProperty("contents").EnumerateArray().ToArray();
 
             // Create path to this directory
@@ -88,12 +124,12 @@ namespace RPG
             folder.LoadData(data, this);
 
             // Add folder to dictionary
-            folders.Add(id, folder);
+            this.folders.Add(id, folder);
 
-            // Load sub folders
-            for (int i = 0; i < subFolders.Length; i++)
+            // Load folders
+            for (int i = 0; i < folders.Length; i++)
             {
-                LoadDirectory(subFolders[i], pathToThisFolder);
+                LoadDirectory(folders[i].Value, folders[i].Name, pathToThisFolder);
             }
 
             // Load tokens
@@ -105,19 +141,85 @@ namespace RPG
         public Color GetColor()
         {
             // Generate random color with 13 variants
-            float randomHue = Random.Range(0, 12) * (1.0f / 12.0f);
+            float randomHue = GetRandomHue();
+
+            // Prevent selecting the same color twice in a row
+            while (randomHue == lastColor)
+            {
+                randomHue = GetRandomHue();
+            }
+            lastColor = randomHue;
             return Color.HSVToRGB(randomHue, 0.6f, 1.0f);
         }
+        private float GetRandomHue()
+        {
+            return Random.Range(0, 12) * (1.0f / 12.0f);
+        }
 
+        public TokenFolder CreateFolder(string id, string path)
+        {
+            // Create path to this directory
+            string pathToThisFolder = string.IsNullOrEmpty(path) ? id : $"{path}/{id}";
+            Folder data = new Folder(id, path, "New Folder", GetColor());
+
+            // Instantiate folder
+            TokenFolder targetFolder = GetDirectoryByPath(path);
+            TokenFolder folder = Instantiate(folderPrefab, targetFolder == null ? rootTransform : targetFolder.Content);
+            folder.LoadData(data, this);
+
+            // Add folder to dictionary
+            this.folders.Add(id, folder);
+            return folder;
+        }
+        public void RemoveFolder(TokenFolder folder)
+        {
+            List<TokenFolder> subFolders = GetFolders(folder);
+            List<TokenHolder> tokens = GetTokens(folder);
+
+            for (int i = 0; i < subFolders.Count; i++)
+            {
+                RemoveFolder(subFolders[i]);
+            }
+
+            for (int i = 0; i < tokens.Count; i++)
+            {
+                RemoveToken(tokens[i]);
+            }
+
+            folders.Remove(folder.Id);
+            Destroy(folder.gameObject);
+        }
+        public void CreateFolder()
+        {
+            SocketManager.EmitAsync("create-blueprint-folder", async (callback) =>
+            {
+                // Check if the event was successful
+                if (callback.GetValue().GetBoolean())
+                {
+                    await UniTask.SwitchToMainThread();
+
+                    // Create the folder
+                    string id = callback.GetValue(1).GetString();
+                    TokenFolder createdFolder = CreateFolder(id, "");
+
+                    // Activate rename field
+                    createdFolder.Rename();
+                    return;
+                }
+
+                // Send error message
+                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+            }, "", "New Folder");
+        }
+        public void RemoveToken(TokenHolder token)
+        {
+            tokens.Remove(token.Id);
+            Destroy(token.gameObject);
+        }
         public TokenFolder GetDirectoryByPath(string path)
         {
             // Find folder with specified path
             return folders.FirstOrDefault(item => item.Value.Path == path).Value;
-        }
-        public TokenFolder GetDirectoryById(string id)
-        {
-            // Find folder with specified id
-            return folders[id];
         }
         public bool IsSubFolderOf(TokenFolder folderToCheck, TokenFolder parentFolder)
         {
@@ -127,7 +229,40 @@ namespace RPG
             subFolders.Remove(parentFolder);
             return subFolders.Contains(folderToCheck);
         }
+        public List<TokenFolder> GetFolders(TokenFolder folder, bool deepSearch = false)
+        {
+            List<TokenFolder> listOfFolders = new List<TokenFolder>();
+            TokenFolder[] folders = folder.Content.GetComponentsInChildren<TokenFolder>(false);
+            for (int i = 0; i < folders.Length; i++)
+            {
+                if (deepSearch)
+                {
+                    listOfFolders.Add(folders[i]);
+                    continue;
+                }
 
+                if (folders[i].transform.parent == folder.Content) listOfFolders.Add(folders[i]);
+            }
+
+            return listOfFolders;
+        }
+        public List<TokenHolder> GetTokens(TokenFolder folder, bool deepSearch = false)
+        {
+            List<TokenHolder> listOfTokens = new List<TokenHolder>();
+            TokenHolder[] holders = folder.Content.GetComponentsInChildren<TokenHolder>(false);
+            for (int i = 0; i < holders.Length; i++)
+            {
+                if (deepSearch)
+                {
+                    listOfTokens.Add(holders[i]);
+                    continue;
+                }
+
+                if (holders[i].transform.parent == folder.Content) listOfTokens.Add(holders[i]);
+            }
+
+            return listOfTokens;
+        }
         public void SelectFolder(TokenFolder folder)
         {
             // Deselect token
@@ -137,6 +272,8 @@ namespace RPG
             selectedFolder = folder;
             Events.OnBlueprintFolderSelected?.Invoke(folder);
             Events.OnBlueprintSelected?.Invoke(null);
+
+            Debug.Log($"Selected folder {folder.Data.name} in {folder.Path}");
         }
         public void MoveFolderRoot()
         {
@@ -144,17 +281,29 @@ namespace RPG
 
             Debug.Log($"Moving folder from {selectedFolder.Path} to root");
 
-            // Set new transform
-            selectedFolder.transform.SetParent(rootTransform);
-            selectedFolder.transform.SetAsFirstSibling();
+            SocketManager.EmitAsync("move-blueprint-folder", async (callback) =>
+            {
+                await UniTask.SwitchToMainThread();
 
-            // Calculate new path
-            selectedFolder.CalculatePath("");
+                // Check if the event was successful
+                if (callback.GetValue().GetBoolean())
+                {
+                    // Set new transform
+                    selectedFolder.transform.SetParent(rootTransform);
+                    selectedFolder.transform.SetAsFirstSibling();
 
-            // Send cancel event
-            selectedFolder = null;
-            Events.OnBlueprintFolderDeselected?.Invoke();
-            Events.OnBlueprintDeselected?.Invoke();
+                    // Calculate new path
+                    selectedFolder.CalculatePath("");
+
+                    Events.OnBlueprintFolderMoved?.Invoke();
+                    selectedFolder = null;
+                    return;
+                }
+
+                // Send error message
+                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                selectedFolder = null;
+            }, selectedFolder.Path, "");
         }
         public void DeselectFolder()
         {
@@ -169,30 +318,57 @@ namespace RPG
             {
                 Debug.Log($"Moving folder from {selectedFolder.Path} to {folder.Path}");
 
-                // Set new transform
-                selectedFolder.transform.SetParent(folder.Content);
-                selectedFolder.transform.SetAsFirstSibling();
+                SocketManager.EmitAsync("move-blueprint-folder", async (callback) =>
+                {
+                    await UniTask.SwitchToMainThread();
 
-                // Calculate new path
-                selectedFolder.CalculatePath(folder.Path);
-                selectedFolder = null;
+                    // Check if the event was successful
+                    if (callback.GetValue().GetBoolean())
+                    {
+                        // Set new transform
+                        selectedFolder.transform.SetParent(folder.Content);
+                        selectedFolder.transform.SetAsFirstSibling();
+
+                        // Calculate new path
+                        selectedFolder.CalculatePath(folder.Path);
+
+                        Events.OnBlueprintFolderMoved?.Invoke();
+                        selectedFolder = null;
+                        return;
+                    }
+
+                    // Send error message
+                    MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                    selectedFolder = null;
+                }, selectedFolder.Path, folder.Path);
             }
             else
             {
                 Debug.Log($"Moving token from {selectedToken.Path} to {folder.Path}");
 
-                // Set new transform
-                selectedToken.transform.SetParent(folder.Content);
-                selectedToken.transform.SetAsLastSibling();
+                SocketManager.EmitAsync("move-blueprint", async (callback) =>
+                {
+                    await UniTask.SwitchToMainThread();
 
-                // Calculate new path
-                selectedToken.UpdatePath(folder.Path);
-                selectedToken = null;
+                    if (callback.GetValue().GetBoolean())
+                    {
+                        // Set new transform
+                        selectedToken.transform.SetParent(folder.Content);
+                        selectedToken.transform.SetAsLastSibling();
+
+                        // Calculate new path
+                        selectedToken.UpdatePath(folder.Path);
+
+                        Events.OnBlueprintMoved?.Invoke();
+                        selectedToken = null;
+                        return;
+                    }
+
+                    // Send error message
+                    MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                    selectedToken = null;
+                }, selectedToken.Id, selectedToken.Path, folder.Path);
             }
-
-            // Send move finish move event
-            Events.OnBlueprintFolderMoved?.Invoke();
-            Events.OnBlueprintMoved?.Invoke();
         }
 
         public void SelectToken(TokenHolder token)
@@ -204,6 +380,8 @@ namespace RPG
             selectedToken = token;
             Events.OnBlueprintSelected?.Invoke(token);
             Events.OnBlueprintFolderSelected?.Invoke(null);
+
+            Debug.Log($"Selected token {token.Id} in {token.Path}");
         }
         public void MoveTokenRoot()
         {
@@ -211,17 +389,28 @@ namespace RPG
 
             Debug.Log($"Moving token from {selectedToken.Path} to root");
 
-            // Set new transform
-            selectedToken.transform.SetParent(rootTransform);
-            selectedToken.transform.SetAsFirstSibling();
+            SocketManager.EmitAsync("move-blueprint", async (callback) =>
+            {
+                await UniTask.SwitchToMainThread();
 
-            // Calculate new path
-            selectedToken.UpdatePath("");
+                if (callback.GetValue().GetBoolean())
+                {
+                    // Set new transform
+                    selectedToken.transform.SetParent(rootTransform);
+                    selectedToken.transform.SetAsLastSibling();
 
-            // Send cancel event
-            selectedToken = null;
-            Events.OnBlueprintDeselected?.Invoke();
-            Events.OnBlueprintFolderDeselected?.Invoke();
+                    // Calculate new path
+                    selectedToken.UpdatePath("");
+
+                    Events.OnBlueprintMoved?.Invoke();
+                    selectedToken = null;
+                    return;
+                }
+
+                // Send error message
+                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                selectedToken = null;
+            }, selectedToken.Id, selectedToken.Path, "");
         }
         public void DeselectScene()
         {

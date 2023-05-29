@@ -27,7 +27,7 @@ namespace RPG
         {
 
         }
-        private void LoadWalls(SceneSettings settings)
+        private void LoadWalls(SceneData settings)
         {
             // Instantiate walls
             List<WallData> list = settings.walls;
@@ -44,7 +44,7 @@ namespace RPG
             wall.LoadData(data);
 
             // Add wall to dictionary
-            walls.Add(data.wallId, wall);
+            walls.Add(data.id, wall);
         }
     }
 }

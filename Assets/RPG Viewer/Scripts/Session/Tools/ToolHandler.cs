@@ -1,4 +1,3 @@
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -6,6 +5,8 @@ namespace RPG
 {
     public class ToolHandler : MonoBehaviour
     {
+        [SerializeField] private CanvasGroup canvasGroup;
+
         [Header("Buttons")]
         [SerializeField] private ToolButton moveButton;
         [SerializeField] private ToolButton measureButton;
@@ -18,14 +19,10 @@ namespace RPG
         [SerializeField] private ToolButton createButton;
         [SerializeField] private ToolButton deleteButton;
 
-        [Header("Panels")]
-        [SerializeField] private RectTransform measureRect;
-        [SerializeField] private RectTransform pingRect;
-        [SerializeField] private RectTransform notesRect;
-
-        [Header("Info")]
-        [SerializeField] private Image currentIcon;
-        [SerializeField] private TMP_Text currentText;
+        [Header("Masks")]
+        [SerializeField] private RectMask2D measureMask;
+        [SerializeField] private RectMask2D pingMask;
+        [SerializeField] private RectMask2D notesMask;
 
         public static ToolHandler Instance { get; private set; }
 
@@ -34,8 +31,6 @@ namespace RPG
         private Tool lastMeasure = Tool.Measure_Precise;
         private Tool lastPing = Tool.Ping_Marker;
         private Tool lastNotes = Tool.Notes_Create;
-        private RectTransform rect;
-        private float targetHeight = 170.0f;
 
         private void Awake()
         {
@@ -45,10 +40,14 @@ namespace RPG
         }
         private void OnEnable()
         {
-            // Get reference of our rect transform
-            if (rect == null) rect = GetComponent<RectTransform>();
-
             SelectMove();
+            // Add event listeners
+            Events.OnStateChanged.AddListener(HandleStateChange);
+        }
+        private void OnDisable()
+        {
+            // Remove event listeners
+            Events.OnStateChanged.RemoveListener(HandleStateChange);
         }
         private void Update()
         {
@@ -56,19 +55,17 @@ namespace RPG
             if (activeTool != lastTool)
             {
                 lastTool = activeTool;
-                targetHeight = activeTool == Tool.Move ? 170.0f : 240.0f;
-                LeanTween.size(rect, new Vector2(140.0f, targetHeight), 0.2f);
-
                 Events.OnToolChanged?.Invoke(activeTool);
             }
         }
 
+        private void HandleStateChange(SessionState oldState, SessionState newState)
+        {
+            canvasGroup.alpha = string.IsNullOrEmpty(newState.scene) ? 0.0f : 1.0f;
+        }
+
         public void SelectMove()
         {
-            // Update info
-            currentText.text = "Move";
-            currentIcon.sprite = moveButton.Icon.sprite;
-
             // Update selections
             moveButton.Select();
             CloseMeasure();
@@ -80,10 +77,6 @@ namespace RPG
         }
         public void SelectPrecise()
         {
-            // Update info
-            currentText.text = preciseButton.Header.text;
-            currentIcon.sprite = preciseButton.Icon.sprite;
-
             // Update selections
             preciseButton.Select();
             gridButton.Deselect();
@@ -94,10 +87,6 @@ namespace RPG
         }
         public void SelectGrid()
         {
-            // Update info
-            currentText.text = gridButton.Header.text;
-            currentIcon.sprite = gridButton.Icon.sprite;
-
             // Update selections
             gridButton.Select();
             preciseButton.Deselect();
@@ -108,10 +97,6 @@ namespace RPG
         }
         public void SelectMark()
         {
-            // Update info
-            currentText.text = markButton.Header.text;
-            currentIcon.sprite = markButton.Icon.sprite;
-
             // Update selections
             markButton.Select();
             pointerButton.Deselect();
@@ -122,10 +107,6 @@ namespace RPG
         }
         public void SelectPointer()
         {
-            // Update info
-            currentText.text = pointerButton.Header.text;
-            currentIcon.sprite = pointerButton.Icon.sprite;
-
             // Update selections
             pointerButton.Select();
             markButton.Deselect();
@@ -136,10 +117,6 @@ namespace RPG
         }
         public void SelectCreate()
         {
-            // Update info
-            currentText.text = createButton.Header.text;
-            currentIcon.sprite = createButton.Icon.sprite;
-
             // Update selections
             createButton.Select();
             deleteButton.Deselect();
@@ -150,10 +127,6 @@ namespace RPG
         }
         public void SelectDelete()
         {
-            // Update info
-            currentText.text = deleteButton.Header.text;
-            currentIcon.sprite = deleteButton.Icon.sprite;
-
             // Update selections
             deleteButton.Select();
             createButton.Deselect();
@@ -163,16 +136,9 @@ namespace RPG
             lastNotes = activeTool;
         }
 
-        public void OpenPanel()
-        {
-            // Update rect size
-            if (rect.sizeDelta.y == 30.0f) LeanTween.size(rect, new Vector2(140.0f, targetHeight), 0.2f);
-            else LeanTween.size(rect, new Vector2(140.0f, 30.0f), 0.2f);
-        }
         public void OpenMeasure()
         {
-            // Update rect size
-            LeanTween.size(measureRect, new Vector2(120.0f, 100.0f), 0.2f);
+            measureMask.enabled = false;
 
             // Update selections
             measureButton.Select();
@@ -186,7 +152,7 @@ namespace RPG
         }
         public void CloseMeasure()
         {
-            LeanTween.size(measureRect, new Vector2(120.0f, 30.0f), 0.2f);
+            measureMask.enabled = true;
 
             // Update selections
             measureButton.Deselect();
@@ -195,7 +161,7 @@ namespace RPG
         }
         public void OpenPing()
         {
-            LeanTween.size(pingRect, new Vector2(120.0f, 100.0f), 0.2f);
+            pingMask.enabled = false;
 
             // Update selections
             pingButton.Select();
@@ -209,7 +175,7 @@ namespace RPG
         }
         public void ClosePing()
         {
-            LeanTween.size(pingRect, new Vector2(120.0f, 30.0f), 0.2f);
+            pingMask.enabled = true;
 
             // Update selections
             pingButton.Deselect();
@@ -218,7 +184,7 @@ namespace RPG
         }
         public void OpenNotes()
         {
-            LeanTween.size(notesRect, new Vector2(120.0f, 100.0f), 0.2f);
+            notesMask.enabled = false;
 
             // Update selections
             notesButton.Select();
@@ -232,7 +198,7 @@ namespace RPG
         }
         public void CloseNotes()
         {
-            LeanTween.size(notesRect, new Vector2(120.0f, 30.0f), 0.2f);
+            notesMask.enabled = true;
 
             // Update selections
             notesButton.Deselect();

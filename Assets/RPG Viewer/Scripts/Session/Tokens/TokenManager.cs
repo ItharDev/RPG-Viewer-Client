@@ -228,7 +228,7 @@ namespace RPG
             token.UI.SetRotation(angle);
         }
 
-        private void LoadTokens(SceneSettings settings)
+        private void LoadTokens(SceneData settings)
         {
             SocketManager.EmitAsync("get-tokens", (callback) =>
             {

@@ -10,15 +10,26 @@ namespace RPG
         public bool globalLighting;
         public Color color;
         public float translucency;
-        public float nightVisionStrength;
 
-        public LightingSettings(bool _enabled, bool _globalLighting, Color _color, float _translucency, float _nightVisionStrength)
+        public LightingSettings(bool _enabled, bool _globalLighting, Color _color, float _translucency)
         {
             enabled = _enabled;
             globalLighting = _globalLighting;
             color = _color;
             translucency = _translucency;
-            nightVisionStrength = _nightVisionStrength;
+        }
+    }
+
+    [Serializable]
+    public struct NightVisionData
+    {
+        public float strength;
+        public float radius;
+
+        public NightVisionData(float _strength, float _radius)
+        {
+            strength = _strength;
+            radius = _radius;
         }
     }
 

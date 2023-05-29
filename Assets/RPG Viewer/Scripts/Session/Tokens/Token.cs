@@ -182,24 +182,17 @@ namespace RPG
     [Serializable]
     public struct TokenData
     {
-        public string id;
-        public string name;
-        public TokenType type;
-        public List<Permission> permissions;
-        public Vector2Int dimensions;
-        public bool hasVision;
-        public bool nightVision;
+        public string id; //
+        public string name; //
+        public TokenType type; //
+        public List<Permission> permissions; //
+        public List<Permission> visible; //
+        public Vector2Int dimensions; //
+        public float visionRadius; //
+        public float nightRadius; //
+        public string light;
         public bool highlighted;
-        public int lightRadius;
-        public int lightEffect;
-        public Color lightColor;
-        public float lightIntensity;
-        public float flickerFrequency;
-        public float flickerAmount;
-        public float pulseInterval;
-        public float pulseAmount;
-        public string preset;
-        public string image;
+        public string image; //
         public Vector2 position;
         public bool enabled;
         public int health;
@@ -227,6 +220,19 @@ namespace RPG
         {
             user = _user;
             type = _type;
+        }
+    }
+
+    [Serializable]
+    public struct Visible
+    {
+        public string user;
+        public bool visible;
+
+        public Visible(string _user, bool _visible)
+        {
+            user = _user;
+            visible = _visible;
         }
     }
 

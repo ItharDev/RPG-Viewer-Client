@@ -19,7 +19,7 @@ namespace RPG
         public static UnityEvent<string> OnUserConnected = new UnityEvent<string>();
         public static UnityEvent<string> OnUserDisconnected = new UnityEvent<string>();
         public static UnityEvent<SessionState, SessionState> OnStateChanged = new UnityEvent<SessionState, SessionState>();
-        public static UnityEvent<SceneSettings> OnSceneLoaded = new UnityEvent<SceneSettings>();
+        public static UnityEvent<SceneData> OnSceneLoaded = new UnityEvent<SceneData>();
 
         // Side panel
         public static UnityEvent<SceneFolder> OnSceneFolderClicked = new UnityEvent<SceneFolder>();

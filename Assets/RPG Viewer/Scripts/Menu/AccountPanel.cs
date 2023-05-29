@@ -38,7 +38,6 @@ namespace RPG
             Events.OnSignOut.AddListener(SignOut);
             Events.OnRegister.AddListener(SignIn);
             Events.OnConnected.AddListener(AutomaticSignIn);
-            Events.OnDisconnected.AddListener(SignOut);
         }
         private void OnDisable()
         {
@@ -47,7 +46,6 @@ namespace RPG
             Events.OnSignOut.RemoveListener(SignOut);
             Events.OnRegister.RemoveListener(SignIn);
             Events.OnConnected.RemoveListener(AutomaticSignIn);
-            Events.OnDisconnected.RemoveListener(SignOut);
         }
 
         public void OpenSignIn()
@@ -170,7 +168,7 @@ namespace RPG
 
             SocketManager.EmitAsync("sign-in", async (callback) =>
             {
-                // check if the event was successfull
+                // Check if the event was successful
                 if (callback.GetValue().GetBoolean())
                 {
                     await UniTask.SwitchToMainThread();
@@ -198,7 +196,7 @@ namespace RPG
 
             SocketManager.EmitAsync("sign-in", async (callback) =>
             {
-                // check if the event was successfull
+                // Check if the event was successful
                 if (callback.GetValue().GetBoolean())
                 {
                     await UniTask.SwitchToMainThread();
@@ -206,6 +204,8 @@ namespace RPG
                     // Read account data
                     string name = callback.GetValue(1).GetString();
                     string id = callback.GetValue(2).GetString();
+
+                    PlayerPrefs.SetString("user id", id);
 
                     MessageManager.QueueMessage($"Signed in as {name}");
 
@@ -222,11 +222,19 @@ namespace RPG
         {
             SocketManager.EmitAsync("sign-out", async (callback) =>
             {
-                await UniTask.SwitchToMainThread();
-                MessageManager.QueueMessage("Signed out");
+                // Check if the event was successful
+                if (callback.GetValue().GetBoolean())
+                {
+                    await UniTask.SwitchToMainThread();
+                    MessageManager.QueueMessage("Signed out");
 
-                // Send sign out event
-                Events.OnSignOut?.Invoke();
+                    // Send sign out event
+                    Events.OnSignOut?.Invoke();
+                    return;
+                }
+
+                // Send error message
+                MessageManager.QueueMessage(callback.GetValue(1).GetString());
             });
         }
         public void Register()
@@ -243,7 +251,7 @@ namespace RPG
 
             SocketManager.EmitAsync("register", async (callback) =>
             {
-                // check if the event was successfull
+                // Check if the event was successful
                 if (callback.GetValue().GetBoolean())
                 {
                     await UniTask.SwitchToMainThread();

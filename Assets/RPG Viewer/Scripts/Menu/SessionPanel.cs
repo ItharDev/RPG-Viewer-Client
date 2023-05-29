@@ -87,7 +87,7 @@ namespace RPG
         {
             SocketManager.EmitAsync("load-licences", async (callback) =>
             {
-                // check if the event was successfull
+                // Check if the event was successful
                 if (callback.GetValue().GetBoolean())
                 {
                     await UniTask.SwitchToMainThread();
@@ -171,7 +171,7 @@ namespace RPG
 
             SocketManager.EmitAsync("create-session", (callback) =>
             {
-                // check if the event was successful
+                // Check if the event was successful
                 if (callback.GetValue().GetBoolean())
                 {
                     MessageManager.QueueMessage("Session created successfully");
@@ -215,7 +215,7 @@ namespace RPG
 
             SocketManager.EmitAsync("validate-licence", (callback) =>
             {
-                // check if the event was successful
+                // Check if the event was successful
                 if (callback.GetValue().GetBoolean())
                 {
                     MessageManager.QueueMessage("Session key validated");

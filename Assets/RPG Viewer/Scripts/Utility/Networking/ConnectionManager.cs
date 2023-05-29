@@ -84,12 +84,11 @@ namespace RPG
                         // TODO: Load preset data and add it to the list
                         // var data = JsonUtility.FromJson<LightPreset>(callback.GetValue(1).ToString());
                         // LightingPresets.AddPreset(id, data);
+                        return;
                     }
-                    else
-                    {
-                        // Send error message
-                        MessageManager.QueueMessage(callback.GetValue(1).GetString());
-                    }
+
+                    // Send error message
+                    MessageManager.QueueMessage(callback.GetValue(1).GetString());
                 }, list[i]);
             }
         }

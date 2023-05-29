@@ -23,10 +23,11 @@ namespace RPG
         [SerializeField] private Color normalColor;
 
         public string Path { get { return _path; } }
+        public string Id { get { return Data.id; } }
+
+        public TokenData Data;
 
         private string _path;
-        private TokenData data;
-
         private TokensPanel tokensPanel;
         private bool optionsOpen;
         private Color selectedColor;
@@ -140,7 +141,7 @@ namespace RPG
         public void Delete()
         {
             ToggleOptions();
-            Debug.Log($"Delete scene");
+            Debug.Log($"Delete blueprint");
         }
         public void Select()
         {
@@ -177,7 +178,8 @@ namespace RPG
                     return;
                 }
 
-                MessageManager.QueueMessage(callback.GetValue().GetString());
+                // Send error message
+                MessageManager.QueueMessage(callback.GetValue(1).GetString());
             }, id);
         }
         public void UpdatePath(string newPath)
@@ -188,7 +190,7 @@ namespace RPG
 
         private void LoadData(TokenData settings)
         {
-            data = settings;
+            Data = settings;
             header.text = settings.name;
             WebManager.Download(settings.image, true, async (bytes) =>
             {

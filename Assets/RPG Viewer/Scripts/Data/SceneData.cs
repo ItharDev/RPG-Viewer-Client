@@ -4,11 +4,11 @@ using UnityEngine;
 
 namespace RPG
 {
-    public class SceneSettings
+    public class SceneData
     {
-        public SceneData data;
+        public SceneInfo info;
         public GridData grid;
-        public LightingSettings fogOfWar;
+        public LightingSettings darkness;
         public List<WallData> walls;
         public List<string> tokens;
         public List<InitiativeData> initiatives;
@@ -17,16 +17,23 @@ namespace RPG
 
         [NonSerialized] public string path;
         [NonSerialized] public string id;
+
+        public SceneData(SceneInfo _info, GridData _grid, LightingSettings _darkness)
+        {
+            info = _info;
+            grid = _grid;
+            darkness = _darkness;
+        }
     }
 
     [Serializable]
-    public struct SceneData
+    public struct SceneInfo
     {
         public string name;
         public string image;
         public float nightStrength;
 
-        public SceneData(string _name, string _image, float _nightStrength)
+        public SceneInfo(string _name, string _image, float _nightStrength)
         {
             name = _name;
             image = _image;
@@ -37,17 +44,17 @@ namespace RPG
     [Serializable]
     public struct WallData
     {
-        public string wallId;
+        public string id;
         public List<Vector2> points;
-        public WallType model;
+        public WallType type;
         public bool open;
         public bool locked;
 
-        public WallData(string _id, List<Vector2> _points, WallType _model, bool _open, bool _locked)
+        public WallData(string _id, List<Vector2> _points, WallType _type, bool _open, bool _locked)
         {
-            wallId = _id;
+            id = _id;
             points = _points;
-            model = _model;
+            type = _type;
             open = _open;
             locked = _locked;
         }

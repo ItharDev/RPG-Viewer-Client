@@ -99,7 +99,7 @@ namespace Networking
                 WallData wall = JsonUtility.FromJson<WallData>(data.GetValue().GetString());
 
                 await UniTask.SwitchToMainThread();
-                Events.OnDoorModified?.Invoke(wall.wallId, wall);
+                Events.OnDoorModified?.Invoke(wall.id, wall);
             });
 
             // Lights

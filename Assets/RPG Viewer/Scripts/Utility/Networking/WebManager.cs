@@ -26,17 +26,18 @@ namespace Networking
                 {
                     SocketManager.EmitAsync("download-image", async (callback1) =>
                     {
+                        // Check if the event was successful
                         if (callback1.GetValue().GetBoolean())
                         {
                             byte[] bytes = Convert.FromBase64String(callback1.GetValue(1).GetString());
                             await File.WriteAllBytesAsync(path, bytes);
                             callback(bytes);
+                            return;
                         }
-                        else
-                        {
-                            MessageManager.QueueMessage(callback1.GetValue(1).GetString());
-                            callback(null);
-                        }
+
+                        // Send error message
+                        MessageManager.QueueMessage(callback1.GetValue(1).GetString());
+                        callback(null);
                     }, path);
                 }
             }
@@ -44,16 +45,17 @@ namespace Networking
             {
                 SocketManager.EmitAsync("download-image", (callback1) =>
                 {
+                    // Check if the event was successful
                     if (callback1.GetValue().GetBoolean())
                     {
                         byte[] bytes = Convert.FromBase64String(callback1.GetValue(1).GetString());
                         callback(bytes);
+                        return;
                     }
-                    else
-                    {
-                        MessageManager.QueueMessage(callback1.GetValue(1).GetString());
-                        callback(null);
-                    }
+
+                    // Send error message
+                    MessageManager.QueueMessage(callback1.GetValue(1).GetString());
+                    callback(null);
                 }, path);
             }
         }

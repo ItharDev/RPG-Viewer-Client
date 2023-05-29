@@ -1,3 +1,7 @@
+using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
+using Networking;
+using Nobi.UiRoundedCorners;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -43,6 +47,9 @@ namespace RPG
         private bool folderOpen;
         private bool optionsOpen;
         private Color selectedColor;
+        private bool requireSend;
+        private float lastSize;
+        private float lastCount;
 
         private void OnEnable()
         {
@@ -63,6 +70,35 @@ namespace RPG
             Events.OnBlueprintFolderDeselected.RemoveListener(HandleDeselect);
             Events.OnBlueprintFolderMoved.RemoveListener(HandleMoved);
         }
+        private void Update()
+        {
+            if (requireSend)
+            {
+                // Send folder toggled event
+                Events.OnBlueprintFolderClicked?.Invoke(this);
+                requireSend = false;
+            }
+            if (content.sizeDelta.y != lastSize)
+            {
+                lastSize = content.sizeDelta.y;
+                Resize();
+            }
+            if (lastCount != content.transform.childCount)
+            {
+                lastCount = content.transform.childCount;
+                SortContent();
+            }
+        }
+
+        private void Resize()
+        {
+            rect.sizeDelta = new Vector2(0.0f, folderOpen ? 40.0f + content.sizeDelta.y : 40.0f);
+
+            // Refresh corners
+            var corners = background.GetComponent<ImageWithRoundedCorners>();
+            corners.Validate();
+            corners.Refresh();
+        }
 
         private void HandleClick(TokenFolder folder)
         {
@@ -76,10 +112,7 @@ namespace RPG
             border.enabled = false;
             border.enabled = true;
 
-            VerticalLayoutGroup layout = content.GetComponent<VerticalLayoutGroup>();
-            layout.CalculateLayoutInputVertical();
-            layout.SetLayoutVertical();
-            rect.sizeDelta = new Vector2(0.0f, folderOpen ? 40.0f + content.sizeDelta.y : 40.0f);
+            Resize();
         }
         private void HandleSelect(TokenFolder folder)
         {
@@ -128,6 +161,31 @@ namespace RPG
             // Reset background color
             background.color = normalColor;
         }
+        private void SortContent()
+        {
+            List<TokenFolder> folders = tokensPanel.GetFolders(this);
+            List<TokenHolder> holders = tokensPanel.GetTokens(this);
+
+            folders.Sort(SortByName);
+            holders.Sort(SortByName);
+
+            for (int i = 0; i < folders.Count; i++)
+            {
+                folders[i].transform.SetSiblingIndex(i);
+            }
+            for (int i = 0; i < holders.Count; i++)
+            {
+                holders[i].transform.SetSiblingIndex(i + folders.Count);
+            }
+        }
+        private int SortByName(TokenFolder folderA, TokenFolder folderB)
+        {
+            return folderA.Data.name.CompareTo(folderB.Data.name);
+        }
+        private int SortByName(TokenHolder holderA, TokenHolder holderB)
+        {
+            return holderA.Data.name.CompareTo(holderB.Data.name);
+        }
 
         public void ClickFolder(BaseEventData eventData)
         {
@@ -140,8 +198,7 @@ namespace RPG
             // Toggle options panel on right click
             else if (pointerData.button == PointerEventData.InputButton.Right) ToggleOptions();
 
-            // Send folder toggled event
-            Events.OnBlueprintFolderClicked?.Invoke(this);
+            requireSend = true;
         }
         private void ToggleFolder()
         {
@@ -163,13 +220,13 @@ namespace RPG
             }
 
             // Calculate panel's target height
-            float targetSize = 60.0f;
+            float targetSize = 120.0f;
             if (selectButton.activeInHierarchy) targetSize += 30.0f;
             if (moveHereButton.activeInHierarchy) targetSize += 30.0f;
             if (deselectButton.activeInHierarchy) targetSize += 30.0f;
             if (rootButton.activeInHierarchy) targetSize += 30.0f;
 
-            LeanTween.size(optionsPanel, new Vector2(110.0f, optionsOpen ? targetSize : 0.0f), 0.2f).setOnComplete(() =>
+            LeanTween.size(optionsPanel, new Vector2(115.0f, optionsOpen ? targetSize : 0.0f), 0.2f).setOnComplete(() =>
             {
                 // Set panel's transform to this after closing the panel
                 if (!optionsOpen)
@@ -186,7 +243,7 @@ namespace RPG
 
         public void Rename()
         {
-            ToggleOptions();
+            if (optionsOpen) ToggleOptions();
             headerInput.gameObject.SetActive(true);
             headerInput.ActivateInputField();
             header.gameObject.SetActive(false);
@@ -194,7 +251,18 @@ namespace RPG
         public void Delete()
         {
             ToggleOptions();
-            Debug.Log($"Delete folder");
+            SocketManager.EmitAsync("remove-blueprint-folder", async (callback) =>
+            {
+                // Check if the event was successful
+                if (callback.GetValue().GetBoolean())
+                {
+                    await UniTask.SwitchToMainThread();
+                    tokensPanel.RemoveFolder(this);
+                }
+
+                // Send error message
+                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+            }, Path);
         }
         public void Select()
         {
@@ -221,8 +289,46 @@ namespace RPG
             headerInput.gameObject.SetActive(false);
             header.gameObject.SetActive(true);
             string newName = string.IsNullOrEmpty(headerInput.text) ? Data.name : headerInput.text;
+            header.text = newName;
 
-            Debug.Log($"Renamed folder to: {newName}");
+            SocketManager.EmitAsync("rename-blueprint-folder", async (callback) =>
+            {
+                if (callback.GetValue().GetBoolean())
+                {
+                    await UniTask.SwitchToMainThread();
+                    Data.name = header.text;
+                    return;
+                }
+
+                // Send error message
+                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                header.text = Data.name;
+            }, Path, newName);
+        }
+        public void AddFolder()
+        {
+            ToggleOptions();
+            SocketManager.EmitAsync("create-blueprint-folder", async (callback) =>
+            {
+                // Check if the event was successful
+                if (callback.GetValue().GetBoolean())
+                {
+                    await UniTask.SwitchToMainThread();
+                    if (!folderOpen) ToggleFolder();
+                    requireSend = true;
+
+                    // Create the folder
+                    string id = callback.GetValue(1).GetString();
+                    TokenFolder createdFolder = tokensPanel.CreateFolder(id, Path);
+
+                    // Activate rename field
+                    createdFolder.Rename();
+                    return;
+                }
+
+                // Send error message
+                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+            }, Path, "New Folder");
         }
         public void LoadData(Folder folder, TokensPanel panel)
         {

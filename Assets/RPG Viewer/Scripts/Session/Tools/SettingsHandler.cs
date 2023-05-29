@@ -1,9 +1,12 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace RPG
 {
     public class SettingsHandler : MonoBehaviour
     {
+        [SerializeField] private CanvasGroup canvasGroup;
+
         [Header("Buttons")]
         [SerializeField] private ToolButton gridButton;
         [SerializeField] private ToolButton wallsButton;
@@ -15,15 +18,13 @@ namespace RPG
         [SerializeField] private ToolButton createButton;
         [SerializeField] private ToolButton deleteButton;
 
-        [Header("Panels")]
-        [SerializeField] private RectTransform gridRect;
-        [SerializeField] private RectTransform wallsRect;
-        [SerializeField] private RectTransform lightingRect;
+        [Header("Masks")]
+        [SerializeField] private RectMask2D gridMask;
+        [SerializeField] private RectMask2D wallsMask;
+        [SerializeField] private RectMask2D lightingMask;
 
         public static SettingsHandler Instance { get; private set; }
         public Setting Setting { get { return activeSetting; } }
-
-        private RectTransform rect;
 
         private Setting activeSetting;
         private Setting lastSetting;
@@ -38,8 +39,13 @@ namespace RPG
         }
         private void OnEnable()
         {
-            // Get reference of our rect transform
-            if (rect == null) rect = GetComponent<RectTransform>();
+            // Add event listeners
+            Events.OnStateChanged.AddListener(HandleStateChange);
+        }
+        private void OnDisable()
+        {
+            // Remove event listeners
+            Events.OnStateChanged.RemoveListener(HandleStateChange);
         }
         private void Update()
         {
@@ -47,9 +53,13 @@ namespace RPG
             if (activeSetting != lastSetting)
             {
                 lastSetting = activeSetting;
-
                 Events.OnSettingChanged?.Invoke(activeSetting);
             }
+        }
+
+        private void HandleStateChange(SessionState oldState, SessionState newState)
+        {
+            canvasGroup.alpha = string.IsNullOrEmpty(newState.scene) ? 0.0f : 1.0f;
         }
 
         public void ConfigureGrid()
@@ -133,13 +143,6 @@ namespace RPG
             Debug.Log("Selecting new image");
         }
 
-        public void OpenPanel()
-        {
-            // Update rect size
-            if (rect.sizeDelta.x == 100.0f) LeanTween.size(rect, new Vector2(605.0f, 170.0f), 0.2f);
-            else LeanTween.size(rect, new Vector2(100.0f, 170.0f), 0.2f);
-        }
-
         public void OpenGrid()
         {
             // Update selections
@@ -147,15 +150,14 @@ namespace RPG
             CloseLighting();
 
             // Close panel if it's open
-            if (gridRect.sizeDelta.x == 120.0f)
+            if (!gridMask.enabled)
             {
                 CloseGrid();
                 activeSetting = Setting.None;
                 return;
             }
 
-            // Update rect size
-            LeanTween.size(gridRect, new Vector2(120.0f, 65.0f), 0.2f);
+            gridMask.enabled = false;
             gridButton.Select();
 
             // Update tool state
@@ -163,7 +165,7 @@ namespace RPG
         }
         public void CloseGrid()
         {
-            LeanTween.size(gridRect, new Vector2(100.0f, 30.0f), 0.2f);
+            gridMask.enabled = true;
             gridButton.Deselect();
         }
         public void OpenWalls()
@@ -173,7 +175,7 @@ namespace RPG
             CloseLighting();
 
             // Close panel if it's open
-            if (wallsRect.sizeDelta.x == 150.0f)
+            if (!wallsMask.enabled)
             {
                 CloseWalls();
                 activeSetting = Setting.None;
@@ -181,7 +183,7 @@ namespace RPG
             }
 
             // Update rect size
-            LeanTween.size(wallsRect, new Vector2(150.0f, 170.0f), 0.2f);
+            wallsMask.enabled = false;
             wallsButton.Select();
 
 
@@ -192,7 +194,7 @@ namespace RPG
         }
         public void CloseWalls()
         {
-            LeanTween.size(wallsRect, new Vector2(100.0f, 30.0f), 0.2f);
+            wallsMask.enabled = true;
             wallsButton.Deselect();
         }
         public void OpenLighting()
@@ -202,7 +204,7 @@ namespace RPG
             CloseWalls();
 
             // Close panel if it's open
-            if (lightingRect.sizeDelta.x == 120.0f)
+            if (!lightingMask.enabled)
             {
                 CloseLighting();
                 activeSetting = Setting.None;
@@ -210,7 +212,7 @@ namespace RPG
             }
 
             // Update rect size
-            LeanTween.size(lightingRect, new Vector2(120.0f, 135.0f), 0.2f);
+            lightingMask.enabled = false;
             lightingButton.Select();
 
             // Activate last tool selection
@@ -219,7 +221,7 @@ namespace RPG
         }
         public void CloseLighting()
         {
-            LeanTween.size(lightingRect, new Vector2(100.0f, 30.0f), 0.2f);
+            lightingMask.enabled = true;
             lightingButton.Deselect();
         }
     }

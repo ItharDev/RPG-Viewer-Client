@@ -54,7 +54,7 @@ namespace RPG
 
             // Update layer
             gameObject.layer = 8;
-            if (data.model == WallType.Invisible)
+            if (data.type == WallType.Invisible)
             {
                 gameObject.layer = 7;
                 lightCollider.enabled = false;
@@ -63,14 +63,14 @@ namespace RPG
             if (ConnectionManager.Info.isMaster)
             {
                 bool toolActivated = SettingsHandler.Instance.Setting.ToString().Contains("Walls");
-                bool isDoor = data.model.ToString().Contains("Door");
+                bool isDoor = data.type.ToString().Contains("Door");
 
                 // Show UI if tool is not selected
                 if (!toolActivated) ToggleUI(isDoor);
             }
             else
             {
-                ToggleUI(data.model == WallType.Door);
+                ToggleUI(data.type == WallType.Door);
             }
         }
         private void HandleCollider()
@@ -95,7 +95,7 @@ namespace RPG
         {
             // Enable / disable UI based on setting
             bool toolSelected = setting.ToString().Contains("Walls");
-            bool isDoor = data.model.ToString().Contains("Door");
+            bool isDoor = data.type.ToString().Contains("Door");
 
             // Show UI if tool is not selected
             ToggleUI(!toolSelected && isDoor);

@@ -1,5 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-using Cysharp.Threading.Tasks;
+﻿using Cysharp.Threading.Tasks;
 using Networking;
 using UnityEngine;
 using UnityEngine.UI;
@@ -14,7 +13,7 @@ namespace RPG
         public LightingManager LightingManager { get; private set; }
         public TokenManager TokenManager { get; private set; }
         public GridManager Grid { get; private set; }
-        public SceneSettings Settings { get; private set; }
+        public SceneData Settings { get; private set; }
         public static Session Instance { get; private set; }
 
         private void OnEnable()
@@ -84,19 +83,20 @@ namespace RPG
             landingPage.gameObject.SetActive(true);
             SocketManager.EmitAsync("get-scene", async (callback) =>
             {
+                // Check if the event was successful
                 if (callback.GetValue().GetBoolean())
                 {
                     await UniTask.SwitchToMainThread();
 
                     // Load scene data
-                    SceneSettings settings = JsonUtility.FromJson<SceneSettings>(callback.GetValue(1).ToString());
+                    SceneData settings = JsonUtility.FromJson<SceneData>(callback.GetValue(1).ToString());
                     settings.id = id;
 
                     MessageManager.QueueMessage("Loading scene");
                     Settings = settings;
 
                     // Send load event
-                    WebManager.Download(settings.data.image, true, async (bytes) =>
+                    WebManager.Download(settings.info.image, true, async (bytes) =>
                     {
                         await UniTask.SwitchToMainThread();
 

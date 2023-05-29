@@ -98,7 +98,7 @@ namespace RPG
             // Clear list
             lights.Clear();
         }
-        private void LoadLights(SceneSettings settings)
+        private void LoadLights(SceneData settings)
         {
             // Get lighting data
             List<LightData> list = settings.lights;

@@ -24,9 +24,10 @@ namespace RPG
         [SerializeField] private Image background;
         [SerializeField] private Color normalColor;
 
-        public string Path { get { return data.path; } }
+        public string Path { get { return Data.path; } }
+        public string Id { get { return Data.id; } }
 
-        private SceneSettings data;
+        public SceneData Data;
         private ScenesPanel scenesPanel;
         private bool optionsOpen;
         private Color selectedColor;
@@ -147,7 +148,7 @@ namespace RPG
 
                 // Send error message
                 MessageManager.QueueMessage(callback.GetValue(1).GetString());
-            }, data.id);
+            }, Data.id);
         }
         public void Rename()
         {
@@ -159,8 +160,9 @@ namespace RPG
         public void ConfirmRename()
         {
             headerInput.gameObject.SetActive(false);
-            headerInput.gameObject.SetActive(true);
-            string newName = string.IsNullOrEmpty(headerInput.text) ? data.data.name : headerInput.text;
+            headerInput.DeactivateInputField();
+            headerText.gameObject.SetActive(true);
+            string newName = string.IsNullOrEmpty(headerInput.text) ? Data.info.name : headerInput.text;
 
             Debug.Log($"Renamed scene to: {newName}");
         }
@@ -172,7 +174,7 @@ namespace RPG
         public void Select()
         {
             ToggleOptions();
-            scenesPanel.SelectToken(this);
+            scenesPanel.SelectScene(this);
         }
         public void MoveRoot()
         {
@@ -195,10 +197,10 @@ namespace RPG
                     await UniTask.SwitchToMainThread();
 
                     // Load Data
-                    SceneSettings data = JsonUtility.FromJson<SceneSettings>(callback.GetValue(1).ToString());
+                    SceneData data = JsonUtility.FromJson<SceneData>(callback.GetValue(1).ToString());
                     data.id = id;
                     scenesPanel = panel;
-                    selectedColor = string.IsNullOrEmpty(path) ? scenesPanel.GetColor() : scenesPanel.GetDirectoryById(path).Data.color;
+                    selectedColor = string.IsNullOrEmpty(path) ? scenesPanel.GetColor() : scenesPanel.GetDirectoryByPath(path).Data.color;
                     selectedColor.a = 0.5f;
                     LoadData(data);
                     return;
@@ -209,16 +211,16 @@ namespace RPG
         }
         public void UpdatePath(string newPath)
         {
-            data.path = newPath;
+            Data.path = newPath;
             selectedColor = string.IsNullOrEmpty(newPath) ? scenesPanel.GetColor() : scenesPanel.GetDirectoryByPath(newPath).Data.color;
         }
 
-        private void LoadData(SceneSettings settings)
+        private void LoadData(SceneData data)
         {
-            data = settings;
-            headerText.text = settings.data.name;
-            headerBackground.SetActive(!string.IsNullOrEmpty(settings.data.name));
-            WebManager.Download(settings.data.image, true, async (bytes) =>
+            Data = data;
+            headerText.text = data.info.name;
+            headerBackground.SetActive(!string.IsNullOrEmpty(data.info.name));
+            WebManager.Download(data.info.image, true, async (bytes) =>
             {
                 // Return if image couldn't be loaded
                 if (bytes == null) return;

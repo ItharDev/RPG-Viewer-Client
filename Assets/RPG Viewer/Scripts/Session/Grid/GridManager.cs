@@ -36,7 +36,7 @@ namespace RPG
             Events.OnSceneLoaded.RemoveListener(LoadGrid);
         }
 
-        private void LoadGrid(SceneSettings data)
+        private void LoadGrid(SceneData data)
         {
             GridData gridData = data.grid;
 
