@@ -302,16 +302,4 @@ namespace RPG
             }, id);
         }
     }
-
-    [System.Serializable]
-    public struct JoinData
-    {
-        public string id;
-        public string master;
-        public bool isMaster;
-        public bool synced;
-        public string scene;
-        public List<string> users;
-        public string background;
-    }
 }

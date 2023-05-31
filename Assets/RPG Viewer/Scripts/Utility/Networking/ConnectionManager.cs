@@ -54,6 +54,8 @@ namespace RPG
                     users.Add(user);
                 }
 
+                PresetManager.Instance.LoadPresets(data.presets);
+
                 // Generate session info and state
                 Info = new SessionInfo(data.id, data.master, data.isMaster, users, sprite);
                 State = new SessionState(data.synced, data.scene);
@@ -122,5 +124,18 @@ namespace RPG
             synced = _synced;
             scene = _scene;
         }
+    }
+
+    [System.Serializable]
+    public struct JoinData
+    {
+        public string id;
+        public string master;
+        public bool isMaster;
+        public bool synced;
+        public string scene;
+        public List<string> users;
+        public List<string> presets;
+        public string background;
     }
 }

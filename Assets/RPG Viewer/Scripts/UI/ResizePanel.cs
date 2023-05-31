@@ -20,6 +20,12 @@ namespace RPG
             minSize = _minSize;
             maxSize = _maxSize;
         }
+        public void UpdatePermissions(bool _x, bool _y)
+        {
+            // Set new resize permissions
+            allowX = _x;
+            allowY = _y;
+        }
 
         public void OnBeginDrag(PointerEventData eventData)
         {

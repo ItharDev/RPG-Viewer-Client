@@ -190,8 +190,6 @@ namespace RPG
         public Vector2Int dimensions; //
         public float visionRadius; //
         public float nightRadius; //
-        public string light;
-        public bool highlighted;
         public string image; //
         public Vector2 position;
         public bool enabled;

@@ -126,21 +126,21 @@ namespace Networking
             });
 
             // Presets
-            Socket.On("create-preset", (data) =>
+            Socket.On("create-preset", async (data) =>
             {
-                // string id = data.GetValue().GetString();
-                // LightPreset preset = JsonUtility.FromJson<LightPreset>(data.GetValue(1).ToString());
+                string id = data.GetValue().GetString();
+                LightData preset = JsonUtility.FromJson<LightData>(data.GetValue(1).ToString());
 
-                // await UniTask.SwitchToMainThread();
-                // Events.OnPresetCreated?.Invoke(id, preset);
+                await UniTask.SwitchToMainThread();
+                Events.OnPresetCreated?.Invoke(id, preset);
             });
-            Socket.On("modify-preset", (data) =>
+            Socket.On("modify-preset", async (data) =>
             {
-                // string id = data.GetValue().GetString();
-                // LightPreset preset = JsonUtility.FromJson<LightPreset>(data.GetValue(1).ToString());
+                string id = data.GetValue().GetString();
+                LightData preset = JsonUtility.FromJson<LightData>(data.GetValue(1).ToString());
 
-                // await UniTask.SwitchToMainThread();
-                // Events.OnPresetModified?.Invoke(id, preset);
+                await UniTask.SwitchToMainThread();
+                Events.OnPresetModified?.Invoke(id, preset);
             });
             Socket.On("remove-preset", async (data) =>
             {
@@ -230,125 +230,6 @@ namespace Networking
 
                 await UniTask.SwitchToMainThread();
                 Events.OnTokenRotated?.Invoke(id, angle);
-            });
-
-            // Notes
-            Socket.On("create-note", (data) =>
-            {
-                // string id = data.GetValue().GetString();
-                // NoteData note = JsonUtility.FromJson<NoteData>(data.GetValue(1).ToString());
-                // note.id = id;
-
-                // await UniTask.SwitchToMainThread();
-                // Events.OnNoteCreated?.Invoke(note);
-            });
-            Socket.On("modify-note-text", async (data) =>
-            {
-                string id = data.GetValue().GetString();
-                string text = data.GetValue(1).GetString();
-
-                await UniTask.SwitchToMainThread();
-                Events.OnNoteTextModified?.Invoke(id, text);
-            });
-            Socket.On("modify-note-image", async (data) =>
-            {
-                string id = data.GetValue().GetString();
-                string image = data.GetValue(1).GetString();
-
-                await UniTask.SwitchToMainThread();
-                Events.OnNoteImageModified?.Invoke(id, image);
-            });
-            Socket.On("modify-note-header", async (data) =>
-            {
-                string id = data.GetValue().GetString();
-                string header = data.GetValue(1).GetString();
-
-                await UniTask.SwitchToMainThread();
-                Events.OnNoteHeaderModified?.Invoke(id, header);
-            });
-            Socket.On("set-note-state", async (data) =>
-            {
-                string id = data.GetValue().GetString();
-                bool state = data.GetValue(1).GetBoolean();
-
-                await UniTask.SwitchToMainThread();
-                Events.OnNoteEnabled?.Invoke(id, state);
-            });
-            Socket.On("move-note", async (data) =>
-            {
-                string id = data.GetValue().GetString();
-                Vector2 pos = JsonUtility.FromJson<Vector2>(data.GetValue(1).GetString());
-
-                await UniTask.SwitchToMainThread();
-                Events.OnNoteMoved?.Invoke(id, pos);
-            });
-            Socket.On("remove-note", async (data) =>
-            {
-                string id = data.GetValue().GetString();
-
-                await UniTask.SwitchToMainThread();
-                Events.OnNoteRemoved?.Invoke(id);
-            });
-            Socket.On("show-note", async (data) =>
-            {
-                string id = data.GetValue().GetString();
-
-                await UniTask.SwitchToMainThread();
-                Events.OnNoteShown?.Invoke(id);
-            });
-
-            Socket.On("modify-journal-text", async (data) =>
-            {
-                string id = data.GetValue().GetString();
-                string text = data.GetValue(1).GetString();
-
-                await UniTask.SwitchToMainThread();
-                Events.OnJournalTextModified?.Invoke(id, text);
-            });
-            Socket.On("modify-journal-image", async (data) =>
-            {
-                await UniTask.SwitchToMainThread();
-                string id = data.GetValue().GetString();
-                string image = data.GetValue(1).GetString();
-
-                await UniTask.SwitchToMainThread();
-                Events.OnJournalImageModified?.Invoke(id, image);
-            });
-            Socket.On("modify-journal-header", async (data) =>
-            {
-                string id = data.GetValue().GetString();
-                string header = data.GetValue(1).GetString();
-
-                await UniTask.SwitchToMainThread();
-                Events.OnJournalHeaderModified?.Invoke(id, header);
-            });
-            Socket.On("set-collaborators", (data) =>
-            {
-                string id = data.GetValue().GetString();
-                var list = data.GetValue(1).EnumerateArray().ToArray();
-
-                // List<Collaborator> collaborators = new List<Collaborator>();
-                // for (int i = 0; i < list.Length; i++)
-                // {
-                //     collaborators.Add(JsonUtility.FromJson<Collaborator>(list[i].ToString()));
-                // }
-
-                // await UniTask.SwitchToMainThread();
-                // Events.OnCollaboratorsModified?.Invoke(id, collaborators);
-            });
-            Socket.On("remove-journal", async (data) =>
-            {
-                string id = data.GetValue().GetString();
-
-                await UniTask.SwitchToMainThread();
-                Events.OnJournalRemoved?.Invoke(id);
-            });
-            Socket.On("show-journal", (data) =>
-            {
-                // JournalData journal = JsonUtility.FromJson<JournalData>(data.GetValue().GetString());
-
-                // await UniTask.SwitchToMainThread();
-                // Events.OnJournalShown?.Invoke(journal);
             });
         }
 

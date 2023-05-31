@@ -54,8 +54,8 @@ namespace RPG
         public static UnityEvent<Setting> OnSettingChanged = new UnityEvent<Setting>();
 
         // Presets
-        // public static UnityEvent<string, LightPreset> OnPresetCreated = new UnityEvent<string, LightPreset>();
-        // public static UnityEvent<string, LightPreset> OnPresetModified = new UnityEvent<string, LightPreset>();
+        public static UnityEvent<string, LightData> OnPresetCreated = new UnityEvent<string, LightData>();
+        public static UnityEvent<string, LightData> OnPresetModified = new UnityEvent<string, LightData>();
         public static UnityEvent<string> OnPresetRemoved = new UnityEvent<string>();
 
         // Tokens

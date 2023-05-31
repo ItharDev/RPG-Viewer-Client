@@ -201,10 +201,6 @@ namespace RPG
             {
                 case TokenType.Character:
                     canvas.sortingLayerName = "Characters";
-
-                    // Check if we are highlighted
-                    if (token.Data.highlighted) canvas.sortingLayerName = "Highlighted Characters";
-
                     // Check if we are dead
                     if (token.Conditions.IsDead) canvas.sortingLayerName = "Dead Characters";
 
@@ -214,9 +210,6 @@ namespace RPG
                 case TokenType.Mount:
                     canvas.sortingLayerName = "Mounts";
 
-                    // Check if we are highlighted
-                    if (token.Data.highlighted) canvas.sortingLayerName = "Highlighted Mounts";
-
                     // Check if we are dead
                     if (token.Conditions.IsDead) canvas.sortingLayerName = "Dead Mounts";
 
@@ -225,9 +218,6 @@ namespace RPG
                     break;
                 case TokenType.Item:
                     canvas.sortingLayerName = "Items";
-
-                    // Check if we are highlighted
-                    if (token.Data.highlighted) canvas.sortingLayerName = "Highlighted Items";
 
                     // Check if we are owners
                     if (token.IsOwner) canvas.sortingLayerName = "Owned Items";

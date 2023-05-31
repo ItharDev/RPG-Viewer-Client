@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
+using Networking;
 using UnityEngine;
 
 namespace RPG
@@ -39,6 +41,25 @@ namespace RPG
 
             // Store light to dictionary
             lights.Add(data.id, light);
+        }
+        private void GetLight(string id)
+        {
+            SocketManager.EmitAsync("get-light", async (callback) =>
+            {
+                // Check if the event was successful
+                if (callback.GetValue().GetBoolean())
+                {
+                    await UniTask.SwitchToMainThread();
+                    LightData data = JsonUtility.FromJson<LightData>(callback.GetValue(1).ToString());
+                    data.id = id;
+                    CreateLight(data);
+
+                    return;
+                }
+
+                // Send error message
+                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+            }, id);
         }
         private void ModifyLight(string id, LightData data)
         {
@@ -101,12 +122,12 @@ namespace RPG
         private void LoadLights(SceneData settings)
         {
             // Get lighting data
-            List<LightData> list = settings.lights;
+            List<string> list = settings.lights;
 
             // Generate lights
             for (int i = 0; i < list.Count; i++)
             {
-                CreateLight(list[i]);
+                GetLight(list[i]);
             }
         }
     }

@@ -1,7 +1,11 @@
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using Networking;
+using SFB;
 using UnityEngine;
 
 namespace RPG
@@ -11,6 +15,7 @@ namespace RPG
         [SerializeField] private TokenFolder folderPrefab;
         [SerializeField] private TokenHolder tokenPrefab;
         [SerializeField] private Transform rootTransform;
+        [SerializeField] private TokenConfiguration configPrefab;
 
         private Dictionary<string, TokenFolder> folders = new Dictionary<string, TokenFolder>();
         private Dictionary<string, TokenHolder> tokens = new Dictionary<string, TokenHolder>();
@@ -153,9 +158,38 @@ namespace RPG
         }
         private float GetRandomHue()
         {
-            return Random.Range(0, 12) * (1.0f / 12.0f);
+            return UnityEngine.Random.Range(0, 12) * (1.0f / 12.0f);
         }
 
+        public async void CreateToken(string path)
+        {
+            await ImageTask((bytes) =>
+            {
+                TokenConfiguration config = Instantiate(configPrefab, Vector2.zero, Quaternion.identity);
+                config.transform.SetParent(UICanvas.Instance.transform);
+                config.transform.SetAsLastSibling();
+                config.LoadData(new TokenData(), bytes, (tokenData, image, lightData) =>
+                {
+                    Debug.Log(JsonUtility.ToJson(tokenData, true));
+                });
+            });
+        }
+        private async Task ImageTask(Action<byte[]> callback)
+        {
+            // Only allow image files
+            ExtensionFilter[] extensions = new ExtensionFilter[] { new ExtensionFilter("Image Files", "png", "jpg", "jpeg") };
+
+            // Open file explorer
+            StandaloneFileBrowser.OpenFilePanelAsync("Select file", "", extensions, false, (string[] paths) =>
+            {
+                // Return if no items are selected
+                if (paths.Length == 0) callback(null);
+
+                // Read bytes from selected file
+                callback(File.ReadAllBytes(paths[0]));
+            });
+            await Task.Yield();
+        }
         public TokenFolder CreateFolder(string id, string path)
         {
             // Create path to this directory

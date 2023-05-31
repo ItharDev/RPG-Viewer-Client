@@ -37,16 +37,70 @@ namespace RPG
     public struct LightData
     {
         public string id;
+        public string name;
         public float radius;
-        public bool enabled;
-        public Vector2 position;
         public float intensity;
-        public float flickerFrequency;
-        public float flickerAmount;
-        public float pulseInterval;
-        public float pulseAmount;
-        public int effect;
+        public bool enabled;
         public Color color;
-        public string preset;
+        public Vector2 position;
+        public LightEffect effect;
+
+        public override bool Equals(object obj)
+        {
+            return base.Equals(obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+
+        public override string ToString()
+        {
+            return base.ToString();
+        }
+
+        public static bool operator ==(LightData data_1, LightData data_2)
+        {
+            return data_1.Equals(data_2);
+        }
+        public static bool operator !=(LightData data_1, LightData data_2)
+        {
+            return !data_1.Equals(data_2);
+        }
+    }
+
+    [Serializable]
+    public struct LightEffect
+    {
+        public int type;
+        public float strength;
+        public float frequency;
+
+        public override bool Equals(object obj)
+        {
+            return base.Equals(obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+
+        public override string ToString()
+        {
+            return base.ToString();
+        }
+
+        public static bool operator ==(LightEffect data_1, LightEffect data_2)
+        {
+            return data_1.Equals(data_2);
+
+        }
+        public static bool operator !=(LightEffect data_1, LightEffect data_2)
+        {
+            return !data_1.Equals(data_2);
+
+        }
     }
 }
