@@ -251,18 +251,21 @@ namespace RPG
         public void Delete()
         {
             ToggleOptions();
-            SocketManager.EmitAsync("remove-scene-folder", async (callback) =>
+            MessageManager.AskConfirmation(new Confirmation("Delete folder", "Delete", "Cancel", (result) =>
             {
-                // Check if the event was successful
-                if (callback.GetValue().GetBoolean())
+                if (result) SocketManager.EmitAsync("remove-scene-folder", async (callback) =>
                 {
-                    await UniTask.SwitchToMainThread();
-                    scenesPanel.RemoveFolder(this);
-                }
+                    // Check if the event was successful
+                    if (callback.GetValue().GetBoolean())
+                    {
+                        await UniTask.SwitchToMainThread();
+                        scenesPanel.RemoveFolder(this);
+                    }
 
-                // Send error message
-                MessageManager.QueueMessage(callback.GetValue(1).GetString());
-            }, Path);
+                    // Send error message
+                    MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                }, Path);
+            }));
         }
         public void Select()
         {

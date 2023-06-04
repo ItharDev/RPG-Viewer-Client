@@ -191,6 +191,7 @@ namespace RPG
         public float visionRadius; //
         public float nightRadius; //
         public string image; //
+        public string light; //
         public Vector2 position;
         public bool enabled;
         public int health;

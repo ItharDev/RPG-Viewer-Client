@@ -251,18 +251,21 @@ namespace RPG
         public void Delete()
         {
             ToggleOptions();
-            SocketManager.EmitAsync("remove-blueprint-folder", async (callback) =>
+            MessageManager.AskConfirmation(new Confirmation("Delete folder", "Delete", "Cancel", (result) =>
             {
-                // Check if the event was successful
-                if (callback.GetValue().GetBoolean())
+                if (result) SocketManager.EmitAsync("remove-blueprint-folder", async (callback) =>
                 {
-                    await UniTask.SwitchToMainThread();
-                    tokensPanel.RemoveFolder(this);
-                }
+                    // Check if the event was successful
+                    if (callback.GetValue().GetBoolean())
+                    {
+                        await UniTask.SwitchToMainThread();
+                        tokensPanel.RemoveFolder(this);
+                    }
 
-                // Send error message
-                MessageManager.QueueMessage(callback.GetValue(1).GetString());
-            }, Path);
+                    // Send error message
+                    MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                }, Path);
+            }));
         }
         public void Select()
         {
@@ -329,6 +332,11 @@ namespace RPG
                 // Send error message
                 MessageManager.QueueMessage(callback.GetValue(1).GetString());
             }, Path, "New Folder");
+        }
+        public void AddToken()
+        {
+            ToggleOptions();
+            tokensPanel.CreateToken(Path);
         }
         public void LoadData(Folder folder, TokensPanel panel)
         {

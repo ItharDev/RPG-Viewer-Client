@@ -38,7 +38,7 @@ namespace Networking
                         // Send error message
                         MessageManager.QueueMessage(callback1.GetValue(1).GetString());
                         callback(null);
-                    }, path);
+                    }, _path);
                 }
             }
             else
@@ -56,7 +56,7 @@ namespace Networking
                     // Send error message
                     MessageManager.QueueMessage(callback1.GetValue(1).GetString());
                     callback(null);
-                }, path);
+                }, _path);
             }
         }
         public static async void DownloadLocal(string _path, Action<byte[]> callback)

@@ -165,12 +165,23 @@ namespace RPG
         {
             await ImageTask((bytes) =>
             {
-                TokenConfiguration config = Instantiate(configPrefab, Vector2.zero, Quaternion.identity);
+                TokenConfiguration config = Instantiate(configPrefab);
                 config.transform.SetParent(UICanvas.Instance.transform);
+                config.transform.localPosition = Vector3.zero;
                 config.transform.SetAsLastSibling();
-                config.LoadData(new TokenData(), bytes, (tokenData, image, lightData) =>
+                config.LoadData(new TokenData(), new PresetData(), bytes, "Create new Blueprint", (tokenData, image, lightData) =>
                 {
-                    Debug.Log(JsonUtility.ToJson(tokenData, true));
+                    SocketManager.EmitAsync("create-blueprint", (callback) =>
+                    {
+                        // Check if the event was successful
+                        if (callback.GetValue().GetBoolean())
+                        {
+                            return;
+                        }
+
+                        // Send error message
+                        MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                    }, path, JsonUtility.ToJson(tokenData), JsonUtility.ToJson(lightData), Convert.ToBase64String(image));
                 });
             });
         }

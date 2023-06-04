@@ -13,9 +13,6 @@ namespace RPG
 
         private void Update()
         {
-            // Return if no callback event is defined
-            if (confirmation.callback == null) return;
-
             // Accept or cancel based on what key is pressed
             if (Input.GetKeyDown(KeyCode.Return)) Accept();
             if (Input.GetKeyDown(KeyCode.Escape)) Cancel();
@@ -23,19 +20,27 @@ namespace RPG
 
         public void Accept()
         {
-            // Confirmation is accepted
-            confirmation.callback(true);
-            Destroy(gameObject);
+            LeanTween.size((RectTransform)transform, new Vector2(240.0f, 0.0f), 0.2f).setOnComplete(() =>
+            {
+                // Confirmation is accepted
+                if (confirmation.callback != null) confirmation.callback(true);
+                Destroy(gameObject);
+            });
         }
         public void Cancel()
         {
-            // Confirmation is declined
-            confirmation.callback(false);
-            Destroy(gameObject);
+            LeanTween.size((RectTransform)transform, new Vector2(240.0f, 0.0f), 0.2f).setOnComplete(() =>
+            {
+                // Confirmation is declined
+                if (confirmation.callback != null) confirmation.callback(false);
+                Destroy(gameObject);
+            });
         }
 
-        public void UpdateUI(Confirmation confirmation)
+        public void UpdateUI(Confirmation _confirmation)
         {
+            confirmation = _confirmation;
+
             // Update header and buttons
             question.text = confirmation.question;
             accept.text = confirmation.acceptText;

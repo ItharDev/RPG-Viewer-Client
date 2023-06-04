@@ -18,10 +18,10 @@ namespace RPG
 
         public string Id { get { return data.id; } }
 
-        private LightData data;
-        private Action<LightData> callback;
+        private PresetData data;
+        private Action<PresetData> callback;
 
-        public void LoadData(LightData _data, Action<LightData> onSelected)
+        public void LoadData(PresetData _data, Action<PresetData> onSelected)
         {
             LeanTween.size((RectTransform)transform, new Vector2(325.0f, 286.0f), 0.2f);
 

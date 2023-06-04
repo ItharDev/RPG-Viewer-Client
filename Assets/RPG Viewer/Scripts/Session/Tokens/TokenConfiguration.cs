@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using Networking;
 using SFB;
 using TMPro;
 using UnityEngine;
@@ -10,6 +11,8 @@ namespace RPG
 {
     public class TokenConfiguration : MonoBehaviour
     {
+        [SerializeField] private TMP_Text header;
+
         [Header("Appearance")]
         [SerializeField] private CanvasGroup appearancePanel;
         [SerializeField] private Vector2 appearancePanelSize;
@@ -35,8 +38,8 @@ namespace RPG
         private RectTransform rect;
         private byte[] image;
         private TokenData data;
-        private LightData lightData;
-        private Action<TokenData, byte[], LightData> callback;
+        private PresetData lightData;
+        private Action<TokenData, byte[], PresetData> callback;
 
         private void Awake()
         {
@@ -91,7 +94,7 @@ namespace RPG
             LeanTween.size((RectTransform)presetList.transform, new Vector2(120.0f, lightingPanelSize.y), 0.2f);
         }
 
-        private void LoadPreset(string id, LightData data)
+        private void LoadPreset(string id, PresetData data)
         {
             if (lightData.id == id) ApplyPreset(data);
         }
@@ -99,7 +102,7 @@ namespace RPG
         {
             if (lightData.id == id) lightData.id = data.id;
         }
-        private void ApplyPreset(LightData data)
+        private void ApplyPreset(PresetData data)
         {
             lightData = data;
             effectDropdown.value = data.effect.type;
@@ -128,16 +131,43 @@ namespace RPG
             await Task.Yield();
         }
 
-        public void ClosePanel()
+        public void ClosePanel(bool saveData = true)
         {
-            LeanTween.size(rect, new Vector2(appearancePanelSize.x, 0.0f), 0.1f).setOnComplete(SaveData);
+            LeanTween.size(rect, new Vector2(appearancePanelSize.x, 0.0f), 0.1f).setOnComplete(() =>
+            {
+                if (saveData) SaveData();
+            });
         }
-        public void LoadData(TokenData _data, byte[] _image, Action<TokenData, byte[], LightData> _callback)
+        public void LoadData(TokenData _data, PresetData _lightData, byte[] _image, string _header, Action<TokenData, byte[], PresetData> _callback)
         {
             data = _data;
+            lightData = _lightData;
             image = _image;
+            header.text = _header;
             callback = _callback;
+
+            LoadAppearance();
+            LoadLighting(_lightData);
         }
+        private void LoadAppearance()
+        {
+            nameInput.text = data.name;
+            typeDropdown.value = (int)data.type;
+            widthInput.text = data.dimensions.x.ToString();
+            heightInput.text = data.dimensions.y.ToString();
+        }
+        private void LoadLighting(PresetData preset)
+        {
+            visionInput.text = data.visionRadius.ToString();
+            nightInput.text = data.nightRadius.ToString();
+            effectDropdown.value = preset.effect.type;
+            radiusInput.text = preset.radius.ToString();
+            intensityInput.text = preset.intensity.ToString();
+            colorButton.color = preset.color;
+            strengthInput.text = preset.effect.strength.ToString();
+            frequencyInput.text = preset.effect.frequency.ToString();
+        }
+
         private void SaveData()
         {
             // Appearance
@@ -162,7 +192,7 @@ namespace RPG
             float.TryParse(strengthInput.text, out lightData.effect.strength);
             float.TryParse(frequencyInput.text, out lightData.effect.frequency);
 
-            if (!string.IsNullOrEmpty(data.id))
+            if (!string.IsNullOrEmpty(lightData.id))
             {
                 if (lightData != PresetManager.Instance.GetPreset(lightData.id)) lightData.id = data.id;
             }

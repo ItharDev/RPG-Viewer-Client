@@ -7,7 +7,7 @@ namespace RPG
     public class PresetManager : MonoBehaviour
     {
         public static PresetManager Instance { get; private set; }
-        public Dictionary<string, LightData> Presets = new Dictionary<string, LightData>();
+        public Dictionary<string, PresetData> Presets = new Dictionary<string, PresetData>();
 
         private void Awake()
         {
@@ -26,7 +26,7 @@ namespace RPG
                 LoadPreset(data[i]);
             }
         }
-        public LightData GetPreset(string id)
+        public PresetData GetPreset(string id)
         {
             if (!Presets.ContainsKey(id)) return default;
 
@@ -40,7 +40,7 @@ namespace RPG
                 // Check if the event was successful
                 if (callback.GetValue().GetBoolean())
                 {
-                    LightData data = JsonUtility.FromJson<LightData>(callback.GetValue(1).ToString());
+                    PresetData data = JsonUtility.FromJson<PresetData>(callback.GetValue(1).ToString());
                     data.id = id;
                     Presets.Add(id, data);
                     return;

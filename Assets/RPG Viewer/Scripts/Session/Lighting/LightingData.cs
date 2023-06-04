@@ -37,6 +37,15 @@ namespace RPG
     public struct LightData
     {
         public string id;
+        public Vector2 position;
+        public string preset;
+        public bool enabled;
+    }
+
+    [Serializable]
+    public struct PresetData
+    {
+        public string id;
         public string name;
         public float radius;
         public float intensity;
@@ -60,11 +69,11 @@ namespace RPG
             return base.ToString();
         }
 
-        public static bool operator ==(LightData data_1, LightData data_2)
+        public static bool operator ==(PresetData data_1, PresetData data_2)
         {
             return data_1.Equals(data_2);
         }
-        public static bool operator !=(LightData data_1, LightData data_2)
+        public static bool operator !=(PresetData data_1, PresetData data_2)
         {
             return !data_1.Equals(data_2);
         }

@@ -16,7 +16,7 @@ namespace RPG
 
         private Light2D source;
         private Canvas canvas;
-        private LightData data;
+        private PresetData data;
         private bool loaded;
 
         private void OnEnable()
@@ -62,7 +62,7 @@ namespace RPG
             ToggleUI(enable);
         }
 
-        public void LoadData(LightData _data)
+        public void LoadData(PresetData _data)
         {
             data = _data;
 

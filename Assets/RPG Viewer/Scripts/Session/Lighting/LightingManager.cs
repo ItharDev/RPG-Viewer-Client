@@ -33,7 +33,7 @@ namespace RPG
             Events.OnSceneLoaded.RemoveListener(LoadLights);
         }
 
-        private void CreateLight(LightData data)
+        private void CreateLight(PresetData data)
         {
             // Instantiate light and load its data
             Light light = Instantiate(lightPrefab, lightParent);
@@ -50,7 +50,7 @@ namespace RPG
                 if (callback.GetValue().GetBoolean())
                 {
                     await UniTask.SwitchToMainThread();
-                    LightData data = JsonUtility.FromJson<LightData>(callback.GetValue(1).ToString());
+                    PresetData data = JsonUtility.FromJson<PresetData>(callback.GetValue(1).ToString());
                     data.id = id;
                     CreateLight(data);
 
@@ -61,7 +61,7 @@ namespace RPG
                 MessageManager.QueueMessage(callback.GetValue(1).GetString());
             }, id);
         }
-        private void ModifyLight(string id, LightData data)
+        private void ModifyLight(string id, PresetData data)
         {
             // Find the correct light
             Light light = lights[id];

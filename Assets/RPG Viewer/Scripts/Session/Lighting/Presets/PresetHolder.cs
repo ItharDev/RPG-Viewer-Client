@@ -10,12 +10,12 @@ namespace RPG
     {
         [SerializeField] private TMP_Text header;
 
-        public LightData Data;
+        public PresetData Data;
 
-        private Action<LightData> callback;
+        private Action<PresetData> callback;
         private PresetList list;
 
-        public void LoadData(LightData data, Action<LightData> onSelected, PresetList _list)
+        public void LoadData(PresetData data, Action<PresetData> onSelected, PresetList _list)
         {
             Data = data;
             callback = onSelected;
@@ -33,14 +33,17 @@ namespace RPG
         }
         public void Remove()
         {
-            SocketManager.EmitAsync("remove-preset", (callback) =>
+            MessageManager.AskConfirmation(new Confirmation("Delete preset", "Delete", "Cancel", (result) =>
             {
-                // Check if the event was successful
-                if (callback.GetValue().GetBoolean()) return;
+                if (result) SocketManager.EmitAsync("remove-preset", (callback) =>
+                {
+                    // Check if the event was successful
+                    if (callback.GetValue().GetBoolean()) return;
 
-                // Send error message
-                MessageManager.QueueMessage(callback.GetValue(1).GetString());
-            }, Data.id);
+                    // Send error message
+                    MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                }, Data.id);
+            }));
         }
     }
 }

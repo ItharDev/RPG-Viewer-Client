@@ -15,7 +15,7 @@ namespace RPG
 
         private Dictionary<string, PresetHolder> holders = new Dictionary<string, PresetHolder>();
         private float lastCount;
-        private Action<LightData> callback;
+        private Action<PresetData> callback;
 
         private void OnEnable()
         {
@@ -47,7 +47,7 @@ namespace RPG
                 LoadHolder(preset.Key, preset.Value);
             }
         }
-        private void LoadHolder(string id, LightData data)
+        private void LoadHolder(string id, PresetData data)
         {
             // Instantiate the holder and load its data
             PresetHolder holder = Instantiate(holderPrefab, content);
@@ -55,7 +55,7 @@ namespace RPG
             holder.LoadData(data, callback, this);
             holders.Add(id, holder);
         }
-        private void ModifyHolder(string id, LightData data)
+        private void ModifyHolder(string id, PresetData data)
         {
             PresetHolder holder = holders[id];
             holder.LoadData(data, callback, this);
@@ -75,7 +75,7 @@ namespace RPG
             }
         }
 
-        public void LoadData(Action<LightData> onSelected)
+        public void LoadData(Action<PresetData> onSelected)
         {
             callback = onSelected;
             gameObject.SetActive(true);
@@ -112,7 +112,7 @@ namespace RPG
                 }, JsonUtility.ToJson(data));
             });
         }
-        public void ModifyPreset(LightData data)
+        public void ModifyPreset(PresetData data)
         {
             configPanel.gameObject.SetActive(true);
             configPanel.LoadData(data, (data) =>

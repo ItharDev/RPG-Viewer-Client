@@ -112,7 +112,7 @@ namespace Networking
             });
             Socket.On("modify-light", async (data) =>
             {
-                LightData light = JsonUtility.FromJson<LightData>(data.GetValue().GetString());
+                PresetData light = JsonUtility.FromJson<PresetData>(data.GetValue().GetString());
 
                 await UniTask.SwitchToMainThread();
                 Events.OnLightModified?.Invoke(light.id, light);
@@ -129,7 +129,7 @@ namespace Networking
             Socket.On("create-preset", async (data) =>
             {
                 string id = data.GetValue().GetString();
-                LightData preset = JsonUtility.FromJson<LightData>(data.GetValue(1).ToString());
+                PresetData preset = JsonUtility.FromJson<PresetData>(data.GetValue(1).ToString());
 
                 await UniTask.SwitchToMainThread();
                 Events.OnPresetCreated?.Invoke(id, preset);
@@ -137,7 +137,7 @@ namespace Networking
             Socket.On("modify-preset", async (data) =>
             {
                 string id = data.GetValue().GetString();
-                LightData preset = JsonUtility.FromJson<LightData>(data.GetValue(1).ToString());
+                PresetData preset = JsonUtility.FromJson<PresetData>(data.GetValue(1).ToString());
 
                 await UniTask.SwitchToMainThread();
                 Events.OnPresetModified?.Invoke(id, preset);

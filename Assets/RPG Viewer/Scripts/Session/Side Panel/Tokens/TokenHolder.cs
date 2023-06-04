@@ -11,6 +11,7 @@ namespace RPG
     {
         [SerializeField] private TMP_Text header;
         [SerializeField] private Image icon;
+        [SerializeField] private TokenConfiguration configPanel;
 
         [Header("Options")]
         [SerializeField] private RectTransform optionsPanel;
@@ -26,6 +27,7 @@ namespace RPG
         public string Id { get { return Data.id; } }
 
         public TokenData Data;
+        private PresetData lightData;
 
         private string _path;
         private TokensPanel tokensPanel;
@@ -118,7 +120,7 @@ namespace RPG
             }
 
             // Calculate panel's target height
-            float targetSize = 30.0f;
+            float targetSize = 60.0f;
             if (selectButton.activeInHierarchy) targetSize += 30.0f;
             if (deselectButton.activeInHierarchy) targetSize += 30.0f;
             if (rootButton.activeInHierarchy) targetSize += 30.0f;
@@ -138,10 +140,29 @@ namespace RPG
             });
         }
 
+        public void Modify()
+        {
+            ToggleOptions();
+            TokenConfiguration config = Instantiate(configPanel);
+            config.transform.SetParent(UICanvas.Instance.transform);
+            config.transform.localPosition = Vector3.zero;
+            config.transform.SetAsLastSibling();
+
+            config.LoadData(Data, lightData, icon.sprite.texture.GetRawTextureData(), "Modify Blueprint", (tokenData, image, lightData) =>
+            {
+                SocketManager.EmitAsync("modify-blueprint", (callback) =>
+                {
+
+                }, Id, Path);
+            });
+        }
         public void Delete()
         {
             ToggleOptions();
-            Debug.Log($"Delete blueprint");
+            MessageManager.AskConfirmation(new Confirmation("Delete blueprint", "Delete", "Cancel", (result) =>
+            {
+                if (result) Debug.Log("Blueprint deleted");
+            }));
         }
         public void Select()
         {
@@ -205,6 +226,20 @@ namespace RPG
                 icon.color = Color.white;
                 icon.GetComponent<RectTransform>().sizeDelta = new Vector2(50.0f, 50.0f);
             });
+
+            SocketManager.EmitAsync("get-light", async (callback) =>
+            {
+                // Check if the event was successful
+                if (callback.GetValue().GetBoolean())
+                {
+                    await UniTask.SwitchToMainThread();
+                    lightData = JsonUtility.FromJson<PresetData>(callback.GetValue(1).ToString());
+                    return;
+                }
+
+                // Send error message
+                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+            }, settings.light);
         }
     }
 }
