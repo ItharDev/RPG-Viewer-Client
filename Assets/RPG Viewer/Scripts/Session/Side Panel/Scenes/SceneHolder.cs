@@ -12,6 +12,7 @@ namespace RPG
         [SerializeField] private Image icon;
         [SerializeField] private TMP_Text headerText;
         [SerializeField] private GameObject headerBackground;
+        [SerializeField] private GameObject header;
         [SerializeField] private TMP_InputField headerInput;
 
         [Header("Options")]
@@ -129,7 +130,7 @@ namespace RPG
                 if (!optionsOpen)
                 {
                     optionsPanel.transform.SetParent(transform, true);
-                    optionsPanel.anchoredPosition = new Vector2(15.0f, -45.0f);
+                    optionsPanel.anchoredPosition = new Vector2(15.0f, -100.0f);
                     optionsPanel.SetAsLastSibling();
                 }
 
@@ -141,30 +142,45 @@ namespace RPG
         public void Play()
         {
             ToggleOptions();
-            SocketManager.EmitAsync("set-scene", (callback) =>
+            SocketManager.EmitAsync("set-state", (callback) =>
             {
                 // Check if the event was successful
                 if (callback.GetValue().GetBoolean()) return;
 
                 // Send error message
                 MessageManager.QueueMessage(callback.GetValue(1).GetString());
-            }, Data.id);
+            }, Data.id, ConnectionManager.State.synced);
         }
         public void Rename()
         {
             ToggleOptions();
             headerInput.gameObject.SetActive(true);
-            headerInput.ActivateInputField();
             headerText.gameObject.SetActive(false);
+            header.SetActive(true);
+            headerInput.DeactivateInputField();
+            headerInput.ActivateInputField();
+            headerInput.Select();
         }
         public void ConfirmRename()
         {
+            header.SetActive(false);
             headerInput.gameObject.SetActive(false);
-            headerInput.DeactivateInputField();
             headerText.gameObject.SetActive(true);
             string newName = string.IsNullOrEmpty(headerInput.text) ? Data.info.name : headerInput.text;
 
-            Debug.Log($"Renamed scene to: {newName}");
+            SocketManager.EmitAsync("rename-scene", async (callback) =>
+            {
+                await UniTask.SwitchToMainThread();
+                // Check if the event was successful
+                if (callback.GetValue().GetBoolean())
+                {
+                    headerText.text = newName;
+                    return;
+                }
+
+                // Send error message
+                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+            }, Data.id, newName);
         }
         public void Delete()
         {

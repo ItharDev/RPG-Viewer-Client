@@ -245,7 +245,7 @@ namespace RPG
         {
             if (optionsOpen) ToggleOptions();
             headerInput.gameObject.SetActive(true);
-            headerInput.ActivateInputField();
+            headerInput.Select();
             header.gameObject.SetActive(false);
         }
         public void Delete()

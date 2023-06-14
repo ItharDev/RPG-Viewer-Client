@@ -1,3 +1,4 @@
+using System;
 using Cysharp.Threading.Tasks;
 using Networking;
 using TMPro;
@@ -41,6 +42,8 @@ namespace RPG
             Events.OnBlueprintSelected.AddListener(HandleSelect);
             Events.OnBlueprintDeselected.AddListener(HandleDeselect);
             Events.OnBlueprintMoved.AddListener(HandleMoved);
+            Events.OnPresetModified.AddListener(ModifyPreset);
+            Events.OnPresetRemoved.AddListener(RemovePreset);
         }
         private void OnDisable()
         {
@@ -49,6 +52,8 @@ namespace RPG
             Events.OnBlueprintSelected.RemoveListener(HandleSelect);
             Events.OnBlueprintDeselected.RemoveListener(HandleDeselect);
             Events.OnBlueprintMoved.RemoveListener(HandleMoved);
+            Events.OnPresetModified.RemoveListener(ModifyPreset);
+            Events.OnPresetRemoved.AddListener(RemovePreset);
         }
 
         private void HandleClick(TokenHolder token)
@@ -150,10 +155,21 @@ namespace RPG
 
             config.LoadData(Data, lightData, icon.sprite.texture.GetRawTextureData(), "Modify Blueprint", (tokenData, image, lightData) =>
             {
-                SocketManager.EmitAsync("modify-blueprint", (callback) =>
+                bool imageChanged = image != icon.sprite.texture.GetRawTextureData();
+                SocketManager.EmitAsync("modify-blueprint", async (callback) =>
                 {
+                    await UniTask.SwitchToMainThread();
+                    if (callback.GetValue().GetBoolean())
+                    {
+                        string image = callback.GetValue(1).GetString();
+                        tokenData.image = image;
+                        LoadData(tokenData);
+                        return;
+                    }
 
-                }, Id, Path);
+                    // Send error message
+                    MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                }, Id, JsonUtility.ToJson(tokenData), JsonUtility.ToJson(lightData), imageChanged ? Convert.ToBase64String(image) : null);
             });
         }
         public void Delete()
@@ -161,7 +177,19 @@ namespace RPG
             ToggleOptions();
             MessageManager.AskConfirmation(new Confirmation("Delete blueprint", "Delete", "Cancel", (result) =>
             {
-                if (result) Debug.Log("Blueprint deleted");
+                if (result) SocketManager.EmitAsync("remove-blueprint", async (callback) =>
+                {
+                    await UniTask.SwitchToMainThread();
+                    if (callback.GetValue().GetBoolean())
+                    {
+                        tokensPanel.RemoveToken(this);
+                        return;
+                    }
+
+                    // Send error message
+                    MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                }, Path, Id);
+
             }));
         }
         public void Select()
@@ -208,6 +236,22 @@ namespace RPG
             _path = newPath;
             selectedColor = string.IsNullOrEmpty(newPath) ? tokensPanel.GetColor() : tokensPanel.GetDirectoryByPath(newPath).Data.color;
         }
+        private void ModifyPreset(string id, PresetData data)
+        {
+            Data.light = id;
+            lightData = data;
+        }
+        private void RemovePreset(string id, PresetData data)
+        {
+            Data.light = Data.id;
+            lightData = data;
+
+            SocketManager.EmitAsync("modify-blueprint", (callback) =>
+            {
+
+            }, Id, JsonUtility.ToJson(Data), JsonUtility.ToJson(lightData), null);
+
+        }
 
         private void LoadData(TokenData settings)
         {
@@ -233,7 +277,9 @@ namespace RPG
                 if (callback.GetValue().GetBoolean())
                 {
                     await UniTask.SwitchToMainThread();
-                    lightData = JsonUtility.FromJson<PresetData>(callback.GetValue(1).ToString());
+                    string data = callback.GetValue(1).ToString();
+                    lightData = JsonUtility.FromJson<PresetData>(data);
+                    lightData.id = settings.light;
                     return;
                 }
 

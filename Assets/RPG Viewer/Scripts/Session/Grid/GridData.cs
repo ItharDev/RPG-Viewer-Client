@@ -6,16 +6,14 @@ namespace RPG
     [Serializable]
     public struct GridData
     {
-        public bool enabled;
         public bool snapToGrid;
         public Vector2Int dimensions;
         public float cellSize;
         public Vector2 position;
         public Color color;
 
-        public GridData(bool _enabled, bool _snapToGrid, Vector2Int _dimensions, float _cellSize, Vector2 _position, Color _color)
+        public GridData(bool _snapToGrid, Vector2Int _dimensions, float _cellSize, Vector2 _position, Color _color)
         {
-            enabled = _enabled;
             snapToGrid = _snapToGrid;
             dimensions = _dimensions;
             cellSize = _cellSize;
@@ -23,6 +21,7 @@ namespace RPG
             color = _color;
         }
     }
+    
     [Serializable]
     public struct Cell
     {

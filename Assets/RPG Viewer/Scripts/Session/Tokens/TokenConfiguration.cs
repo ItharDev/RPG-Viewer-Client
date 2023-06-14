@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
-using Networking;
 using SFB;
 using TMPro;
 using UnityEngine;
@@ -34,6 +33,7 @@ namespace RPG
         [SerializeField] private Image colorButton;
         [SerializeField] private TMP_InputField strengthInput;
         [SerializeField] private TMP_InputField frequencyInput;
+        [SerializeField] private FlexibleColorPicker colorPicker;
 
         private RectTransform rect;
         private byte[] image;
@@ -53,7 +53,7 @@ namespace RPG
         }
         private void OnDisable()
         {
-            // Add event listeners
+            // Remove event listeners
             Events.OnPresetModified.RemoveListener(LoadPreset);
             Events.OnPresetRemoved.RemoveListener(RemovePreset);
         }
@@ -89,22 +89,23 @@ namespace RPG
         }
         public void OpenPresets()
         {
-            presetList.gameObject.SetActive(true);
+            if (presetList.gameObject.activeInHierarchy) return;
             presetList.LoadData(ApplyPreset);
-            LeanTween.size((RectTransform)presetList.transform, new Vector2(120.0f, lightingPanelSize.y), 0.2f);
         }
 
         private void LoadPreset(string id, PresetData data)
         {
             if (lightData.id == id) ApplyPreset(data);
         }
-        private void RemovePreset(string id)
+        private void RemovePreset(string id, PresetData data)
         {
             if (lightData.id == id) lightData.id = data.id;
+            ApplyPreset(data);
         }
         private void ApplyPreset(PresetData data)
         {
             lightData = data;
+            this.data.light = data.id;
             effectDropdown.value = data.effect.type;
             radiusInput.text = data.radius.ToString();
             intensityInput.text = data.intensity.ToString();
@@ -113,8 +114,14 @@ namespace RPG
             frequencyInput.text = data.effect.frequency.ToString();
         }
 
-        public async void ChooseImage() => await ImageTask();
-        private async Task ImageTask()
+        public async void ChooseImage()
+        {
+            await ImageTask((bytes) =>
+            {
+                if (bytes != null) image = bytes;
+            });
+        }
+        private async Task ImageTask(Action<byte[]> callback)
         {
             // Only allow image files
             ExtensionFilter[] extensions = new ExtensionFilter[] { new ExtensionFilter("Image Files", "png", "jpg", "jpeg") };
@@ -123,10 +130,10 @@ namespace RPG
             StandaloneFileBrowser.OpenFilePanelAsync("Select file", "", extensions, false, (string[] paths) =>
             {
                 // Return if no items are selected
-                if (paths.Length == 0) return;
+                if (paths.Length == 0) callback(null);
 
                 // Read bytes from selected file
-                image = File.ReadAllBytes(paths[0]);
+                callback(File.ReadAllBytes(paths[0]));
             });
             await Task.Yield();
         }
@@ -136,7 +143,19 @@ namespace RPG
             LeanTween.size(rect, new Vector2(appearancePanelSize.x, 0.0f), 0.1f).setOnComplete(() =>
             {
                 if (saveData) SaveData();
+                Destroy(gameObject);
             });
+        }
+        public void OpenColor()
+        {
+            colorPicker.gameObject.SetActive(true);
+            colorPicker.SetColor(lightData.color);
+        }
+        public void ChangeColor(Color color)
+        {
+            lightData.color.a = color.a;
+            color.a = 1.0f;
+            colorButton.color = color;
         }
         public void LoadData(TokenData _data, PresetData _lightData, byte[] _image, string _header, Action<TokenData, byte[], PresetData> _callback)
         {
@@ -156,8 +175,10 @@ namespace RPG
             widthInput.text = data.dimensions.x.ToString();
             heightInput.text = data.dimensions.y.ToString();
         }
-        private void LoadLighting(PresetData preset)
+        public void LoadLighting(PresetData preset)
         {
+            lightData = preset;
+            preset.color.a = 1.0f;
             visionInput.text = data.visionRadius.ToString();
             nightInput.text = data.nightRadius.ToString();
             effectDropdown.value = preset.effect.type;
@@ -187,7 +208,7 @@ namespace RPG
             // Lighting
             float.TryParse(radiusInput.text, out lightData.radius);
             float.TryParse(intensityInput.text, out lightData.intensity);
-            lightData.color = colorButton.color;
+            lightData.color = new Color(colorButton.color.r, colorButton.color.g, colorButton.color.b, lightData.color.a);
             lightData.effect.type = effectDropdown.value;
             float.TryParse(strengthInput.text, out lightData.effect.strength);
             float.TryParse(frequencyInput.text, out lightData.effect.frequency);
@@ -199,7 +220,6 @@ namespace RPG
 
             // Send callback
             callback?.Invoke(data, image, lightData);
-            Destroy(gameObject);
         }
     }
 }

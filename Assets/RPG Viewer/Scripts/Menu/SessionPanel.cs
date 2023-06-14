@@ -135,8 +135,14 @@ namespace RPG
             });
         }
 
-        public async void SelectImage() => await ImageTask();
-        private async Task ImageTask()
+        public async void SelectImage()
+        {
+            await ImageTask((bytes) =>
+            {
+                if (bytes != null) landingPage = bytes;
+            });
+        }
+        private async Task ImageTask(Action<byte[]> callback)
         {
             // Only allow image files
             ExtensionFilter[] extensions = new ExtensionFilter[] { new ExtensionFilter("Image Files", "png", "jpg", "jpeg") };
@@ -145,10 +151,10 @@ namespace RPG
             StandaloneFileBrowser.OpenFilePanelAsync("Select file", "", extensions, false, (string[] paths) =>
             {
                 // Return if no items are selected
-                if (paths.Length == 0) return;
+                if (paths.Length == 0) callback(null);
 
                 // Read bytes from selected file
-                landingPage = File.ReadAllBytes(paths[0]);
+                callback(File.ReadAllBytes(paths[0]));
             });
             await Task.Yield();
         }

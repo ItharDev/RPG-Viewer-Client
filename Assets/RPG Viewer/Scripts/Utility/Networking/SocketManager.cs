@@ -84,6 +84,13 @@ namespace Networking
                 await UniTask.SwitchToMainThread();
                 Events.OnStateChanged?.Invoke(oldState, newState);
             });
+            Socket.On("change-landing-page", async (data) =>
+            {
+                string id = data.GetValue().GetString();
+
+                await UniTask.SwitchToMainThread();
+                Events.OnLandingPageChanged?.Invoke(id);
+            });
 
             // Doors
             Socket.On("toggle-door", async (data) =>
@@ -145,9 +152,10 @@ namespace Networking
             Socket.On("remove-preset", async (data) =>
             {
                 string id = data.GetValue().GetString();
+                PresetData light = JsonUtility.FromJson<PresetData>(data.GetValue(1).ToString());
 
                 await UniTask.SwitchToMainThread();
-                Events.OnPresetRemoved?.Invoke(id);
+                Events.OnPresetRemoved?.Invoke(id, light);
             });
 
             // Tokens

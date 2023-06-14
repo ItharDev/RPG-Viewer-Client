@@ -18,6 +18,20 @@ namespace RPG
             }
             else Destroy(gameObject);
         }
+        private void OnEnable()
+        {
+            // Add event listeners
+            Events.OnPresetCreated.AddListener(CreatePreset);
+            Events.OnPresetModified.AddListener(ModifyPreset);
+            Events.OnPresetRemoved.AddListener(RemovePreset);
+        }
+        private void OnDisable()
+        {
+            // Remove event listeners
+            Events.OnPresetCreated.RemoveListener(CreatePreset);
+            Events.OnPresetModified.RemoveListener(ModifyPreset);
+            Events.OnPresetRemoved.RemoveListener(RemovePreset);
+        }
 
         public void LoadPresets(List<string> data)
         {
@@ -26,6 +40,7 @@ namespace RPG
                 LoadPreset(data[i]);
             }
         }
+
         public PresetData GetPreset(string id)
         {
             if (!Presets.ContainsKey(id)) return default;
@@ -49,6 +64,18 @@ namespace RPG
                 // Send error message
                 MessageManager.QueueMessage(callback.GetValue(1).GetString());
             }, id);
+        }
+        private void CreatePreset(string id, PresetData data)
+        {
+            Presets.Add(id, data);
+        }
+        private void ModifyPreset(string id, PresetData data)
+        {
+            Presets[id] = data;
+        }
+        private void RemovePreset(string id, PresetData data)
+        {
+            Presets.Remove(id);
         }
     }
 }

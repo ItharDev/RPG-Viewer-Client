@@ -71,11 +71,11 @@ namespace RPG
 
         public static bool operator ==(PresetData data_1, PresetData data_2)
         {
-            return data_1.Equals(data_2);
+            return JsonUtility.ToJson(data_1) == JsonUtility.ToJson(data_2);
         }
         public static bool operator !=(PresetData data_1, PresetData data_2)
         {
-            return !data_1.Equals(data_2);
+            return JsonUtility.ToJson(data_1) != JsonUtility.ToJson(data_2);
         }
     }
 
@@ -103,13 +103,11 @@ namespace RPG
 
         public static bool operator ==(LightEffect data_1, LightEffect data_2)
         {
-            return data_1.Equals(data_2);
-
+            return JsonUtility.ToJson(data_1) == JsonUtility.ToJson(data_2);
         }
         public static bool operator !=(LightEffect data_1, LightEffect data_2)
         {
-            return !data_1.Equals(data_2);
-
+            return JsonUtility.ToJson(data_1) != JsonUtility.ToJson(data_2);
         }
     }
 }

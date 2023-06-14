@@ -176,6 +176,11 @@ namespace RPG
                         // Check if the event was successful
                         if (callback.GetValue().GetBoolean())
                         {
+                            string id = callback.GetValue().GetString();
+                            string image = callback.GetValue(1).GetString();
+
+                            tokenData.id = id;
+                            LoadToken(id, path);
                             return;
                         }
 

@@ -60,7 +60,7 @@ namespace RPG
             PresetHolder holder = holders[id];
             holder.LoadData(data, callback, this);
         }
-        private void RemoveHolder(string id)
+        private void RemoveHolder(string id, PresetData data)
         {
             if (configPanel.Id == id) configPanel.ClosePanel(false);
             PresetHolder holder = holders[id];
@@ -71,7 +71,10 @@ namespace RPG
         {
             foreach (var key in holders.Keys.ToList())
             {
-                RemoveHolder(key);
+                if (configPanel.Id == key) configPanel.ClosePanel(false);
+                PresetHolder holder = holders[key];
+                holders.Remove(key);
+                Destroy(holder.gameObject);
             }
         }
 
@@ -79,13 +82,13 @@ namespace RPG
         {
             callback = onSelected;
             gameObject.SetActive(true);
-            LeanTween.size((RectTransform)transform, new Vector2(120.0f, 286.0f), 0.2f);
+            LeanTween.size((RectTransform)transform, new Vector2(160.0f, 239.0f), 0.2f);
             LoadHolders();
         }
         public void ClosePanel()
         {
             configPanel.ClosePanel(false);
-            LeanTween.size((RectTransform)transform, new Vector2(120.0f, 0.0f), 0.2f).setOnComplete(() =>
+            LeanTween.size((RectTransform)transform, new Vector2(160.0f, 0.0f), 0.2f).setOnComplete(() =>
             {
                 if (hideWhenMinimised)
                 {

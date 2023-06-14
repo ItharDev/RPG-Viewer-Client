@@ -82,12 +82,8 @@ namespace RPG
         }
         public void ChangeInput()
         {
-            int value = int.Parse(fpsInput.text);
-            if (value >= fpsSlider.minValue && value <= fpsSlider.maxValue)
-            {
-                fpsSlider.value = value;
-                return;
-            }
+            float value = Mathf.Clamp(float.Parse(fpsInput.text), fpsSlider.minValue, fpsSlider.maxValue);
+            fpsSlider.value = value;
             fpsInput.text = fpsSlider.value.ToString();
         }
         public void ApplyChanges()

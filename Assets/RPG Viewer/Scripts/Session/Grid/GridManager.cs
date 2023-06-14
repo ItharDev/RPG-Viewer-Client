@@ -2,31 +2,18 @@
 
 namespace RPG
 {
-    [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
     public class GridManager : MonoBehaviour
     {
         public float CellSize { get { return cellSize; } }
 
-        private Color gridColor;
         private Vector2Int dimensions;
         private Vector2 worldSize;
         private float cellSize;
         private Vector2 position;
-        private Material GridMaterial;
         public Cell[,] Grid { get; private set; }
-
-        private Mesh mesh;
-        private MeshRenderer meshRenderer;
-        private Vector3[] vertices;
-        private Vector2[] uv;
-        private int[] triangles;
 
         private void OnEnable()
         {
-            // Get reference of the mesh
-            if (mesh == null) mesh = GetComponent<MeshFilter>().mesh;
-            if (meshRenderer == null) meshRenderer = GetComponent<MeshRenderer>();
-
             // Add event listeners
             Events.OnSceneLoaded.AddListener(LoadGrid);
         }
@@ -44,18 +31,8 @@ namespace RPG
             dimensions = gridData.dimensions;
             cellSize = gridData.cellSize;
             position = gridData.position;
-            gridColor = gridData.color;
 
             // Generate grid
-            GenerateGrid(dimensions, position, cellSize);
-        }
-
-        public void GenerateGrid(Vector2Int dimensions, Vector2 position, float cellSize)
-        {
-            // Calculate the number of vertices, uvs and triangles
-            vertices = new Vector3[4 * (dimensions.x * dimensions.y)];
-            uv = new Vector2[4 * (dimensions.x * dimensions.y)];
-            triangles = new int[6 * (dimensions.x * dimensions.y)];
             worldSize = new Vector2(dimensions.x * cellSize, dimensions.y * cellSize);
             Grid = new Cell[dimensions.x, dimensions.y];
 
@@ -71,40 +48,8 @@ namespace RPG
                     // Calculate cell position and add it to the list
                     Vector2 cellPosition = new(x * cellSize + cellSize * 0.5f + position.x, y * cellSize + cellSize * 0.5f + position.y);
                     Grid[x, y] = new Cell(cellPosition);
-
-                    // Generate vertices
-                    vertices[index * 4 + 0] = new Vector3(cellSize * x + position.x, cellSize * y + position.y);
-                    vertices[index * 4 + 1] = new Vector3(cellSize * x + position.x, cellSize * (y + 1) + position.y);
-                    vertices[index * 4 + 2] = new Vector3(cellSize * (x + 1) + position.x, cellSize * (y + 1) + position.y);
-                    vertices[index * 4 + 3] = new Vector3(cellSize * (x + 1) + position.x, cellSize * y + position.y);
-
-                    // Generate uvs
-                    uv[index * 4 + 0] = new Vector2(0, 0);
-                    uv[index * 4 + 1] = new Vector2(0, 1);
-                    uv[index * 4 + 2] = new Vector2(1, 1);
-                    uv[index * 4 + 3] = new Vector2(1, 0);
-
-                    // Generate triangles
-                    triangles[index * 6 + 0] = index * 4 + 0;
-                    triangles[index * 6 + 1] = index * 4 + 1;
-                    triangles[index * 6 + 2] = index * 4 + 2;
-
-                    triangles[index * 6 + 3] = index * 4 + 0;
-                    triangles[index * 6 + 4] = index * 4 + 2;
-                    triangles[index * 6 + 5] = index * 4 + 3;
                 }
             }
-
-            // Clear mesh
-            mesh.Clear();
-
-            // Apply new data to mesh, and recalculate it
-            mesh.vertices = vertices;
-            mesh.uv = uv;
-            mesh.triangles = triangles;
-            mesh.RecalculateNormals();
-
-            meshRenderer.sharedMaterial.color = gridColor;
         }
 
         public Cell WorldPosToCell(Vector2 worldPos)
@@ -198,13 +143,6 @@ namespace RPG
             //     distance = feet,
             //     diagonals = diagonals
             // };
-        }
-
-        private void OnDrawGizmosSelected()
-        {
-            if (Grid == null) return;
-            Gizmos.color = new Color(1.0f, 0.0f, 0.0f, 0.4f);
-
         }
     }
 

@@ -20,11 +20,13 @@ namespace RPG
         {
             // Add event listeners
             Events.OnStateChanged.AddListener(ChangeState);
+            Events.OnLandingPageChanged.AddListener(UpdateLandingPage);
         }
         private void OnDisable()
         {
             // Remove event listeners
             Events.OnStateChanged.RemoveListener(ChangeState);
+            Events.OnLandingPageChanged.RemoveListener(UpdateLandingPage);
         }
         private void Awake()
         {
@@ -76,6 +78,30 @@ namespace RPG
                 // Load new scene
                 if (!string.IsNullOrEmpty(newState.scene)) LoadScene(newState.scene);
             }
+        }
+        private void UpdateLandingPage(string id)
+        {
+            MessageManager.QueueMessage("Loading new landing page");
+
+            WebManager.Download(id, true, async (bytes) =>
+            {
+                // Check if landing page exists
+                if (bytes == null)
+                {
+                    MessageManager.QueueMessage("Failed to load landing page, please try again");
+                    return;
+                }
+
+                await UniTask.SwitchToMainThread();
+
+                // Create landing page texture
+                Texture2D texture = await AsyncImageLoader.CreateFromImageAsync(bytes);
+                Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
+
+                ConnectionManager.Info.background = sprite;
+                landingPage.sprite = sprite;
+                MessageManager.RemoveMessage("Loading new landing page");
+            });
         }
 
         private void LoadScene(string id)

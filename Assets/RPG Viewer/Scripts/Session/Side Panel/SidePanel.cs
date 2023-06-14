@@ -1,3 +1,8 @@
+using System;
+using System.IO;
+using System.Threading.Tasks;
+using Networking;
+using SFB;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -18,7 +23,31 @@ namespace RPG
         [SerializeField] private GameObject scenesPanel;
         [SerializeField] private GameObject journalsPanel;
 
+        [Space]
+        [SerializeField] private GameObject imageButton;
+        [SerializeField] private GameObject tokensButton;
+        [SerializeField] private GameObject scenesButton;
+
+        [Space]
+        [SerializeField] private PresetList presetList;
+
         private bool open;
+        private float targetWidthOpen;
+        private float targetWidthClose;
+
+        private void Start()
+        {
+            targetWidthOpen = 210.0f;
+            targetWidthClose = 150.0f;
+            if (!ConnectionManager.Info.isMaster)
+            {
+                imageButton.gameObject.SetActive(false);
+                tokensButton.gameObject.SetActive(false);
+                scenesButton.gameObject.SetActive(false);
+                targetWidthOpen = 70.0f;
+                targetWidthClose = 50.0f;
+            }
+        }
 
         public void SelectTokens()
         {
@@ -76,7 +105,8 @@ namespace RPG
         {
             open = false;
 
-            LeanTween.size(buttonRect, new Vector2(150.0f, 50.0f), 0.2f);
+            LeanTween.size(buttonRect, new Vector2(targetWidthClose, 50.0f), 0.2f);
+            LeanTween.size((RectTransform)transform, new Vector2(150.0f, 50.0f), 0.2f);
             LeanTween.size(panelRect, new Vector2(0.0f, 0.0f), 0.2f).setOnComplete(() =>
             {
                 journalsPanel.SetActive(false);
@@ -92,8 +122,46 @@ namespace RPG
         {
             open = true;
 
-            LeanTween.size(buttonRect, new Vector2(210.0f, 50.0f), 0.2f);
+            LeanTween.size(buttonRect, new Vector2(targetWidthOpen, 50.0f), 0.2f);
+            LeanTween.size((RectTransform)transform, new Vector2(210.0f, 50.0f), 0.2f);
             LeanTween.size(panelRect, new Vector2(210.0f, 1000.0f), 0.2f);
+        }
+
+        public void OpenPresets()
+        {
+            if (presetList.gameObject.activeInHierarchy) return;
+            
+            presetList.LoadData(null);
+        }
+        public async void SelectImage()
+        {
+            await ImageTask((bytes) =>
+            {
+                if (bytes != null) SocketManager.EmitAsync("change-landing-page", (callback) =>
+                {
+                    // Check if the event was successful
+                    if (callback.GetValue().GetBoolean()) return;
+
+                    // Send error mesage
+                    MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                }, Convert.ToBase64String(bytes)); ;
+            });
+        }
+        private async Task ImageTask(Action<byte[]> callback)
+        {
+            // Only allow image files
+            ExtensionFilter[] extensions = new ExtensionFilter[] { new ExtensionFilter("Image Files", "png", "jpg", "jpeg") };
+
+            // Open file explorer
+            StandaloneFileBrowser.OpenFilePanelAsync("Select file", "", extensions, false, (string[] paths) =>
+            {
+                // Return if no items are selected
+                if (paths.Length == 0) callback(null);
+
+                // Read bytes from selected file
+                callback(File.ReadAllBytes(paths[0]));
+            });
+            await Task.Yield();
         }
     }
 

@@ -20,8 +20,9 @@ namespace RPG
         public static UnityEvent<string> OnUserDisconnected = new UnityEvent<string>();
         public static UnityEvent<SessionState, SessionState> OnStateChanged = new UnityEvent<SessionState, SessionState>();
         public static UnityEvent<SceneData> OnSceneLoaded = new UnityEvent<SceneData>();
+        public static UnityEvent<string> OnLandingPageChanged = new UnityEvent<string>();
 
-        // Side panel
+        // Side panel (Scenes)
         public static UnityEvent<SceneFolder> OnSceneFolderClicked = new UnityEvent<SceneFolder>();
         public static UnityEvent<SceneFolder> OnSceneFolderSelected = new UnityEvent<SceneFolder>();
         public static UnityEvent OnSceneFolderDeselected = new UnityEvent();
@@ -31,6 +32,7 @@ namespace RPG
         public static UnityEvent OnSceneDeselected = new UnityEvent();
         public static UnityEvent OnSceneMoved = new UnityEvent();
 
+        // Side panel (Blueprints)
         public static UnityEvent<TokenFolder> OnBlueprintFolderClicked = new UnityEvent<TokenFolder>();
         public static UnityEvent<TokenFolder> OnBlueprintFolderSelected = new UnityEvent<TokenFolder>();
         public static UnityEvent OnBlueprintFolderDeselected = new UnityEvent();
@@ -49,14 +51,21 @@ namespace RPG
         public static UnityEvent<string, PresetData> OnLightModified = new UnityEvent<string, PresetData>();
         public static UnityEvent<string> OnLightRemoved = new UnityEvent<string>();
 
+        // Grid
+        public static UnityEvent<Vector2Int> OnGridDimensionsChanged = new UnityEvent<Vector2Int>();
+        public static UnityEvent<float> OnGridSizeChanged = new UnityEvent<float>();
+        public static UnityEvent<float> OnGridWidthChanged = new UnityEvent<float>();
+        public static UnityEvent<Color> OnGridColorChanged = new UnityEvent<Color>();
+
         // Tools
         public static UnityEvent<Tool> OnToolChanged = new UnityEvent<Tool>();
         public static UnityEvent<Setting> OnSettingChanged = new UnityEvent<Setting>();
+        public static UnityEvent<GameView> OnViewChanged = new UnityEvent<GameView>();
 
         // Presets
         public static UnityEvent<string, PresetData> OnPresetCreated = new UnityEvent<string, PresetData>();
         public static UnityEvent<string, PresetData> OnPresetModified = new UnityEvent<string, PresetData>();
-        public static UnityEvent<string> OnPresetRemoved = new UnityEvent<string>();
+        public static UnityEvent<string, PresetData> OnPresetRemoved = new UnityEvent<string, PresetData>();
 
         // Tokens
         public static UnityEvent<TokenData> OnTokenCreated = new UnityEvent<TokenData>();

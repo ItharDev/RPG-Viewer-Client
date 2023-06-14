@@ -172,7 +172,7 @@ namespace RPG
                 int rows = Mathf.RoundToInt(texture.height * 0.01f / cellSize);
 
                 SceneInfo info = new SceneInfo("New Scene", "", 0.0f);
-                GridData grid = new GridData(true, true, new Vector2Int(25, rows), cellSize, gridPosition, Color.black);
+                GridData grid = new GridData(true, new Vector2Int(25, rows), cellSize, gridPosition, Color.black);
                 LightingSettings darkness = new LightingSettings(true, false, Color.black, 0.0f);
                 SceneData data = new SceneData(info, grid, darkness);
                 data.path = path;
@@ -194,6 +194,7 @@ namespace RPG
 
                         // Add scene to dictionary
                         scenes.Add(id, scene);
+                        return;
                     }
 
                     // Send error message
