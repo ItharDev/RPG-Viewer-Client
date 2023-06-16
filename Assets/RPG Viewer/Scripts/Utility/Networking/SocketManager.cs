@@ -73,16 +73,26 @@ namespace Networking
                 await UniTask.SwitchToMainThread();
                 Events.OnUserDisconnected?.Invoke(name);
             });
-            Socket.On("set-state", async (data) =>
+            Socket.On("set-state", (data) =>
             {
                 string scene = data.GetValue().GetString();
                 bool synced = data.GetValue(1).GetBoolean();
 
                 SessionState newState = new SessionState(synced, scene);
                 SessionState oldState = ConnectionManager.State;
+                EmitAsync("set-scene", async (callback) =>
+                {
 
-                await UniTask.SwitchToMainThread();
-                Events.OnStateChanged?.Invoke(oldState, newState);
+                    await UniTask.SwitchToMainThread();
+                    if (callback.GetValue().GetBoolean())
+                    {
+                        Events.OnStateChanged?.Invoke(oldState, newState);
+                        return;
+                    }
+
+                    // Send error message
+                    MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                }, scene);
             });
             Socket.On("change-landing-page", async (data) =>
             {

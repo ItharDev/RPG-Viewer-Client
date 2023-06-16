@@ -9,7 +9,7 @@ namespace RPG
         [SerializeField] private Color hoveredColor;
         [SerializeField] private bool drawGizmos;
         [SerializeField] private float lineWidth;
-        [SerializeField] private List<GameObject> corners;
+        [SerializeField] private List<GridCorner> corners;
 
         private GridManager grid;
 
@@ -56,6 +56,23 @@ namespace RPG
             }
             VectorLine line = new VectorLine("Grid UI", points, lineWidth);
             line.Draw3DAuto();
+        }
+        public void MoveCorner(CornerType type)
+        {
+            Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            mousePos = new Vector3(mousePos.x, mousePos.y, -1);
+
+            switch (type)
+            {
+                case CornerType.Top_Left:
+                    return;
+                case CornerType.Top_Right:
+                    return;
+                case CornerType.Bottom_Left:
+                    return;
+                case CornerType.Bottom_Right:
+                    return;
+            }
         }
 
         private void OnDrawGizmos()

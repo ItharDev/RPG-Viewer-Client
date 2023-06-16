@@ -247,7 +247,7 @@ namespace RPG
 
                 // Send error message
                 MessageManager.QueueMessage(callback.GetValue(1).GetString());
-            }, settings.id);
+            });
         }
         private void LoadToken(System.Text.Json.JsonElement json)
         {

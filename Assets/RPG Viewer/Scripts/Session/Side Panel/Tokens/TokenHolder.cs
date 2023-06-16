@@ -13,6 +13,7 @@ namespace RPG
         [SerializeField] private TMP_Text header;
         [SerializeField] private Image icon;
         [SerializeField] private TokenConfiguration configPanel;
+        [SerializeField] private TokenDrag dragPrefab;
 
         [Header("Options")]
         [SerializeField] private RectTransform optionsPanel;
@@ -111,6 +112,36 @@ namespace RPG
 
             // Send token toggled event
             Events.OnBlueprintClicked?.Invoke(this);
+        }
+        public void StartDrag(BaseEventData eventData)
+        {
+            // Get pointer data
+            PointerEventData pointerData = (PointerEventData)eventData;
+            if (pointerData.button != PointerEventData.InputButton.Left) return;
+
+            if (!string.IsNullOrEmpty(ConnectionManager.State.scene)) InstantiateDrag();
+        }
+
+        private void InstantiateDrag()
+        {
+            TokenDrag drag = Instantiate(dragPrefab);
+            drag.transform.SetParent(UICanvas.Instance.transform);
+            drag.transform.SetAsLastSibling();
+            drag.LoadData(Data, icon.sprite, (position) =>
+            {
+                TokenData newData = Data;
+                newData.position = position;
+                if (newData.light == newData.id) newData.light = "";
+
+                SocketManager.EmitAsync("create-token", (callback) =>
+                {
+                    // Check if the event was successful
+                    if (callback.GetValue().GetBoolean()) return;
+
+                    // Send error message
+                    MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                }, JsonUtility.ToJson(newData));
+            });
         }
         private void ToggleOptions()
         {

@@ -1469,6 +1469,7 @@ MonoBehaviour:
   header: {fileID: 2432352109756387567}
   icon: {fileID: 2432352109715469091}
   configPanel: {fileID: 1975285841069417387, guid: 977b50fddb903884a862055593e79dca, type: 3}
+  dragPrefab: {fileID: 4973781241921049785, guid: 4c8c3eac1ac938444b19012e058613d4, type: 3}
   optionsPanel: {fileID: 6240496168936582622}
   selectButton: {fileID: 3161139565793584621}
   rootButton: {fileID: 7362755000084702894}
@@ -1553,6 +1554,22 @@ MonoBehaviour:
         - m_Target: {fileID: 496641619267371144}
           m_TargetAssemblyTypeName: RPG.TokenHolder, Assembly-CSharp
           m_MethodName: ClickToken
+          m_Mode: 0
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+  - eventID: 13
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 496641619267371144}
+          m_TargetAssemblyTypeName: RPG.TokenHolder, Assembly-CSharp
+          m_MethodName: StartDrag
           m_Mode: 0
           m_Arguments:
             m_ObjectArgument: {fileID: 0}

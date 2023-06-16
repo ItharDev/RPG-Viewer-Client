@@ -33,6 +33,9 @@ namespace RPG
         [SerializeField] private RectMask2D lightingMask;
         [SerializeField] private RectMask2D viewMask;
 
+        [Header("Grid")]
+        [SerializeField] private GridConfiguration gridConfiguration;
+
         public static SettingsHandler Instance { get; private set; }
         public Setting Setting { get { return activeSetting; } }
 
@@ -76,7 +79,10 @@ namespace RPG
 
         public void ConfigureGrid()
         {
-            Debug.Log("Configuring grid");
+            if (gridConfiguration.gameObject.activeInHierarchy) return;
+
+            gridConfiguration.transform.SetAsLastSibling();
+            gridConfiguration.OpenPanel(Session.Instance.Settings.grid);
         }
         public void SelectRegular()
         {
