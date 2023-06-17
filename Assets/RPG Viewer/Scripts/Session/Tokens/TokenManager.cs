@@ -252,6 +252,7 @@ namespace RPG
         private void LoadToken(System.Text.Json.JsonElement json)
         {
             TokenData data = JsonUtility.FromJson<TokenData>(json.ToString());
+            data.id = json.GetProperty("_id").GetString();
             CreateToken(data);
         }
         private void ReloadTokens(SessionState oldState, SessionState newState)

@@ -23,6 +23,7 @@ namespace RPG
 
         private Token token;
         private Token dragObject;
+        private bool dragging;
         private List<Vector2> waypoints = new List<Vector2>();
         private List<Vector2> dragPoints = new List<Vector2>();
         private int currentWaypoint = 0;
@@ -35,6 +36,14 @@ namespace RPG
 
         private void Update()
         {
+            if (Input.GetMouseButtonDown(1) && dragging)
+            {
+                Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                mousePos = new Vector3(mousePos.x, mousePos.y, 0);
+
+                dragPoints.Add(mousePos);
+            }
+
             // Return if token is not selected or we are edting any fields
             if (!token.Selected || token.UI.Editing) return;
 
@@ -132,7 +141,7 @@ namespace RPG
 
             // Get current and target cells
             Cell currentCell = Session.Instance.Grid.WorldPosToCell(token.Data.position);
-            Cell targetCell =  currentCell/*Session.Instance.Grid.GetCell(currentCell.gridPosition.x + Mathf.RoundToInt(inputX), currentCell.gridPosition.y + Mathf.RoundToInt(inputY))*/;
+            Cell targetCell = currentCell/*Session.Instance.Grid.GetCell(currentCell.gridPosition.x + Mathf.RoundToInt(inputX), currentCell.gridPosition.y + Mathf.RoundToInt(inputY))*/;
 
             // Return if no target cell was found
             if (targetCell.worldPosition == Vector2.zero) return;
@@ -204,9 +213,11 @@ namespace RPG
             dragObject.Vision.DisableLight();
             dragObject.DisableCollider();
             dragObject.UI.SetAlpha(0.5f);
+            dragObject.UI.DisableOutline();
 
             // Add first drag point
             dragPoints.Add(transform.position);
+            dragging = true;
         }
         public void OnDrag(BaseEventData eventData)
         {
@@ -220,6 +231,7 @@ namespace RPG
         }
         public void OnEndDrag(BaseEventData eventData)
         {
+            dragging = false;
             // Return if drag object is null
             if (dragObject == null) return;
 
@@ -326,7 +338,7 @@ namespace RPG
 
                 // Send error message
                 MessageManager.QueueMessage(callback.GetValue(1).GetString());
-            }, movement.id, JsonUtility.ToJson(movement));
+            }, JsonUtility.ToJson(movement));
         }
         public void AddWaypoints(MovementData data)
         {

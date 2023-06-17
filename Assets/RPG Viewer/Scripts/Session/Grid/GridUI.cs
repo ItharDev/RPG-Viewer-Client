@@ -7,11 +7,14 @@ namespace RPG
     public class GridUI : MonoBehaviour
     {
         [SerializeField] private Color hoveredColor;
+        [SerializeField] private CanvasGroup canvasGroup;
         [SerializeField] private bool drawGizmos;
         [SerializeField] private float lineWidth;
         [SerializeField] private List<GridCorner> corners;
 
         private GridManager grid;
+        private GridData gridData;
+        private VectorLine line;
 
         private void Awake()
         {
@@ -20,59 +23,109 @@ namespace RPG
         private void OnEnable()
         {
             // Add event listeners
-            Events.OnSceneLoaded.AddListener(DrawGrid);
+            Events.OnSceneLoaded.AddListener(LoadScene);
+            Events.OnGridChanged.AddListener(ReloadGrid);
+            Events.OnSettingChanged.AddListener(ToggleUI);
         }
         private void OnDisable()
         {
             // Remove event listeners
-            Events.OnSceneLoaded.RemoveListener(DrawGrid);
+            Events.OnSceneLoaded.RemoveListener(LoadScene);
+            Events.OnGridChanged.RemoveListener(ReloadGrid);
+            Events.OnSettingChanged.RemoveListener(ToggleUI);
         }
 
-        private void DrawGrid(SceneData data)
+        private void ReloadGrid(GridData newData, bool reloadRequired, bool globalUpdate)
         {
-            GridData grid = data.grid;
-            Vector2 worldSize = new Vector2(grid.dimensions.x * grid.cellSize, grid.dimensions.y * grid.cellSize);
+            gridData = newData;
+            if (reloadRequired) InstantiateGrid();
+        }
+        private void ToggleUI(Setting setting)
+        {
+            bool enabled = setting == Setting.Grid;
+            canvasGroup.alpha = enabled ? 1.0f : 0.0f;
+            canvasGroup.blocksRaycasts = enabled;
+        }
+        private void LoadScene(SceneData data)
+        {
+            gridData = data.grid;
+            InstantiateGrid();
+        }
+        private void InstantiateGrid()
+        {
+            Vector2 worldSize = new Vector2(gridData.dimensions.x * gridData.cellSize, gridData.dimensions.y * gridData.cellSize);
 
             // Instantiate corners
-            corners[0].transform.position = new Vector2(grid.position.x, grid.position.y);
-            corners[1].transform.position = new Vector2(grid.position.x, grid.position.y + worldSize.y);
-            corners[2].transform.position = new Vector2(grid.position.x + worldSize.x, grid.position.y);
-            corners[3].transform.position = new Vector2(grid.position.x + worldSize.x, grid.position.y + worldSize.y);
+            corners[0].transform.position = new Vector2(gridData.position.x, gridData.position.y + worldSize.y);
+            corners[1].transform.position = new Vector2(gridData.position.x + worldSize.x, gridData.position.y + worldSize.y);
+            corners[2].transform.position = new Vector2(gridData.position.x, gridData.position.y);
+            corners[3].transform.position = new Vector2(gridData.position.x + worldSize.x, gridData.position.y);
 
+            UpdateGrid(gridData.cellSize);
+            line.color = gridData.color;
+            line.Draw3DAuto();
+        }
+        private void UpdateGrid(float cellSize)
+        {
+            gridData.cellSize = cellSize;
             // Generate grid
             List<Vector3> points = new List<Vector3>();
 
             // Lines down X axis
-            for (int i = 0; i <= grid.dimensions.x; i++)
+            for (int i = 0; i <= gridData.dimensions.x; i++)
             {
-                points.Add(grid.position + (new Vector2(i * grid.cellSize, 0)));
-                points.Add(grid.position + (new Vector2(i * grid.cellSize, (grid.dimensions.y) * grid.cellSize)));
+                points.Add(gridData.position + (new Vector2(i * gridData.cellSize, 0)));
+                points.Add(gridData.position + (new Vector2(i * gridData.cellSize, (gridData.dimensions.y) * gridData.cellSize)));
             }
             // Lines down Y axis
-            for (int i = 0; i <= grid.dimensions.y; i++)
+            for (int i = 0; i <= gridData.dimensions.y; i++)
             {
-                points.Add(grid.position + (new Vector2(0, i * grid.cellSize)));
-                points.Add(grid.position + (new Vector2((grid.dimensions.x) * grid.cellSize, i * grid.cellSize)));
+                points.Add(gridData.position + (new Vector2(0, i * gridData.cellSize)));
+                points.Add(gridData.position + (new Vector2((gridData.dimensions.x) * gridData.cellSize, i * gridData.cellSize)));
             }
-            VectorLine line = new VectorLine("Grid UI", points, lineWidth);
-            line.Draw3DAuto();
+            if (line == null) line = new VectorLine("Grid UI", points, lineWidth);
+            else
+            {
+                line.points3 = points;
+                Events.OnGridChanged?.Invoke(gridData, false, false);
+            }
         }
         public void MoveCorner(CornerType type)
         {
             Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             mousePos = new Vector3(mousePos.x, mousePos.y, -1);
+            float cellSize = 0.0f;
 
             switch (type)
             {
                 case CornerType.Top_Left:
-                    return;
+                    cellSize = Mathf.Abs(mousePos.x - corners[1].transform.position.x) / gridData.dimensions.x;
+                    corners[0].transform.position = new Vector3(mousePos.x, corners[2].transform.position.y + gridData.dimensions.y * cellSize);
+                    corners[1].transform.position = new Vector3(corners[1].transform.position.x, corners[0].transform.position.y);
+                    corners[2].transform.position = new Vector3(corners[0].transform.position.x, corners[2].transform.position.y);
+                    break;
                 case CornerType.Top_Right:
-                    return;
+                    cellSize = Mathf.Abs(mousePos.x - corners[0].transform.position.x) / gridData.dimensions.x;
+                    corners[1].transform.position = new Vector3(mousePos.x, corners[3].transform.position.y + gridData.dimensions.y * cellSize);
+                    corners[0].transform.position = new Vector3(corners[0].transform.position.x, corners[1].transform.position.y);
+                    corners[3].transform.position = new Vector3(corners[1].transform.position.x, corners[3].transform.position.y);
+                    break;
                 case CornerType.Bottom_Left:
-                    return;
+                    cellSize = Mathf.Abs(mousePos.x - corners[1].transform.position.x) / gridData.dimensions.x;
+                    corners[2].transform.position = new Vector3(mousePos.x, corners[0].transform.position.y - gridData.dimensions.y * cellSize);
+                    corners[0].transform.position = new Vector3(corners[2].transform.position.x, corners[0].transform.position.y);
+                    corners[3].transform.position = new Vector3(corners[3].transform.position.x, corners[2].transform.position.y);
+                    break;
                 case CornerType.Bottom_Right:
-                    return;
+                    cellSize = Mathf.Abs(mousePos.x - corners[0].transform.position.x) / gridData.dimensions.x;
+                    corners[3].transform.position = new Vector3(mousePos.x, corners[1].transform.position.y - gridData.dimensions.y * cellSize);
+                    corners[1].transform.position = new Vector3(corners[3].transform.position.x, corners[1].transform.position.y);
+                    corners[2].transform.position = new Vector3(corners[2].transform.position.x, corners[3].transform.position.y);
+                    break;
             }
+
+            gridData.position = corners[2].transform.position;
+            UpdateGrid(cellSize);
         }
 
         private void OnDrawGizmos()

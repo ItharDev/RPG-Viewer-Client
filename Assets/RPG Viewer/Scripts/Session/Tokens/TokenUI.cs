@@ -100,6 +100,10 @@ namespace RPG
             // Update group alpha
             canvasGroup.alpha = value;
         }
+        public void DisableOutline()
+        {
+            outlineImage.gameObject.SetActive(false);
+        }
         public void SetRotation(float value)
         {
             image.transform.eulerAngles = new Vector3(0.0f, 0.0f, value);

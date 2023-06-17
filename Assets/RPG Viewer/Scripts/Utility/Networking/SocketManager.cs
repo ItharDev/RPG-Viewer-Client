@@ -119,6 +119,15 @@ namespace Networking
                 Events.OnDoorModified?.Invoke(wall.id, wall);
             });
 
+            // Grid
+            Socket.On("modify-grid", async (data) =>
+            {
+                GridData gridData = JsonUtility.FromJson<GridData>(data.GetValue().ToString());
+
+                await UniTask.SwitchToMainThread();
+                Events.OnGridChanged?.Invoke(gridData, true, true);
+            });
+
             // Lights
             Socket.On("create-light", (data) =>
             {

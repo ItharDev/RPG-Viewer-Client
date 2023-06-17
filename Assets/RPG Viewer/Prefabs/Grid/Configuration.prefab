@@ -484,8 +484,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: RPG.TokenConfiguration, Assembly-CSharp
+      - m_Target: {fileID: 8401259940999278276}
+        m_TargetAssemblyTypeName: RPG.GridConfiguration, Assembly-CSharp
         m_MethodName: ClosePanel
         m_Mode: 6
         m_Arguments:
@@ -811,8 +811,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: RPG.TokenConfiguration, Assembly-CSharp
+      - m_Target: {fileID: 8401259940999278276}
+        m_TargetAssemblyTypeName: RPG.GridConfiguration, Assembly-CSharp
         m_MethodName: ClosePanel
         m_Mode: 6
         m_Arguments:
@@ -979,7 +979,19 @@ MonoBehaviour:
   m_CharacterLimit: 0
   m_OnEndEdit:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 8401259940999278276}
+        m_TargetAssemblyTypeName: RPG.GridConfiguration, Assembly-CSharp
+        m_MethodName: ChangeDimensions
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   m_OnSubmit:
     m_PersistentCalls:
       m_Calls: []
@@ -988,7 +1000,19 @@ MonoBehaviour:
       m_Calls: []
   m_OnDeselect:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 8401259940999278276}
+        m_TargetAssemblyTypeName: RPG.GridConfiguration, Assembly-CSharp
+        m_MethodName: ChangeDimensions
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   m_OnTextSelection:
     m_PersistentCalls:
       m_Calls: []
@@ -2255,7 +2279,19 @@ MonoBehaviour:
   m_CharacterLimit: 0
   m_OnEndEdit:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 8401259940999278276}
+        m_TargetAssemblyTypeName: RPG.GridConfiguration, Assembly-CSharp
+        m_MethodName: ChangeDimensions
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   m_OnSubmit:
     m_PersistentCalls:
       m_Calls: []
@@ -2264,7 +2300,19 @@ MonoBehaviour:
       m_Calls: []
   m_OnDeselect:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 8401259940999278276}
+        m_TargetAssemblyTypeName: RPG.GridConfiguration, Assembly-CSharp
+        m_MethodName: ChangeDimensions
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   m_OnTextSelection:
     m_PersistentCalls:
       m_Calls: []
@@ -2745,7 +2793,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &4950642182741989706
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3622,7 +3670,7 @@ MonoBehaviour:
   - {fileID: 21300000, guid: dda233eaa062e434cae0d844b2310202, type: 3}
   - {fileID: 21300000, guid: 7f7bf995d8f4ffc489061658bbbe371d, type: 3}
   - {fileID: 21300000, guid: 70f194dd3b5bc754d9a1153445b604f4, type: 3}
-  startingColor: {r: 0.11877227, g: 1, b: 0, a: 1}
+  startingColor: {r: 1, g: 1, b: 1, a: 1}
   staticMode: 0
   multiInstance: 1
   onColorChange:

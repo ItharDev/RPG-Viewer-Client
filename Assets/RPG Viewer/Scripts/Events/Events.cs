@@ -52,10 +52,7 @@ namespace RPG
         public static UnityEvent<string> OnLightRemoved = new UnityEvent<string>();
 
         // Grid
-        public static UnityEvent<Vector2Int> OnGridDimensionsChanged = new UnityEvent<Vector2Int>();
-        public static UnityEvent<float> OnGridSizeChanged = new UnityEvent<float>();
-        public static UnityEvent<float> OnGridWidthChanged = new UnityEvent<float>();
-        public static UnityEvent<Color> OnGridColorChanged = new UnityEvent<Color>();
+        public static UnityEvent<GridData, bool, bool> OnGridChanged = new UnityEvent<GridData, bool, bool>();
 
         // Tools
         public static UnityEvent<Tool> OnToolChanged = new UnityEvent<Tool>();

@@ -21,12 +21,14 @@ namespace RPG
             // Add event listeners
             Events.OnStateChanged.AddListener(ChangeState);
             Events.OnLandingPageChanged.AddListener(UpdateLandingPage);
+            Events.OnGridChanged.AddListener(UpdateGrid);
         }
         private void OnDisable()
         {
             // Remove event listeners
             Events.OnStateChanged.RemoveListener(ChangeState);
             Events.OnLandingPageChanged.RemoveListener(UpdateLandingPage);
+            Events.OnGridChanged.RemoveListener(UpdateGrid);
         }
         private void Awake()
         {
@@ -78,6 +80,10 @@ namespace RPG
                 // Load new scene
                 if (!string.IsNullOrEmpty(newState.scene)) LoadScene(newState.scene);
             }
+        }
+        private void UpdateGrid(GridData gridData, bool reloadRequired, bool globalUpdate)
+        {
+            if (globalUpdate) Settings.grid = gridData;
         }
         private void UpdateLandingPage(string id)
         {

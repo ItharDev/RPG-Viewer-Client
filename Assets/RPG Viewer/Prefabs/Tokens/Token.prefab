@@ -4590,6 +4590,54 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
+  - eventID: 13
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 6794845644918859483}
+          m_TargetAssemblyTypeName: RPG.TokenMovement, Assembly-CSharp
+          m_MethodName: OnBeginDrag
+          m_Mode: 0
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+  - eventID: 5
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 6794845644918859483}
+          m_TargetAssemblyTypeName: RPG.TokenMovement, Assembly-CSharp
+          m_MethodName: OnDrag
+          m_Mode: 0
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+  - eventID: 14
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 6794845644918859483}
+          m_TargetAssemblyTypeName: RPG.TokenMovement, Assembly-CSharp
+          m_MethodName: OnEndDrag
+          m_Mode: 0
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
 --- !u!1 &7901601947894505916
 GameObject:
   m_ObjectHideFlags: 0
@@ -5141,20 +5189,12 @@ MonoBehaviour:
     name: 
     type: 0
     permissions: []
+    visible: []
     dimensions: {x: 0, y: 0}
-    hasVision: 0
-    nightVision: 0
-    highlighted: 0
-    lightRadius: 0
-    lightEffect: 0
-    lightColor: {r: 0, g: 0, b: 0, a: 0}
-    lightIntensity: 0
-    flickerFrequency: 0
-    flickerAmount: 0
-    pulseInterval: 0
-    pulseAmount: 0
-    preset: 
+    visionRadius: 0
+    nightRadius: 0
     image: 
+    light: 
     position: {x: 0, y: 0}
     enabled: 0
     health: 0
