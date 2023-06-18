@@ -227,7 +227,7 @@ namespace RPG
             // Update drag object's position
             Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             mousePos = new Vector3(mousePos.x, mousePos.y, 0);
-            dragObject.transform.position = mousePos;
+            dragObject.transform.position = Session.Instance.Grid.SnapToGrid(mousePos, token.Data.dimensions);
         }
         public void OnEndDrag(BaseEventData eventData)
         {

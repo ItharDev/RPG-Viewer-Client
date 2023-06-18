@@ -6,6 +6,7 @@ namespace RPG
     {
         public float CellSize { get { return cellSize; } }
 
+        private GridData gridData;
         private Vector2Int dimensions;
         private Vector2 worldSize;
         private float cellSize;
@@ -15,41 +16,52 @@ namespace RPG
         private void OnEnable()
         {
             // Add event listeners
-            Events.OnSceneLoaded.AddListener(LoadGrid);
+            Events.OnSceneLoaded.AddListener(LoadScene);
+            Events.OnGridChanged.AddListener(LoadGrid);
         }
         private void OnDisable()
         {
             // Remove event listeners
-            Events.OnSceneLoaded.RemoveListener(LoadGrid);
+            Events.OnSceneLoaded.RemoveListener(LoadScene);
+            Events.OnGridChanged.AddListener(LoadGrid);
         }
-
-        private void LoadGrid(SceneData data)
+        private void LoadGrid(GridData data, bool reloadRequired, bool globalUpdate)
         {
-            GridData gridData = data.grid;
-
-            // Load parameters
-            dimensions = gridData.dimensions;
-            cellSize = gridData.cellSize;
-            position = gridData.position;
-
-            // Generate grid
-            worldSize = new Vector2(dimensions.x * cellSize, dimensions.y * cellSize);
-            Grid = new Cell[dimensions.x, dimensions.y];
-
-            // Loop through colums
-            for (int x = 0; x < dimensions.x; x++)
+            if (globalUpdate)
             {
-                // Loop through rows
-                for (int y = 0; y < dimensions.y; y++)
-                {
-                    // Calculate corner index
-                    int index = x * dimensions.y + y;
+                gridData = data;
 
-                    // Calculate cell position and add it to the list
-                    Vector2 cellPosition = new(x * cellSize + cellSize * 0.5f + position.x, y * cellSize + cellSize * 0.5f + position.y);
-                    Grid[x, y] = new Cell(cellPosition);
+                // Load parameters
+                dimensions = gridData.dimensions;
+                cellSize = gridData.cellSize;
+                position = gridData.position;
+
+                // Generate grid
+                worldSize = new Vector2(dimensions.x * cellSize, dimensions.y * cellSize);
+                Grid = new Cell[dimensions.x, dimensions.y];
+
+                // Loop through colums
+                for (int x = 0; x < dimensions.x; x++)
+                {
+                    // Loop through rows
+                    for (int y = 0; y < dimensions.y; y++)
+                    {
+                        // Calculate corner index
+                        int index = x * dimensions.y + y;
+
+                        // Calculate cell position and add it to the list
+                        Vector2 cellPosition = new(x * cellSize + cellSize * 0.5f + position.x, y * cellSize + cellSize * 0.5f + position.y);
+                        Grid[x, y] = new Cell(cellPosition);
+                    }
                 }
             }
+        }
+
+        private void LoadScene(SceneData data)
+        {
+            gridData = data.grid;
+
+            LoadGrid(gridData, true, true);
         }
 
         public Cell WorldPosToCell(Vector2 worldPos)
@@ -81,7 +93,7 @@ namespace RPG
 
         public Vector2 SnapToGrid(Vector2 point, Vector2 tokenSize)
         {
-            if (dimensions == Vector2Int.zero) return point;
+            if (dimensions == Vector2Int.zero || !gridData.snapToGrid) return point;
 
             float closest = 0;
             Vector2 closestPoint = Vector2.zero;
