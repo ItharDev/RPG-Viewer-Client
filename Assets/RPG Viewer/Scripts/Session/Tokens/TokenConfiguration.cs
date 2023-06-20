@@ -19,6 +19,7 @@ namespace RPG
         [SerializeField] private TMP_Dropdown typeDropdown;
         [SerializeField] private TMP_InputField widthInput;
         [SerializeField] private TMP_InputField heightInput;
+        [SerializeField] private PermissionPanel permissionPanel;
 
         [Header("Lighting")]
         [SerializeField] private CanvasGroup lightingPanel;
@@ -144,6 +145,15 @@ namespace RPG
             {
                 if (saveData) SaveData();
                 Destroy(gameObject);
+            });
+        }
+        public void OpenPermissions()
+        {
+            if (permissionPanel.gameObject.activeInHierarchy) return;
+
+            permissionPanel.LoadData(data.permissions, (permissions) =>
+            {
+                data.permissions = permissions;
             });
         }
         public void OpenColor()

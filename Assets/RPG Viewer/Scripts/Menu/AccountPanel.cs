@@ -32,7 +32,7 @@ namespace RPG
         {
             // Get reference of our rect transform
             if (rect == null) rect = GetComponent<RectTransform>();
-            
+
             // Add event listeners
             Events.OnSignIn.AddListener(SignIn);
             Events.OnSignOut.AddListener(SignOut);

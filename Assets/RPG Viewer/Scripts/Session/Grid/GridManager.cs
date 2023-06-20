@@ -51,7 +51,7 @@ namespace RPG
 
                         // Calculate cell position and add it to the list
                         Vector2 cellPosition = new(x * cellSize + cellSize * 0.5f + position.x, y * cellSize + cellSize * 0.5f + position.y);
-                        Grid[x, y] = new Cell(cellPosition);
+                        Grid[x, y] = new Cell(cellPosition, new Vector2Int(x, y));
                     }
                 }
             }
@@ -85,8 +85,10 @@ namespace RPG
             return Grid[x, y];
         }
 
-        public Cell GetCell(int row, int column)
+        public Cell GetCell(int column, int row)
         {
+            if (column >= gridData.dimensions.x || row >= gridData.dimensions.y || column < 0 || row < 0) return new Cell(Vector2.zero, Vector2Int.zero);
+
             // Find cell in the specified grid position
             return Grid[column, row];
         }
@@ -113,57 +115,38 @@ namespace RPG
             return closestPoint;
         }
 
-        // TODO: 
-        public void DistanceBetweenPoints(Vector2 start, Vector2 end)
+        public MeasurementResult DistanceBetweenPoints(Vector2 start, Vector2 end, MeasurementType type)
         {
-            // float feet = 0;
-            // Cell startCell = WorldPosToCell(start);
-            // Cell endCell = WorldPosToCell(end);
+            if (type == MeasurementType.Grid)
+            {
+                float feet = 0;
+                Cell startCell = WorldPosToCell(start);
+                Cell endCell = WorldPosToCell(end);
 
-            // int diagonals = 0;
-            // if (/* TODO: */start != end)
-            // {
-            //     int dX = Mathf.Abs(endCell.gridPosition.x - startCell.gridPosition.x);
-            //     int dY = Mathf.Abs(endCell.gridPosition.y - startCell.gridPosition.y);
+                int diagonals = 0;
+                if (start != end)
+                {
+                    int dstX = Mathf.Abs(endCell.gridPosition.x - startCell.gridPosition.x);
+                    int dstY = Mathf.Abs(endCell.gridPosition.y - startCell.gridPosition.y);
 
-            //     if (dX > 0 && dY > 0)
-            //     {
-            //         if (dX > dY)
-            //         {
-            //             diagonals = dY;
-            //             feet += (dX - dY) * 5;
-            //         }
-            //         else if (dY > dX)
-            //         {
-            //             diagonals = dX;
-            //             feet += (dY - dX) * 5;
-            //         }
-            //         else diagonals = dY;
-            //     }
-            //     else feet += (dX + dY) * 5;
-            // }
-            // // else
-            // // {
-            // //     float dist = Vector2.Distance(end, start);
-            // //     feet = dist / (CellSize * 0.2f);
-            // // }
+                    if (dstX >= dstY)
+                    {
+                        diagonals = dstY;
+                        feet += (dstX - dstY) * 5.0f;
+                    }
+                    else if (dstY > dstX)
+                    {
+                        diagonals = dstX;
+                        feet += (dstY - dstX) * 5.0f;
+                    }
+                    else feet += (dstX + dstY) * 5;
+                }
 
-            // return new MeasurementResult()
-            // {
-            //     startPos = startCell.worldPosition,
-            //     endPos = endCell.worldPosition,
-            //     distance = feet,
-            //     diagonals = diagonals
-            // };
+                return new MeasurementResult(startCell.worldPosition, endCell.worldPosition, feet, diagonals);
+            }
+
+            float distance = Vector2.Distance(end, start) / (CellSize * 0.2f);
+            return new MeasurementResult(start, end, distance, 0);
         }
-    }
-
-    [System.Serializable]
-    public struct MeasurementResult
-    {
-        public Vector2 startPos;
-        public Vector2 endPos;
-        public float distance;
-        public int diagonals;
     }
 }

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Runtime;
 using Networking;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -42,6 +43,11 @@ namespace RPG
                 mousePos = new Vector3(mousePos.x, mousePos.y, 0);
 
                 dragPoints.Add(mousePos);
+            }
+            if (dragging)
+            {
+                if (Input.GetKeyDown(KeyCode.LeftAlt)) MeasurementManager.Instance.ChangeType(MeasurementType.Precise);
+                if (Input.GetKeyUp(KeyCode.LeftAlt)) MeasurementManager.Instance.ChangeType(MeasurementType.Grid);
             }
 
             // Return if token is not selected or we are edting any fields
@@ -135,13 +141,16 @@ namespace RPG
             // Check if any of the arrow keys are pressed down
             if (!CheckArrowKeys()) return;
 
+            // Apply new target for the camera to follow
+            FindObjectOfType<Camera2D>().FollowTarget(transform);
+
             // Get movement direction
             float inputX = Input.GetAxisRaw("Horizontal");
             float inputY = Input.GetAxisRaw("Vertical");
 
             // Get current and target cells
-            Cell currentCell = Session.Instance.Grid.WorldPosToCell(token.Data.position);
-            Cell targetCell = currentCell/*Session.Instance.Grid.GetCell(currentCell.gridPosition.x + Mathf.RoundToInt(inputX), currentCell.gridPosition.y + Mathf.RoundToInt(inputY))*/;
+            Cell currentCell = Session.Instance.Grid.WorldPosToCell(transform.position);
+            Cell targetCell = Session.Instance.Grid.GetCell(currentCell.gridPosition.x + Mathf.RoundToInt(inputX), currentCell.gridPosition.y + Mathf.RoundToInt(inputY));
 
             // Return if no target cell was found
             if (targetCell.worldPosition == Vector2.zero) return;
@@ -205,7 +214,8 @@ namespace RPG
             // TODO: token.UI.CloseConfig();
 
             // Create clone of this token
-            dragObject = Instantiate(token, Camera.main.ScreenToWorldPoint(Input.mousePosition), Quaternion.identity);
+            Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            dragObject = Instantiate(token, mousePos, Quaternion.identity);
             dragObject.transform.SetParent(transform.parent);
 
             // Disable clone's vision and light
@@ -218,6 +228,7 @@ namespace RPG
             // Add first drag point
             dragPoints.Add(transform.position);
             dragging = true;
+            MeasurementManager.Instance.StartMeasurement(mousePos, MeasurementType.Grid);
         }
         public void OnDrag(BaseEventData eventData)
         {
@@ -227,7 +238,8 @@ namespace RPG
             // Update drag object's position
             Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             mousePos = new Vector3(mousePos.x, mousePos.y, 0);
-            dragObject.transform.position = Session.Instance.Grid.SnapToGrid(mousePos, token.Data.dimensions);
+            if (!Input.GetKey(KeyCode.LeftAlt)) mousePos = Session.Instance.Grid.SnapToGrid(mousePos, token.Data.dimensions);
+            dragObject.transform.position = mousePos;
         }
         public void OnEndDrag(BaseEventData eventData)
         {
@@ -236,13 +248,11 @@ namespace RPG
             if (dragObject == null) return;
 
             // Store drag object's position 
-            Vector2 pos = dragObject.transform.position;
+            Vector3 pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            pos = new Vector3(pos.x, pos.y, 0);
 
             // Snap to grid if Alt key was not held down
-            if (!Input.GetKey(KeyCode.LeftAlt))
-            {
-                pos = Session.Instance.Grid.SnapToGrid(dragObject.transform.position, token.Data.dimensions);
-            }
+            if (!Input.GetKey(KeyCode.LeftAlt)) pos = Session.Instance.Grid.SnapToGrid(pos, token.Data.dimensions);
 
             // Add final drag point
             dragPoints.Add(pos);
@@ -353,7 +363,7 @@ namespace RPG
             }
 
             // Add waypoints
-            waypoints.AddRange(data.points);
+            waypoints = data.points;
         }
     }
 }

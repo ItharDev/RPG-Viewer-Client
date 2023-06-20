@@ -18,6 +18,7 @@ namespace RPG
 
         private void OnEnable()
         {
+            Debug.Log("R");
             // Add event listeners
             Events.OnStateChanged.AddListener(ChangeState);
             Events.OnLandingPageChanged.AddListener(UpdateLandingPage);
@@ -25,6 +26,7 @@ namespace RPG
         }
         private void OnDisable()
         {
+            Debug.Log("D");
             // Remove event listeners
             Events.OnStateChanged.RemoveListener(ChangeState);
             Events.OnLandingPageChanged.RemoveListener(UpdateLandingPage);
@@ -49,6 +51,7 @@ namespace RPG
 
         private void ChangeState(SessionState oldState, SessionState newState)
         {
+            Debug.Log("Runs");
             if (newState.scene == null)
             {
                 // Return if there's no scene active

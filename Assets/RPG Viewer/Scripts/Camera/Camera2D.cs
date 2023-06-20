@@ -9,8 +9,8 @@ namespace RPG
     public class Camera2D : MonoBehaviour
     {
         public float Zoom { get { return mainVCam.m_Lens.OrthographicSize; } }
+        public bool UsePan = false;
 
-        [SerializeField] private bool UsePan = false;
         [SerializeField] private CinemachineVirtualCamera mainVCam;
 
         [SerializeField] private float camZoomMax = 2.0f;

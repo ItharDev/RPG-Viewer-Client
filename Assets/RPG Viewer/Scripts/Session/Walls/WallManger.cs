@@ -25,7 +25,39 @@ namespace RPG
 
         private void ReloadWalls(SessionState oldState, SessionState newState)
         {
+            // Check if we are the master client
+            if (ConnectionManager.Info.isMaster)
+            {
+                // Return if scene was not changed
+                if (oldState.scene == newState.scene) return;
+                UnloadWalls();
+            }
+            else
+            {
+                // Unload tokens if syncing was disabled
+                if (oldState.synced && !newState.synced)
+                {
+                    UnloadWalls();
+                    return;
+                }
 
+                // Return if scene was not changed
+                if (oldState.scene == newState.scene) return;
+                UnloadWalls();
+            }
+        }
+        private void UnloadWalls()
+        {
+            // Loop through each wall
+            foreach (var item in walls)
+            {
+                // Continue if token is null
+                if (item.Value == null) continue;
+                Destroy(item.Value.gameObject);
+            }
+
+            // Clear lists
+            walls.Clear();
         }
         private void LoadWalls(SceneData settings)
         {

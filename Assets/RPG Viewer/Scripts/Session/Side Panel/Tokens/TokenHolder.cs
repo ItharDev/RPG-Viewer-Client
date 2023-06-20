@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Cysharp.Threading.Tasks;
 using Networking;
 using TMPro;
@@ -140,7 +141,7 @@ namespace RPG
 
                     // Send error message
                     MessageManager.QueueMessage(callback.GetValue(1).GetString());
-                }, JsonUtility.ToJson(newData));
+                }, JsonUtility.ToJson(newData), JsonUtility.ToJson(lightData));
             });
         }
         private void ToggleOptions()
@@ -186,7 +187,7 @@ namespace RPG
 
             config.LoadData(Data, lightData, icon.sprite.texture.GetRawTextureData(), "Modify Blueprint", (tokenData, image, lightData) =>
             {
-                bool imageChanged = image != icon.sprite.texture.GetRawTextureData();
+                bool imageChanged = !image.SequenceEqual(icon.sprite.texture.GetRawTextureData());
                 SocketManager.EmitAsync("modify-blueprint", async (callback) =>
                 {
                     await UniTask.SwitchToMainThread();

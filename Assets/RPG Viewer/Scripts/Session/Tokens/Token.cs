@@ -12,6 +12,7 @@ namespace RPG
         [SerializeField] private LayerMask mountLayers;
 
         public TokenData Data;
+        public PresetData Lighting;
 
         public TokenMovement Movement { get; private set; }
         public TokenVision Vision { get; private set; }
@@ -20,8 +21,9 @@ namespace RPG
 
         public bool IsOwner
         {
-            get { return Permission.type == PermissionType.Owner; }
+            get { return Permission.type == PermissionType.Controller; }
         }
+        public string Id { get { return Data.id; } }
 
         public Permission Permission;
         public bool Selected;
@@ -33,14 +35,26 @@ namespace RPG
             if (Vision == null) Vision = GetComponent<TokenVision>();
             if (UI == null) UI = GetComponent<TokenUI>();
             if (Conditions == null) Conditions = GetComponent<TokenConditions>();
-        }
 
+            // Add event listeners
+            Events.OnTokenSelected.AddListener(HandleSelection);
+        }
+        private void OnDisable()
+        {
+            // Remove event listeners
+            Events.OnTokenSelected.RemoveListener(HandleSelection);
+        }
         private void Update()
         {
             // Return if token is not selected or we are edting any fields
             if (!Selected || UI.Editing) return;
 
             HandleDeletion();
+        }
+
+        private void HandleSelection(Token token)
+        {
+            Selected = token == this;
         }
 
         private void HandleDeletion()
@@ -76,14 +90,6 @@ namespace RPG
             // Disable collisions
             boxCollider.enabled = false;
         }
-        public void SelectToken()
-        {
-            Selected = true;
-        }
-        public void DeselectToken()
-        {
-            Selected = false;
-        }
 
         public void LoadData(TokenData data, Sprite sprite)
         {
@@ -107,7 +113,7 @@ namespace RPG
             // Set as owner if we are the master client
             if (ConnectionManager.Info.isMaster)
             {
-                Permission = new Permission(GameData.User.id, PermissionType.Owner);
+                Permission = new Permission(GameData.User.id, PermissionType.Controller);
                 return;
             }
 
@@ -150,7 +156,7 @@ namespace RPG
         public void DeleteToken()
         {
             // Check if any player is the owner
-            Permission owner = Data.permissions.FirstOrDefault(value => value.type == PermissionType.Owner);
+            Permission owner = Data.permissions.FirstOrDefault(value => value.type == PermissionType.Controller);
             if (!string.IsNullOrEmpty(owner.user))
             {
                 FinishDeletion(true);
@@ -240,7 +246,7 @@ namespace RPG
     {
         None,
         Observer,
-        Owner
+        Controller
     }
 
     [Serializable]

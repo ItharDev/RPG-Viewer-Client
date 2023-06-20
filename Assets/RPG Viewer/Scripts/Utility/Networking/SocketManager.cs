@@ -82,11 +82,13 @@ namespace Networking
                 SessionState oldState = ConnectionManager.State;
                 EmitAsync("set-scene", async (callback) =>
                 {
-
                     await UniTask.SwitchToMainThread();
                     if (callback.GetValue().GetBoolean())
                     {
+                        Debug.Log("Runs");
+                        Debug.Log(Events.OnStateChanged);
                         Events.OnStateChanged?.Invoke(oldState, newState);
+                        Debug.Log("Runs 1");
                         return;
                     }
 

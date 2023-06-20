@@ -14,7 +14,7 @@ namespace RPG
         private Dictionary<string, Token> tokens = new Dictionary<string, Token>();
         private List<Token> myTokens = new List<Token>();
 
-        private int selectedToken = -1;
+        private int selectedToken = 0;
 
         private void OnEnable()
         {
@@ -31,6 +31,7 @@ namespace RPG
             Events.OnTokenRotated.AddListener(RotateToken);
             Events.OnStateChanged.AddListener(ReloadTokens);
             Events.OnSceneLoaded.AddListener(LoadTokens);
+            Events.OnTokenSelected.AddListener(SelectToken);
         }
         private void OnDisable()
         {
@@ -47,6 +48,7 @@ namespace RPG
             Events.OnTokenRotated.RemoveListener(RotateToken);
             Events.OnStateChanged.RemoveListener(ReloadTokens);
             Events.OnSceneLoaded.RemoveListener(LoadTokens);
+            Events.OnTokenSelected.RemoveListener(SelectToken);
         }
         private void Update()
         {
@@ -65,24 +67,8 @@ namespace RPG
                 // Reset selection at the end of list
                 if (selectedToken >= myTokens.Count) selectedToken = 0;
 
-                // Check if any token is selected
-                if (selectedToken >= 0)
-                {
-                    // Set current token as not selected
-                    myTokens[selectedToken].DeselectToken();
-                }
-
-                // Move to next token in the list
+                Events.OnTokenSelected?.Invoke(myTokens[selectedToken]);
                 selectedToken++;
-
-                // Reset selection at the end of list
-                if (selectedToken >= myTokens.Count) selectedToken = 0;
-
-                // Set new token as selected
-                myTokens[selectedToken].SelectToken();
-
-                // Apply new target for the camera to follow
-                FindObjectOfType<Camera2D>().FollowTarget(myTokens[selectedToken].transform);
             }
         }
 
@@ -93,24 +79,33 @@ namespace RPG
             {
                 await UniTask.SwitchToMainThread();
 
+
                 // Create texture
                 Texture2D texture = await AsyncImageLoader.CreateFromImageAsync(bytes);
                 Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
 
+                Debug.Log("Rums 000");
                 // Instantiate token and attach it to correct parent
                 Token token = Instantiate(tokenPrefab, data.position, Quaternion.identity, tokenParent);
 
+                Debug.Log("Rums 111");
                 // Disable token if needed
                 if (!ConnectionManager.Info.isMaster && !data.enabled) token.UI.SetAlpha(0.0f);
 
+
+                Debug.Log("Rums 222");
                 // Load data and add it to dictionary
                 token.LoadData(data, sprite);
                 tokens.Add(data.id, token);
                 // Check token's permissions
-                if (token.Permission.type == PermissionType.Owner) myTokens.Add(token);
+                if (token.Permission.type == PermissionType.Controller) myTokens.Add(token);
 
+
+                Debug.Log("Rums 333");
                 // Select this token if it's the first token we instantiate and this client is player
                 if (myTokens.Count == 1) SelectToken(ConnectionManager.Info.isMaster ? null : myTokens[0]);
+
+                Debug.Log("Rums 444");
             });
         }
         private void MoveToken(string id, MovementData data)
@@ -296,26 +291,10 @@ namespace RPG
 
         public void SelectToken(Token token)
         {
-            // Loop through each token
-            foreach (var item in tokens)
-            {
-                // Set token as selected
-                item.Value.Selected = true;
-
-                // Deselect token if it's not correct
-                if (item.Value != token && token != null) item.Value.Selected = false;
-
-                // Reload sorting and lighting
-                item.Value.UI.UpdateSorting();
-                // TODO: item.Value.LoadLights();
-            }
-
-            // Return if no token was selected
             if (token == null) return;
 
             // Update index of selected token
-            int index = myTokens.IndexOf(token);
-            selectedToken = index;
+            selectedToken = myTokens.IndexOf(token);
         }
     }
 }

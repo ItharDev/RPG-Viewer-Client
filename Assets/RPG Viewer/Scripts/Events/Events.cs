@@ -8,7 +8,6 @@ namespace RPG
         // Connection
         public static UnityEvent OnConnected = new UnityEvent();
         public static UnityEvent OnDisconnected = new UnityEvent();
-        public static UnityEvent OnSessionJoined = new UnityEvent();
 
         // Accounts
         public static UnityEvent<string, string> OnSignIn = new UnityEvent<string, string>();
@@ -75,7 +74,7 @@ namespace RPG
         public static UnityEvent<string, int> OnHealthModified = new UnityEvent<string, int>();
         public static UnityEvent<string, string> OnElevationModified = new UnityEvent<string, string>();
         public static UnityEvent<string, float> OnTokenRotated = new UnityEvent<string, float>();
-        public static UnityEvent OnTokenSelected = new UnityEvent();
+        public static UnityEvent<Token> OnTokenSelected = new UnityEvent<Token>();
 
         // Notes
         // public static UnityEvent<NoteData> OnNoteCreated = new UnityEvent<NoteData>();

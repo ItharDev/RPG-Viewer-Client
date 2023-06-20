@@ -1,4 +1,8 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using Cysharp.Threading.Tasks;
+using Networking;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -18,6 +22,10 @@ namespace RPG
         [SerializeField] private Image outlineImage;
         [SerializeField] private TMP_Text label;
         [SerializeField] private GameObject rotateButton;
+        [SerializeField] private CanvasGroup buttonsGroup;
+        [SerializeField] private GameObject lockButton;
+        [SerializeField] private GameObject visibilityButton;
+
 
         [Space]
         [SerializeField] private Image lockedImage;
@@ -32,13 +40,18 @@ namespace RPG
         [SerializeField] private TMP_InputField healthInput;
         [SerializeField] private GameObject healthPanel;
 
+        [Space]
+        [SerializeField] private TokenConfiguration configPrefab;
+
         public RectTransform Rect { get { return canvas.GetComponent<RectTransform>(); } }
-        public bool Editing { get { return true /* TODO: */; } }
+        public bool MouseOver { get { return RectTransformUtility.RectangleContainsScreenPoint(Rect, Camera.main.ScreenToWorldPoint(Input.mousePosition)); } }
+        public bool Editing { get { return false /* TODO: */; } }
 
         private Token token;
         private Vector2 screenPos;
         private Outline outline;
         private List<Token> rotatedTokens = new List<Token>();
+        private TokenConfiguration config;
 
         private Shader outlineShader;
         private Shader regularShader;
@@ -53,20 +66,34 @@ namespace RPG
 
             // Add event listeners
             Events.OnToolChanged.AddListener(HandleRaycast);
-            Events.OnTokenSelected.AddListener(UpdateSorting);
+            Events.OnTokenSelected.AddListener(HandleSelection);
         }
         private void OnDisable()
         {
             // Remove event listeners
             Events.OnToolChanged.RemoveListener(HandleRaycast);
-            Events.OnTokenSelected.RemoveListener(UpdateSorting);
+            Events.OnTokenSelected.RemoveListener(HandleSelection);
+        }
+        private void Awake()
+        {
+            lockButton.SetActive(ConnectionManager.Info.isMaster);
+            visibilityButton.SetActive(ConnectionManager.Info.isMaster);
         }
         private void Update()
         {
             // Return if token is not selected
             if (!token.Selected) return;
 
+            if (Input.GetMouseButtonDown(0) && !MouseOver) Events.OnTokenSelected?.Invoke(null);
+
             HandleElevation();
+        }
+        private void HandleSelection(Token _token)
+        {
+            outline.enabled = _token == token;
+            buttonsGroup.alpha = outline.enabled ? 1.0f : 0.0f;
+            buttonsGroup.blocksRaycasts = outline.enabled ? true : false;
+            UpdateSorting();
         }
 
         private void HandleRaycast(Tool tool)
@@ -123,7 +150,12 @@ namespace RPG
             UpdateSorting();
             Resize();
 
-            // TODO: Update all elements
+            LoadUI();
+        }
+        private void LoadUI()
+        {
+            label.text = token.Data.name;
+            label.transform.parent.gameObject.SetActive(!string.IsNullOrEmpty(label.text));
         }
         public void EnableRaycasting(bool enable)
         {
@@ -135,6 +167,8 @@ namespace RPG
         {
             // Get pointer data
             PointerEventData pointerData = eventData as PointerEventData;
+            if (pointerData.button == PointerEventData.InputButton.Left) Events.OnTokenSelected?.Invoke(token);
+            else if (pointerData.button == PointerEventData.InputButton.Right) ModifyToken();
         }
         public void OnPointerEnter(BaseEventData eventData)
         {
@@ -142,7 +176,30 @@ namespace RPG
         }
         public void OnPointerExit(BaseEventData eventData)
         {
-            outline.enabled = false;
+            if (!token.Selected) outline.enabled = false;
+        }
+
+        private void ModifyToken()
+        {
+            if (config != null) return;
+
+            config = Instantiate(configPrefab);
+            config.transform.SetParent(UICanvas.Instance.transform);
+            config.transform.localPosition = Vector3.zero;
+            config.transform.SetAsLastSibling();
+            config.LoadData(token.Data, token.Lighting, image.sprite.texture.GetRawTextureData(), "Modify Token", (data, image, lighting) =>
+            {
+                bool imageChanged = !image.SequenceEqual(this.image.sprite.texture.GetRawTextureData());
+                SocketManager.EmitAsync("modify-token", async (callback) =>
+                {
+                    await UniTask.SwitchToMainThread();
+                    if (callback.GetValue().GetBoolean()) return;
+
+                    // Send error message
+                    MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                }, token.Id, JsonUtility.ToJson(data), JsonUtility.ToJson(lighting), imageChanged ? Convert.ToBase64String(image) : null);
+
+            });
         }
 
         public void BeginRotate(BaseEventData eventData)

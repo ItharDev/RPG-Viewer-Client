@@ -26,10 +26,12 @@ namespace RPG
     public struct Cell
     {
         public Vector2 worldPosition;
+        public Vector2Int gridPosition;
 
-        public Cell(Vector2 _worldPosition)
+        public Cell(Vector2 _worldPosition, Vector2Int _gridPosition)
         {
             worldPosition = _worldPosition;
+            gridPosition = _gridPosition;
         }
     }
 }

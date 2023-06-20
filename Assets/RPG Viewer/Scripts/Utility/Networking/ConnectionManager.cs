@@ -58,7 +58,7 @@ namespace RPG
 
                 // Generate session info and state
                 Info = new SessionInfo(data.id, data.master, data.isMaster, users, sprite);
-                State = new SessionState(data.synced, data.scene);
+                State = new SessionState(data.synced, "");
                 SessionState oldState = new SessionState(false, "");
 
                 // Load session in background
@@ -66,8 +66,6 @@ namespace RPG
                 await UniTask.WaitUntil(() => Loader.isDone);
 
                 Events.OnStateChanged?.Invoke(oldState, State);
-                Events.OnSessionJoined?.Invoke();
-
                 PlayerPrefs.SetString($"{GameData.User.id}_last_session", data.id);
             });
         }

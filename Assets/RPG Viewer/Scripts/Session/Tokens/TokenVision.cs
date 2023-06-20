@@ -1,4 +1,6 @@
+using Cysharp.Threading.Tasks;
 using FunkyCode;
+using Networking;
 using UnityEngine;
 
 namespace RPG
@@ -23,6 +25,7 @@ namespace RPG
             if (!loaded && Session.Instance.Grid.Grid != null) loaded = true;
             if (updateRequired && loaded)
             {
+                LoadVision();
                 LoadLighting();
                 updateRequired = false;
             }
@@ -42,13 +45,31 @@ namespace RPG
         {
             updateRequired = true;
         }
-        private void LoadLighting()
+        private void LoadVision()
         {
             float feetToUnits = Session.Instance.Grid.CellSize * 0.2f;
             nightSource.enabled = token.Data.nightRadius > 0.0f;
             visionSource.enabled = token.Data.visionRadius > 0.0f;
             nightSource.size = token.Data.nightRadius * feetToUnits;
             visionSource.size = token.Data.visionRadius * feetToUnits;
+        }
+        private void LoadLighting()
+        {
+            SocketManager.EmitAsync("get-light", async (callback) =>
+            {
+                // Check if the event was successful
+                if (callback.GetValue().GetBoolean())
+                {
+                    await UniTask.SwitchToMainThread();
+                    string data = callback.GetValue(1).ToString();
+                    token.Lighting = JsonUtility.FromJson<PresetData>(data);
+                    token.Lighting.id = token.Data.light;
+                    return;
+                }
+
+                // Send error message
+                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+            }, token.Data.light);
         }
     }
 }
