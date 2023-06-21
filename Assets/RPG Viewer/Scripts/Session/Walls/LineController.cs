@@ -28,18 +28,12 @@ namespace RPG
             {
                 if (Input.GetMouseButtonUp(1)) dragging = false;
                 HandleDrag();
+                UpdateLine();
             }
-        }
-        private void LateUpdate()
-        {
-            // Update line width
-            if (line != null) line.SetWidth((15.0f / Camera.main.orthographicSize) * (Screen.currentResolution.width / 1600));
         }
 
         private void HandleDrag()
         {
-            if (Input.GetKeyDown(KeyCode.Escape)) StopDrawing();
-
             // Return if no point is being dragged
             if (draggedPoint == null) return;
 
@@ -72,15 +66,16 @@ namespace RPG
                 }
                 if (line == null)
                 {
-                    line = VectorLine.SetLine3D(color, list3D.ToArray());
-                    line.SetWidth(7.0f);
+                    line = new VectorLine("Wall controller", list3D, 3.0f);
                     line.lineType = LineType.Continuous;
-                    line.Draw3DAuto();
-                    line.material.mainTexture = lineTexture;
+                    line.color = color;
+                    // line.material.mainTexture = lineTexture;
                 }
-
-                line.points3 = list3D;
-                collider2D.SetPoints(list2D);
+                else
+                {
+                    line.points3 = list3D;
+                    collider2D.SetPoints(list2D);
+                }
                 line.Draw3D();
             }
         }
@@ -120,7 +115,6 @@ namespace RPG
             initialPoint.OnDragEvent.AddListener(DragPoint);
 
             dragging = true;
-            UpdateLine();
         }
 
         private void DragPoint()
