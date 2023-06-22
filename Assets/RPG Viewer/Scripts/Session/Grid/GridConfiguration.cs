@@ -1,4 +1,3 @@
-using System;
 using Networking;
 using TMPro;
 using UnityEngine;
@@ -16,7 +15,6 @@ namespace RPG
 
         private RectTransform rect;
         private GridData data;
-        private Action<GridData> callback;
 
         private void Awake()
         {
@@ -41,12 +39,12 @@ namespace RPG
         public void OpenPanel(GridData _data)
         {
             gameObject.SetActive(true);
-            LeanTween.size(rect, new Vector2(250.0f, 122.0f), 0.2f);
+            LeanTween.size(rect, new Vector2(250.0f, 117.0f), 0.2f);
             LoadData(_data);
         }
         public void ClosePanel(bool saveData)
         {
-            LeanTween.size(rect, new Vector2(250.0f, 122.0f), 0.2f).setOnComplete(() =>
+            LeanTween.size(rect, new Vector2(250.0f, 0.0f), 0.2f).setOnComplete(() =>
             {
                 if (saveData) SaveData();
                 else Events.OnGridChanged?.Invoke(Session.Instance.Settings.grid, true, false);

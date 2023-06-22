@@ -15,12 +15,18 @@ namespace RPG
             // Add event listeners
             Events.OnStateChanged.AddListener(ReloadWalls);
             Events.OnSceneLoaded.AddListener(LoadWalls);
+            Events.OnWallCreated.AddListener(CreateWall);
+            Events.OnWallModified.AddListener(ModifyWall);
+            Events.OnWallRemoved.AddListener(RemoveWall);
         }
         private void OnDisable()
         {
             // Remove event listeners
             Events.OnStateChanged.RemoveListener(ReloadWalls);
             Events.OnSceneLoaded.RemoveListener(LoadWalls);
+            Events.OnWallCreated.RemoveListener(CreateWall);
+            Events.OnWallModified.RemoveListener(ModifyWall);
+            Events.OnWallRemoved.RemoveListener(RemoveWall);
         }
 
         private void ReloadWalls(SessionState oldState, SessionState newState)
@@ -67,6 +73,8 @@ namespace RPG
             {
                 CreateWall(list[i]);
             }
+
+            GetComponent<WallTools>().LoadWalls(list);
         }
 
         private void CreateWall(WallData data)
@@ -77,6 +85,17 @@ namespace RPG
 
             // Add wall to dictionary
             walls.Add(data.id, wall);
+        }
+        private void ModifyWall(string id, WallData data)
+        {
+            if (!walls.ContainsKey(id)) return;
+            walls[id].LoadData(data);
+        }
+        private void RemoveWall(string id)
+        {
+            if (!walls.ContainsKey(id)) return;
+            Destroy(walls[id].gameObject);
+            walls.Remove(id);
         }
     }
 }

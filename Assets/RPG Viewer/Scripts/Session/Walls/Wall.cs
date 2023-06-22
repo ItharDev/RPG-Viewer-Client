@@ -62,16 +62,15 @@ namespace RPG
 
             if (ConnectionManager.Info.isMaster)
             {
-                bool toolActivated = SettingsHandler.Instance.Setting.ToString().Contains("Walls");
-                bool isDoor = data.type.ToString().Contains("Door");
+                bool toolActivated = SettingsHandler.Instance.Setting.ToString().ToLower().Contains("walls");
+                bool isDoor = data.type.ToString().ToLower().Contains("door");
 
                 // Show UI if tool is not selected
                 if (!toolActivated) ToggleUI(isDoor);
             }
-            else
-            {
-                ToggleUI(data.type == WallType.Door);
-            }
+            else ToggleUI(data.type == WallType.Door);
+
+            lightCollider.Initialize();
         }
         private void HandleCollider()
         {
@@ -94,9 +93,9 @@ namespace RPG
         private void ToggleUI(Setting setting)
         {
             // Enable / disable UI based on setting
-            bool toolSelected = setting.ToString().Contains("Walls");
-            bool isDoor = data.type.ToString().Contains("Door");
-
+            bool toolSelected = setting.ToString().ToLower().Contains("walls");
+            bool isDoor = data.type.ToString().ToLower().Contains("door");
+    
             // Show UI if tool is not selected
             ToggleUI(!toolSelected && isDoor);
         }

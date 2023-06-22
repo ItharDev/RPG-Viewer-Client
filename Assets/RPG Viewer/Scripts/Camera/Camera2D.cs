@@ -35,7 +35,7 @@ namespace RPG
 
             if (UsePan)
             {
-                if (Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject())
+                if (!Input.GetKey(KeyCode.LeftShift) && Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject())
                 {
                     panActive = true;
                     panPosition = (Vector2)Camera.main.ScreenToWorldPoint(Input.mousePosition);

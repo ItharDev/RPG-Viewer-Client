@@ -59,7 +59,15 @@ namespace RPG
         public static UnityEvent<GameView> OnViewChanged = new UnityEvent<GameView>();
 
         // Walls
+        public static UnityEvent<WallData> OnWallCreated = new UnityEvent<WallData>();
+        public static UnityEvent<string, WallData> OnWallModified = new UnityEvent<string, WallData>();
+        public static UnityEvent<string> OnWallRemoved = new UnityEvent<string>();
+        public static UnityEvent<PointController> OnPointContinued = new UnityEvent<PointController>();
         public static UnityEvent<PointController> OnPointDragged = new UnityEvent<PointController>();
+        public static UnityEvent<PointController> OnPointClicked = new UnityEvent<PointController>();
+        public static UnityEvent<PointController> OnPointDeleted = new UnityEvent<PointController>();
+        public static UnityEvent<PointController> OnPointHovered = new UnityEvent<PointController>();
+        public static UnityEvent<LineController> OnLineHovered = new UnityEvent<LineController>();
 
         // Presets
         public static UnityEvent<string, PresetData> OnPresetCreated = new UnityEvent<string, PresetData>();

@@ -85,10 +85,7 @@ namespace Networking
                     await UniTask.SwitchToMainThread();
                     if (callback.GetValue().GetBoolean())
                     {
-                        Debug.Log("Runs");
-                        Debug.Log(Events.OnStateChanged);
                         Events.OnStateChanged?.Invoke(oldState, newState);
-                        Debug.Log("Runs 1");
                         return;
                     }
 
@@ -104,21 +101,28 @@ namespace Networking
                 Events.OnLandingPageChanged?.Invoke(id);
             });
 
-            // Doors
-            Socket.On("toggle-door", async (data) =>
+            // Walls
+            Socket.On("create-wall", async (data) =>
+            {
+                WallData wall = JsonUtility.FromJson<WallData>(data.GetValue().ToString());
+
+                await UniTask.SwitchToMainThread();
+                Events.OnWallCreated?.Invoke(wall);
+            });
+            Socket.On("modify-wall", async (data) =>
             {
                 string id = data.GetValue().GetString();
-                bool open = data.GetValue(1).GetBoolean();
+                WallData wall = JsonUtility.FromJson<WallData>(data.GetValue(1).ToString());
 
                 await UniTask.SwitchToMainThread();
-                Events.OnDoorOpened?.Invoke(id, open);
+                Events.OnWallModified?.Invoke(id, wall);
             });
-            Socket.On("modify-door", async (data) =>
+            Socket.On("remove-wall", async (data) =>
             {
-                WallData wall = JsonUtility.FromJson<WallData>(data.GetValue().GetString());
+                string id = data.GetValue().GetString();
 
                 await UniTask.SwitchToMainThread();
-                Events.OnDoorModified?.Invoke(wall.id, wall);
+                Events.OnWallRemoved?.Invoke(id);
             });
 
             // Grid

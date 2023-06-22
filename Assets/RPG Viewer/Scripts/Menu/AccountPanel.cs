@@ -13,6 +13,7 @@ namespace RPG
         [SerializeField] private GameObject signOutButton;
         [SerializeField] private GameObject accountInfo;
         [SerializeField] private TMP_Text infoText;
+        [SerializeField] private CanvasGroup canvasGroup;
 
         [Header("Sign in")]
         [SerializeField] private GameObject signInPanel;
@@ -38,6 +39,8 @@ namespace RPG
             Events.OnSignOut.AddListener(SignOut);
             Events.OnRegister.AddListener(SignIn);
             Events.OnConnected.AddListener(AutomaticSignIn);
+            Events.OnConnected.AddListener(ToggleUI);
+            Events.OnDisconnected.AddListener(ToggleUI);
         }
         private void OnDisable()
         {
@@ -46,6 +49,8 @@ namespace RPG
             Events.OnSignOut.RemoveListener(SignOut);
             Events.OnRegister.RemoveListener(SignIn);
             Events.OnConnected.RemoveListener(AutomaticSignIn);
+            Events.OnConnected.RemoveListener(ToggleUI);
+            Events.OnDisconnected.RemoveListener(ToggleUI);
         }
 
         public void OpenSignIn()
@@ -187,6 +192,11 @@ namespace RPG
                 // Send error message
                 MessageManager.QueueMessage(callback.GetValue(1).GetString());
             }, userId, "", "");
+        }
+        private void ToggleUI()
+        {
+            canvasGroup.blocksRaycasts = !canvasGroup.blocksRaycasts;
+            canvasGroup.alpha = canvasGroup.blocksRaycasts ? 1.0f : 0.0f;
         }
 
         public void SignIn()

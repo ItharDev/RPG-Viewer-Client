@@ -79,33 +79,24 @@ namespace RPG
             {
                 await UniTask.SwitchToMainThread();
 
-
                 // Create texture
                 Texture2D texture = await AsyncImageLoader.CreateFromImageAsync(bytes);
                 Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
 
-                Debug.Log("Rums 000");
                 // Instantiate token and attach it to correct parent
                 Token token = Instantiate(tokenPrefab, data.position, Quaternion.identity, tokenParent);
 
-                Debug.Log("Rums 111");
                 // Disable token if needed
                 if (!ConnectionManager.Info.isMaster && !data.enabled) token.UI.SetAlpha(0.0f);
 
-
-                Debug.Log("Rums 222");
                 // Load data and add it to dictionary
                 token.LoadData(data, sprite);
                 tokens.Add(data.id, token);
                 // Check token's permissions
                 if (token.Permission.type == PermissionType.Controller) myTokens.Add(token);
 
-
-                Debug.Log("Rums 333");
                 // Select this token if it's the first token we instantiate and this client is player
                 if (myTokens.Count == 1) SelectToken(ConnectionManager.Info.isMaster ? null : myTokens[0]);
-
-                Debug.Log("Rums 444");
             });
         }
         private void MoveToken(string id, MovementData data)
