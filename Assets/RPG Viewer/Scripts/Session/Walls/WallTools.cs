@@ -136,8 +136,20 @@ namespace RPG
 
         public void RemoveWall(LineController controller)
         {
-            controllers.Remove(controller);
-            Destroy(controller.gameObject);
+
+            SocketManager.EmitAsync("remove-wall", (callback) =>
+            {
+                // Check if the event was successful
+                if (callback.GetValue().GetBoolean())
+                {
+                    controllers.Remove(controller);
+                    Destroy(controller.gameObject);
+                    return;
+                }
+
+                // Send error message
+                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+            }, controller.GetData().id);
         }
     }
 }
