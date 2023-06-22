@@ -58,6 +58,9 @@ namespace RPG
         public static UnityEvent<Setting> OnSettingChanged = new UnityEvent<Setting>();
         public static UnityEvent<GameView> OnViewChanged = new UnityEvent<GameView>();
 
+        // Walls
+        public static UnityEvent<PointController> OnPointDragged = new UnityEvent<PointController>();
+
         // Presets
         public static UnityEvent<string, PresetData> OnPresetCreated = new UnityEvent<string, PresetData>();
         public static UnityEvent<string, PresetData> OnPresetModified = new UnityEvent<string, PresetData>();
