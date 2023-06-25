@@ -27,6 +27,7 @@ namespace RPG
 
         public Permission Permission;
         public bool Selected;
+        public bool Enabled;
 
         private void OnEnable()
         {
@@ -54,7 +55,18 @@ namespace RPG
 
         private void HandleSelection(Token token)
         {
-            Selected = token == this;
+            if (token == null)
+            {
+                Selected = false;
+                Enabled = true;
+            }
+            else
+            {
+                Selected = token == this;
+                Enabled = Selected;
+            }
+
+            Vision.EnableVision(Enabled);
         }
 
         private void HandleDeletion()
@@ -96,6 +108,7 @@ namespace RPG
             // Update data and set permissions
             Data = data;
             SetPermission();
+            Enabled = IsOwner;
 
             // Reload UI
             if (sprite != null) UI.SetImage(sprite);

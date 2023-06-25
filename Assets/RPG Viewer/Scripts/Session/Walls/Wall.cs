@@ -48,7 +48,7 @@ namespace RPG
             // Update canvas
             canvas.transform.localScale = new Vector3(cellSize * 0.03f, cellSize * 0.03f, 1.0f);
             canvas.sortingOrder = ConnectionManager.Info.isMaster ? 1 : 0;
-            canvas.transform.position = (data.points[0] + data.points[data.points.Count - 1]) / 2f;
+            canvas.transform.position = (data.points[0] + data.points[1]) / 2f;
 
             HandleCollider();
 
@@ -95,7 +95,7 @@ namespace RPG
             // Enable / disable UI based on setting
             bool toolSelected = setting.ToString().ToLower().Contains("walls");
             bool isDoor = data.type.ToString().ToLower().Contains("door");
-    
+
             // Show UI if tool is not selected
             ToggleUI(!toolSelected && isDoor);
         }

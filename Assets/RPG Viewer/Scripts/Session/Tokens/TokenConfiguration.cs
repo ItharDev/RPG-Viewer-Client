@@ -225,7 +225,11 @@ namespace RPG
 
             if (!string.IsNullOrEmpty(lightData.id))
             {
-                if (lightData != PresetManager.Instance.GetPreset(lightData.id)) lightData.id = data.id;
+                if (lightData != PresetManager.Instance.GetPreset(lightData.id))
+                {
+                    lightData.id = data.id;
+                    data.light = data.id;
+                }
             }
 
             // Send callback

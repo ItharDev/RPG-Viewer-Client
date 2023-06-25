@@ -21,6 +21,21 @@ namespace RPG
     }
 
     [Serializable]
+    public struct LightData
+    {
+        public string id;
+        public Vector2 position;
+        public bool enabled;
+
+        public LightData(string _id, Vector2 _position, bool _enabled)
+        {
+            id = _id;
+            position = _position;
+            enabled = _enabled;
+        }
+    }
+
+    [Serializable]
     public struct NightVisionData
     {
         public float strength;
@@ -34,24 +49,13 @@ namespace RPG
     }
 
     [Serializable]
-    public struct LightData
-    {
-        public string id;
-        public Vector2 position;
-        public string preset;
-        public bool enabled;
-    }
-
-    [Serializable]
     public struct PresetData
     {
         public string id;
         public string name;
         public float radius;
         public float intensity;
-        public bool enabled;
         public Color color;
-        public Vector2 position;
         public LightEffect effect;
 
         public override bool Equals(object obj)

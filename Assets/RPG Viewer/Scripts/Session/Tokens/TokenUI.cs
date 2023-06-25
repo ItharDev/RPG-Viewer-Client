@@ -149,6 +149,7 @@ namespace RPG
             SetRotation(token.Data.rotation);
             UpdateSorting();
             Resize();
+            EnableRaycasting(token.Enabled);
 
             LoadUI();
         }

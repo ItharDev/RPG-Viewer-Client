@@ -52,15 +52,6 @@ namespace RPG
         }
         private void Update()
         {
-            // Paste token
-            if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.V))
-            {
-                // if (FindObjectOfType<StateManager>(true).ToolState == ToolState.Pan && !string.IsNullOrEmpty(copyData.id))
-                // {
-                //     PasteToken(Camera.main.ScreenToWorldPoint(Input.mousePosition));
-                // }
-            }
-
             // Iterate through my tokens
             if (myTokens.Count != 0 && Input.GetKeyDown(KeyCode.Tab))
             {

@@ -90,12 +90,12 @@ namespace RPG
             selection.gameObject.SetActive(selected);
         }
 
-        public void Initialise(Color color, LineController _controller, bool stationary)
+        public void Initialise(Color color, LineController _controller, bool stationary, bool initialiseDrag = true)
         {
             image.color = color;
             controller = _controller;
             dragging = !stationary;
-            if (dragging) Events.OnPointDragged?.Invoke(this);
+            if (dragging && initialiseDrag) Events.OnPointDragged?.Invoke(this);
         }
         public void UpdateColor(Color color)
         {
@@ -138,7 +138,6 @@ namespace RPG
             if (dragging) return;
 
             if (pointerData.button == PointerEventData.InputButton.Left) Events.OnPointClicked?.Invoke(this);
-            if (pointerData.button == PointerEventData.InputButton.Right) controller.ConfigureWall();
         }
     }
 }

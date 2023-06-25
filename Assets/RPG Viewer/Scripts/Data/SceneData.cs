@@ -12,11 +12,10 @@ namespace RPG
         public List<WallData> walls;
         public List<string> tokens;
         public List<InitiativeData> initiatives;
-        public List<string> lights;
-        // TODO: public List<NoteData> notes;
 
         [NonSerialized] public string path;
         [NonSerialized] public string id;
+        [NonSerialized] public Dictionary<string, LightData> lights;
 
         public SceneData(SceneInfo _info, GridData _grid, LightingSettings _darkness)
         {

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Cysharp.Threading.Tasks;
 using Networking;
 using UnityEngine;
@@ -33,16 +34,16 @@ namespace RPG
             Events.OnSceneLoaded.RemoveListener(LoadLights);
         }
 
-        private void CreateLight(PresetData data)
+        private void CreateLight(KeyValuePair<string, LightData> info, PresetData data)
         {
             // Instantiate light and load its data
             Light light = Instantiate(lightPrefab, lightParent);
-            light.LoadData(data);
+            light.LoadData(info.Value, data);
 
             // Store light to dictionary
-            lights.Add(data.id, light);
+            lights.Add(info.Key, light);
         }
-        private void GetLight(string id)
+        private void GetLight(KeyValuePair<string, LightData> lightData)
         {
             SocketManager.EmitAsync("get-light", async (callback) =>
             {
@@ -51,15 +52,15 @@ namespace RPG
                 {
                     await UniTask.SwitchToMainThread();
                     PresetData data = JsonUtility.FromJson<PresetData>(callback.GetValue(1).ToString());
-                    data.id = id;
-                    CreateLight(data);
+                    data.id = lightData.Value.id;
+                    CreateLight(lightData, data);
 
                     return;
                 }
 
                 // Send error message
                 MessageManager.QueueMessage(callback.GetValue(1).GetString());
-            }, id);
+            }, lightData.Value.id);
         }
         private void ModifyLight(string id, PresetData data)
         {
@@ -122,12 +123,12 @@ namespace RPG
         private void LoadLights(SceneData settings)
         {
             // Get lighting data
-            List<string> list = settings.lights;
+            Dictionary<string, LightData> list = settings.lights;
 
             // Generate lights
             for (int i = 0; i < list.Count; i++)
             {
-                GetLight(list[i]);
+                GetLight(list.ElementAt(i));
             }
         }
     }

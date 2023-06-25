@@ -135,12 +135,14 @@ namespace Networking
             });
 
             // Lights
-            Socket.On("create-light", (data) =>
+            Socket.On("create-light", async (data) =>
             {
-                // LightData light = JsonUtility.FromJson<LightData>(data.GetValue().GetString());
+                string id = data.GetValue().GetString();
+                PresetData light = JsonUtility.FromJson<PresetData>(data.GetValue(1).ToString());
+                light.id = id;
 
-                // await UniTask.SwitchToMainThread();
-                // Events.OnLightCreated?.Invoke(light);
+                await UniTask.SwitchToMainThread();
+                Events.OnLightCreated?.Invoke(light);
             });
             Socket.On("modify-light", async (data) =>
             {

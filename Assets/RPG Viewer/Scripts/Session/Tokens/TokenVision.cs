@@ -9,7 +9,7 @@ namespace RPG
     {
         [SerializeField] private Light2D nightSource;
         [SerializeField] private Light2D visionSource;
-        [SerializeField] private Light2D lightSource;
+        [SerializeField] private LightSource lightSource;
 
         private Token token;
         private bool loaded;
@@ -26,6 +26,7 @@ namespace RPG
             if (updateRequired && loaded)
             {
                 LoadVision();
+                EnableVision(token.Enabled);
                 LoadLighting();
                 updateRequired = false;
             }
@@ -38,7 +39,7 @@ namespace RPG
         }
         public void DisableLight()
         {
-            lightSource.enabled = false;
+            lightSource.Toggle(false);
         }
 
         public void Reload()
@@ -48,8 +49,6 @@ namespace RPG
         private void LoadVision()
         {
             float feetToUnits = Session.Instance.Grid.CellSize * 0.2f;
-            nightSource.enabled = token.Data.nightRadius > 0.0f;
-            visionSource.enabled = token.Data.visionRadius > 0.0f;
             nightSource.size = token.Data.nightRadius * feetToUnits;
             visionSource.size = token.Data.visionRadius * feetToUnits;
         }
@@ -61,15 +60,22 @@ namespace RPG
                 if (callback.GetValue().GetBoolean())
                 {
                     await UniTask.SwitchToMainThread();
-                    string data = callback.GetValue(1).ToString();
-                    token.Lighting = JsonUtility.FromJson<PresetData>(data);
+                    PresetData data = JsonUtility.FromJson<PresetData>(callback.GetValue(1).ToString());
+                    token.Lighting = data;
                     token.Lighting.id = token.Data.light;
+                    lightSource.LoadData(data);
                     return;
                 }
 
                 // Send error message
                 MessageManager.QueueMessage(callback.GetValue(1).GetString());
             }, token.Data.light);
+        }
+
+        public void EnableVision(bool selected)
+        {
+            nightSource.enabled = token.Data.nightRadius > 0.0f && selected;
+            visionSource.enabled = token.Data.visionRadius > 0.0f && selected;
         }
     }
 }

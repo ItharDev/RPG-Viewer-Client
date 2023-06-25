@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 using Networking;
 using UnityEngine;
 
@@ -15,6 +16,7 @@ namespace RPG
 
         private WallManger wallManager;
         private bool initialising;
+        private bool interactable;
         private WallType wallType;
         private List<LineController> controllers = new List<LineController>();
 
@@ -36,6 +38,7 @@ namespace RPG
         }
         private void Update()
         {
+            if (!interactable) return;
             if (Input.GetKey(KeyCode.LeftShift) && Input.GetMouseButtonDown(0) && !MouseOver && !initialising) InitialiseWall();
             if (Input.GetMouseButtonUp(0) && initialising) FinishCreation();
         }
@@ -45,6 +48,7 @@ namespace RPG
             bool enabled = setting.ToString().ToLower().Contains("walls");
             canvasGroup.alpha = enabled ? 1.0f : 0.0f;
             canvasGroup.blocksRaycasts = enabled;
+            interactable = enabled;
 
             switch (setting)
             {
@@ -105,11 +109,34 @@ namespace RPG
             SocketManager.EmitAsync("create-wall", (callback) =>
             {
                 // Check if the event was successful
-                if (callback.GetValue().GetBoolean()) return;
+                if (callback.GetValue().GetBoolean())
+                {
+                    controller.Data.id = callback.GetValue(1).GetString();
+                    return;
+                }
 
                 // Send error message
                 MessageManager.QueueMessage(callback.GetValue(1).GetString());
             }, JsonUtility.ToJson(newData));
+        }
+        public void CreateWall(WallData data)
+        {
+            data.id = "";
+            LineController controller = Instantiate(controllerPrefab, controllerParent);
+            controller.Initialise(data);
+            SocketManager.EmitAsync("create-wall", (callback) =>
+            {
+                // Check if the event was successful
+                if (callback.GetValue().GetBoolean())
+                {
+                    controller.Data.id = callback.GetValue(1).GetString();
+                    return;
+                }
+
+                // Send error message
+                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                RemoveWall(controller);
+            }, JsonUtility.ToJson(data));
         }
         private void InitialiseWall()
         {
@@ -126,7 +153,11 @@ namespace RPG
             SocketManager.EmitAsync("create-wall", (callback) =>
             {
                 // Check if the event was successful
-                if (callback.GetValue().GetBoolean()) return;
+                if (callback.GetValue().GetBoolean())
+                {
+                    target.Data.id = callback.GetValue(1).GetString();
+                    return;
+                }
 
                 // Send error message
                 MessageManager.QueueMessage(callback.GetValue(1).GetString());
@@ -136,9 +167,9 @@ namespace RPG
 
         public void RemoveWall(LineController controller)
         {
-
-            SocketManager.EmitAsync("remove-wall", (callback) =>
+            SocketManager.EmitAsync("remove-wall", async (callback) =>
             {
+                await UniTask.SwitchToMainThread();
                 // Check if the event was successful
                 if (callback.GetValue().GetBoolean())
                 {

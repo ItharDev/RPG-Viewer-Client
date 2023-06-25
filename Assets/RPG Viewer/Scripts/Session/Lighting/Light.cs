@@ -1,11 +1,13 @@
-using FunkyCode;
+using Networking;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace RPG
 {
     public class Light : MonoBehaviour
     {
+        [SerializeField] private LightSource source;
         [SerializeField] private Image icon;
         [SerializeField] private Sprite onIcon;
         [SerializeField] private Sprite offIcon;
@@ -14,24 +16,16 @@ namespace RPG
         [SerializeField] private Color offColor;
         [SerializeField] private Color onColor;
 
-        private Light2D source;
         private Canvas canvas;
         private PresetData data;
+        private LightData info;
         private bool loaded;
+        private bool dragging;
 
-        private void OnEnable()
+        private void Awake()
         {
-            // Get reference of our light source and canvas
-            if (source == null) source = GetComponent<Light2D>();
+            // Get reference of our canvas
             if (canvas == null) canvas = GetComponentInChildren<Canvas>();
-
-            // Add event listeners
-            Events.OnSettingChanged.AddListener(ToggleUI);
-        }
-        private void OnDisable()
-        {
-            // Remove event listeners
-            Events.OnSettingChanged.RemoveListener(ToggleUI);
         }
         private void Update()
         {
@@ -40,6 +34,14 @@ namespace RPG
                 loaded = true;
                 UpdateData();
             }
+
+            if (dragging)
+            {
+                // Update our position when being dragged
+                Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                mousePos.z = 0.0f;
+                transform.localPosition = mousePos;
+            }
         }
 
         private void UpdateData()
@@ -47,41 +49,78 @@ namespace RPG
             float cellSize = Session.Instance.Grid.CellSize;
 
             // Update our position and scale
-            transform.position = data.position;
+            transform.position = info.position;
             canvas.transform.localScale = new Vector3(cellSize * 0.03f, cellSize * 0.03f, 1.0f);
 
-            // Update the light source
-            source.size = data.radius * 0.2f * cellSize;
-            source.enabled = data.enabled;
-            source.color = data.color;
-
             // Enable UI
-            icon.sprite = data.enabled ? onIcon : offIcon;
-            icon.color = data.enabled ? onColor : offColor;
-            bool enable = SettingsHandler.Instance.Setting.ToString().Contains("Lighting");
-            ToggleUI(enable);
+            icon.sprite = info.enabled ? onIcon : offIcon;
+            icon.color = info.enabled ? onColor : offColor;
+            bool enable = SettingsHandler.Instance.Setting.ToString().ToLower().Contains("lighting");
+            source.LoadData(data);
+            source.Toggle(info.enabled);
         }
 
-        public void LoadData(PresetData _data)
+        public void LoadData(LightData _info, PresetData _data)
         {
+            info = _info;
             data = _data;
 
-            // Set our data to be dirty
+            // Set our data to dirty
             loaded = false;
+        }
+        public void BeginDrag(BaseEventData eventData)
+        {
+            // Get pointer data
+            PointerEventData pointerData = (PointerEventData)eventData;
 
-            // Disable UI
-            ToggleUI(false);
+            if (pointerData.button != PointerEventData.InputButton.Left) return;
+
+            dragging = true;
         }
-        private void ToggleUI(Setting setting)
+        public void EndDrag(BaseEventData eventData)
         {
-            // Toggle ui based on tool state
-            bool enable = SettingsHandler.Instance.Setting.ToString().Contains("Lighting");
-            ToggleUI(enable);
+            dragging = false;
+            LightData newData = info;
+            newData.position = transform.localPosition;
+            SocketManager.EmitAsync("move-light", (callback) =>
+            {
+                // Check if the event was successful
+                if (callback.GetValue().GetBoolean())
+                {
+                    transform.localPosition = newData.position;
+                    return;
+                }
+
+                // Send error message
+                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+            }, data.id, JsonUtility.ToJson(newData));
         }
-        private void ToggleUI(bool enabled)
+        public void OnClick(BaseEventData eventData)
         {
-            // Enable / disable UI
-            canvas.enabled = enabled;
+            // Get pointer data
+            PointerEventData pointerData = (PointerEventData)eventData;
+            if (pointerData.dragging) return;
+
+            if (pointerData.button == PointerEventData.InputButton.Left) ToggleLight();
+            if (pointerData.button == PointerEventData.InputButton.Right) ModifyLight();
+        }
+
+        private void ToggleLight()
+        {
+            LightData newData = info;
+            newData.enabled = !info.enabled;
+            SocketManager.EmitAsync("toggle-light", (callback) =>
+            {
+                // Check if the event was successful
+                if (callback.GetValue().GetBoolean()) return;
+
+                // Send error message
+                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+            }, data.id, JsonUtility.ToJson(newData));
+        }
+        private void ModifyLight()
+        {
+
         }
     }
 }

@@ -16,7 +16,7 @@ namespace RPG
         [SerializeField] private new EdgeCollider2D collider2D;
         [SerializeField] private WallConfiguration configurationPrefab;
 
-
+        public WallData Data;
         public WallType Type;
         public List<PointController> Points = new List<PointController>();
 
@@ -31,7 +31,7 @@ namespace RPG
         private bool moving;
         private bool continuing;
         private bool hovered;
-        private WallData data;
+        private int selectedIndex;
 
         private void OnEnable()
         {
@@ -54,6 +54,10 @@ namespace RPG
         }
         private void Update()
         {
+            if (hovered && Input.GetMouseButtonUp(1))
+            {
+                if (selectedIndex != -1) ConfigureWall();
+            }
             if (Input.GetMouseButtonUp(0))
             {
                 if (dragging) dragging = false;
@@ -67,14 +71,14 @@ namespace RPG
                         // Check if the event was successful
                         if (callback.GetValue().GetBoolean())
                         {
-                            data = newData;
+                            Data = newData;
                             return;
                         }
 
                         // Send error message
                         MessageManager.QueueMessage(callback.GetValue(1).GetString());
-                        Type = data.type;
-                        locked = data.locked;
+                        Type = Data.type;
+                        locked = Data.locked;
                         LoadType(Type);
                     }, JsonUtility.ToJson(newData));
                 }
@@ -88,14 +92,14 @@ namespace RPG
                         // Check if the event was successful
                         if (callback.GetValue().GetBoolean())
                         {
-                            data = newData;
+                            Data = newData;
                             return;
                         }
 
                         // Send error message
                         MessageManager.QueueMessage(callback.GetValue(1).GetString());
-                        Type = data.type;
-                        locked = data.locked;
+                        Type = Data.type;
+                        locked = Data.locked;
                         LoadType(Type);
                     }, JsonUtility.ToJson(newData));
                 }
@@ -107,17 +111,20 @@ namespace RPG
             }
 
             if (line == null) return;
-            if (line.Selected(Input.mousePosition) && !hovered) Events.OnLineHovered?.Invoke(this);
-            if (!line.Selected(Input.mousePosition) && hovered) Events.OnLineHovered?.Invoke(null);
+
+            line.Selected(Input.mousePosition, 10, out selectedIndex);
+            if (selectedIndex != -1 && !hovered) Events.OnLineHovered?.Invoke(this);
+            if (selectedIndex == -1 && hovered) Events.OnLineHovered?.Invoke(null);
         }
 
-        private void DeleteWall()
-        {
-            WallTools.Instance.RemoveWall(this);
-        }
         private void HandleSorting(LineController controller)
         {
-            if (controller == null) return;
+            if (controller == null)
+            {
+                hovered = false;
+                transform.localPosition = new Vector3(0.0f, 0.0f, -1.0f);
+                return;
+            }
 
             hovered = controller == this;
             transform.localPosition = new Vector3(0.0f, 0.0f, hovered ? -1.1f : -1.0f);
@@ -139,25 +146,26 @@ namespace RPG
             {
                 if (line != null) Destroy(line.rectTransform.gameObject);
                 WallTools.Instance.RemoveWall(this);
-                return;
             }
-
-            WallData newData = GetData();
-            SocketManager.EmitAsync("modify-wall", (callback) =>
+            else
             {
-                // Check if the event was successful
-                if (callback.GetValue().GetBoolean())
+                WallData newData = GetData();
+                SocketManager.EmitAsync("modify-wall", (callback) =>
                 {
-                    data = newData;
-                    return;
-                }
+                    // Check if the event was successful
+                    if (callback.GetValue().GetBoolean())
+                    {
+                        Data = newData;
+                        return;
+                    }
 
-                // Send error message
-                MessageManager.QueueMessage(callback.GetValue(1).GetString());
-                Type = data.type;
-                locked = data.locked;
-                LoadType(Type);
-            }, JsonUtility.ToJson(newData));
+                    // Send error message
+                    MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                    Type = Data.type;
+                    locked = Data.locked;
+                    LoadType(Type);
+                }, JsonUtility.ToJson(newData));
+            }
         }
         private void ToggleUI(Setting setting)
         {
@@ -218,12 +226,12 @@ namespace RPG
             PointController initialPoint = Instantiate(pointPrefab, transform);
             initialPoint.transform.localPosition = mousePos;
             Points.Add(initialPoint);
-            initialPoint.Initialise(color, this, true);
+            initialPoint.Initialise(color, this, true, false);
 
             draggedPoint = Instantiate(pointPrefab, transform);
             draggedPoint.transform.localPosition = mousePos;
             Points.Add(draggedPoint);
-            draggedPoint.Initialise(color, this, false);
+            draggedPoint.Initialise(color, this, false, false);
 
             dragging = true;
 
@@ -233,7 +241,7 @@ namespace RPG
         }
         public void Initialise(WallData _data)
         {
-            data = _data;
+            Data = _data;
             Type = _data.type;
             locked = _data.locked;
 
@@ -260,7 +268,7 @@ namespace RPG
             {
                 points.Add(Points[i].transform.localPosition);
             }
-            return new WallData(data.id, points, Type, open, locked);
+            return new WallData(Data.id, points, Type, open, locked);
         }
         private void LoadType(WallType type)
         {
@@ -295,10 +303,10 @@ namespace RPG
         }
         private void LoadPoints()
         {
-            for (int i = 0; i < data.points.Count; i++)
+            for (int i = 0; i < Data.points.Count; i++)
             {
                 PointController point = Instantiate(pointPrefab, transform);
-                point.transform.localPosition = new Vector3(data.points[i].x, data.points[i].y, -1.0f);
+                point.transform.localPosition = new Vector3(Data.points[i].x, Data.points[i].y, -1.0f);
                 Points.Add(point);
                 point.Initialise(color, this, true);
             }
@@ -326,14 +334,14 @@ namespace RPG
                     // Check if the event was successful
                     if (callback.GetValue().GetBoolean())
                     {
-                        data = newData;
+                        Data = newData;
                         return;
                     }
 
                     // Send error message
                     MessageManager.QueueMessage(callback.GetValue(1).GetString());
-                    Type = data.type;
-                    locked = data.locked;
+                    Type = Data.type;
+                    locked = Data.locked;
                     LoadType(Type);
                 }, JsonUtility.ToJson(newData));
             });
