@@ -24,11 +24,13 @@ namespace RPG
         {
             // Add event listeners
             Events.OnSettingChanged.AddListener(ToggleUI);
+            Events.OnStateChanged.AddListener(ReloadWalls);
         }
         private void OnDisable()
         {
             // Remove event listeners
             Events.OnSettingChanged.RemoveListener(ToggleUI);
+            Events.OnStateChanged.AddListener(ReloadWalls);
         }
         private void Awake()
         {
@@ -43,6 +45,42 @@ namespace RPG
             if (Input.GetMouseButtonUp(0) && initialising) FinishCreation();
         }
 
+        private void ReloadWalls(SessionState oldState, SessionState newState)
+        {
+            // Check if we are the master client
+            if (ConnectionManager.Info.isMaster)
+            {
+                // Return if scene was not changed
+                if (oldState.scene == newState.scene) return;
+                UnloadWalls();
+            }
+            else
+            {
+                // Unload tokens if syncing was disabled
+                if (oldState.synced && !newState.synced)
+                {
+                    UnloadWalls();
+                    return;
+                }
+
+                // Return if scene was not changed
+                if (oldState.scene == newState.scene) return;
+                UnloadWalls();
+            }
+        }
+        private void UnloadWalls()
+        {
+            // Loop through each wall
+            foreach (var item in controllers)
+            {
+                // Continue if token is null
+                if (item == null) continue;
+                Destroy(item.gameObject);
+            }
+
+            // Clear lists
+            controllers.Clear();
+        }
         private void ToggleUI(Setting setting)
         {
             bool enabled = setting.ToString().ToLower().Contains("walls");

@@ -57,7 +57,9 @@ Canvas:
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
+  m_VertexColorAlwaysGammaSpace: 0
   m_AdditionalShaderChannelsFlag: 25
+  m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 477917525
   m_SortingOrder: 1
   m_TargetDisplay: 0
@@ -153,6 +155,7 @@ MonoBehaviour:
   offIcon: {fileID: 21300000, guid: 59ae932553b255b4e98359585035f7a7, type: 3}
   offColor: {r: 0.90588236, g: 0.81960785, b: 0.69411767, a: 1}
   onColor: {r: 1, g: 0.70000005, b: 0.100000024, a: 1}
+  configPrefab: {fileID: 2376236999891959578, guid: 86ae849c3e4132144a7da8fec954ee51, type: 3}
 --- !u!1 &4160888584570967418
 GameObject:
   m_ObjectHideFlags: 0
@@ -288,7 +291,7 @@ MonoBehaviour:
   coreSize: 0.5
   falloff: 0
   lightStrength: 0.75
-  outerAngle: 60
+  outerAngle: 35
   lightRadius: 1
   shadowDistanceClose: 0
   shadowDistanceFar: 5

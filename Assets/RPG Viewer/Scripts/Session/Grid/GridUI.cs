@@ -10,6 +10,7 @@ namespace RPG
         [SerializeField] private CanvasGroup canvasGroup;
         [SerializeField] private bool drawGizmos;
         [SerializeField] private float lineWidth;
+        [SerializeField] private float moveSpeed;
         [SerializeField] private List<GridCorner> corners;
 
         private GridManager grid;
@@ -33,6 +34,38 @@ namespace RPG
             Events.OnSceneLoaded.RemoveListener(LoadScene);
             Events.OnGridChanged.RemoveListener(ReloadGrid);
             Events.OnSettingChanged.RemoveListener(ToggleUI);
+        }
+        private void Update()
+        {
+            if (!canvasGroup.blocksRaycasts) return;
+
+            // Check if any of the arrow keys are pressed down
+            if (!CheckArrowKeys()) return;
+
+            MoveGrid();
+        }
+        private bool CheckArrowKeys()
+        {
+            // Check if up or down arrow is pressed
+            if (Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.DownArrow)) return true;
+
+            // Check if left or righ arrow is pressed
+            if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.RightArrow)) return true;
+            return false;
+        }
+        private void MoveGrid()
+        {
+            // Get movement direction
+            float inputX = Input.GetAxisRaw("Horizontal");
+            float inputY = Input.GetAxisRaw("Vertical");
+
+            corners[0].transform.position += new Vector3(inputX * moveSpeed, inputY * moveSpeed);
+            corners[1].transform.position += new Vector3(inputX * moveSpeed, inputY * moveSpeed);
+            corners[2].transform.position += new Vector3(inputX * moveSpeed, inputY * moveSpeed);
+            corners[3].transform.position += new Vector3(inputX * moveSpeed, inputY * moveSpeed);
+
+            gridData.position = corners[2].transform.position;
+            UpdateGrid(gridData.cellSize);
         }
 
         private void ReloadGrid(GridData newData, bool reloadRequired, bool globalUpdate)
@@ -68,6 +101,7 @@ namespace RPG
         private void UpdateGrid(float cellSize)
         {
             gridData.cellSize = cellSize;
+            moveSpeed = cellSize * 0.005f;
             // Generate grid
             List<Vector3> points = new List<Vector3>();
 

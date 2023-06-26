@@ -210,9 +210,6 @@ namespace RPG
             PointerEventData pointerData = eventData as PointerEventData;
             if (pointerData.button != PointerEventData.InputButton.Left) return;
 
-            // Close configuration panel
-            // TODO: token.UI.CloseConfig();
-
             // Create clone of this token
             Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             dragObject = Instantiate(token, mousePos, Quaternion.identity);
@@ -224,6 +221,13 @@ namespace RPG
             dragObject.DisableCollider();
             dragObject.UI.SetAlpha(0.5f);
             dragObject.UI.DisableOutline();
+
+            // Toggle conditions panel
+            if (token.Conditions.IsOpen)
+            {
+                token.Conditions.ToggleConditions();
+                dragObject.Conditions.ToggleConditions(true);
+            }
 
             // Add first drag point
             dragPoints.Add(transform.position);

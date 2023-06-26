@@ -15,8 +15,11 @@ namespace RPG
         [Space]
         [SerializeField] private Color offColor;
         [SerializeField] private Color onColor;
+        [SerializeField] private LightConfiguration configPrefab;
 
+        private LightConfiguration activeConfig;
         private Canvas canvas;
+        private string id;
         private PresetData data;
         private LightData info;
         private bool loaded;
@@ -60,10 +63,32 @@ namespace RPG
             source.Toggle(info.enabled);
         }
 
-        public void LoadData(LightData _info, PresetData _data)
+        public void LoadData(string _id, LightData _info, PresetData _data)
         {
+            id = _id;
             info = _info;
             data = _data;
+
+            // Set our data to dirty
+            loaded = false;
+        }
+        public void LoadData(PresetData _data)
+        {
+            data = _data;
+
+            // Set our data to dirty
+            loaded = false;
+        }
+        public void LoadData(LightData _info)
+        {
+            info = _info;
+
+            // Set our data to dirty
+            loaded = false;
+        }
+        public void Toggle(bool enabled)
+        {
+            info.enabled = enabled;
 
             // Set our data to dirty
             loaded = false;
@@ -93,7 +118,7 @@ namespace RPG
 
                 // Send error message
                 MessageManager.QueueMessage(callback.GetValue(1).GetString());
-            }, data.id, JsonUtility.ToJson(newData));
+            }, id, JsonUtility.ToJson(newData));
         }
         public void OnClick(BaseEventData eventData)
         {
@@ -101,14 +126,16 @@ namespace RPG
             PointerEventData pointerData = (PointerEventData)eventData;
             if (pointerData.dragging) return;
 
-            if (pointerData.button == PointerEventData.InputButton.Left) ToggleLight();
+            if (pointerData.button == PointerEventData.InputButton.Left)
+            {
+                if (LightTools.Instance.Mode == LightMode.Create) ToggleLight();
+                else DeleteLight();
+            }
             if (pointerData.button == PointerEventData.InputButton.Right) ModifyLight();
         }
 
         private void ToggleLight()
         {
-            LightData newData = info;
-            newData.enabled = !info.enabled;
             SocketManager.EmitAsync("toggle-light", (callback) =>
             {
                 // Check if the event was successful
@@ -116,11 +143,40 @@ namespace RPG
 
                 // Send error message
                 MessageManager.QueueMessage(callback.GetValue(1).GetString());
-            }, data.id, JsonUtility.ToJson(newData));
+            }, id, !info.enabled);
+        }
+        private void DeleteLight()
+        {
+            if (activeConfig != null) Destroy(activeConfig.gameObject);
+
+            SocketManager.EmitAsync("remove-light", (callback) =>
+            {
+                // Check if the event was successful
+                if (callback.GetValue().GetBoolean()) return;
+
+                // Send error message
+                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+            }, id);
         }
         private void ModifyLight()
         {
+            if (activeConfig != null) return;
 
+            activeConfig = Instantiate(configPrefab);
+            activeConfig.transform.SetParent(UICanvas.Instance.transform);
+            activeConfig.transform.localPosition = Vector3.zero;
+            activeConfig.transform.SetAsLastSibling();
+            activeConfig.LoadData(id, info, data, (newInfo, newData) =>
+            {
+                SocketManager.EmitAsync("modify-light", (callback) =>
+                {
+                    // Check if the event was successful
+                    if (callback.GetValue().GetBoolean()) return;
+
+                    // Send error message
+                    MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                }, id, JsonUtility.ToJson(newInfo), JsonUtility.ToJson(newData));
+            });
         }
     }
 }

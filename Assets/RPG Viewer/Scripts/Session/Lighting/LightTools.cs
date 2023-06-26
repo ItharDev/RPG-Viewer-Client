@@ -56,7 +56,7 @@ namespace RPG
         {
             Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             PresetData data = defaultConfig;
-            data.position = mousePos;
+            LightData info = new LightData("", mousePos, false);
 
             SocketManager.EmitAsync("create-light", (callback) =>
             {
@@ -65,7 +65,7 @@ namespace RPG
 
                 // Send error message
                 MessageManager.QueueMessage(callback.GetValue(1).GetString());
-            }, JsonUtility.ToJson(data));
+            }, JsonUtility.ToJson(data), JsonUtility.ToJson(info));
         }
     }
 

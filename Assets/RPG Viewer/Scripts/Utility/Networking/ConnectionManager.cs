@@ -69,29 +69,6 @@ namespace RPG
                 PlayerPrefs.SetString($"{GameData.User.id}_last_session", data.id);
             });
         }
-
-        private static void LoadPresets(List<string> list)
-        {
-            for (int i = 0; i < list.Count; i++)
-            {
-                // Store current iterations value
-                string id = list[i];
-                SocketManager.EmitAsync("load-preset", (callback) =>
-                {
-                    // Check if the event was successful
-                    if (callback.GetValue().GetBoolean())
-                    {
-                        // TODO: Load preset data and add it to the list
-                        // var data = JsonUtility.FromJson<LightPreset>(callback.GetValue(1).ToString());
-                        // LightingPresets.AddPreset(id, data);
-                        return;
-                    }
-
-                    // Send error message
-                    MessageManager.QueueMessage(callback.GetValue(1).GetString());
-                }, list[i]);
-            }
-        }
     }
 
     public struct SessionInfo

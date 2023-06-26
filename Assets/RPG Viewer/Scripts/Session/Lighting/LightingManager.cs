@@ -20,6 +20,8 @@ namespace RPG
             // Add event listeners
             Events.OnLightCreated.AddListener(CreateLight);
             Events.OnLightModified.AddListener(ModifyLight);
+            Events.OnLightMoved.AddListener(MoveLight);
+            Events.OnLightToggled.AddListener(ToggleLight);
             Events.OnLightRemoved.AddListener(RemoveLight);
             Events.OnStateChanged.AddListener(ReloadLights);
             Events.OnSceneLoaded.AddListener(LoadLights);
@@ -29,6 +31,8 @@ namespace RPG
             // Remove event listeners
             Events.OnLightCreated.RemoveListener(CreateLight);
             Events.OnLightModified.RemoveListener(ModifyLight);
+            Events.OnLightMoved.RemoveListener(MoveLight);
+            Events.OnLightToggled.RemoveListener(ToggleLight);
             Events.OnLightRemoved.RemoveListener(RemoveLight);
             Events.OnStateChanged.RemoveListener(ReloadLights);
             Events.OnSceneLoaded.RemoveListener(LoadLights);
@@ -38,7 +42,7 @@ namespace RPG
         {
             // Instantiate light and load its data
             Light light = Instantiate(lightPrefab, lightParent);
-            light.LoadData(info.Value, data);
+            light.LoadData(info.Key, info.Value, data);
 
             // Store light to dictionary
             lights.Add(info.Key, light);
@@ -62,7 +66,18 @@ namespace RPG
                 MessageManager.QueueMessage(callback.GetValue(1).GetString());
             }, lightData.Value.id);
         }
-        private void ModifyLight(string id, PresetData data)
+        private void ModifyLight(string id, LightData info, PresetData data)
+        {
+            // Find the correct light
+            Light light = lights[id];
+
+            // Check if light was found
+            if (light == null) return;
+
+            // Load new data
+            light.LoadData(id, info, data);
+        }
+        private void MoveLight(string id, LightData data)
         {
             // Find the correct light
             Light light = lights[id];
@@ -72,6 +87,17 @@ namespace RPG
 
             // Load new data
             light.LoadData(data);
+        }
+        private void ToggleLight(string id, bool enabled)
+        {
+            // Find the correct light
+            Light light = lights[id];
+
+            // Check if light was found
+            if (light == null) return;
+
+            // Load new data
+            light.Toggle(enabled);
         }
         private void RemoveLight(string id)
         {

@@ -322,14 +322,10 @@ namespace RPG
             selectedFolder = folder;
             Events.OnBlueprintFolderSelected?.Invoke(folder);
             Events.OnBlueprintSelected?.Invoke(null);
-
-            Debug.Log($"Selected folder {folder.Data.name} in {folder.Path}");
         }
         public void MoveFolderRoot()
         {
             if (selectedFolder == null) return;
-
-            Debug.Log($"Moving folder from {selectedFolder.Path} to root");
 
             SocketManager.EmitAsync("move-blueprint-folder", async (callback) =>
             {
@@ -366,8 +362,6 @@ namespace RPG
         {
             if (selectedFolder != null)
             {
-                Debug.Log($"Moving folder from {selectedFolder.Path} to {folder.Path}");
-
                 SocketManager.EmitAsync("move-blueprint-folder", async (callback) =>
                 {
                     await UniTask.SwitchToMainThread();
@@ -394,8 +388,6 @@ namespace RPG
             }
             else
             {
-                Debug.Log($"Moving token from {selectedToken.Path} to {folder.Path}");
-
                 SocketManager.EmitAsync("move-blueprint", async (callback) =>
                 {
                     await UniTask.SwitchToMainThread();
@@ -430,14 +422,10 @@ namespace RPG
             selectedToken = token;
             Events.OnBlueprintSelected?.Invoke(token);
             Events.OnBlueprintFolderSelected?.Invoke(null);
-
-            Debug.Log($"Selected token {token.Id} in {token.Path}");
         }
         public void MoveTokenRoot()
         {
             if (selectedToken == null) return;
-
-            Debug.Log($"Moving token from {selectedToken.Path} to root");
 
             SocketManager.EmitAsync("move-blueprint", async (callback) =>
             {
@@ -462,7 +450,7 @@ namespace RPG
                 selectedToken = null;
             }, selectedToken.Id, selectedToken.Path, "");
         }
-        public void DeselectScene()
+        public void DeselectToken()
         {
             // Send cancel event
             selectedToken = null;

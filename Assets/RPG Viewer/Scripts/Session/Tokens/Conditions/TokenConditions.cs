@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Networking;
 using UnityEngine;
 
 namespace RPG
@@ -6,15 +7,18 @@ namespace RPG
     public class TokenConditions : MonoBehaviour
     {
         [SerializeField] private List<ConditionHolder> holders = new List<ConditionHolder>();
+        [SerializeField] private List<ConditionHolder> placeHolders = new List<ConditionHolder>();
         [SerializeField] private ConditionHolder deadCondition;
+        [SerializeField] private RectTransform conditionsPanel;
 
         public bool IsDead
         {
-            get { return conditionFlags.HasFlag(deadCondition.condition.flag); }
+            get { return ConditionFlags.HasFlag(deadCondition.Condition.flag); }
         }
 
         private Token token;
-        private ConditionFlag conditionFlags;
+        public bool IsOpen;
+        public ConditionFlag ConditionFlags;
 
         private void OnEnable()
         {
@@ -32,16 +36,39 @@ namespace RPG
         {
             // Update conditions on main class
             token.Data.conditions = conditions;
-            conditionFlags = (ConditionFlag)conditions;
+            ConditionFlags = (ConditionFlag)conditions;
 
             // Activate / deactivate conditions based on flags
             for (int i = 0; i < holders.Count; i++)
             {
-                holders[i].gameObject.SetActive(conditionFlags.HasFlag(holders[i].condition.flag));
+                holders[i].gameObject.SetActive(ConditionFlags.HasFlag(holders[i].Condition.flag));
+                placeHolders[i].Toggle(ConditionFlags.HasFlag(placeHolders[i].Condition.flag));
             }
 
             // Activate / deactivate dead condition
             deadCondition.gameObject.SetActive(IsDead);
+        }
+        public void ToggleConditions(bool instant = false)
+        {
+            IsOpen = !IsOpen;
+            LeanTween.size(conditionsPanel, new Vector2(IsOpen ? 105.0f : 0.0f, 130.0f), instant ? 0.0f : 0.2f);
+        }
+        public void ToggleCondition(ConditionHolder holder)
+        {
+            if (ConditionFlags.HasFlag(holder.Condition.flag)) ConditionFlags &= ~holder.Condition.flag;
+            else ConditionFlags |= holder.Condition.flag;
+
+            SocketManager.EmitAsync("update-conditions", (callback) =>
+            {
+                // Check if the event was successful
+                if (callback.GetValue().GetBoolean()) return;
+
+                // Reload conditions
+                ConditionFlags = (ConditionFlag)token.Data.conditions;
+
+                // Send error message
+                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+            }, token.Id, (int)ConditionFlags);
         }
     }
 }

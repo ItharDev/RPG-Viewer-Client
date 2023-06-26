@@ -138,18 +138,36 @@ namespace Networking
             Socket.On("create-light", async (data) =>
             {
                 string id = data.GetValue().GetString();
-                PresetData light = JsonUtility.FromJson<PresetData>(data.GetValue(1).ToString());
-                light.id = id;
+                LightData info = JsonUtility.FromJson<LightData>(data.GetValue(1).ToString());
+                PresetData light = JsonUtility.FromJson<PresetData>(data.GetValue(2).ToString());
 
                 await UniTask.SwitchToMainThread();
-                Events.OnLightCreated?.Invoke(light);
+                Events.OnLightCreated?.Invoke(new KeyValuePair<string, LightData>(id, info), light);
             });
             Socket.On("modify-light", async (data) =>
             {
-                PresetData light = JsonUtility.FromJson<PresetData>(data.GetValue().GetString());
+                string id = data.GetValue().GetString();
+                LightData info = JsonUtility.FromJson<LightData>(data.GetValue(1).ToString());
+                PresetData light = JsonUtility.FromJson<PresetData>(data.GetValue(2).ToString());
 
                 await UniTask.SwitchToMainThread();
-                Events.OnLightModified?.Invoke(light.id, light);
+                Events.OnLightModified?.Invoke(id, info, light);
+            });
+            Socket.On("move-light", async (data) =>
+            {
+                string id = data.GetValue().GetString();
+                LightData info = JsonUtility.FromJson<LightData>(data.GetValue(1).ToString());
+
+                await UniTask.SwitchToMainThread();
+                Events.OnLightMoved?.Invoke(id, info);
+            });
+            Socket.On("toggle-light", async (data) =>
+            {
+                string id = data.GetValue().GetString();
+                bool enabled = data.GetValue(1).GetBoolean();
+
+                await UniTask.SwitchToMainThread();
+                Events.OnLightToggled?.Invoke(id, enabled);
             });
             Socket.On("remove-light", async (data) =>
             {
@@ -217,14 +235,6 @@ namespace Networking
 
                 await UniTask.SwitchToMainThread();
                 Events.OnTokenRemoved?.Invoke(id);
-            });
-            Socket.On("update-visibility", async (data) =>
-            {
-                string id = data.GetValue().GetString();
-                bool enabled = data.GetValue(1).GetBoolean();
-
-                await UniTask.SwitchToMainThread();
-                Events.OnTokenEnabled?.Invoke(id, enabled);
             });
             Socket.On("update-visibility", async (data) =>
             {

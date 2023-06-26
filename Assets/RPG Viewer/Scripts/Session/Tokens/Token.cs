@@ -110,12 +110,12 @@ namespace RPG
             SetPermission();
             Enabled = IsOwner;
 
+            // Update conditions
+            Conditions.SetConditions(data.conditions);
+
             // Reload UI
             if (sprite != null) UI.SetImage(sprite);
             UI.Reload();
-
-            // Update conditions
-            Conditions.SetConditions(data.conditions);
 
             // Load lighting and vision
             Vision.Reload();
@@ -147,7 +147,7 @@ namespace RPG
 
             // Enable / disable vision and image
             Vision.Reload();
-            UI.SetAlpha(enabled ? 1.0f : 0.5f);
+            UI.Toggle(enabled);
         }
         public void SetElevation(string elevation)
         {

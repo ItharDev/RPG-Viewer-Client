@@ -150,9 +150,8 @@ namespace RPG
             // Check if token was found
             if (token == null) return;
 
-            // Check if we are the master client
-            if (ConnectionManager.Info.isMaster) token.EnableToken(enabled);
-            else token.gameObject.SetActive(enabled);
+            token.EnableToken(enabled);
+            if (!ConnectionManager.Info.isMaster) token.gameObject.SetActive(enabled);
         }
         private void UpdateElevation(string id, string elevation)
         {

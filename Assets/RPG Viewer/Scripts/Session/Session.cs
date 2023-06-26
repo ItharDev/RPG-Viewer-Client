@@ -1,4 +1,6 @@
-﻿using Cysharp.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Cysharp.Threading.Tasks;
 using Networking;
 using UnityEngine;
 using UnityEngine.UI;
@@ -123,6 +125,9 @@ namespace RPG
                     // Load scene data
                     SceneData settings = JsonUtility.FromJson<SceneData>(callback.GetValue(1).ToString());
                     settings.id = id;
+                    settings.lights = new Dictionary<string, LightData>();
+                    System.Text.Json.JsonElement lights;
+                    if (callback.GetValue(1).TryGetProperty("lights", out lights)) settings.lights = GetLights(callback.GetValue(1).GetProperty("lights").EnumerateObject().ToArray());
 
                     MessageManager.QueueMessage("Loading scene");
                     Settings = settings;
@@ -150,6 +155,17 @@ namespace RPG
                 // Send error message
                 MessageManager.QueueMessage(callback.GetValue(1).GetString());
             }, id);
+        }
+
+        private Dictionary<string, LightData> GetLights(System.Text.Json.JsonProperty[] lights)
+        {
+            Dictionary<string, LightData> dictionary = new Dictionary<string, LightData>();
+            for (int i = 0; i < lights.Length; i++)
+            {
+                dictionary.Add(lights[i].Name, JsonUtility.FromJson<LightData>(lights[i].Value.ToString()));
+            }
+
+            return dictionary;
         }
     }
 }

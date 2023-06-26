@@ -237,7 +237,7 @@ namespace RPG
         public void Deselect()
         {
             ToggleOptions();
-            tokensPanel.DeselectScene();
+            tokensPanel.DeselectToken();
         }
 
         public void LoadData(string id, string path, TokensPanel panel)

@@ -127,6 +127,23 @@ namespace RPG
             // Update group alpha
             canvasGroup.alpha = value;
         }
+        public void EnableToken()
+        {
+            SocketManager.EmitAsync("update-visibility", (callback) =>
+            {
+                // Check if the event was successful
+                if (callback.GetValue().GetBoolean()) return;
+
+                // Send error message
+                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+            }, token.Id, !token.Data.enabled);
+        }
+        public void Toggle(bool enabled)
+        {
+            Color imageColor = Color.white;
+            imageColor.a = enabled ? 1.0f : 0.5f;
+            image.color = imageColor;
+        }
         public void DisableOutline()
         {
             outlineImage.gameObject.SetActive(false);
@@ -141,7 +158,6 @@ namespace RPG
             image.sprite = sprite;
             outlineImage.sprite = sprite;
             outlineImage.material.shader = outlineShader;
-            image.color = Color.white;
         }
         public void Reload()
         {
@@ -149,16 +165,19 @@ namespace RPG
             SetRotation(token.Data.rotation);
             UpdateSorting();
             Resize();
-            EnableRaycasting(token.Enabled);
-
             LoadUI();
+
+            if (!ConnectionManager.Info.isMaster) EnableRaycasting(token.Enabled);
         }
         private void LoadUI()
         {
             label.text = token.Data.name;
             label.transform.parent.gameObject.SetActive(!string.IsNullOrEmpty(label.text));
+            Color imageColor = Color.white;
+            imageColor.a = token.Data.enabled ? 1.0f : 0.5f;
+            image.color = imageColor;
         }
-        public void EnableRaycasting(bool enable)
+        private void EnableRaycasting(bool enable)
         {
             // Enable / disable raycasting
             image.raycastTarget = enable;
@@ -289,7 +308,7 @@ namespace RPG
         public void Resize()
         {
             // Calculate correct canvas scale
-            float cellSize = 1;
+            float cellSize = Session.Instance.Grid.CellSize;
             Vector2Int dimensions = token.Data.dimensions;
             float targetSize = dimensions.x >= dimensions.y ? cellSize * (dimensions.y / 5.0f) : cellSize * (dimensions.x / 5.0f);
 

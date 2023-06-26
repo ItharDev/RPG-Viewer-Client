@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -46,8 +47,10 @@ namespace RPG
         public static UnityEvent<string, WallData> OnDoorModified = new UnityEvent<string, WallData>();
 
         // Lights
-        public static UnityEvent<PresetData> OnLightCreated = new UnityEvent<PresetData>();
-        public static UnityEvent<string, PresetData> OnLightModified = new UnityEvent<string, PresetData>();
+        public static UnityEvent<KeyValuePair<string, LightData>, PresetData> OnLightCreated = new UnityEvent<KeyValuePair<string, LightData>, PresetData>();
+        public static UnityEvent<string, LightData, PresetData> OnLightModified = new UnityEvent<string, LightData, PresetData>();
+        public static UnityEvent<string, LightData> OnLightMoved = new UnityEvent<string, LightData>();
+        public static UnityEvent<string, bool> OnLightToggled = new UnityEvent<string, bool>();
         public static UnityEvent<string> OnLightRemoved = new UnityEvent<string>();
 
         // Grid

@@ -19,7 +19,6 @@ namespace RPG
             data = _data;
             source.size = data.radius * 0.2f * Session.Instance.Grid.CellSize;
             source.color = data.color;
-            transform.localPosition = data.position;
         }
         public void Toggle(bool enabled)
         {
