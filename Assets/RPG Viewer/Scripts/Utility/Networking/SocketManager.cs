@@ -244,6 +244,14 @@ namespace Networking
                 await UniTask.SwitchToMainThread();
                 Events.OnTokenEnabled?.Invoke(id, enabled);
             });
+            Socket.On("lock-token", async (data) =>
+            {
+                string id = data.GetValue().GetString();
+                bool locked = data.GetValue(1).GetBoolean();
+
+                await UniTask.SwitchToMainThread();
+                Events.OnTokenLocked?.Invoke(id, locked);
+            });
             Socket.On("update-conditions", async (data) =>
             {
                 string id = data.GetValue().GetString();
@@ -263,7 +271,7 @@ namespace Networking
             Socket.On("update-elevation", async (data) =>
             {
                 string id = data.GetValue().GetString();
-                string elevation = data.GetValue(1).GetString();
+                int elevation = data.GetValue(1).GetInt32();
 
                 await UniTask.SwitchToMainThread();
                 Events.OnElevationModified?.Invoke(id, elevation);

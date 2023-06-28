@@ -30,6 +30,16 @@ namespace RPG
             // Get reference of our canvas
             if (canvas == null) canvas = GetComponentInChildren<Canvas>();
         }
+        private void OnEnable()
+        {
+            // Add event listeners
+            Events.OnPresetModified.AddListener(ModifyPreset);
+        }
+        private void OnDisable()
+        {
+            // remove event listeners
+            Events.OnPresetModified.RemoveListener(ModifyPreset);
+        }
         private void Update()
         {
             if (!loaded && Session.Instance.Grid.Grid != null)
@@ -45,6 +55,15 @@ namespace RPG
                 mousePos.z = 0.0f;
                 transform.localPosition = mousePos;
             }
+        }
+
+        private void ModifyPreset(string _id, PresetData _data)
+        {
+            // Return if the effect doesn't affect us
+            if (data.id != _id) return;
+
+            data = _data;
+            UpdateData();
         }
 
         private void UpdateData()

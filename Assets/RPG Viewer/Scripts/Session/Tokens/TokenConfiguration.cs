@@ -109,7 +109,7 @@ namespace RPG
             this.data.light = data.id;
             effectDropdown.value = data.effect.type;
             radiusInput.text = data.radius.ToString();
-            intensityInput.text = data.intensity.ToString();
+            intensityInput.text = ((int)(data.color.a * 100.0f)).ToString();
             colorButton.color = data.color;
             strengthInput.text = data.effect.strength.ToString();
             frequencyInput.text = data.effect.frequency.ToString();
@@ -164,8 +164,14 @@ namespace RPG
         public void ChangeColor(Color color)
         {
             lightData.color.a = color.a;
+            intensityInput.text = ((int)(color.a * 100.0f)).ToString();
             color.a = 1.0f;
             colorButton.color = color;
+        }
+        public void ChangeIntensity()
+        {
+            lightData.color.a = float.Parse(intensityInput.text) * 0.01f;
+            colorPicker.SetColor(lightData.color);
         }
         public void LoadData(TokenData _data, PresetData _lightData, byte[] _image, string _header, Action<TokenData, byte[], PresetData> _callback)
         {
@@ -188,12 +194,12 @@ namespace RPG
         public void LoadLighting(PresetData preset)
         {
             lightData = preset;
-            preset.color.a = 1.0f;
             visionInput.text = data.visionRadius.ToString();
             nightInput.text = data.nightRadius.ToString();
             effectDropdown.value = preset.effect.type;
             radiusInput.text = preset.radius.ToString();
-            intensityInput.text = preset.intensity.ToString();
+            intensityInput.text = ((int)(preset.color.a * 100.0f)).ToString();
+            preset.color.a = 1.0f;
             colorButton.color = preset.color;
             strengthInput.text = preset.effect.strength.ToString();
             frequencyInput.text = preset.effect.frequency.ToString();
@@ -217,7 +223,6 @@ namespace RPG
 
             // Lighting
             float.TryParse(radiusInput.text, out lightData.radius);
-            float.TryParse(intensityInput.text, out lightData.intensity);
             lightData.color = new Color(colorButton.color.r, colorButton.color.g, colorButton.color.b, lightData.color.a);
             lightData.effect.type = effectDropdown.value;
             float.TryParse(strengthInput.text, out lightData.effect.strength);

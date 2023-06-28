@@ -54,7 +54,7 @@ namespace RPG
             if (!token.Selected || token.UI.Editing) return;
 
             HandleRotation();
-            HandleMovement();
+            if (!token.Data.locked) HandleMovement();
         }
         private void FixedUpdate()
         {
@@ -203,7 +203,7 @@ namespace RPG
             // Clear old drag points
             dragPoints.Clear();
 
-            // Return if this token is locked to place
+            // Return if this token is locked
             if (token.Data.locked) return;
 
             // Return if we aren't dragging whit LMB
@@ -333,6 +333,7 @@ namespace RPG
                 if (Physics2D.Raycast(points[i], direction, distance, blockingLayers).collider == null) continue;
 
                 // We have collided with something
+                MessageManager.QueueMessage("Movement blocked by a wall");
                 return true;
             }
 
@@ -368,6 +369,17 @@ namespace RPG
 
             // Add waypoints
             waypoints = data.points;
+        }
+        public void LockToken()
+        {
+            SocketManager.EmitAsync("lock-token", (callback) =>
+            {
+                // Check if the event was successful
+                if (callback.GetValue().GetBoolean()) return;
+
+                // Send error message
+                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+            }, token.Id, !token.Data.locked);
         }
     }
 }

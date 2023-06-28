@@ -54,7 +54,6 @@ namespace RPG
         public string id;
         public string name;
         public float radius;
-        public float intensity;
         public Color color;
         public LightEffect effect;
 

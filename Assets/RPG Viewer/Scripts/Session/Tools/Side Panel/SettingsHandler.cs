@@ -68,8 +68,10 @@ namespace RPG
 
         private void HandleStateChange(SessionState oldState, SessionState newState)
         {
-            bool synced = newState.synced || ConnectionManager.Info.isMaster;
-            canvasGroup.alpha = (string.IsNullOrEmpty(newState.scene) && synced) ? 0.0f : 1.0f;
+            if (!ConnectionManager.Info.isMaster) return;
+
+            bool synced = newState.synced;
+            canvasGroup.alpha = (string.IsNullOrEmpty(newState.scene) && !synced) ? 0.0f : 1.0f;
         }
 
         public void ConfigureGrid()

@@ -111,6 +111,7 @@ namespace RPG
 
             // Add token to dictionary
             tokens.Add(id, token);
+            SortContent();
         }
         private void LoadDirectory(System.Text.Json.JsonElement json, string id, string path)
         {
@@ -142,6 +143,8 @@ namespace RPG
             {
                 LoadToken(contents[i].GetString(), pathToThisFolder);
             }
+
+            SortContent();
         }
         public Color GetColor()
         {

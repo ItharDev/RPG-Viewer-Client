@@ -11,7 +11,8 @@ namespace RPG
         [SerializeField] private Token tokenPrefab;
         [SerializeField] private Transform tokenParent;
 
-        private Dictionary<string, Token> tokens = new Dictionary<string, Token>();
+        public Dictionary<string, Token> Tokens = new Dictionary<string, Token>();
+        
         private List<Token> myTokens = new List<Token>();
 
         private int selectedToken = 0;
@@ -82,7 +83,7 @@ namespace RPG
 
                 // Load data and add it to dictionary
                 token.LoadData(data, sprite);
-                tokens.Add(data.id, token);
+                Tokens.Add(data.id, token);
                 // Check token's permissions
                 if (token.Permission.type == PermissionType.Controller) myTokens.Add(token);
 
@@ -93,7 +94,7 @@ namespace RPG
         private void MoveToken(string id, MovementData data)
         {
             // Find the correct token
-            Token token = tokens[id];
+            Token token = Tokens[id];
 
             // Check if token was found
             if (token == null) return;
@@ -103,7 +104,7 @@ namespace RPG
         private void ModifyToken(string id, TokenData data)
         {
             // Find the correct token
-            Token token = tokens[id];
+            Token token = Tokens[id];
 
             // Check if token was found
             if (token == null) return;
@@ -132,20 +133,20 @@ namespace RPG
         private void RemoveToken(string id)
         {
             // Find the correct token
-            Token token = tokens[id];
+            Token token = Tokens[id];
 
             // Check if token was found
             if (token == null) return;
 
             // Remove token from lists and destroy it
             if (myTokens.Contains(token)) myTokens.Remove(token);
-            tokens.Remove(id);
+            Tokens.Remove(id);
             Destroy(token.gameObject);
         }
         private void EnableToken(string id, bool enabled)
         {
             // Find the correct token
-            Token token = tokens[id];
+            Token token = Tokens[id];
 
             // Check if token was found
             if (token == null) return;
@@ -153,10 +154,10 @@ namespace RPG
             token.EnableToken(enabled);
             if (!ConnectionManager.Info.isMaster) token.gameObject.SetActive(enabled);
         }
-        private void UpdateElevation(string id, string elevation)
+        private void UpdateElevation(string id, int elevation)
         {
             // Find the correct token
-            Token token = tokens[id];
+            Token token = Tokens[id];
 
             // Check if token was found
             if (token == null) return;
@@ -166,7 +167,7 @@ namespace RPG
         private void UpdateConditions(string id, int conditions)
         {
             // Find the correct token
-            Token token = tokens[id];
+            Token token = Tokens[id];
 
             // Check if token was found
             if (token == null) return;
@@ -176,7 +177,7 @@ namespace RPG
         private void LockToken(string id, bool locked)
         {
             // Find the correct token
-            Token token = tokens[id];
+            Token token = Tokens[id];
 
             // Check if token was found
             if (token == null) return;
@@ -186,7 +187,7 @@ namespace RPG
         private void UpdateHealth(string id, int health)
         {
             // Find the correct token
-            Token token = tokens[id];
+            Token token = Tokens[id];
 
             // Check if token was found
             if (token == null) return;
@@ -196,7 +197,7 @@ namespace RPG
         private void RotateToken(string id, float angle)
         {
             // Find the correct token
-            Token token = tokens[id];
+            Token token = Tokens[id];
 
             // Check if token was found
             if (token == null) return;
@@ -258,7 +259,7 @@ namespace RPG
         private void UnloadTokens()
         {
             // Loop through each token
-            foreach (var item in tokens)
+            foreach (var item in Tokens)
             {
                 // Continue if token is null
                 if (item.Value == null) continue;
@@ -266,7 +267,7 @@ namespace RPG
             }
 
             // Clear lists
-            tokens.Clear();
+            Tokens.Clear();
             myTokens.Clear();
         }
 

@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Networking;
 using SFB;
 using UnityEngine;
-using UnityEngine.Events;
+using UnityEngine.UI;
 
 namespace RPG
 {
@@ -25,6 +25,10 @@ namespace RPG
 
         [Space]
         [SerializeField] private GameObject imageButton;
+        [SerializeField] private GameObject syncButton;
+        [SerializeField] private Image syncIcon;
+        [SerializeField] private Sprite syncedSprite;
+        [SerializeField] private Sprite desyncedSprite;
         [SerializeField] private GameObject tokensButton;
         [SerializeField] private GameObject scenesButton;
 
@@ -35,6 +39,16 @@ namespace RPG
         private float targetWidthOpen;
         private float targetWidthClose;
 
+        private void OnEnable()
+        {
+            // Add event listeners
+            Events.OnStateChanged.AddListener(SetSynced);
+        }
+        private void OnDisable()
+        {
+            // Add event listeners
+            Events.OnStateChanged.RemoveListener(SetSynced);
+        }
         private void Start()
         {
             targetWidthOpen = 210.0f;
@@ -42,11 +56,17 @@ namespace RPG
             if (!ConnectionManager.Info.isMaster)
             {
                 imageButton.gameObject.SetActive(false);
+                syncButton.gameObject.SetActive(false);
                 tokensButton.gameObject.SetActive(false);
                 scenesButton.gameObject.SetActive(false);
                 targetWidthOpen = 70.0f;
                 targetWidthClose = 50.0f;
             }
+        }
+
+        private void SetSynced(SessionState oldState, SessionState newState)
+        {
+            syncIcon.sprite = newState.synced ? syncedSprite : desyncedSprite;
         }
 
         public void SelectTokens()
@@ -130,8 +150,19 @@ namespace RPG
         public void OpenPresets()
         {
             if (presetList.gameObject.activeInHierarchy) return;
-            
+
             presetList.LoadData(null);
+        }
+        public void Sync()
+        {
+            SocketManager.EmitAsync("set-state", (callback) =>
+            {
+                // Check if the event was successful
+                if (callback.GetValue().GetBoolean()) return;
+
+                // Send error message
+                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+            }, ConnectionManager.State.scene, !ConnectionManager.State.synced);
         }
         public async void SelectImage()
         {

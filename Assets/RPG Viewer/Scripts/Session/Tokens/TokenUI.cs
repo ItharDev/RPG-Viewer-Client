@@ -16,6 +16,7 @@ namespace RPG
         [SerializeField] private Canvas canvas;
         [SerializeField] private Canvas uICanvas;
         [SerializeField] private CanvasGroup canvasGroup;
+        [SerializeField] private CanvasGroup uIcanvasGroup;
 
         [Header("UI")]
         [SerializeField] private Image image;
@@ -44,7 +45,13 @@ namespace RPG
         [SerializeField] private TokenConfiguration configPrefab;
 
         public RectTransform Rect { get { return canvas.GetComponent<RectTransform>(); } }
-        public bool MouseOver { get { return RectTransformUtility.RectangleContainsScreenPoint(Rect, Camera.main.ScreenToWorldPoint(Input.mousePosition)); } }
+        public bool MouseOver
+        {
+            get
+            {
+                return RectTransformUtility.RectangleContainsScreenPoint(Rect, Camera.main.ScreenToWorldPoint(Input.mousePosition)) || token.Conditions.MouseOver;
+            }
+        }
         public bool Editing { get { return false /* TODO: */; } }
 
         private Token token;
@@ -84,15 +91,26 @@ namespace RPG
             // Return if token is not selected
             if (!token.Selected) return;
 
-            if (Input.GetMouseButtonDown(0) && !MouseOver) Events.OnTokenSelected?.Invoke(null);
+            if (Input.GetMouseButtonDown(0) && !MouseOver)
+            {
+                if (token.Conditions.IsOpen) token.Conditions.ToggleConditions();
+                Events.OnTokenSelected?.Invoke(null);
+            }
 
             HandleElevation();
         }
         private void HandleSelection(Token _token)
         {
-            outline.enabled = _token == token;
-            buttonsGroup.alpha = outline.enabled ? 1.0f : 0.0f;
-            buttonsGroup.blocksRaycasts = outline.enabled ? true : false;
+            bool selected = _token == token;
+            outline.enabled = selected;
+            buttonsGroup.alpha = selected ? 1.0f : 0.0f;
+            buttonsGroup.blocksRaycasts = selected ? true : false;
+
+            if (string.IsNullOrEmpty(healthInput.text)) healthPanel.SetActive(selected);
+            else healthPanel.SetActive(true);
+
+            if (string.IsNullOrEmpty(elevationInput.text)) elevationPanel.SetActive(selected);
+            else elevationPanel.SetActive(true);
             UpdateSorting();
         }
 
@@ -112,13 +130,10 @@ namespace RPG
         {
             if (Input.GetKeyDown(KeyCode.PageUp) || Input.GetKeyDown(KeyCode.PageDown))
             {
-                // Trim out the 'ft' part of the elevation and parse it to integer
-                string elevation = elevationInput.text.TrimEnd('f', 't', ' ');
-                int elevationValue = string.IsNullOrEmpty(elevation) ? 0 : int.Parse(elevation);
+                int elevationValue = string.IsNullOrEmpty(elevationInput.text) ? 0 : int.Parse(elevationInput.text);
 
                 // Modify elevation value
                 elevationValue += Input.GetKey(KeyCode.PageUp) ? 5 : -5;
-                string newElevation = $"{elevationValue} ft";
             }
         }
 
@@ -126,6 +141,55 @@ namespace RPG
         {
             // Update group alpha
             canvasGroup.alpha = value;
+        }
+        public void SetHealth(int value)
+        {
+            healthInput.interactable = token.IsOwner;
+            healthInput.text = value == 0 ? "" : value.ToString();
+            if (!token.IsOwner)
+            {
+                healthPanel.SetActive(false);
+                return;
+            }
+
+            healthPanel.SetActive(token.Selected);
+            if (!token.Selected) healthPanel.SetActive(value != 0);
+        }
+        public void SetElevation(int value)
+        {
+            elevationInput.interactable = token.IsOwner;
+            elevationInput.text = value == 0 ? "" : value.ToString();
+
+            elevationPanel.SetActive(token.Selected);
+            if (!token.Selected) elevationPanel.SetActive(value != 0);
+        }
+        public void UpdateHealth()
+        {
+            int health = 0;
+            int.TryParse(healthInput.text, out health);
+
+            SocketManager.EmitAsync("update-health", (callback) =>
+            {
+                // Check if the event was successful
+                if (callback.GetValue().GetBoolean()) return;
+
+                // Send error message
+                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+            }, token.Id, health);
+        }
+        public void UpdateElevation()
+        {
+            int elevation = 0;
+            int.TryParse(elevationInput.text, out elevation);
+
+            SocketManager.EmitAsync("update-elevation", (callback) =>
+            {
+                // Check if the event was successful
+                if (callback.GetValue().GetBoolean()) return;
+
+                // Send error message
+                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+            }, token.Id, elevation);
         }
         public void EnableToken()
         {
@@ -140,6 +204,10 @@ namespace RPG
         }
         public void Toggle(bool enabled)
         {
+            if (!ConnectionManager.Info.isMaster)
+            {
+                SetAlpha(enabled ? 1.0f : 0.0f);
+            }
             Color imageColor = Color.white;
             imageColor.a = enabled ? 1.0f : 0.5f;
             image.color = imageColor;
@@ -166,8 +234,9 @@ namespace RPG
             UpdateSorting();
             Resize();
             LoadUI();
+            LockToken(token.Data.locked);
 
-            if (!ConnectionManager.Info.isMaster) EnableRaycasting(token.Enabled);
+            if (!ConnectionManager.Info.isMaster) EnableRaycasting(token.Permission.type == PermissionType.Controller);
         }
         private void LoadUI()
         {
@@ -176,11 +245,18 @@ namespace RPG
             Color imageColor = Color.white;
             imageColor.a = token.Data.enabled ? 1.0f : 0.5f;
             image.color = imageColor;
+            uIcanvasGroup.blocksRaycasts = token.IsOwner;
+            SetElevation(token.Data.elevation);
+            SetHealth(token.Data.health);
         }
-        private void EnableRaycasting(bool enable)
+        public void EnableRaycasting(bool enable)
         {
             // Enable / disable raycasting
             image.raycastTarget = enable;
+        }
+        public void LockToken(bool state)
+        {
+            lockedImage.sprite = state ? lockedSprite : unlockedSprite;
         }
 
         public void OnPointerClick(BaseEventData eventData)
@@ -304,6 +380,8 @@ namespace RPG
                     if (token.IsOwner) canvas.sortingLayerName = "Owned Items";
                     break;
             }
+
+            uICanvas.sortingLayerName = buttonsGroup.alpha == 1.0f ? "Above Fog" : canvas.sortingLayerName;
         }
         public void Resize()
         {

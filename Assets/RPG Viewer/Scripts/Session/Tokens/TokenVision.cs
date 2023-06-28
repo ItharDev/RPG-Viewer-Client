@@ -19,7 +19,16 @@ namespace RPG
         {
             // Get reference of main class
             if (token == null) token = GetComponent<Token>();
+
+            // Add event listeners
+            Events.OnPresetModified.AddListener(ModifyPreset);
         }
+        private void OnDisable()
+        {
+            // remove event listeners
+            Events.OnPresetModified.RemoveListener(ModifyPreset);
+        }
+
         private void Update()
         {
             if (!loaded && Session.Instance.Grid.Grid != null) loaded = true;
@@ -30,6 +39,15 @@ namespace RPG
                 LoadLighting();
                 updateRequired = false;
             }
+        }
+
+        private void ModifyPreset(string _id, PresetData _data)
+        {
+            // Return if the effect doesn't affect us
+            if (token.Lighting.id != _id) return;
+
+            token.Lighting = _data;
+            LoadLighting();
         }
 
         public void DisableVision()
@@ -64,6 +82,7 @@ namespace RPG
                     token.Lighting = data;
                     token.Lighting.id = token.Data.light;
                     lightSource.LoadData(data);
+                    lightSource.Toggle(token.Data.enabled);
                     return;
                 }
 

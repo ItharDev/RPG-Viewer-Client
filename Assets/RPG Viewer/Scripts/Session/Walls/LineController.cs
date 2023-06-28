@@ -56,7 +56,7 @@ namespace RPG
         {
             if (hovered && Input.GetMouseButtonUp(1))
             {
-                if (selectedIndex != -1) ConfigureWall();
+                if (selectedIndex != -1 && line.active) ConfigureWall();
             }
             if (Input.GetMouseButtonUp(0))
             {

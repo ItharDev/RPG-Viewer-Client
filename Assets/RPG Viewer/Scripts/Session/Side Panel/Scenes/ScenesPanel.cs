@@ -110,6 +110,7 @@ namespace RPG
 
             // Add scene to dictionary
             scenes.Add(id, scene);
+            SortContent();
         }
         private void LoadDirectory(System.Text.Json.JsonElement json, string id, string path)
         {
@@ -141,6 +142,8 @@ namespace RPG
             {
                 LoadScene(contents[i].GetString(), pathToThisFolder);
             }
+
+            SortContent();
         }
         public Color GetColor()
         {
@@ -334,14 +337,10 @@ namespace RPG
             selectedFolder = folder;
             Events.OnSceneFolderSelected?.Invoke(folder);
             Events.OnSceneSelected?.Invoke(null);
-
-            Debug.Log($"Selected folder {folder.Data.name} in {folder.Path}");
         }
         public void MoveFolderRoot()
         {
             if (selectedFolder == null) return;
-
-            Debug.Log($"Moving folder from {selectedFolder.Path} to root");
 
             SocketManager.EmitAsync("move-scene-folder", async (callback) =>
             {
@@ -378,8 +377,6 @@ namespace RPG
         {
             if (selectedFolder != null)
             {
-                Debug.Log($"Moving folder from {selectedFolder.Path} to {folder.Path}");
-
                 SocketManager.EmitAsync("move-scene-folder", async (callback) =>
                 {
                     await UniTask.SwitchToMainThread();
@@ -406,8 +403,6 @@ namespace RPG
             }
             else
             {
-                Debug.Log($"Moving token from {selectedScene.Path} to {folder.Path}");
-
                 SocketManager.EmitAsync("move-scene", async (callback) =>
                 {
                     await UniTask.SwitchToMainThread();
@@ -442,14 +437,10 @@ namespace RPG
             selectedScene = scene;
             Events.OnSceneSelected?.Invoke(scene);
             Events.OnSceneFolderSelected?.Invoke(null);
-
-            Debug.Log($"Selected scene {scene.Id} in {scene.Path}");
         }
         public void MoveSceneRoot()
         {
             if (selectedScene == null) return;
-
-            Debug.Log($"Moving scene from {selectedScene.Path} to root");
 
             SocketManager.EmitAsync("move-scene", async (callback) =>
             {

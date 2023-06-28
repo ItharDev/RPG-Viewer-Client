@@ -24,6 +24,8 @@ namespace RPG
             Events.OnStateChanged.AddListener(ChangeState);
             Events.OnLandingPageChanged.AddListener(UpdateLandingPage);
             Events.OnGridChanged.AddListener(UpdateGrid);
+            Events.OnUserConnected.AddListener(ConnectUser);
+            Events.OnUserDisconnected.AddListener(DisconnectUser);
         }
         private void OnDisable()
         {
@@ -31,6 +33,8 @@ namespace RPG
             Events.OnStateChanged.RemoveListener(ChangeState);
             Events.OnLandingPageChanged.RemoveListener(UpdateLandingPage);
             Events.OnGridChanged.RemoveListener(UpdateGrid);
+            Events.OnUserConnected.AddListener(ConnectUser);
+            Events.OnUserDisconnected.AddListener(DisconnectUser);
         }
         private void Awake()
         {
@@ -155,6 +159,15 @@ namespace RPG
                 // Send error message
                 MessageManager.QueueMessage(callback.GetValue(1).GetString());
             }, id);
+        }
+
+        private void ConnectUser(string user)
+        {
+            MessageManager.QueueMessage($"{user} connected");
+        }
+        private void DisconnectUser(string user)
+        {
+            MessageManager.QueueMessage($"{user} disconnected");
         }
 
         private Dictionary<string, LightData> GetLights(System.Text.Json.JsonProperty[] lights)

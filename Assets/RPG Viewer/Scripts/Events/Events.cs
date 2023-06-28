@@ -86,7 +86,7 @@ namespace RPG
         public static UnityEvent<string, bool> OnTokenLocked = new UnityEvent<string, bool>();
         public static UnityEvent<string, int> OnConditionsModified = new UnityEvent<string, int>();
         public static UnityEvent<string, int> OnHealthModified = new UnityEvent<string, int>();
-        public static UnityEvent<string, string> OnElevationModified = new UnityEvent<string, string>();
+        public static UnityEvent<string, int> OnElevationModified = new UnityEvent<string, int>();
         public static UnityEvent<string, float> OnTokenRotated = new UnityEvent<string, float>();
         public static UnityEvent<Token> OnTokenSelected = new UnityEvent<Token>();
 

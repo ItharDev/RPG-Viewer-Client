@@ -33,20 +33,27 @@ namespace RPG
             nameInput.text = data.name;
             effectDropdown.value = data.effect.type;
             radiusInput.text = data.radius.ToString();
-            intensityInput.text = data.intensity.ToString();
+            intensityInput.text = ((int)(data.color.a * 100.0f)).ToString();
             colorButton.color = _data.color;
             strengthInput.text = data.effect.strength.ToString();
             frequencyInput.text = data.effect.frequency.ToString();
         }
         public void OpenColor()
         {
-            colorPicker.gameObject.SetActive(true);
             colorPicker.SetColor(data.color);
+            colorPicker.gameObject.SetActive(true);
         }
         public void ChangeColor(Color color)
         {
+            data.color = color;
+            intensityInput.text = ((int)(color.a * 100.0f)).ToString();
             color.a = 1.0f;
             colorButton.color = color;
+        }
+        public void ChangeIntensity()
+        {
+            data.color.a = float.Parse(intensityInput.text) * 0.01f;
+            colorPicker.SetColor(data.color);
         }
 
         public void ClosePanel(bool saveData = true)
@@ -65,7 +72,6 @@ namespace RPG
         {
             data.name = string.IsNullOrEmpty(nameInput.text) ? data.name : nameInput.text;
             float.TryParse(radiusInput.text, out data.radius);
-            float.TryParse(intensityInput.text, out data.intensity);
             data.color = new Color(colorButton.color.r, colorButton.color.g, colorButton.color.b, data.color.a);
             data.effect.type = effectDropdown.value;
             float.TryParse(strengthInput.text, out data.effect.strength);

@@ -15,6 +15,13 @@ namespace RPG
         {
             get { return ConditionFlags.HasFlag(deadCondition.Condition.flag); }
         }
+        public bool MouseOver
+        {
+            get
+            {
+                return RectTransformUtility.RectangleContainsScreenPoint(conditionsPanel, Camera.main.ScreenToWorldPoint(Input.mousePosition));
+            }
+        }
 
         private Token token;
         public bool IsOpen;

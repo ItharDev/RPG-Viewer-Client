@@ -137,6 +137,9 @@ namespace RPG
             registerButton.SetActive(false);
             accountInfo.SetActive(true);
 
+            canvasGroup.blocksRaycasts = true;
+            canvasGroup.alpha = 1.0f;
+
             ClosePanel();
         }
         private void SignOut()

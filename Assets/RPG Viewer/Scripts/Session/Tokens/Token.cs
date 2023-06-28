@@ -92,7 +92,7 @@ namespace RPG
 
                 // Don't count in ourselves
                 if (token == this || token == null) continue;
-                if (token.Data.type == TokenType.Character) mounted.Add(token);
+                if (token.Data.type == TokenType.Character && token.Data.enabled) mounted.Add(token);
             }
 
             return mounted;
@@ -108,7 +108,7 @@ namespace RPG
             // Update data and set permissions
             Data = data;
             SetPermission();
-            Enabled = IsOwner;
+            Enabled = Permission.type != PermissionType.None;
 
             // Update conditions
             Conditions.SetConditions(data.conditions);
@@ -149,20 +149,21 @@ namespace RPG
             Vision.Reload();
             UI.Toggle(enabled);
         }
-        public void SetElevation(string elevation)
+        public void SetElevation(int elevation)
         {
             Data.elevation = elevation;
-            // TODO: Update elevation input
+            UI.SetElevation(elevation);
         }
         public void SetLocked(bool locked)
         {
             Data.locked = locked;
-            // TODO: Update locked icon
+            UI.EnableRaycasting(!(locked && !ConnectionManager.Info.isMaster));
+            UI.LockToken(locked);
         }
         public void SetHealth(int health)
         {
             Data.health = health;
-            // TODO: Update health
+            UI.SetHealth(health);
         }
 
         #region Buttons
@@ -201,20 +202,20 @@ namespace RPG
     [Serializable]
     public struct TokenData
     {
-        public string id; //
-        public string name; //
-        public TokenType type; //
-        public List<Permission> permissions; //
-        public List<Permission> visible; //
-        public Vector2Int dimensions; //
-        public float visionRadius; //
-        public float nightRadius; //
-        public string image; //
-        public string light; //
+        public string id;
+        public string name;
+        public TokenType type;
+        public List<Permission> permissions;
+        public List<Permission> visible;
+        public Vector2Int dimensions;
+        public float visionRadius;
+        public float nightRadius;
+        public string image;
+        public string light;
         public Vector2 position;
         public bool enabled;
         public int health;
-        public string elevation;
+        public int elevation;
         public int conditions;
         public bool locked;
         public float rotation;
