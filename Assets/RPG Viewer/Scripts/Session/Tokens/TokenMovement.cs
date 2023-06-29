@@ -216,8 +216,8 @@ namespace RPG
             dragObject.transform.SetParent(transform.parent);
 
             // Disable clone's vision and light
-            dragObject.Vision.DisableVision();
-            dragObject.Vision.DisableLight();
+            dragObject.Vision.ToggleVision(false);
+            dragObject.Vision.ToggleLight(false);
             dragObject.DisableCollider();
             dragObject.UI.SetAlpha(0.5f);
             dragObject.UI.DisableOutline();

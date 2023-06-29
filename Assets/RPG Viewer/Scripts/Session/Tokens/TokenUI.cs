@@ -26,6 +26,7 @@ namespace RPG
         [SerializeField] private CanvasGroup buttonsGroup;
         [SerializeField] private GameObject lockButton;
         [SerializeField] private GameObject visibilityButton;
+        [SerializeField] private GameObject conditionsButton;
 
 
         [Space]
@@ -49,10 +50,18 @@ namespace RPG
         {
             get
             {
-                return RectTransformUtility.RectangleContainsScreenPoint(Rect, Camera.main.ScreenToWorldPoint(Input.mousePosition)) || token.Conditions.MouseOver;
+                return RectTransformUtility.RectangleContainsScreenPoint(Rect, Camera.main.ScreenToWorldPoint(Input.mousePosition)) ||
+                token.Conditions.MouseOver ||
+                RectTransformUtility.RectangleContainsScreenPoint(rotateButton.GetComponent<RectTransform>(), Camera.main.ScreenToWorldPoint(Input.mousePosition));
             }
         }
-        public bool Editing { get { return false /* TODO: */; } }
+        public bool Editing
+        {
+            get
+            {
+                return config != null || healthInput.isFocused || elevationInput.isFocused;
+            }
+        }
 
         private Token token;
         private Vector2 screenPos;
@@ -103,8 +112,10 @@ namespace RPG
         {
             bool selected = _token == token;
             outline.enabled = selected;
-            buttonsGroup.alpha = selected ? 1.0f : 0.0f;
-            buttonsGroup.blocksRaycasts = selected ? true : false;
+            buttonsGroup.alpha = selected && ConnectionManager.Info.isMaster ? 1.0f : 0.0f;
+            buttonsGroup.blocksRaycasts = selected && ConnectionManager.Info.isMaster ? true : false;
+            conditionsButton.SetActive(selected);
+            rotateButton.SetActive(selected);
 
             if (string.IsNullOrEmpty(healthInput.text)) healthPanel.SetActive(selected);
             else healthPanel.SetActive(true);
@@ -141,6 +152,11 @@ namespace RPG
         {
             // Update group alpha
             canvasGroup.alpha = value;
+        }
+        public void ToggleUI(bool enabled)
+        {
+            uICanvas.enabled = enabled;
+            canvas.enabled = enabled;
         }
         public void SetHealth(int value)
         {
@@ -235,6 +251,7 @@ namespace RPG
             Resize();
             LoadUI();
             LockToken(token.Data.locked);
+            ApplyVisibility();
 
             if (!ConnectionManager.Info.isMaster) EnableRaycasting(token.Permission.type == PermissionType.Controller);
         }
@@ -248,6 +265,10 @@ namespace RPG
             uIcanvasGroup.blocksRaycasts = token.IsOwner;
             SetElevation(token.Data.elevation);
             SetHealth(token.Data.health);
+        }
+        private void ApplyVisibility()
+        {
+            ToggleUI(token.Visibility.visible);
         }
         public void EnableRaycasting(bool enable)
         {
@@ -381,7 +402,7 @@ namespace RPG
                     break;
             }
 
-            uICanvas.sortingLayerName = buttonsGroup.alpha == 1.0f ? "Above Fog" : canvas.sortingLayerName;
+            uICanvas.sortingLayerName = outline.enabled ? "Above Fog" : canvas.sortingLayerName;
         }
         public void Resize()
         {

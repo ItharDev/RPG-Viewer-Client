@@ -12,7 +12,7 @@ namespace RPG
         [SerializeField] private Transform tokenParent;
 
         public Dictionary<string, Token> Tokens = new Dictionary<string, Token>();
-        
+
         private List<Token> myTokens = new List<Token>();
 
         private int selectedToken = 0;
@@ -85,7 +85,7 @@ namespace RPG
                 token.LoadData(data, sprite);
                 Tokens.Add(data.id, token);
                 // Check token's permissions
-                if (token.Permission.type == PermissionType.Controller) myTokens.Add(token);
+                if (token.Permission.type == PermissionType.Controller && token.Visibility.visible && (token.Data.enabled || ConnectionManager.Info.isMaster)) myTokens.Add(token);
 
                 // Select this token if it's the first token we instantiate and this client is player
                 if (myTokens.Count == 1) SelectToken(ConnectionManager.Info.isMaster ? null : myTokens[0]);
@@ -122,6 +122,8 @@ namespace RPG
 
                     // Load data with the new image
                     token.LoadData(data, sprite);
+                    if (myTokens.Contains(token) && (token.Permission.type != PermissionType.Controller || !token.Visibility.visible)) myTokens.Remove(token);
+                    else if (!myTokens.Contains(token) && token.Permission.type == PermissionType.Controller && token.Visibility.visible) myTokens.Add(token);
                 });
 
                 return;
@@ -129,6 +131,8 @@ namespace RPG
 
             // Load data
             token.LoadData(data, null);
+            if (myTokens.Contains(token) && (token.Permission.type != PermissionType.Controller || !token.Visibility.visible)) myTokens.Remove(token);
+            else if (!myTokens.Contains(token) && token.Permission.type == PermissionType.Controller && token.Visibility.visible) myTokens.Add(token);
         }
         private void RemoveToken(string id)
         {
@@ -152,7 +156,12 @@ namespace RPG
             if (token == null) return;
 
             token.EnableToken(enabled);
-            if (!ConnectionManager.Info.isMaster) token.gameObject.SetActive(enabled);
+
+            if (ConnectionManager.Info.isMaster) return;
+
+            if (myTokens.Contains(token) && !enabled) myTokens.Remove(token);
+            else if (!myTokens.Contains(token) && token.Permission.type == PermissionType.Controller && token.Visibility.visible && enabled) myTokens.Add(token);
+            token.gameObject.SetActive(enabled);
         }
         private void UpdateElevation(string id, int elevation)
         {

@@ -72,10 +72,10 @@ namespace RPG
     {
         public int index;
         public string name;
-        public string roll;
+        public int roll;
         public bool visible;
 
-        public InitiativeData(int _index, string _name, string _roll, bool _visible)
+        public InitiativeData(int _index, string _name, int _roll, bool _visible)
         {
             index = _index;
             name = _name;

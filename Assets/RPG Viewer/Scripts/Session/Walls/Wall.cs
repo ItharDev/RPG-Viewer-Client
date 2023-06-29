@@ -12,9 +12,9 @@ namespace RPG
         [SerializeField] private Image doorIcon;
         [SerializeField] private Sprite closedSprite;
         [SerializeField] private Sprite openSprite;
-        [SerializeField] private Image stateIcon;
-        [SerializeField] private Sprite lockedSprite;
-        [SerializeField] private Sprite unlockedSprite;
+        [SerializeField] private Color regularColor;
+        [SerializeField] private Color secretColor;
+        [SerializeField] private GameObject lockedIcon;
 
         private Canvas canvas;
         private EdgeCollider2D edgeCollider;
@@ -75,7 +75,8 @@ namespace RPG
 
             canvas.transform.position = (data.points[0] + data.points[1]) / 2f;
             doorIcon.sprite = data.open ? openSprite : closedSprite;
-            stateIcon.sprite = data.locked ? lockedSprite : unlockedSprite;
+            lockedIcon.SetActive(data.locked);
+            doorIcon.color = data.type == WallType.Hidden_Door ? secretColor : regularColor;
 
             HandleCollider();
 

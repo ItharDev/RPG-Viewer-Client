@@ -52,6 +52,7 @@ namespace RPG
         public static UnityEvent<string, LightData> OnLightMoved = new UnityEvent<string, LightData>();
         public static UnityEvent<string, bool> OnLightToggled = new UnityEvent<string, bool>();
         public static UnityEvent<string> OnLightRemoved = new UnityEvent<string>();
+        public static UnityEvent<LightingSettings, bool> OnLightingChanged = new UnityEvent<LightingSettings, bool>();
 
         // Grid
         public static UnityEvent<GridData, bool, bool> OnGridChanged = new UnityEvent<GridData, bool, bool>();

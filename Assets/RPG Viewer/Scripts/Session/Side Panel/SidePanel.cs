@@ -59,9 +59,11 @@ namespace RPG
                 syncButton.gameObject.SetActive(false);
                 tokensButton.gameObject.SetActive(false);
                 scenesButton.gameObject.SetActive(false);
-                targetWidthOpen = 70.0f;
+                targetWidthOpen = 110.0f;
                 targetWidthClose = 50.0f;
             }
+
+            ClosePanel();
         }
 
         private void SetSynced(SessionState oldState, SessionState newState)
@@ -126,7 +128,7 @@ namespace RPG
             open = false;
 
             LeanTween.size(buttonRect, new Vector2(targetWidthClose, 50.0f), 0.2f);
-            LeanTween.size((RectTransform)transform, new Vector2(150.0f, 50.0f), 0.2f);
+            LeanTween.size((RectTransform)transform, new Vector2(targetWidthClose, 50.0f), 0.2f);
             LeanTween.size(panelRect, new Vector2(0.0f, 0.0f), 0.2f).setOnComplete(() =>
             {
                 journalsPanel.SetActive(false);
@@ -143,7 +145,7 @@ namespace RPG
             open = true;
 
             LeanTween.size(buttonRect, new Vector2(targetWidthOpen, 50.0f), 0.2f);
-            LeanTween.size((RectTransform)transform, new Vector2(210.0f, 50.0f), 0.2f);
+            LeanTween.size((RectTransform)transform, new Vector2(targetWidthOpen, 50.0f), 0.2f);
             LeanTween.size(panelRect, new Vector2(210.0f, 1000.0f), 0.2f);
         }
 

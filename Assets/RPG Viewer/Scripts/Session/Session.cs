@@ -24,6 +24,7 @@ namespace RPG
             Events.OnStateChanged.AddListener(ChangeState);
             Events.OnLandingPageChanged.AddListener(UpdateLandingPage);
             Events.OnGridChanged.AddListener(UpdateGrid);
+            Events.OnLightingChanged.AddListener(UpdateLighting);
             Events.OnUserConnected.AddListener(ConnectUser);
             Events.OnUserDisconnected.AddListener(DisconnectUser);
         }
@@ -33,6 +34,7 @@ namespace RPG
             Events.OnStateChanged.RemoveListener(ChangeState);
             Events.OnLandingPageChanged.RemoveListener(UpdateLandingPage);
             Events.OnGridChanged.RemoveListener(UpdateGrid);
+            Events.OnLightingChanged.RemoveListener(UpdateLighting);
             Events.OnUserConnected.AddListener(ConnectUser);
             Events.OnUserDisconnected.AddListener(DisconnectUser);
         }
@@ -90,6 +92,10 @@ namespace RPG
         private void UpdateGrid(GridData gridData, bool reloadRequired, bool globalUpdate)
         {
             if (globalUpdate) Settings.grid = gridData;
+        }
+        private void UpdateLighting(LightingSettings lightingData, bool globalUpdate)
+        {
+            if (globalUpdate) Settings.darkness = lightingData;
         }
         private void UpdateLandingPage(string id)
         {

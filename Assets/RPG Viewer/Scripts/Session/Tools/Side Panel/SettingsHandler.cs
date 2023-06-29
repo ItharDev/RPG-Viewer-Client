@@ -28,17 +28,19 @@ namespace RPG
         [SerializeField] private RectMask2D lightingMask;
         [SerializeField] private RectMask2D viewMask;
 
-        [Header("Grid")]
+        [Header("Configuration")]
         [SerializeField] private GridConfiguration gridConfiguration;
+        [SerializeField] private DarknessConfiguration lightConfiguration;
 
         public static SettingsHandler Instance { get; private set; }
         public Setting Setting { get { return activeSetting; } }
+
+        public GameView LastView = GameView.Player;
 
         private Setting activeSetting;
         private Setting lastSetting;
         private Setting lastWalls = Setting.Walls_Regular;
         private Setting lastLighting = Setting.Lighting_Create;
-        private GameView lastView = GameView.Clear;
 
         private void Awake()
         {
@@ -69,9 +71,7 @@ namespace RPG
         private void HandleStateChange(SessionState oldState, SessionState newState)
         {
             if (!ConnectionManager.Info.isMaster) return;
-
-            bool synced = newState.synced;
-            canvasGroup.alpha = (string.IsNullOrEmpty(newState.scene) && !synced) ? 0.0f : 1.0f;
+            canvasGroup.alpha = (string.IsNullOrEmpty(newState.scene)) ? 0.0f : 1.0f;
         }
 
         public void ConfigureGrid()
@@ -137,7 +137,7 @@ namespace RPG
             clearButton.Deselect();
 
             // Update tool states
-            lastView = GameView.Player;
+            LastView = GameView.Player;
             Events.OnViewChanged?.Invoke(GameView.Player);
         }
         public void SelectVision()
@@ -148,7 +148,7 @@ namespace RPG
             clearButton.Deselect();
 
             // Update tool states
-            lastView = GameView.Vision;
+            LastView = GameView.Vision;
             Events.OnViewChanged?.Invoke(GameView.Vision);
         }
         public void SelectClear()
@@ -159,12 +159,15 @@ namespace RPG
             visionButton.Deselect();
 
             // Update tool states
-            lastView = GameView.Clear;
+            LastView = GameView.Clear;
             Events.OnViewChanged?.Invoke(GameView.Clear);
         }
         public void ConfigureLighting()
         {
-            Debug.Log("Configuring lighting");
+            if (lightConfiguration.gameObject.activeInHierarchy) return;
+
+            lightConfiguration.transform.SetAsLastSibling();
+            lightConfiguration.OpenPanel(Session.Instance.Settings.darkness);
         }
         public void SelectCreate()
         {
@@ -292,8 +295,8 @@ namespace RPG
 
 
             // Activate last tool selection
-            if (lastView == GameView.Player) SelectPlayer();
-            else if (lastView == GameView.Vision) SelectPlayer();
+            if (LastView == GameView.Player) SelectPlayer();
+            else if (LastView == GameView.Vision) SelectPlayer();
             else SelectClear();
         }
         public void CloseView()

@@ -35,8 +35,8 @@ namespace RPG
             if (updateRequired && loaded)
             {
                 LoadVision();
-                EnableVision(token.Enabled);
                 LoadLighting();
+                ApplyVisibility();
                 updateRequired = false;
             }
         }
@@ -49,15 +49,20 @@ namespace RPG
             token.Lighting = _data;
             LoadLighting();
         }
-
-        public void DisableVision()
+        private void ApplyVisibility()
         {
-            nightSource.enabled = false;
-            visionSource.enabled = false;
+            ToggleVision(token.Visibility.visible && token.Enabled);
+            ToggleLight(token.Visibility.visible);
         }
-        public void DisableLight()
+
+        public void ToggleVision(bool enabled)
         {
-            lightSource.Toggle(false);
+            nightSource.enabled = enabled;
+            visionSource.enabled = enabled;
+        }
+        public void ToggleLight(bool enabled)
+        {
+            lightSource.Toggle(enabled);
         }
 
         public void Reload()
@@ -89,12 +94,6 @@ namespace RPG
                 // Send error message
                 MessageManager.QueueMessage(callback.GetValue(1).GetString());
             }, token.Data.light);
-        }
-
-        public void EnableVision(bool selected)
-        {
-            nightSource.enabled = token.Data.nightRadius > 0.0f && selected;
-            visionSource.enabled = token.Data.visionRadius > 0.0f && selected;
         }
     }
 }

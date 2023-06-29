@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Cysharp.Threading.Tasks;
 using RPG;
 using SocketIOClient;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Networking
 {
@@ -54,6 +54,7 @@ namespace Networking
 
             // Send disconnection event
             Events.OnDisconnected?.Invoke();
+            SceneManager.LoadScene("Menu");
         }
 
         private static void AddListeners()
@@ -175,6 +176,13 @@ namespace Networking
 
                 await UniTask.SwitchToMainThread();
                 Events.OnLightRemoved?.Invoke(id);
+            });
+            Socket.On("modify-lighting", async (data) =>
+            {
+                RPG.LightingSettings lightingData = JsonUtility.FromJson<RPG.LightingSettings>(data.GetValue().ToString());
+
+                await UniTask.SwitchToMainThread();
+                Events.OnLightingChanged?.Invoke(lightingData, true);
             });
 
             // Presets

@@ -20,6 +20,7 @@ namespace RPG
         [SerializeField] private TMP_InputField widthInput;
         [SerializeField] private TMP_InputField heightInput;
         [SerializeField] private PermissionPanel permissionPanel;
+        [SerializeField] private VisibilityPanel visibilityPanel;
 
         [Header("Lighting")]
         [SerializeField] private CanvasGroup lightingPanel;
@@ -154,6 +155,15 @@ namespace RPG
             permissionPanel.LoadData(data.permissions, (permissions) =>
             {
                 data.permissions = permissions;
+            });
+        }
+        public void OpenVisibility()
+        {
+            if (visibilityPanel.gameObject.activeInHierarchy) return;
+
+            visibilityPanel.LoadData(data.visible, (visiblity) =>
+            {
+                data.visible = visiblity;
             });
         }
         public void OpenColor()

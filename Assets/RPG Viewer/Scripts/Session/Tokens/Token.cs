@@ -26,6 +26,7 @@ namespace RPG
         public string Id { get { return Data.id; } }
 
         public Permission Permission;
+        public Visible Visibility;
         public bool Selected;
         public bool Enabled;
 
@@ -66,7 +67,7 @@ namespace RPG
                 Enabled = Selected;
             }
 
-            Vision.EnableVision(Enabled);
+            Vision.ToggleVision(Enabled && Visibility.visible);
         }
 
         private void HandleDeletion()
@@ -108,6 +109,7 @@ namespace RPG
             // Update data and set permissions
             Data = data;
             SetPermission();
+            SetVisibility();
             Enabled = Permission.type != PermissionType.None;
 
             // Update conditions
@@ -140,6 +142,26 @@ namespace RPG
 
             // Update our permission
             Permission = myPermission;
+        }
+        private void SetVisibility()
+        {
+            // Set as visible if we are the master client
+            if (ConnectionManager.Info.isMaster)
+            {
+                Visibility = new Visible(GameData.User.id, true);
+                return;
+            }
+
+            // Check if visibility is defined for our uid
+            Visible myVisibility = Data.visible.FirstOrDefault(value => value.user == GameData.User.id);
+            if (string.IsNullOrEmpty(myVisibility.user))
+            {
+                Visibility = new Visible(GameData.User.id, true);
+                return;
+            }
+
+            // Update our visibility
+            Visibility = myVisibility;
         }
         public void EnableToken(bool enabled)
         {
@@ -206,7 +228,7 @@ namespace RPG
         public string name;
         public TokenType type;
         public List<Permission> permissions;
-        public List<Permission> visible;
+        public List<Visible> visible;
         public Vector2Int dimensions;
         public float visionRadius;
         public float nightRadius;

@@ -119,7 +119,6 @@ namespace RPG
         private void SaveData()
         {
             float.TryParse(radiusInput.text, out lightData.radius);
-            lightData.color.a = float.Parse(intensityInput.text) * 0.01f;
             lightData.color = new Color(colorButton.color.r, colorButton.color.g, colorButton.color.b, lightData.color.a);
             lightData.effect.type = effectDropdown.value;
             info.enabled = enabledToggle.isOn;

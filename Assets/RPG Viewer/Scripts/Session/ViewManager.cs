@@ -9,12 +9,17 @@ namespace RPG
         {
             // Add event listeners
             Events.OnViewChanged.AddListener(ChangeView);
+            Events.OnSceneLoaded.AddListener(LoadView);
+            Events.OnLightingChanged.AddListener(ChangeLighting);
         }
         private void OnDisable()
         {
             // Remove event listeners
             Events.OnViewChanged.RemoveListener(ChangeView);
+            Events.OnSceneLoaded.RemoveListener(LoadView);
+            Events.OnLightingChanged.RemoveListener(ChangeLighting);
         }
+
 
         private void ChangeView(GameView view)
         {
@@ -38,9 +43,37 @@ namespace RPG
                     return;
             }
         }
+        private void LoadView(SceneData data)
+        {
+            // Return if fog is disabled
+            if (!data.darkness.enabled)
+            {
+                LoadClear();
+                return;
+            }
+
+            switch (SettingsHandler.Instance.LastView)
+            {
+                case GameView.Player:
+                    Lighting2D.LightmapPresets[0].darknessColor = data.darkness.color;
+                    Lighting2D.LightmapPresets[0].darknessColor.a = data.darkness.globalLighting ? 0.0f : data.darkness.color.a;
+                    Lighting2D.LightmapPresets[1].darknessColor = data.darkness.color;
+                    return;
+                case GameView.Vision:
+                    Lighting2D.LightmapPresets[0].darknessColor = new Color(0.0f, 0.0f, 0.0f, 0.0f);
+                    Lighting2D.LightmapPresets[1].darknessColor = data.darkness.color;
+                    Lighting2D.LightmapPresets[1].darknessColor.a = 0.9f;
+                    return;
+                case GameView.Clear:
+                    Lighting2D.LightmapPresets[0].darknessColor.a = 0.0f;
+                    Lighting2D.LightmapPresets[1].darknessColor.a = 0.0f;
+                    return;
+            }
+        }
         private void LoadPlayer()
         {
             Lighting2D.LightmapPresets[0].darknessColor = Session.Instance.Settings.darkness.color;
+            Lighting2D.LightmapPresets[0].darknessColor.a = Session.Instance.Settings.darkness.globalLighting ? 0.0f : Session.Instance.Settings.darkness.color.a;
             Lighting2D.LightmapPresets[1].darknessColor = Session.Instance.Settings.darkness.color;
         }
         private void LoadVision()
@@ -53,6 +86,34 @@ namespace RPG
         {
             Lighting2D.LightmapPresets[0].darknessColor.a = 0.0f;
             Lighting2D.LightmapPresets[1].darknessColor.a = 0.0f;
+        }
+
+        private void ChangeLighting(LightingSettings data, bool globalUpdate)
+        {
+            // Return if fog is disabled
+            if (!data.enabled)
+            {
+                LoadClear();
+                return;
+            }
+
+            switch (SettingsHandler.Instance.LastView)
+            {
+                case GameView.Player:
+                    Lighting2D.LightmapPresets[0].darknessColor = data.color;
+                    Lighting2D.LightmapPresets[0].darknessColor.a = data.globalLighting ? 0.0f : data.color.a;
+                    Lighting2D.LightmapPresets[1].darknessColor = data.color;
+                    return;
+                case GameView.Vision:
+                    Lighting2D.LightmapPresets[0].darknessColor = new Color(0.0f, 0.0f, 0.0f, 0.0f);
+                    Lighting2D.LightmapPresets[1].darknessColor = data.color;
+                    Lighting2D.LightmapPresets[1].darknessColor.a = 0.9f;
+                    return;
+                case GameView.Clear:
+                    Lighting2D.LightmapPresets[0].darknessColor.a = 0.0f;
+                    Lighting2D.LightmapPresets[1].darknessColor.a = 0.0f;
+                    return;
+            }
         }
     }
 

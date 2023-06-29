@@ -15,6 +15,8 @@ namespace RPG
         {
             if (eventData.button == PointerEventData.InputButton.Left)
             {
+                if (targetPanel == null) return;
+                
                 dragging = true;
                 offset = useWorldPos ? targetPanel.anchoredPosition - (Vector2)Camera.main.ScreenToWorldPoint(Input.mousePosition) : targetPanel.anchoredPosition - (Vector2)Input.mousePosition;
             }
