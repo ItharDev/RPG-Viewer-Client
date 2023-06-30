@@ -221,6 +221,7 @@ namespace RPG
             dragObject.DisableCollider();
             dragObject.UI.SetAlpha(0.5f);
             dragObject.UI.DisableOutline();
+            dragObject.UI.EnableRaycasting(false);
 
             // Toggle conditions panel
             if (token.Conditions.IsOpen)

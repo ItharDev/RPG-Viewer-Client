@@ -1,4 +1,7 @@
 using System.Collections.Generic;
+using System.Linq;
+using Cysharp.Threading.Tasks;
+using Networking;
 using Nobi.UiRoundedCorners;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -10,12 +13,13 @@ namespace RPG
     {
         [SerializeField] private InitiativeHolder holderPrefab;
         [SerializeField] private RectTransform content;
+        [SerializeField] private CanvasGroup canvasGroup;
         [SerializeField] private Image background;
         [SerializeField] private GameObject buttons;
 
         public Transform Content { get { return content.transform; } }
 
-        private List<InitiativeHolder> holders = new List<InitiativeHolder>();
+        private Dictionary<string, InitiativeHolder> holders = new Dictionary<string, InitiativeHolder>();
         private RectTransform rect;
         private float lastSize;
         private int lastCount;
@@ -29,12 +33,20 @@ namespace RPG
             // Add event listners
             Events.OnStateChanged.AddListener(ReloadInitiatives);
             Events.OnSceneLoaded.AddListener(LoadInitiatives);
+            Events.OnInitiativeCreated.AddListener(CreateHolder);
+            Events.OnInitiativeModified.AddListener(ModifyInitiative);
+            Events.OnInitiativeRemoved.AddListener(RemoveInitiative);
+            Events.OnInitiativeSorted.AddListener(SortContent);
         }
         private void OnDisable()
         {
             // Remove event listners
             Events.OnStateChanged.RemoveListener(ReloadInitiatives);
             Events.OnSceneLoaded.RemoveListener(LoadInitiatives);
+            Events.OnInitiativeCreated.RemoveListener(CreateHolder);
+            Events.OnInitiativeModified.RemoveListener(ModifyInitiative);
+            Events.OnInitiativeRemoved.RemoveListener(RemoveInitiative);
+            Events.OnInitiativeSorted.RemoveListener(SortContent);
         }
         private void Update()
         {
@@ -60,9 +72,32 @@ namespace RPG
             buttons.SetActive(isOpen);
             Resize();
         }
+        public void AddInitiative(bool visible)
+        {
+            InitiativeData data = new InitiativeData("", "", 0, visible);
+            SocketManager.EmitAsync("create-initiative", (callback) =>
+            {
+                // Check if the event was successful
+                if (callback.GetValue().GetBoolean()) return;
+
+                // Send error message
+                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+            }, JsonUtility.ToJson(data));
+        }
+        public void Sort()
+        {
+            SocketManager.EmitAsync("sort-initiative", (callback) =>
+            {
+                // Check if the event was successful
+                if (callback.GetValue().GetBoolean()) return;
+
+                // Send error message
+                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+            });
+        }
         private void Resize()
         {
-            rect.sizeDelta = new Vector2(200.0f, isOpen ? 30.0f + content.sizeDelta.y : 30.0f);
+            rect.sizeDelta = new Vector2(200.0f, isOpen ? 35.0f + content.sizeDelta.y : 25.0f);
 
             // Refresh corners
             var corners = background.GetComponent<ImageWithRoundedCorners>();
@@ -71,12 +106,13 @@ namespace RPG
         }
         private void SortContent()
         {
-            holders.Sort(SortByRoll);
-            holders.Reverse();
-
-            for (int i = 0; i < holders.Count; i++)
+            List<InitiativeHolder> sortedList = new List<InitiativeHolder>();
+            foreach (var item in holders)
             {
-                holders[i].transform.SetSiblingIndex(i);
+                sortedList.Add(item.Value);
+                sortedList.Sort(SortByRoll);
+                sortedList.Reverse();
+                item.Value.transform.SetSiblingIndex(sortedList.IndexOf(item.Value));
             }
         }
 
@@ -109,28 +145,57 @@ namespace RPG
             foreach (var item in holders)
             {
                 // Continue if token is null
-                if (item == null) continue;
-                Destroy(item.gameObject);
+                if (item.Value == null) continue;
+                Destroy(item.Value.gameObject);
             }
 
             // Clear lists
             holders.Clear();
+            canvasGroup.alpha = 0.0f;
+            canvasGroup.blocksRaycasts = false;
         }
         private void LoadInitiatives(SceneData data)
         {
-            List<InitiativeData> initiatives = data.initiatives;
-            for (int i = 0; i < initiatives.Count; i++)
-            {
-                CreateHolder(initiatives[i]);
-            }
+            canvasGroup.alpha = 1.0f;
+            canvasGroup.blocksRaycasts = true;
 
-            holders.Sort(SortByRoll);
+            SocketManager.EmitAsync("get-initiatives", async (callback) =>
+            {
+                // Check if the event was successful
+                if (callback.GetValue().GetBoolean())
+                {
+                    await UniTask.SwitchToMainThread();
+                    var initiatives = callback.GetValue(1).EnumerateObject().ToArray();
+                    for (int i = 0; i < initiatives.Length; i++)
+                    {
+                        InitiativeData data = JsonUtility.FromJson<InitiativeData>(initiatives[i].Value.ToString());
+                        CreateHolder(data);
+                    }
+                    return;
+                }
+
+                // Send error message
+                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+            });
+        }
+        private void ModifyInitiative(string id, InitiativeData data)
+        {
+            holders[id].LoadData(data);
+            SortContent();
+        }
+        private void RemoveInitiative(string id)
+        {
+            InitiativeHolder holder = holders[id];
+            holders.Remove(id);
+            Destroy(holder.gameObject);
+            SortContent();
         }
         private void CreateHolder(InitiativeData data)
         {
             InitiativeHolder holder = Instantiate(holderPrefab, Content);
             holder.LoadData(data);
-            holders.Add(holder);
+            holders.Add(data.id, holder);
+            SortContent();
         }
 
         private int SortByRoll(InitiativeHolder holderA, InitiativeHolder holderB)

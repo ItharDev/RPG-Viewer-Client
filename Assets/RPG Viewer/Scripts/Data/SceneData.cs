@@ -70,14 +70,14 @@ namespace RPG
     [Serializable]
     public struct InitiativeData
     {
-        public int index;
+        public string id;
         public string name;
         public int roll;
         public bool visible;
 
-        public InitiativeData(int _index, string _name, int _roll, bool _visible)
+        public InitiativeData(string _id, string _name, int _roll, bool _visible)
         {
-            index = _index;
+            id = _id;
             name = _name;
             roll = _roll;
             visible = _visible;

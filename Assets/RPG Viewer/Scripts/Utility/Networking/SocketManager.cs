@@ -292,6 +292,34 @@ namespace Networking
                 await UniTask.SwitchToMainThread();
                 Events.OnTokenRotated?.Invoke(id, angle);
             });
+
+            // Initiatives
+            Socket.On("create-initiative", async (data) =>
+            {
+                InitiativeData initiative = JsonUtility.FromJson<InitiativeData>(data.GetValue(0).ToString());
+
+                await UniTask.SwitchToMainThread();
+                Events.OnInitiativeCreated?.Invoke(initiative);
+            });
+            Socket.On("modify-initiative", async (data) =>
+            {
+                InitiativeData initiative = JsonUtility.FromJson<InitiativeData>(data.GetValue(0).ToString());
+
+                await UniTask.SwitchToMainThread();
+                Events.OnInitiativeModified?.Invoke(initiative.id, initiative);
+            });
+            Socket.On("remove-initiative", async (data) =>
+            {
+                string id = data.GetValue().GetString();
+
+                await UniTask.SwitchToMainThread();
+                Events.OnInitiativeRemoved?.Invoke(id);
+            });
+            Socket.On("sort-initiative", async (data) =>
+            {
+                await UniTask.SwitchToMainThread();
+                Events.OnInitiativeSorted?.Invoke();
+            });
         }
 
         public static void Connect(string address)

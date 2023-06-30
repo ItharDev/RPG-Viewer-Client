@@ -42,10 +42,6 @@ namespace RPG
         public static UnityEvent OnBlueprintDeselected = new UnityEvent();
         public static UnityEvent OnBlueprintMoved = new UnityEvent();
 
-        // Doors
-        public static UnityEvent<string, bool> OnDoorOpened = new UnityEvent<string, bool>();
-        public static UnityEvent<string, WallData> OnDoorModified = new UnityEvent<string, WallData>();
-
         // Lights
         public static UnityEvent<KeyValuePair<string, LightData>, PresetData> OnLightCreated = new UnityEvent<KeyValuePair<string, LightData>, PresetData>();
         public static UnityEvent<string, LightData, PresetData> OnLightModified = new UnityEvent<string, LightData, PresetData>();
@@ -91,22 +87,10 @@ namespace RPG
         public static UnityEvent<string, float> OnTokenRotated = new UnityEvent<string, float>();
         public static UnityEvent<Token> OnTokenSelected = new UnityEvent<Token>();
 
-        // Notes
-        // public static UnityEvent<NoteData> OnNoteCreated = new UnityEvent<NoteData>();
-        public static UnityEvent<string, string> OnNoteTextModified = new UnityEvent<string, string>();
-        public static UnityEvent<string, string> OnNoteImageModified = new UnityEvent<string, string>();
-        public static UnityEvent<string, string> OnNoteHeaderModified = new UnityEvent<string, string>();
-        public static UnityEvent<string, bool> OnNoteEnabled = new UnityEvent<string, bool>();
-        public static UnityEvent<string, Vector2> OnNoteMoved = new UnityEvent<string, Vector2>();
-        public static UnityEvent<string> OnNoteRemoved = new UnityEvent<string>();
-        public static UnityEvent<string> OnNoteShown = new UnityEvent<string>();
-
-        // Journals
-        public static UnityEvent<string, string> OnJournalTextModified = new UnityEvent<string, string>();
-        public static UnityEvent<string, string> OnJournalImageModified = new UnityEvent<string, string>();
-        public static UnityEvent<string, string> OnJournalHeaderModified = new UnityEvent<string, string>();
-        // public static UnityEvent<string, List<Collaborator>> OnCollaboratorsModified = new UnityEvent<string, List<Collaborator>>();
-        public static UnityEvent<string> OnJournalRemoved = new UnityEvent<string>();
-        // public static UnityEvent<JournalData> OnJournalShown = new UnityEvent<JournalData>();
+        // Initiatives
+        public static UnityEvent<InitiativeData> OnInitiativeCreated = new UnityEvent<InitiativeData>();
+        public static UnityEvent<string, InitiativeData> OnInitiativeModified = new UnityEvent<string, InitiativeData>();
+        public static UnityEvent<string> OnInitiativeRemoved = new UnityEvent<string>();
+        public static UnityEvent OnInitiativeSorted = new UnityEvent();
     }
 }
