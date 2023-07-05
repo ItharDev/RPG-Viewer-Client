@@ -13,6 +13,7 @@ namespace RPG
         [SerializeField] private ImageWithIndependentRoundedCorners topCorners;
 
         private RectTransform rect;
+        private NoteData data;
 
         private void Awake()
         {
@@ -22,6 +23,11 @@ namespace RPG
             {
                 sections[i].Initialise(this);
             }
+        }
+
+        public void Close()
+        {
+            Debug.Log(GetData());
         }
 
         public void ResizePanel(BaseEventData eventData)
@@ -46,6 +52,17 @@ namespace RPG
             corners.Refresh();
             topCorners.Validate();
             topCorners.Refresh();
+        }
+
+        private string GetData()
+        {
+            List<SectionData> sectionList = new List<SectionData>();
+            for (int i = 0; i < sections.Count; i++)
+            {
+                sectionList.Add(sections[i].GetData());
+            }
+
+            return JsonUtility.ToJson(new NoteData(data.id, sectionList));
         }
     }
 }

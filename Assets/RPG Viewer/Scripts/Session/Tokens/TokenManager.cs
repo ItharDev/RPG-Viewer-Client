@@ -122,7 +122,11 @@ namespace RPG
 
                     // Load data with the new image
                     token.LoadData(data, sprite);
-                    if (myTokens.Contains(token) && (token.Permission.type != PermissionType.Controller || !token.Visibility.visible)) myTokens.Remove(token);
+                    if (myTokens.Contains(token) && (token.Permission.type != PermissionType.Controller || !token.Visibility.visible))
+                    {
+                        myTokens.Remove(token);
+                        SelectToken(null);
+                    }
                     else if (!myTokens.Contains(token) && token.Permission.type == PermissionType.Controller && token.Visibility.visible) myTokens.Add(token);
                 });
 
@@ -131,7 +135,11 @@ namespace RPG
 
             // Load data
             token.LoadData(data, null);
-            if (myTokens.Contains(token) && (token.Permission.type != PermissionType.Controller || !token.Visibility.visible)) myTokens.Remove(token);
+            if (myTokens.Contains(token) && (token.Permission.type != PermissionType.Controller || !token.Visibility.visible))
+            {
+                myTokens.Remove(token);
+                SelectToken(null);
+            }
             else if (!myTokens.Contains(token) && token.Permission.type == PermissionType.Controller && token.Visibility.visible) myTokens.Add(token);
         }
         private void RemoveToken(string id)
@@ -159,7 +167,11 @@ namespace RPG
 
             if (ConnectionManager.Info.isMaster) return;
 
-            if (myTokens.Contains(token) && !enabled) myTokens.Remove(token);
+            if (myTokens.Contains(token) && !enabled)
+            {
+                myTokens.Remove(token);
+                SelectToken(null);
+            }
             else if (!myTokens.Contains(token) && token.Permission.type == PermissionType.Controller && token.Visibility.visible && enabled) myTokens.Add(token);
             token.gameObject.SetActive(enabled);
         }

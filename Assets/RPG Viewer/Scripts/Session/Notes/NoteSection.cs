@@ -1,4 +1,5 @@
 using Nobi.UiRoundedCorners;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -6,6 +7,7 @@ namespace RPG
 {
     public class NoteSection : MonoBehaviour
     {
+        [SerializeField] private TMP_InputField textInput;
         [SerializeField] private RectTransform image;
         [SerializeField] private RectTransform text;
         [SerializeField] private RectTransform separator;
@@ -72,6 +74,11 @@ namespace RPG
             // Refresh corners
             corners.Validate();
             corners.Refresh();
+        }
+
+        public SectionData GetData()
+        {
+            return new SectionData(textInput.text, "{image id}");
         }
     }
 }
