@@ -92,5 +92,11 @@ namespace RPG
         public static UnityEvent<string, InitiativeData> OnInitiativeModified = new UnityEvent<string, InitiativeData>();
         public static UnityEvent<string> OnInitiativeRemoved = new UnityEvent<string>();
         public static UnityEvent OnInitiativeSorted = new UnityEvent();
+
+        // Notes
+        public static UnityEvent<NoteInfo, NoteData> OnNoteCreated = new UnityEvent<NoteInfo, NoteData>();
+        public static UnityEvent<string, NoteInfo> OnNoteInfoModified = new UnityEvent<string, NoteInfo>();
+        public static UnityEvent<string, NoteData> OnNoteDataModified = new UnityEvent<string, NoteData>();
+
     }
 }

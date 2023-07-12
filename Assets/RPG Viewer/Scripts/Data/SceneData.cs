@@ -16,6 +16,7 @@ namespace RPG
         [NonSerialized] public string path;
         [NonSerialized] public string id;
         [NonSerialized] public Dictionary<string, LightData> lights;
+        [NonSerialized] public Dictionary<string, NoteInfo> notes;
 
         public SceneData(SceneInfo _info, GridData _grid, LightingSettings _darkness)
         {

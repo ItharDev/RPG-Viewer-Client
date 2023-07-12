@@ -13,8 +13,6 @@ namespace RPG
         [SerializeField] private Transform lightParent;
 
         private Dictionary<string, Light> lights = new Dictionary<string, Light>();
-        private bool canCreate;
-        private bool canRemove;
 
         private void OnEnable()
         {
@@ -122,7 +120,7 @@ namespace RPG
             }
             else
             {
-                // Unload tokens if syncing was disabled
+                // Unload lights if syncing was disabled
                 if (oldState.synced && !newState.synced)
                 {
                     UnloadLights();

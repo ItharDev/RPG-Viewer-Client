@@ -135,9 +135,16 @@ namespace RPG
                     // Load scene data
                     SceneData settings = JsonUtility.FromJson<SceneData>(callback.GetValue(1).ToString());
                     settings.id = id;
+
+                    // Load lights
                     settings.lights = new Dictionary<string, LightData>();
                     System.Text.Json.JsonElement lights;
                     if (callback.GetValue(1).TryGetProperty("lights", out lights)) settings.lights = GetLights(callback.GetValue(1).GetProperty("lights").EnumerateObject().ToArray());
+
+                    // Load notes
+                    settings.notes = new Dictionary<string, NoteInfo>();
+                    System.Text.Json.JsonElement notes;
+                    if (callback.GetValue(1).TryGetProperty("notes", out notes)) settings.notes = GetNotes(callback.GetValue(1).GetProperty("notes").EnumerateObject().ToArray());
 
                     MessageManager.QueueMessage("Loading scene");
                     Settings = settings;
@@ -182,6 +189,16 @@ namespace RPG
             for (int i = 0; i < lights.Length; i++)
             {
                 dictionary.Add(lights[i].Name, JsonUtility.FromJson<LightData>(lights[i].Value.ToString()));
+            }
+
+            return dictionary;
+        }
+        private Dictionary<string, NoteInfo> GetNotes(System.Text.Json.JsonProperty[] notes)
+        {
+            Dictionary<string, NoteInfo> dictionary = new Dictionary<string, NoteInfo>();
+            for (int i = 0; i < notes.Length; i++)
+            {
+                dictionary.Add(notes[i].Name, JsonUtility.FromJson<NoteInfo>(notes[i].Value.ToString()));
             }
 
             return dictionary;

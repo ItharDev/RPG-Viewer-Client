@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
 using UnityEngine;
 
 namespace RPG
@@ -13,29 +11,30 @@ namespace RPG
         public string data;
         public string owner;
         public bool global;
+        public bool IsOwner { get { return owner == GameData.User.id || global; } }
+
+        public NoteInfo(string _id, Vector2 _position, string _data, string _owner, bool _global)
+        {
+            id = _id;
+            position = _position;
+            data = _data;
+            owner = _owner;
+            global = _global;
+        }
     }
 
     [Serializable]
     public struct NoteData
     {
         public string id;
-        public List<SectionData> sections;
-
-        public NoteData(string _id, List<SectionData> _sections)
-        {
-            id = _id;
-            sections = _sections;
-        }
-    }
-
-    [Serializable]
-    public struct SectionData
-    {
+        public string header;
         public string text;
         public string image;
 
-        public SectionData(string _text, string _image)
+        public NoteData(string _id, string _header, string _text, string _image)
         {
+            id = _id;
+            header = _header;
             text = _text;
             image = _image;
         }

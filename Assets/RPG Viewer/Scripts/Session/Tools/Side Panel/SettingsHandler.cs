@@ -315,6 +315,8 @@ namespace RPG
         Walls_Door,
         Walls_Hidden_Door,
         Lighting_Create,
-        Lighting_Delete
+        Lighting_Delete,
+        Notes_Create,
+        Notes_Delete
     }
 }

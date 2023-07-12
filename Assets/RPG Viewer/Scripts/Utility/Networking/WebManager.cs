@@ -9,10 +9,10 @@ namespace Networking
 {
     public class WebManager
     {
-        public static async void Download(string _path, bool useCache, Action<byte[]> callback)
+        public static async void Download(string id, bool useCache, Action<byte[]> callback)
         {
             await UniTask.SwitchToMainThread();
-            string path = $"{Application.persistentDataPath}{Path.DirectorySeparatorChar}{_path}";
+            string path = $"{Application.persistentDataPath}{Path.DirectorySeparatorChar}{id}";
             if (useCache)
             {
                 if (File.Exists(path))
@@ -38,7 +38,7 @@ namespace Networking
                         // Send error message
                         MessageManager.QueueMessage(callback1.GetValue(1).GetString());
                         callback(null);
-                    }, _path);
+                    }, id);
                 }
             }
             else
@@ -56,7 +56,7 @@ namespace Networking
                     // Send error message
                     MessageManager.QueueMessage(callback1.GetValue(1).GetString());
                     callback(null);
-                }, _path);
+                }, id);
             }
         }
         public static async void DownloadLocal(string _path, Action<byte[]> callback)
