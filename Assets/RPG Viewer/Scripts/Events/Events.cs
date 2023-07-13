@@ -95,8 +95,18 @@ namespace RPG
 
         // Notes
         public static UnityEvent<NoteInfo, NoteData> OnNoteCreated = new UnityEvent<NoteInfo, NoteData>();
-        public static UnityEvent<string, NoteInfo> OnNoteInfoModified = new UnityEvent<string, NoteInfo>();
-        public static UnityEvent<string, NoteData> OnNoteDataModified = new UnityEvent<string, NoteData>();
+        public static UnityEvent<string, Vector2> OnNoteMoved = new UnityEvent<string, Vector2>();
+        public static UnityEvent<string, string, string> OnNoteTextModified = new UnityEvent<string, string, string>();
+        public static UnityEvent<string, string, string> OnNoteHeaderModified = new UnityEvent<string, string, string>();
+        public static UnityEvent<string, string> OnNoteImageModified = new UnityEvent<string, string>();
+        public static UnityEvent<string, bool> OnNoteSetToGlobal = new UnityEvent<string, bool>();
+        public static UnityEvent<string> OnNoteRemoved = new UnityEvent<string>();
+        public static UnityEvent<string> OnNoteShowed = new UnityEvent<string>();
 
+        // ping
+        public static UnityEvent<string, Vector2> OnPointerStarted = new UnityEvent<string, Vector2>();
+        public static UnityEvent<string, Vector2> OnPointerUpdated = new UnityEvent<string, Vector2>();
+        public static UnityEvent<string> OnPointerStopped = new UnityEvent<string>();
+        public static UnityEvent<Vector2, bool> OnPing = new UnityEvent<Vector2, bool>();
     }
 }

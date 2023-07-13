@@ -18,12 +18,12 @@ namespace RPG
         private void OnEnable()
         {
             // Add event listeners
-            Events.OnSettingChanged.AddListener(ToggleUI);
+            Events.OnToolChanged.AddListener(ToggleUI);
         }
         private void OnDisable()
         {
             // Remove event listeners
-            Events.OnSettingChanged.RemoveListener(ToggleUI);
+            Events.OnToolChanged.RemoveListener(ToggleUI);
         }
         private void Update()
         {
@@ -31,17 +31,17 @@ namespace RPG
             if (Input.GetKey(KeyCode.LeftShift) && Input.GetMouseButtonUp(0) && !MouseOver) CreateNote();
         }
 
-        private void ToggleUI(Setting setting)
+        private void ToggleUI(Tool tool)
         {
-            bool enabled = setting.ToString().ToLower().Contains("notes");
+            bool enabled = tool.ToString().ToLower().Contains("notes");
             interactable = enabled;
 
-            switch (setting)
+            switch (tool)
             {
-                case Setting.Notes_Create:
+                case Tool.Notes_Create:
                     Mode = NoteMode.Create;
                     break;
-                case Setting.Notes_Delete:
+                case Tool.Notes_Delete:
                     Mode = NoteMode.Delete;
                     break;
             }
@@ -51,7 +51,7 @@ namespace RPG
         {
             Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             NoteData data = new NoteData("", "New note", "", "");
-            NoteInfo info = new NoteInfo("", mousePos, "", GameData.User.id, false);
+            NoteInfo info = new NoteInfo("", mousePos, GameData.User.id, false);
 
             SocketManager.EmitAsync("create-note", (callback) =>
             {

@@ -128,7 +128,7 @@ namespace RPG
             else
             {
                 // Unload initiatives if syncing was disabled
-                if (oldState.synced && !newState.synced)
+                if (!newState.synced)
                 {
                     UnloadInitiatives();
                     return;

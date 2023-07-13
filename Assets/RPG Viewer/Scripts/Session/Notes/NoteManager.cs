@@ -12,13 +12,19 @@ namespace RPG
         [SerializeField] private Transform noteParent;
 
         private Dictionary<string, Note> notes = new Dictionary<string, Note>();
+        private Dictionary<string, NoteUI> openNotes = new Dictionary<string, NoteUI>();
 
         private void OnEnable()
         {
             // Add event listeners
             Events.OnNoteCreated.AddListener(CreateNote);
-            Events.OnNoteInfoModified.AddListener(ModifyInfo);
-            Events.OnNoteDataModified.AddListener(ModifyData);
+            Events.OnNoteMoved.AddListener(MoveNote);
+            Events.OnNoteTextModified.AddListener(ModifyText);
+            Events.OnNoteHeaderModified.AddListener(ModifyHeader);
+            Events.OnNoteImageModified.AddListener(ModifyImage);
+            Events.OnNoteSetToGlobal.AddListener(SetGlobal);
+            Events.OnNoteRemoved.AddListener(RemoveNote);
+            Events.OnNoteShowed.AddListener(ShowNote);
             Events.OnStateChanged.AddListener(ReloadNotes);
             Events.OnSceneLoaded.AddListener(LoadNotes);
         }
@@ -26,8 +32,13 @@ namespace RPG
         {
             // Remove event listeners
             Events.OnNoteCreated.RemoveListener(CreateNote);
-            Events.OnNoteInfoModified.RemoveListener(ModifyInfo);
-            Events.OnNoteDataModified.RemoveListener(ModifyData);
+            Events.OnNoteMoved.RemoveListener(MoveNote);
+            Events.OnNoteTextModified.RemoveListener(ModifyText);
+            Events.OnNoteHeaderModified.RemoveListener(ModifyHeader);
+            Events.OnNoteImageModified.RemoveListener(ModifyImage);
+            Events.OnNoteSetToGlobal.RemoveListener(SetGlobal);
+            Events.OnNoteRemoved.RemoveListener(RemoveNote);
+            Events.OnNoteShowed.RemoveListener(ShowNote);
             Events.OnStateChanged.RemoveListener(ReloadNotes);
             Events.OnSceneLoaded.RemoveListener(LoadNotes);
         }
@@ -50,7 +61,7 @@ namespace RPG
                 {
                     await UniTask.SwitchToMainThread();
                     NoteData data = JsonUtility.FromJson<NoteData>(callback.GetValue(1).ToString());
-                    data.id = info.data;
+                    data.id = info.id;
                     CreateNote(info, data);
 
                     return;
@@ -58,9 +69,9 @@ namespace RPG
 
                 // Send error message
                 MessageManager.QueueMessage(callback.GetValue(1).GetString());
-            }, info.data);
+            }, info.id);
         }
-        private void ModifyInfo(string id, NoteInfo info)
+        private void MoveNote(string id, Vector2 position)
         {
             // Find the correct note
             Note note = notes[id];
@@ -69,9 +80,9 @@ namespace RPG
             if (note == null) return;
 
             // Load new info
-            note.ReloadInfo(info);
+            note.ReloadPosition(position);
         }
-        private void ModifyData(string id, NoteData data)
+        private void ModifyText(string id, string text, string uid)
         {
             // Find the correct note
             Note note = notes[id];
@@ -79,9 +90,73 @@ namespace RPG
             // Check if note was found
             if (note == null) return;
 
-            // Load new data
-            note.ReloadData(data);
+            // Load new info
+            note.ReloadText(text);
+            if (openNotes.ContainsKey(id)) openNotes[id].ReloadText(text, uid != GameData.User.id);
         }
+        private void ModifyHeader(string id, string header, string uid)
+        {
+            // Find the correct note
+            Note note = notes[id];
+
+            // Check if note was found
+            if (note == null) return;
+
+            // Load new info
+            note.ReloadHeader(header);
+            Debug.Log(uid);
+            if (openNotes.ContainsKey(id)) openNotes[id].ReloadHeader(header, uid != GameData.User.id);
+        }
+        private void ModifyImage(string id, string image)
+        {
+            // Find the correct note
+            Note note = notes[id];
+
+            // Check if note was found
+            if (note == null) return;
+
+            // Load new info
+            note.ReloadImage(image);
+            if (openNotes.ContainsKey(id)) openNotes[id].ReloadImage(image);
+        }
+        private void SetGlobal(string id, bool isGlobal)
+        {
+            // Find the correct note
+            Note note = notes[id];
+
+            // Check if note was found
+            if (note == null) return;
+
+            // Load new info
+            note.SetGlobal(isGlobal);
+            if (openNotes.ContainsKey(id)) openNotes[id].SetGlobal(isGlobal);
+        }
+        private void RemoveNote(string id)
+        {
+            // Find the correct note
+            Note note = notes[id];
+
+            // Check if note was found
+            if (note == null) return;
+
+            notes.Remove(id);
+            Destroy(note.gameObject);
+
+            if (!openNotes.ContainsKey(id)) return;
+            Destroy(openNotes[id]);
+            RemoveNote(id);
+        }
+        private void ShowNote(string id)
+        {
+            // Find the correct note
+            Note note = notes[id];
+
+            // Check if note was found
+            if (note == null) return;
+
+            note.ShowNote();
+        }
+
         private void ReloadNotes(SessionState oldState, SessionState newState)
         {
             // Check if we are the master client
@@ -94,7 +169,7 @@ namespace RPG
             else
             {
                 // Unload notes if syncing was disabled
-                if (oldState.synced && !newState.synced)
+                if (!newState.synced)
                 {
                     UnloadNotes();
                     return;
@@ -128,6 +203,17 @@ namespace RPG
             {
                 GetNote(list.ElementAt(i).Value);
             }
+        }
+
+        public void OpenNote(string id, NoteUI note)
+        {
+            if (openNotes.ContainsKey(id) || openNotes.ContainsValue(note)) return;
+            openNotes.Add(id, note);
+        }
+        public void CloseNote(string id)
+        {
+            if (!openNotes.ContainsKey(id)) return;
+            openNotes.Remove(id);
         }
     }
 }

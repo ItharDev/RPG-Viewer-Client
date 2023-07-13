@@ -107,15 +107,15 @@ namespace RPG
 
                 if (line == null)
                 {
-                    line = new VectorLine("Measure arrow", list2D.ToList(), 1.0f, LineType.Continuous);
+                    line = new VectorLine("Measure arrow", list2D.ToList(), 1.0f, LineType.Continuous, Joins.Weld);
                     line.rectTransform.gameObject.layer = 5;
                     line.endCap = "Arrow";
                     line.SetEndCapColor(lineColor);
-                    line.SetColor(lineColor);
                 }
                 else
                 {
                     line.points2 = list2D.ToList();
+                    line.color = lineColor;
                 }
                 line.Draw();
             }

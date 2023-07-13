@@ -12,8 +12,8 @@ namespace RPG
         [SerializeField] private SpriteRenderer sceneSprite;
         [SerializeField] private Image landingPage;
 
-        public LightingManager LightingManager { get; private set; }
         public TokenManager TokenManager { get; private set; }
+        public NoteManager NoteManager { get; private set; }
         public GridManager Grid { get; private set; }
         public SceneData Settings { get; private set; }
         public static Session Instance { get; private set; }
@@ -45,8 +45,8 @@ namespace RPG
             else Destroy(gameObject);
 
             // Get reference of the managers
-            LightingManager = FindObjectOfType<LightingManager>();
             TokenManager = FindObjectOfType<TokenManager>();
+            NoteManager = FindObjectOfType<NoteManager>();
             Grid = FindObjectOfType<GridManager>();
         }
         private void Start()
@@ -60,7 +60,7 @@ namespace RPG
             if (newState.scene == null)
             {
                 // Return if there's no scene active
-                landingPage.gameObject.SetActive(true);
+                landingPage.transform.parent.gameObject.SetActive(true);
                 return;
             }
 
@@ -68,7 +68,7 @@ namespace RPG
             if (ConnectionManager.Info.isMaster)
             {
                 // Activate or deactivate landing page based on state
-                landingPage.gameObject.SetActive(string.IsNullOrEmpty(newState.scene));
+                landingPage.transform.parent.gameObject.SetActive(string.IsNullOrEmpty(newState.scene));
 
                 // Return if no scene was changed
                 if (oldState.scene == newState.scene) return;
@@ -81,7 +81,7 @@ namespace RPG
                 // Return if syncing is disabled
                 if (!newState.synced)
                 {
-                    landingPage.gameObject.SetActive(true);
+                    landingPage.transform.parent.gameObject.SetActive(true);
                     return;
                 }
 
@@ -124,7 +124,7 @@ namespace RPG
 
         private void LoadScene(string id)
         {
-            landingPage.gameObject.SetActive(true);
+            landingPage.transform.parent.gameObject.SetActive(true);
             SocketManager.EmitAsync("get-scene", async (callback) =>
             {
                 // Check if the event was successful
@@ -163,7 +163,7 @@ namespace RPG
                         // Remove message when loading is completed
                         MessageManager.RemoveMessage("Loading scene");
 
-                        landingPage.gameObject.SetActive(false);
+                        landingPage.transform.parent.gameObject.SetActive(false);
                     });
 
                     return;

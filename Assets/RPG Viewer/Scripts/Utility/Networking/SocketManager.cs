@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Net.NetworkInformation;
 using Cysharp.Threading.Tasks;
 using RPG;
 using SocketIOClient;
@@ -319,6 +320,110 @@ namespace Networking
             {
                 await UniTask.SwitchToMainThread();
                 Events.OnInitiativeSorted?.Invoke();
+            });
+
+            // Notes
+            Socket.On("create-note", async (data) =>
+            {
+                string id = data.GetValue().GetString();
+                NoteInfo noteInfo = JsonUtility.FromJson<NoteInfo>(data.GetValue(1).ToString());
+                NoteData noteData = JsonUtility.FromJson<NoteData>(data.GetValue(2).ToString());
+
+                noteInfo.id = id;
+                noteData.id = id;
+
+                await UniTask.SwitchToMainThread();
+                Events.OnNoteCreated?.Invoke(noteInfo, noteData);
+            });
+            Socket.On("move-note", async (data) =>
+            {
+                string id = data.GetValue().GetString();
+                NoteInfo noteInfo = JsonUtility.FromJson<NoteInfo>(data.GetValue(1).ToString());
+
+                await UniTask.SwitchToMainThread();
+                Events.OnNoteMoved?.Invoke(id, noteInfo.position);
+            });
+            Socket.On("modify-note-text", async (data) =>
+            {
+                string id = data.GetValue().GetString();
+                string text = data.GetValue(1).GetString();
+                string uid = data.GetValue(2).GetString();
+
+                await UniTask.SwitchToMainThread();
+                Events.OnNoteTextModified?.Invoke(id, text, uid);
+            });
+            Socket.On("modify-note-header", async (data) =>
+            {
+                string id = data.GetValue().GetString();
+                string header = data.GetValue(1).GetString();
+                string uid = data.GetValue(2).GetString();
+
+                await UniTask.SwitchToMainThread();
+                Events.OnNoteHeaderModified?.Invoke(id, header, uid);
+            });
+            Socket.On("modify-note-image", async (data) =>
+            {
+                string id = data.GetValue().GetString();
+                string image = data.GetValue(1).GetString();
+
+                await UniTask.SwitchToMainThread();
+                Events.OnNoteImageModified?.Invoke(id, image);
+            });
+            Socket.On("set-note-global", async (data) =>
+            {
+                string id = data.GetValue().GetString();
+                bool isGlobal = data.GetValue(1).GetBoolean();
+
+                await UniTask.SwitchToMainThread();
+                Events.OnNoteSetToGlobal?.Invoke(id, isGlobal);
+            });
+            Socket.On("remove-note", async (data) =>
+            {
+                string id = data.GetValue().GetString();
+
+                await UniTask.SwitchToMainThread();
+                Events.OnNoteRemoved?.Invoke(id);
+            });
+            Socket.On("show-note", async (data) =>
+            {
+                string id = data.GetValue().GetString();
+
+                await UniTask.SwitchToMainThread();
+                Events.OnNoteShowed?.Invoke(id);
+            });
+
+            // Ping
+            Socket.On("start-pointer", async (data) =>
+            {
+                string id = data.GetValue().GetString();
+                Vector2 position = JsonUtility.FromJson<Vector2>(data.GetValue(1).GetString());
+
+                await UniTask.SwitchToMainThread();
+                Events.OnPointerStarted?.Invoke(id, position);
+            });
+            Socket.On("update-pointer", async (data) =>
+            {
+                string id = data.GetValue().GetString();
+                Vector2 position = JsonUtility.FromJson<Vector2>(data.GetValue(1).GetString());
+
+                await UniTask.SwitchToMainThread();
+                Events.OnPointerUpdated?.Invoke(id, position);
+            });
+            Socket.On("stop-pointer", async (data) =>
+            {
+                string id = data.GetValue().GetString();
+
+                await UniTask.SwitchToMainThread();
+                Events.OnPointerStopped?.Invoke(id);
+            });
+            Socket.On("ping", async (data) =>
+            {
+                Debug.Log(data);
+                Vector2 position = JsonUtility.FromJson<Vector2>(data.GetValue(0).GetString());
+                bool strong = data.GetValue(1).GetBoolean();
+
+                await UniTask.SwitchToMainThread();
+                Events.OnPing?.Invoke(position, strong);
             });
         }
 

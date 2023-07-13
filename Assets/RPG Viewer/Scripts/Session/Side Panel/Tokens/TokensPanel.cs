@@ -196,7 +196,7 @@ namespace RPG
         private async Task ImageTask(Action<byte[]> callback)
         {
             // Only allow image files
-            ExtensionFilter[] extensions = new ExtensionFilter[] { new ExtensionFilter("Image Files", "png", "jpg", "jpeg") };
+            ExtensionFilter[] extensions = new ExtensionFilter[] { new ExtensionFilter("Image Files", "png", "jpg", "jpeg", "webp") };
 
             // Open file explorer
             StandaloneFileBrowser.OpenFilePanelAsync("Select file", "", extensions, false, (string[] paths) =>

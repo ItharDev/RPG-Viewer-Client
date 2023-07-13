@@ -265,7 +265,7 @@ namespace RPG
             else
             {
                 // Unload tokens if syncing was disabled
-                if (oldState.synced && !newState.synced)
+                if (!newState.synced)
                 {
                     UnloadTokens();
                     return;

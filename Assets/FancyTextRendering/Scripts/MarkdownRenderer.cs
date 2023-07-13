@@ -37,7 +37,6 @@ namespace LogicUI.FancyTextRendering
             RenderText();
         }
 
-
         public MarkdownRenderingSettings RenderSettings = MarkdownRenderingSettings.Default;
 
         private void RenderText()

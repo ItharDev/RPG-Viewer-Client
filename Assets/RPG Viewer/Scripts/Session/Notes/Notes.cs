@@ -8,16 +8,14 @@ namespace RPG
     {
         public string id;
         public Vector2 position;
-        public string data;
         public string owner;
         public bool global;
         public bool IsOwner { get { return owner == GameData.User.id || global; } }
 
-        public NoteInfo(string _id, Vector2 _position, string _data, string _owner, bool _global)
+        public NoteInfo(string _id, Vector2 _position, string _owner, bool _global)
         {
             id = _id;
             position = _position;
-            data = _data;
             owner = _owner;
             global = _global;
         }

@@ -26,10 +26,10 @@ namespace RPG
 
         public static ToolHandler Instance { get; private set; }
 
-        private Tool activeTool;
+        public Tool ActiveTool { get; private set; }
         private Tool lastTool = Tool.Move;
         private Tool lastMeasure = Tool.Measure_Precise;
-        private Tool lastPing = Tool.Ping_Marker;
+        private Tool lastPing = Tool.Ping_Ping;
         private Tool lastNotes = Tool.Notes_Create;
 
         private void Awake()
@@ -52,10 +52,10 @@ namespace RPG
         private void Update()
         {
             // Send tool change event whenever the user changes the tool
-            if (activeTool != lastTool)
+            if (ActiveTool != lastTool)
             {
-                lastTool = activeTool;
-                Events.OnToolChanged?.Invoke(activeTool);
+                lastTool = ActiveTool;
+                Events.OnToolChanged?.Invoke(ActiveTool);
             }
         }
 
@@ -73,7 +73,7 @@ namespace RPG
             CloseNotes();
 
             // Update tool state
-            activeTool = Tool.Move;
+            ActiveTool = Tool.Move;
         }
         public void SelectPrecise()
         {
@@ -82,7 +82,7 @@ namespace RPG
             gridButton.Deselect();
 
             // Update tool states
-            activeTool = Tool.Measure_Precise;
+            ActiveTool = Tool.Measure_Precise;
             lastMeasure = Tool.Measure_Precise;
         }
         public void SelectGrid()
@@ -92,8 +92,8 @@ namespace RPG
             preciseButton.Deselect();
 
             // Update tool states
-            activeTool = Tool.Measure_Grid;
-            lastMeasure = activeTool;
+            ActiveTool = Tool.Measure_Grid;
+            lastMeasure = ActiveTool;
         }
         public void SelectMark()
         {
@@ -102,8 +102,8 @@ namespace RPG
             pointerButton.Deselect();
 
             // Update tool states
-            activeTool = Tool.Ping_Marker;
-            lastPing = activeTool;
+            ActiveTool = Tool.Ping_Ping;
+            lastPing = ActiveTool;
         }
         public void SelectPointer()
         {
@@ -112,8 +112,8 @@ namespace RPG
             markButton.Deselect();
 
             // Update tool states
-            activeTool = Tool.Ping_Pointer;
-            lastPing = activeTool;
+            ActiveTool = Tool.Ping_Pointer;
+            lastPing = ActiveTool;
         }
         public void SelectCreate()
         {
@@ -122,8 +122,8 @@ namespace RPG
             deleteButton.Deselect();
 
             // Update tool states
-            activeTool = Tool.Notes_Create;
-            lastNotes = activeTool;
+            ActiveTool = Tool.Notes_Create;
+            lastNotes = ActiveTool;
         }
         public void SelectDelete()
         {
@@ -132,8 +132,8 @@ namespace RPG
             createButton.Deselect();
 
             // Update tool states
-            activeTool = Tool.Notes_Create;
-            lastNotes = activeTool;
+            ActiveTool = Tool.Notes_Delete;
+            lastNotes = ActiveTool;
         }
 
         public void OpenMeasure()
@@ -170,7 +170,7 @@ namespace RPG
             CloseNotes();
 
             // Activate last tool selection
-            if (lastPing == Tool.Ping_Marker) SelectMark();
+            if (lastPing == Tool.Ping_Ping) SelectMark();
             else SelectPointer();
         }
         public void ClosePing()
@@ -212,7 +212,7 @@ namespace RPG
         Move,
         Measure_Precise,
         Measure_Grid,
-        Ping_Marker,
+        Ping_Ping,
         Ping_Pointer,
         Notes_Create,
         Notes_Delete

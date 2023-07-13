@@ -9,9 +9,14 @@ namespace RPG
         [SerializeField] private RectTransform resolutionPanel;
         [SerializeField] private ResolutionHandler resolutionHandler;
 
+        public PauseHandler Instance { get; private set; }
+
         private void Awake()
         {
-            DontDestroyOnLoad(gameObject);
+            // Create instance
+            if (Instance == null) Instance = this;
+            else Destroy(gameObject);
+
             resolutionHandler.LoadResolutions();
         }
         private void Update()

@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Cysharp.Threading.Tasks;
-using FunkyCode;
 using Networking;
 using UnityEngine;
 
@@ -121,7 +120,7 @@ namespace RPG
             else
             {
                 // Unload lights if syncing was disabled
-                if (oldState.synced && !newState.synced)
+                if (!newState.synced)
                 {
                     UnloadLights();
                     return;
