@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Linq;
 using System.Runtime;
 using Networking;
@@ -40,17 +41,27 @@ namespace RPG
 
         private void Update()
         {
-            if (Input.GetMouseButtonDown(1) && dragging)
-            {
-                Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-                mousePos = new Vector3(mousePos.x, mousePos.y, 0);
-
-                dragPoints.Add(mousePos);
-            }
             if (dragging)
             {
+                if (Input.GetMouseButtonDown(1) && !Input.GetKey(KeyCode.LeftControl))
+                {
+                    Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                    mousePos = new Vector3(mousePos.x, mousePos.y, 0);
+
+                    dragPoints.Add(mousePos);
+                }
+
                 if (Input.GetKeyDown(KeyCode.LeftAlt)) MeasurementManager.Instance.ChangeType(MeasurementType.Precise);
                 if (Input.GetKeyUp(KeyCode.LeftAlt)) MeasurementManager.Instance.ChangeType(MeasurementType.Grid);
+
+                if (Input.GetKeyUp(KeyCode.LeftControl))
+                {
+                    Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                    mousePos = new Vector3(mousePos.x, mousePos.y, 0);
+                    dragPoints.Clear();
+                    dragPoints.Add(transform.position);
+                    MeasurementManager.Instance.StartMeasurement(transform.position, Input.GetKey(KeyCode.LeftAlt) ? MeasurementType.Precise : MeasurementType.Grid);
+                }
             }
 
             // Return if token is not selected or we are edting any fields
@@ -233,6 +244,12 @@ namespace RPG
                 dragObject.Conditions.ToggleConditions(true);
             }
 
+            bool startMeasurement = !Input.GetKey(KeyCode.LeftControl);
+            if (startMeasurement)
+            {
+                MeasurementManager.Instance.StartMeasurement(mousePos, Input.GetKey(KeyCode.LeftAlt) ? MeasurementType.Precise : MeasurementType.Grid);
+                dragPoints.Add(transform.position);
+            }
             dragging = true;
         }
         public void OnDrag(BaseEventData eventData)
@@ -246,7 +263,7 @@ namespace RPG
             if (!Input.GetKey(KeyCode.LeftAlt)) mousePos = Session.Instance.Grid.SnapToGrid(mousePos, token.Data.dimensions);
             dragObject.transform.position = mousePos;
 
-            PathRequestManager.RequestPath(token.Data.position, dragObject.transform.position, UpdatePath);
+            if (Input.GetKey(KeyCode.LeftControl) && !Input.GetKey(KeyCode.LeftAlt)) PathRequestManager.RequestPath(token.Data.position, dragObject.transform.position, UpdatePath);
         }
 
         private void UpdatePath(Vector2[] waypoints, bool pathFound)
@@ -270,6 +287,7 @@ namespace RPG
             // Snap to grid if Alt key was not held down
             if (!Input.GetKey(KeyCode.LeftAlt)) pos = Session.Instance.Grid.SnapToGrid(pos, token.Data.dimensions);
 
+            if (!Input.GetKey(KeyCode.LeftControl)) dragPoints.Add(pos);
             Destroy(dragObject.gameObject);
 
             // Return if movement would collide with walls
@@ -308,6 +326,8 @@ namespace RPG
         private void UpdatePosition()
         {
             // Check if we are close enough to teh next waypoint
+            if (currentWaypoint >= waypoints.Count) currentWaypoint = 1;
+
             if (Vector2.Distance(waypoints[currentWaypoint], transform.position) < 0.01f)
             {
                 // Move to next waypoint

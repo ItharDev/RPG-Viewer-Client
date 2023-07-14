@@ -14,6 +14,7 @@ namespace RPG
         [SerializeField] private ToolButton invisibleButton;
         [SerializeField] private ToolButton doorsButton;
         [SerializeField] private ToolButton hiddenButton;
+        [SerializeField] private ToolButton fogButton;
         [SerializeField] private ToolButton lightingButton;
         [SerializeField] private ToolButton createButton;
         [SerializeField] private ToolButton deleteButton;
@@ -88,6 +89,7 @@ namespace RPG
             invisibleButton.Deselect();
             doorsButton.Deselect();
             hiddenButton.Deselect();
+            fogButton.Deselect();
 
             // Update tool states
             activeSetting = Setting.Walls_Regular;
@@ -100,6 +102,7 @@ namespace RPG
             regularButton.Deselect();
             doorsButton.Deselect();
             hiddenButton.Deselect();
+            fogButton.Deselect();
 
             // Update tool states
             activeSetting = Setting.Walls_Invisible;
@@ -112,6 +115,7 @@ namespace RPG
             regularButton.Deselect();
             invisibleButton.Deselect();
             hiddenButton.Deselect();
+            fogButton.Deselect();
 
             // Update tool states
             activeSetting = Setting.Walls_Door;
@@ -120,13 +124,27 @@ namespace RPG
         public void SelectHidden()
         {
             // Update selections
-            hiddenButton.Select();
+            hiddenButton.Deselect();
             doorsButton.Deselect();
             regularButton.Deselect();
             invisibleButton.Deselect();
+            fogButton.Deselect();
 
             // Update tool states
             activeSetting = Setting.Walls_Hidden_Door;
+            lastWalls = activeSetting;
+        }
+        public void SelectFog()
+        {
+            // Update selections
+            hiddenButton.Deselect();
+            doorsButton.Deselect();
+            regularButton.Deselect();
+            invisibleButton.Deselect();
+            fogButton.Select();
+
+            // Update tool states
+            activeSetting = Setting.Walls_Fog;
             lastWalls = activeSetting;
         }
         public void SelectPlayer()
@@ -314,6 +332,7 @@ namespace RPG
         Walls_Invisible,
         Walls_Door,
         Walls_Hidden_Door,
+        Walls_Fog,
         Lighting_Create,
         Lighting_Delete
     }

@@ -12,6 +12,7 @@ namespace RPG
         [SerializeField] private Color doorColor;
         [SerializeField] private Color invisibleColor;
         [SerializeField] private Color hiddenDoorColor;
+        [SerializeField] private Color fogColor;
         [SerializeField] private Texture lineTexture;
         [SerializeField] private new EdgeCollider2D collider2D;
         [SerializeField] private WallConfiguration configurationPrefab;
@@ -286,6 +287,9 @@ namespace RPG
                     break;
                 case WallType.Invisible:
                     color = invisibleColor;
+                    break;
+                case WallType.Fog:
+                    color = fogColor;
                     break;
             }
 

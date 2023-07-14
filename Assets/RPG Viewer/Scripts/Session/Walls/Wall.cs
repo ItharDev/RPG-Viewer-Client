@@ -110,6 +110,12 @@ namespace RPG
                 gameObject.layer = 7;
                 lightCollider.enabled = false;
             }
+            else if (data.type == WallType.Fog)
+            {
+                gameObject.layer = 6;
+                lightCollider.enabled = true;
+                edgeCollider.enabled = false;
+            }
         }
 
         public void LoadData(WallData _data)
@@ -137,6 +143,13 @@ namespace RPG
         private void HandleView(GameView view)
         {
             canvas.sortingLayerName = view == GameView.Clear ? "Above Fog" : "Default";
+
+            // Enable / disable UI based on setting
+            bool toolSelected = SettingsHandler.Instance.Setting.ToString().ToLower().Contains("walls");
+            bool isDoor = data.type.ToString().ToLower().Contains("door");
+
+            // Show UI if tool is not selected
+            ToggleUI(!toolSelected && isDoor);
         }
 
         public void OnClick(BaseEventData eventData)

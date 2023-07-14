@@ -89,7 +89,7 @@ namespace RPG
                 measuring = false;
                 waypoints.Clear();
                 infoPanel.SetActive(false);
-                if (line != null) Destroy(line.rectTransform.gameObject);
+                if (line != null) VectorLine.Destroy(ref line);
                 line = null;
             }
         }
@@ -118,6 +118,7 @@ namespace RPG
                     line.points2 = list2D.ToList();
                     line.color = lineColor;
                 }
+
                 line.Draw();
             }
         }
@@ -125,6 +126,7 @@ namespace RPG
         public void StartMeasurement(Vector2 startPosition, MeasurementType type)
         {
             camera2D.UsePan = false;
+            waypoints.Clear();
             waypoints.Add(type == MeasurementType.Grid ? Session.Instance.Grid.SnapToGrid(startPosition, new Vector2(5, 5)) : startPosition);
             measuring = true;
             this.type = type;
@@ -135,6 +137,7 @@ namespace RPG
         {
             camera2D.UsePan = false;
             this.waypoints = waypoints;
+            measuring = false;
             type = MeasurementType.Grid;
 
             var list2D = new Vector2[waypoints.Count];

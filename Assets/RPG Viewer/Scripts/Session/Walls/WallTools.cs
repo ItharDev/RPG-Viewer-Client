@@ -102,6 +102,9 @@ namespace RPG
                 case Setting.Walls_Invisible:
                     wallType = WallType.Invisible;
                     break;
+                case Setting.Walls_Fog:
+                    wallType = WallType.Fog;
+                    break;
             }
         }
         public void LoadWalls(List<WallData> list)
