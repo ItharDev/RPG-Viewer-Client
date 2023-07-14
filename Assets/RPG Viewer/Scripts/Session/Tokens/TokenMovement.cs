@@ -1,6 +1,9 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime;
 using Networking;
+using Pathfinding;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -230,10 +233,7 @@ namespace RPG
                 dragObject.Conditions.ToggleConditions(true);
             }
 
-            // Add first drag point
-            dragPoints.Add(transform.position);
             dragging = true;
-            MeasurementManager.Instance.StartMeasurement(mousePos, MeasurementType.Grid);
         }
         public void OnDrag(BaseEventData eventData)
         {
@@ -245,7 +245,18 @@ namespace RPG
             mousePos = new Vector3(mousePos.x, mousePos.y, 0);
             if (!Input.GetKey(KeyCode.LeftAlt)) mousePos = Session.Instance.Grid.SnapToGrid(mousePos, token.Data.dimensions);
             dragObject.transform.position = mousePos;
+
+            PathRequestManager.RequestPath(token.Data.position, dragObject.transform.position, UpdatePath);
         }
+
+        private void UpdatePath(Vector2[] waypoints, bool pathFound)
+        {
+            if (!pathFound) return;
+
+            dragPoints = waypoints.ToList();
+            MeasurementManager.Instance.MeasureDistance(dragPoints);
+        }
+
         public void OnEndDrag(BaseEventData eventData)
         {
             dragging = false;
@@ -259,8 +270,6 @@ namespace RPG
             // Snap to grid if Alt key was not held down
             if (!Input.GetKey(KeyCode.LeftAlt)) pos = Session.Instance.Grid.SnapToGrid(pos, token.Data.dimensions);
 
-            // Add final drag point
-            dragPoints.Add(pos);
             Destroy(dragObject.gameObject);
 
             // Return if movement would collide with walls

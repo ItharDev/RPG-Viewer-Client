@@ -25,7 +25,6 @@ namespace RPG
         public void SetResolution(bool selected)
         {
             if (!selected) return;
-            Debug.Log(resolution);
 
             Screen.SetResolution(resolution.width, resolution.height, Screen.fullScreen);
 

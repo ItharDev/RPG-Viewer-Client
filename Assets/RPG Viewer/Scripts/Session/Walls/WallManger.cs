@@ -51,6 +51,8 @@ namespace RPG
                 if (oldState.scene == newState.scene) return;
                 UnloadWalls();
             }
+
+            Events.ReloadPathfinder?.Invoke();
         }
         private void UnloadWalls()
         {
@@ -71,13 +73,14 @@ namespace RPG
             List<WallData> list = settings.walls;
             for (int i = 0; i < list.Count; i++)
             {
-                CreateWall(list[i]);
+                CreateWall(list[i], false);
             }
 
             GetComponent<WallTools>().LoadWalls(list);
+            Events.ReloadPathfinder?.Invoke();
         }
 
-        private void CreateWall(WallData data)
+        private void CreateWall(WallData data, bool reloadPathfinder)
         {
             // Instantiate wall and load its data
             Wall wall = Instantiate(wallPrefab, wallParent);
@@ -85,17 +88,23 @@ namespace RPG
 
             // Add wall to dictionary
             walls.Add(data.id, wall);
+
+            if (reloadPathfinder) Events.ReloadPathfinder?.Invoke();
         }
         private void ModifyWall(string id, WallData data)
         {
             if (!walls.ContainsKey(id)) return;
             walls[id].LoadData(data);
+
+            Events.ReloadPathfinder?.Invoke();
         }
         private void RemoveWall(string id)
         {
             if (!walls.ContainsKey(id)) return;
             Destroy(walls[id].gameObject);
             walls.Remove(id);
+
+            Events.ReloadPathfinder?.Invoke();
         }
     }
 }

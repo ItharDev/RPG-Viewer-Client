@@ -59,7 +59,7 @@ namespace RPG
         public static UnityEvent<GameView> OnViewChanged = new UnityEvent<GameView>();
 
         // Walls
-        public static UnityEvent<WallData> OnWallCreated = new UnityEvent<WallData>();
+        public static UnityEvent<WallData, bool> OnWallCreated = new UnityEvent<WallData, bool>();
         public static UnityEvent<string, WallData> OnWallModified = new UnityEvent<string, WallData>();
         public static UnityEvent<string> OnWallRemoved = new UnityEvent<string>();
         public static UnityEvent<PointController> OnPointContinued = new UnityEvent<PointController>();
@@ -108,5 +108,8 @@ namespace RPG
         public static UnityEvent<string, Vector2> OnPointerUpdated = new UnityEvent<string, Vector2>();
         public static UnityEvent<string> OnPointerStopped = new UnityEvent<string>();
         public static UnityEvent<Vector2, bool> OnPing = new UnityEvent<Vector2, bool>();
+
+        // Pathfinder
+        public static UnityEvent ReloadPathfinder = new UnityEvent();
     }
 }

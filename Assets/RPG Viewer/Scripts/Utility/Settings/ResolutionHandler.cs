@@ -22,9 +22,6 @@ namespace RPG
             int width = PlayerPrefs.GetInt("screen_width", Screen.currentResolution.width);
             int height = PlayerPrefs.GetInt("screen_height", Screen.currentResolution.height);
             bool isFullscreen = bool.Parse(PlayerPrefs.GetString("is_fullscreen", Screen.fullScreen.ToString()));
-            Debug.Log(width);
-            Debug.Log(height);
-            Debug.Log(isFullscreen);
             Screen.SetResolution(width, height, isFullscreen);
 
             for (int i = 0; i < resolutions.Count; i++)

@@ -109,7 +109,7 @@ namespace Networking
                 WallData wall = JsonUtility.FromJson<WallData>(data.GetValue().ToString());
 
                 await UniTask.SwitchToMainThread();
-                Events.OnWallCreated?.Invoke(wall);
+                Events.OnWallCreated?.Invoke(wall, true);
             });
             Socket.On("modify-wall", async (data) =>
             {

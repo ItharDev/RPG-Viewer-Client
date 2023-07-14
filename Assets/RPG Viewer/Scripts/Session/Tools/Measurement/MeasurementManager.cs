@@ -81,15 +81,16 @@ namespace RPG
 
                 }
                 Measure();
-                if (Input.GetMouseButtonUp(0))
-                {
-                    camera2D.UsePan = true;
-                    measuring = false;
-                    waypoints.Clear();
-                    infoPanel.SetActive(false);
-                    Destroy(line.rectTransform.gameObject);
-                    line = null;
-                }
+            }
+
+            if (!Input.GetMouseButton(0))
+            {
+                camera2D.UsePan = true;
+                measuring = false;
+                waypoints.Clear();
+                infoPanel.SetActive(false);
+                if (line != null) Destroy(line.rectTransform.gameObject);
+                line = null;
             }
         }
         private void LateUpdate()
@@ -121,7 +122,7 @@ namespace RPG
             }
         }
 
-        public MeasurementType StartMeasurement(Vector2 startPosition, MeasurementType type)
+        public void StartMeasurement(Vector2 startPosition, MeasurementType type)
         {
             camera2D.UsePan = false;
             waypoints.Add(type == MeasurementType.Grid ? Session.Instance.Grid.SnapToGrid(startPosition, new Vector2(5, 5)) : startPosition);
@@ -129,7 +130,35 @@ namespace RPG
             this.type = type;
 
             infoPanel.SetActive(true);
-            return type;
+        }
+        public void MeasureDistance(List<Vector2> waypoints)
+        {
+            camera2D.UsePan = false;
+            this.waypoints = waypoints;
+            type = MeasurementType.Grid;
+
+            var list2D = new Vector2[waypoints.Count];
+            for (int i = 0; i < waypoints.Count; i++)
+            {
+                list2D[i] = Camera.main.WorldToScreenPoint(waypoints[i]);
+            }
+
+            infoPanel.SetActive(true);
+            if (line == null)
+            {
+                line = new VectorLine("Measure arrow", list2D.ToList(), 1.0f, LineType.Continuous, Joins.Weld);
+                line.rectTransform.gameObject.layer = 5;
+                line.endCap = "Arrow";
+                line.SetEndCapColor(lineColor);
+            }
+            else
+            {
+                line.points2 = list2D.ToList();
+                line.color = lineColor;
+            }
+
+            line.Draw();
+            Measure();
         }
         public void ChangeType(MeasurementType newType)
         {

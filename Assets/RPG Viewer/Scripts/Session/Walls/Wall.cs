@@ -31,11 +31,13 @@ namespace RPG
 
             // Add event listeners
             Events.OnSettingChanged.AddListener(ToggleUI);
+            Events.OnViewChanged.AddListener(HandleView);
         }
         private void OnDisable()
         {
             // Remove event listeners
             Events.OnSettingChanged.RemoveListener(ToggleUI);
+            Events.OnViewChanged.RemoveListener(HandleView);
         }
         private void Update()
         {
@@ -46,7 +48,7 @@ namespace RPG
                 UpdateData();
             }
 
-            if (!ConnectionManager.Info.isMaster) HandleLayers();
+            if (SettingsHandler.Instance.LastView == GameView.Player) HandleLayers();
         }
 
         private void HandleLayers()
@@ -71,7 +73,7 @@ namespace RPG
             // Update canvas
             canvas.transform.localScale = new Vector3(cellSize * 0.03f, cellSize * 0.03f, 1.0f);
             canvas.sortingOrder = ConnectionManager.Info.isMaster ? 1 : 0;
-            canvas.sortingLayerName = ConnectionManager.Info.isMaster ? "Above Fog" : "Default";
+            canvas.sortingLayerName = SettingsHandler.Instance.LastView == GameView.Clear ? "Above Fog" : "Default";
 
             canvas.transform.position = (data.points[0] + data.points[1]) / 2f;
             doorIcon.sprite = data.open ? openSprite : closedSprite;
@@ -79,14 +81,6 @@ namespace RPG
             doorIcon.color = data.type == WallType.Hidden_Door ? secretColor : regularColor;
 
             HandleCollider();
-
-            // Update layer
-            gameObject.layer = 8;
-            if (data.type == WallType.Invisible)
-            {
-                gameObject.layer = 7;
-                lightCollider.enabled = false;
-            }
 
             if (ConnectionManager.Info.isMaster)
             {
@@ -108,6 +102,14 @@ namespace RPG
 
             lightCollider.enabled = edgeCollider.enabled;
             lightCollider.maskType = LightCollider2D.MaskType.None;
+
+            // Update layer
+            gameObject.layer = 8;
+            if (data.type == WallType.Invisible)
+            {
+                gameObject.layer = 7;
+                lightCollider.enabled = false;
+            }
         }
 
         public void LoadData(WallData _data)
@@ -115,8 +117,8 @@ namespace RPG
             data = _data;
             loaded = false;
 
-            // Disable UI
             ToggleUI(false);
+            HandleCollider();
         }
         private void ToggleUI(Setting setting)
         {
@@ -132,10 +134,14 @@ namespace RPG
             // Enable / disable canvas
             canvas.enabled = enabled;
         }
+        private void HandleView(GameView view)
+        {
+            canvas.sortingLayerName = view == GameView.Clear ? "Above Fog" : "Default";
+        }
 
         public void OnClick(BaseEventData eventData)
         {
-            if (canvas.sortingLayerName == "Default") return;
+            if (SettingsHandler.Instance.LastView == GameView.Player && canvas.sortingLayerName == "Defaulg") return;
             // Get pointer data
             PointerEventData pointerData = (PointerEventData)eventData;
             if (pointerData.button == PointerEventData.InputButton.Left) ToggleDoor();

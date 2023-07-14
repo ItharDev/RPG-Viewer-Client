@@ -14,7 +14,11 @@ namespace RPG
         private void Awake()
         {
             // Create instance
-            if (Instance == null) Instance = this;
+            if (Instance == null)
+            {
+                DontDestroyOnLoad(gameObject);
+                Instance = this;
+            }
             else Destroy(gameObject);
 
             resolutionHandler.LoadResolutions();

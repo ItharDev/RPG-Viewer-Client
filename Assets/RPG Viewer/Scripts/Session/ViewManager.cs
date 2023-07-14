@@ -20,7 +20,6 @@ namespace RPG
             Events.OnLightingChanged.RemoveListener(ChangeLighting);
         }
 
-
         private void ChangeView(GameView view)
         {
             // Return if fog is disabled
