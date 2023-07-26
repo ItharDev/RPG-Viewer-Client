@@ -22,6 +22,9 @@ namespace RPG
         public static UnityEvent<SceneData> OnSceneLoaded = new UnityEvent<SceneData>();
         public static UnityEvent<string> OnLandingPageChanged = new UnityEvent<string>();
 
+        // Side panel
+        public static UnityEvent OnSidePanelChanged = new UnityEvent();
+
         // Side panel (Scenes)
         public static UnityEvent<SceneFolder> OnSceneFolderClicked = new UnityEvent<SceneFolder>();
         public static UnityEvent<SceneFolder> OnSceneFolderSelected = new UnityEvent<SceneFolder>();
@@ -41,6 +44,16 @@ namespace RPG
         public static UnityEvent<TokenHolder> OnBlueprintSelected = new UnityEvent<TokenHolder>();
         public static UnityEvent OnBlueprintDeselected = new UnityEvent();
         public static UnityEvent OnBlueprintMoved = new UnityEvent();
+
+        // Side panel (Journals)
+        public static UnityEvent<JournalFolder> OnJournalFolderClicked = new UnityEvent<JournalFolder>();
+        public static UnityEvent<JournalFolder> OnJournalFolderSelected = new UnityEvent<JournalFolder>();
+        public static UnityEvent OnJournalFolderDeselected = new UnityEvent();
+        public static UnityEvent OnJournalFolderMoved = new UnityEvent();
+        public static UnityEvent<JournalHolder> OnJournalClicked = new UnityEvent<JournalHolder>();
+        public static UnityEvent<JournalHolder> OnJournalSelected = new UnityEvent<JournalHolder>();
+        public static UnityEvent OnJournalDeselected = new UnityEvent();
+        public static UnityEvent OnJournalMoved = new UnityEvent();
 
         // Lights
         public static UnityEvent<KeyValuePair<string, LightData>, PresetData> OnLightCreated = new UnityEvent<KeyValuePair<string, LightData>, PresetData>();
@@ -92,6 +105,7 @@ namespace RPG
         public static UnityEvent<string, InitiativeData> OnInitiativeModified = new UnityEvent<string, InitiativeData>();
         public static UnityEvent<string> OnInitiativeRemoved = new UnityEvent<string>();
         public static UnityEvent OnInitiativeSorted = new UnityEvent();
+        public static UnityEvent OnInitiativesReset = new UnityEvent();
 
         // Notes
         public static UnityEvent<NoteInfo, NoteData> OnNoteCreated = new UnityEvent<NoteInfo, NoteData>();
@@ -102,6 +116,14 @@ namespace RPG
         public static UnityEvent<string, bool> OnNoteSetToGlobal = new UnityEvent<string, bool>();
         public static UnityEvent<string> OnNoteRemoved = new UnityEvent<string>();
         public static UnityEvent<string> OnNoteShowed = new UnityEvent<string>();
+
+        // Journals
+        public static UnityEvent<string, string, string> OnJournalTextModified = new UnityEvent<string, string, string>();
+        public static UnityEvent<string, string, string> OnJournalHeaderModified = new UnityEvent<string, string, string>();
+        public static UnityEvent<string, string> OnJournalImageModified = new UnityEvent<string, string>();
+        public static UnityEvent<string> OnJournalRemoved = new UnityEvent<string>();
+        public static UnityEvent<string> OnJournalShowed = new UnityEvent<string>();
+        public static UnityEvent<string, string, List<Collaborator>> OnCollaboratorsUpdated = new UnityEvent<string, string, List<Collaborator>>();
 
         // ping
         public static UnityEvent<string, Vector2> OnPointerStarted = new UnityEvent<string, Vector2>();

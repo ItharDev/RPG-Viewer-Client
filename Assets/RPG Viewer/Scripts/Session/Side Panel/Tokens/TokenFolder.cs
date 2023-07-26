@@ -58,17 +58,21 @@ namespace RPG
 
             // Add event listeners
             Events.OnBlueprintFolderClicked.AddListener(HandleClick);
+            Events.OnBlueprintClicked.AddListener(HandleClick);
             Events.OnBlueprintFolderSelected.AddListener(HandleSelect);
             Events.OnBlueprintFolderDeselected.AddListener(HandleDeselect);
             Events.OnBlueprintFolderMoved.AddListener(HandleMoved);
+            Events.OnSidePanelChanged.AddListener(CloseOptions);
         }
         private void OnDisable()
         {
             // Remove event listeners
             Events.OnBlueprintFolderClicked.RemoveListener(HandleClick);
+            Events.OnBlueprintClicked.RemoveListener(HandleClick);
             Events.OnBlueprintFolderSelected.RemoveListener(HandleSelect);
             Events.OnBlueprintFolderDeselected.RemoveListener(HandleDeselect);
             Events.OnBlueprintFolderMoved.RemoveListener(HandleMoved);
+            Events.OnSidePanelChanged.RemoveListener(CloseOptions);
         }
         private void Update()
         {
@@ -104,6 +108,20 @@ namespace RPG
         {
             // Close options panel if it's open and not ours
             if (optionsOpen && folder != this) ToggleOptions();
+
+            // Refresh rounded corners
+            background.enabled = false;
+            background.enabled = true;
+
+            border.enabled = false;
+            border.enabled = true;
+
+            Resize();
+        }
+        private void HandleClick(TokenHolder token)
+        {
+            // Close options panel if it's open
+            if (optionsOpen) ToggleOptions();
 
             // Refresh rounded corners
             background.enabled = false;
@@ -240,6 +258,22 @@ namespace RPG
                 optionsPanel.GetComponent<ContentSizeFitter>().enabled = optionsOpen;
             });
         }
+        private void CloseOptions()
+        {
+            if (!optionsOpen) return;
+
+            optionsOpen = false;
+
+            LeanTween.size(optionsPanel, new Vector2(115.0f, 0.0f), 0.2f).setOnComplete(() =>
+            {
+                optionsPanel.transform.SetParent(transform, true);
+                optionsPanel.anchoredPosition = new Vector2(15.0f, -45.0f);
+                optionsPanel.SetAsLastSibling();
+
+                // Enable / disable content size fitter
+                optionsPanel.GetComponent<ContentSizeFitter>().enabled = false;
+            });
+        }
 
         public void Rename()
         {
@@ -331,7 +365,7 @@ namespace RPG
 
                 // Send error message
                 MessageManager.QueueMessage(callback.GetValue(1).GetString());
-            }, Path, "New Folder");
+            }, Path, "New folder");
         }
         public void AddToken()
         {

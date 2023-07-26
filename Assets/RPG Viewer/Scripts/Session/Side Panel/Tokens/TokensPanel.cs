@@ -33,6 +33,14 @@ namespace RPG
                 loaded = true;
                 LoadTokens();
             }
+
+            // Add event listeners
+            Events.OnSidePanelChanged.AddListener(DeselectToken);
+        }
+        private void OnDisable()
+        {
+            // Remove event listeners
+            Events.OnSidePanelChanged.RemoveListener(DeselectToken);
         }
         private void Update()
         {
@@ -179,8 +187,7 @@ namespace RPG
                         // Check if the event was successful
                         if (callback.GetValue().GetBoolean())
                         {
-                            string id = callback.GetValue().GetString();
-                            string image = callback.GetValue(1).GetString();
+                            string id = callback.GetValue(1).GetString();
 
                             tokenData.id = id;
                             LoadToken(id, path);
@@ -213,7 +220,7 @@ namespace RPG
         {
             // Create path to this directory
             string pathToThisFolder = string.IsNullOrEmpty(path) ? id : $"{path}/{id}";
-            Folder data = new Folder(id, path, "New Folder", GetColor());
+            Folder data = new Folder(id, path, "New folder", GetColor());
 
             // Instantiate folder
             TokenFolder targetFolder = GetDirectoryByPath(path);
@@ -262,7 +269,7 @@ namespace RPG
 
                 // Send error message
                 MessageManager.QueueMessage(callback.GetValue(1).GetString());
-            }, "", "New Folder");
+            }, "", "New folder");
         }
         public void RemoveToken(TokenHolder token)
         {

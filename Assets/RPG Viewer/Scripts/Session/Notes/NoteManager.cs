@@ -104,7 +104,6 @@ namespace RPG
 
             // Load new info
             note.ReloadHeader(header);
-            Debug.Log(uid);
             if (openNotes.ContainsKey(id)) openNotes[id].ReloadHeader(header, uid != GameData.User.id);
         }
         private void ModifyImage(string id, string image)

@@ -37,6 +37,7 @@ namespace RPG
             Events.OnInitiativeModified.AddListener(ModifyInitiative);
             Events.OnInitiativeRemoved.AddListener(RemoveInitiative);
             Events.OnInitiativeSorted.AddListener(SortContent);
+            Events.OnInitiativesReset.AddListener(ReloadInitiatives);
         }
         private void OnDisable()
         {
@@ -47,6 +48,7 @@ namespace RPG
             Events.OnInitiativeModified.RemoveListener(ModifyInitiative);
             Events.OnInitiativeRemoved.RemoveListener(RemoveInitiative);
             Events.OnInitiativeSorted.RemoveListener(SortContent);
+            Events.OnInitiativesReset.RemoveListener(ReloadInitiatives);
         }
         private void Update()
         {
@@ -83,6 +85,72 @@ namespace RPG
                 // Send error message
                 MessageManager.QueueMessage(callback.GetValue(1).GetString());
             }, JsonUtility.ToJson(data));
+        }
+        public void ResetInitiatives()
+        {
+            SocketManager.EmitAsync("reset-initiatives", async (callback) =>
+            {
+                await UniTask.SwitchToMainThread();
+
+                // Check if the event was successful
+                if (callback.GetValue().GetBoolean()) GetUsers();
+
+                // Send error message
+                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+            });
+        }
+        private void GetUsers()
+        {
+            SocketManager.EmitAsync("get-users", async (callback) =>
+            {
+                await UniTask.SwitchToMainThread();
+
+                // Check if the event was successful
+                if (callback.GetValue().GetBoolean())
+                {
+                    var users = callback.GetValue(1).EnumerateArray().ToList();
+
+                    for (int i = 0; i < users.Count; i++)
+                    {
+                        string id = users[i].GetString();
+                        AddInitiative(id);
+                    }
+                    return;
+                }
+
+                // Send error message
+                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+            });
+        }
+        private void AddInitiative(string userId)
+        {
+            Debug.Log(userId);
+            SocketManager.EmitAsync("get-user", async (callback) =>
+            {
+                await UniTask.SwitchToMainThread();
+
+                // Check if the event was successful
+                if (callback.GetValue().GetBoolean())
+                {
+                    await UniTask.SwitchToMainThread();
+                    string name = callback.GetValue(1).GetString();
+
+                    InitiativeData data = new InitiativeData("", name, 0, true);
+                    SocketManager.EmitAsync("create-initiative", (callback) =>
+                    {
+                        // Check if the event was successful
+                        if (callback.GetValue().GetBoolean()) return;
+
+                        // Send error message
+                        MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                    }, JsonUtility.ToJson(data));
+
+                    return;
+                }
+
+                // Send error message
+                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+            }, userId);
         }
         public void Sort()
         {
@@ -138,6 +206,19 @@ namespace RPG
                 if (oldState.scene == newState.scene) return;
                 UnloadInitiatives();
             }
+        }
+        private void ReloadInitiatives()
+        {
+            // Loop through each token
+            foreach (var item in holders)
+            {
+                // Continue if token is null
+                if (item.Value == null) continue;
+                Destroy(item.Value.gameObject);
+            }
+
+            // Clear lists
+            holders.Clear();
         }
         private void UnloadInitiatives()
         {

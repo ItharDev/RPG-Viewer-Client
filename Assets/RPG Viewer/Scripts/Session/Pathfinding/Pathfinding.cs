@@ -58,6 +58,7 @@ namespace Pathfinding
                         neighbour.parent = currentNode;
 
                         if (!openSet.Contains(neighbour)) openSet.Add(neighbour);
+                        else openSet.UpdateItem(neighbour);
                     }
                 }
             }

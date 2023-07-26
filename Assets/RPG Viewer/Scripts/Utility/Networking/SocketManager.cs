@@ -316,6 +316,11 @@ namespace Networking
                 await UniTask.SwitchToMainThread();
                 Events.OnInitiativeRemoved?.Invoke(id);
             });
+            Socket.On("reset-initiatives", async (data) =>
+            {
+                await UniTask.SwitchToMainThread();
+                Events.OnInitiativesReset?.Invoke();
+            });
             Socket.On("sort-initiative", async (data) =>
             {
                 await UniTask.SwitchToMainThread();
@@ -392,6 +397,57 @@ namespace Networking
                 Events.OnNoteShowed?.Invoke(id);
             });
 
+            // Journals
+            Socket.On("modify-journal-text", async (data) =>
+            {
+                string id = data.GetValue().GetString();
+                string text = data.GetValue(1).GetString();
+                string uid = data.GetValue(2).GetString();
+
+                await UniTask.SwitchToMainThread();
+                Events.OnJournalTextModified?.Invoke(id, text, uid);
+            });
+            Socket.On("modify-journal-header", async (data) =>
+            {
+                string id = data.GetValue().GetString();
+                string header = data.GetValue(1).GetString();
+                string uid = data.GetValue(2).GetString();
+
+                await UniTask.SwitchToMainThread();
+                Events.OnJournalHeaderModified?.Invoke(id, header, uid);
+            });
+            Socket.On("modify-journal-image", async (data) =>
+            {
+                string id = data.GetValue().GetString();
+                string image = data.GetValue(1).GetString();
+
+                await UniTask.SwitchToMainThread();
+                Events.OnJournalImageModified?.Invoke(id, image);
+            });
+            Socket.On("remove-journal", async (data) =>
+            {
+                string id = data.GetValue().GetString();
+
+                await UniTask.SwitchToMainThread();
+                Events.OnJournalRemoved?.Invoke(id);
+            });
+            Socket.On("share-journal", async (data) =>
+            {
+                string id = data.GetValue().GetString();
+                string uid = data.GetValue(1).GetString();
+                JournalData journalData = JsonUtility.FromJson<JournalData>(data.GetValue(2).ToString());
+
+                await UniTask.SwitchToMainThread();
+                Events.OnCollaboratorsUpdated?.Invoke(id, uid, journalData.collaborators);
+            });
+            Socket.On("show-journal", async (data) =>
+            {
+                string id = data.GetValue().GetString();
+
+                await UniTask.SwitchToMainThread();
+                Events.OnJournalShowed?.Invoke(id);
+            });
+
             // Ping
             Socket.On("start-pointer", async (data) =>
             {
@@ -418,7 +474,6 @@ namespace Networking
             });
             Socket.On("ping", async (data) =>
             {
-                Debug.Log(data);
                 Vector2 position = JsonUtility.FromJson<Vector2>(data.GetValue(0).GetString());
                 bool strong = data.GetValue(1).GetBoolean();
 

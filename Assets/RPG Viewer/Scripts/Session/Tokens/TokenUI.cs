@@ -235,6 +235,7 @@ namespace RPG
         public void SetRotation(float value)
         {
             image.transform.eulerAngles = new Vector3(0.0f, 0.0f, value);
+            token.Data.rotation = value;
         }
         public void SetImage(Sprite sprite)
         {

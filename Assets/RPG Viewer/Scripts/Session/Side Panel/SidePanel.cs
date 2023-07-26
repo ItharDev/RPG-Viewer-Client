@@ -73,6 +73,8 @@ namespace RPG
 
         public void SelectTokens()
         {
+            Events.OnSidePanelChanged?.Invoke();
+
             if (tokens.sizeDelta.x == 110.0f)
             {
                 ClosePanel();
@@ -90,6 +92,8 @@ namespace RPG
         }
         public void SelectScenes()
         {
+            Events.OnSidePanelChanged?.Invoke();
+
             if (scenes.sizeDelta.x == 110.0f)
             {
                 ClosePanel();
@@ -107,6 +111,8 @@ namespace RPG
         }
         public void SelectJournals()
         {
+            Events.OnSidePanelChanged?.Invoke();
+
             if (journals.sizeDelta.x == 110.0f)
             {
                 ClosePanel();

@@ -9,7 +9,7 @@ using UnityEngine.UI;
 
 namespace RPG
 {
-    public class SceneFolder : MonoBehaviour
+    public class JournalFolder : MonoBehaviour
     {
         [Header("Content")]
         [SerializeField] private RectTransform content;
@@ -41,7 +41,7 @@ namespace RPG
         public Transform Content { get { return content.transform; } }
 
         public Folder Data;
-        private ScenesPanel scenesPanel;
+        private JournalsPanel journalsPanel;
         private RectTransform rect;
 
         private bool folderOpen;
@@ -57,21 +57,21 @@ namespace RPG
             if (rect == null) rect = GetComponent<RectTransform>();
 
             // Add event listeners
-            Events.OnSceneFolderClicked.AddListener(HandleClick);
-            Events.OnSceneClicked.AddListener(HandleClick);
-            Events.OnSceneFolderSelected.AddListener(HandleSelect);
-            Events.OnSceneFolderDeselected.AddListener(HandleDeselect);
-            Events.OnSceneFolderMoved.AddListener(HandleMoved);
+            Events.OnJournalFolderClicked.AddListener(HandleClick);
+            Events.OnJournalClicked.AddListener(HandleClick);
+            Events.OnJournalFolderSelected.AddListener(HandleSelect);
+            Events.OnJournalFolderDeselected.AddListener(HandleDeselect);
+            Events.OnJournalFolderMoved.AddListener(HandleMoved);
             Events.OnSidePanelChanged.AddListener(CloseOptions);
         }
         private void OnDisable()
         {
             // Remove event listeners
-            Events.OnSceneFolderClicked.RemoveListener(HandleClick);
-            Events.OnSceneClicked.RemoveListener(HandleClick);
-            Events.OnSceneFolderSelected.RemoveListener(HandleSelect);
-            Events.OnSceneFolderDeselected.RemoveListener(HandleDeselect);
-            Events.OnSceneFolderMoved.RemoveListener(HandleMoved);
+            Events.OnJournalFolderClicked.RemoveListener(HandleClick);
+            Events.OnJournalClicked.RemoveListener(HandleClick);
+            Events.OnJournalFolderSelected.RemoveListener(HandleSelect);
+            Events.OnJournalFolderDeselected.RemoveListener(HandleDeselect);
+            Events.OnJournalFolderMoved.RemoveListener(HandleMoved);
             Events.OnSidePanelChanged.RemoveListener(CloseOptions);
         }
         private void Update()
@@ -79,7 +79,7 @@ namespace RPG
             if (requireSend)
             {
                 // Send folder toggled event
-                Events.OnSceneFolderClicked?.Invoke(this);
+                Events.OnJournalFolderClicked?.Invoke(this);
                 requireSend = false;
             }
             if (content.sizeDelta.y != lastSize)
@@ -104,7 +104,7 @@ namespace RPG
             corners.Refresh();
         }
 
-        private void HandleClick(SceneFolder folder)
+        private void HandleClick(JournalFolder folder)
         {
             // Close options panel if it's open and not ours
             if (optionsOpen && folder != this) ToggleOptions();
@@ -118,7 +118,7 @@ namespace RPG
 
             Resize();
         }
-        private void HandleClick(SceneHolder scene)
+        private void HandleClick(JournalHolder journal)
         {
             // Close options panel if it's open
             if (optionsOpen) ToggleOptions();
@@ -132,7 +132,7 @@ namespace RPG
 
             Resize();
         }
-        private void HandleSelect(SceneFolder folder)
+        private void HandleSelect(JournalFolder folder)
         {
             // This folder was selected
             if (folder == this)
@@ -155,7 +155,7 @@ namespace RPG
             background.color = normalColor;
 
             // Check if we are children of the selected folder
-            if (scenesPanel.IsSubFolderOf(this, folder) && folder != null) moveHereButton.SetActive(false);
+            if (journalsPanel.IsSubFolderOf(this, folder) && folder != null) moveHereButton.SetActive(false);
         }
         private void HandleDeselect()
         {
@@ -181,8 +181,8 @@ namespace RPG
         }
         private void SortContent()
         {
-            List<SceneFolder> folders = scenesPanel.GetFolders(this);
-            List<SceneHolder> holders = scenesPanel.GetScenes(this);
+            List<JournalFolder> folders = journalsPanel.GetFolders(this);
+            List<JournalHolder> holders = journalsPanel.GetJournals(this);
 
             folders.Sort(SortByName);
             holders.Sort(SortByName);
@@ -196,13 +196,13 @@ namespace RPG
                 holders[i].transform.SetSiblingIndex(i + folders.Count);
             }
         }
-        private int SortByName(SceneFolder folderA, SceneFolder folderB)
+        private int SortByName(JournalFolder folderA, JournalFolder folderB)
         {
             return folderA.Data.name.CompareTo(folderB.Data.name);
         }
-        private int SortByName(SceneHolder holderA, SceneHolder holderB)
+        private int SortByName(JournalHolder holderA, JournalHolder holderB)
         {
-            return holderA.Data.info.name.CompareTo(holderB.Data.info.name);
+            return holderA.Data.header.CompareTo(holderB.Data.header);
         }
 
         public void ClickFolder(BaseEventData eventData)
@@ -225,8 +225,27 @@ namespace RPG
             icon.sprite = folderOpen ? openIcon : closedIcon;
             if (optionsOpen) ToggleOptions();
         }
+        private void CloseOptions()
+        {
+            if (!optionsOpen) return;
+
+            optionsOpen = false;
+
+            LeanTween.size(optionsPanel, new Vector2(115.0f, 0.0f), 0.2f).setOnComplete(() =>
+            {
+                optionsPanel.transform.SetParent(transform, true);
+                optionsPanel.anchoredPosition = new Vector2(15.0f, -45.0f);
+                optionsPanel.SetAsLastSibling();
+
+                // Enable / disable content size fitter
+                optionsPanel.GetComponent<ContentSizeFitter>().enabled = false;
+            });
+        }
         private void ToggleOptions()
         {
+            // Prevent clicking shared folders
+            if (Path.Contains("shared")) return;
+
             // Toggle open state
             optionsOpen = !optionsOpen;
 
@@ -258,22 +277,6 @@ namespace RPG
                 optionsPanel.GetComponent<ContentSizeFitter>().enabled = optionsOpen;
             });
         }
-        private void CloseOptions()
-        {
-            if (!optionsOpen) return;
-
-            optionsOpen = false;
-
-            LeanTween.size(optionsPanel, new Vector2(115.0f, 0.0f), 0.2f).setOnComplete(() =>
-            {
-                optionsPanel.transform.SetParent(transform, true);
-                optionsPanel.anchoredPosition = new Vector2(15.0f, -45.0f);
-                optionsPanel.SetAsLastSibling();
-
-                // Enable / disable content size fitter
-                optionsPanel.GetComponent<ContentSizeFitter>().enabled = false;
-            });
-        }
 
         public void Rename()
         {
@@ -287,13 +290,13 @@ namespace RPG
             ToggleOptions();
             MessageManager.AskConfirmation(new Confirmation("Delete folder", "Delete", "Cancel", (result) =>
             {
-                if (result) SocketManager.EmitAsync("remove-scene-folder", async (callback) =>
+                if (result) SocketManager.EmitAsync("remove-journal-folder", async (callback) =>
                 {
                     // Check if the event was successful
                     if (callback.GetValue().GetBoolean())
                     {
                         await UniTask.SwitchToMainThread();
-                        scenesPanel.RemoveFolder(this);
+                        journalsPanel.RemoveFolder(this);
                     }
 
                     // Send error message
@@ -304,22 +307,22 @@ namespace RPG
         public void Select()
         {
             ToggleOptions();
-            scenesPanel.SelectFolder(this);
+            journalsPanel.SelectFolder(this);
         }
         public void MoveRoot()
         {
             ToggleOptions();
-            scenesPanel.MoveFolderRoot();
+            journalsPanel.MoveFolderRoot();
         }
         public void Deselect()
         {
             ToggleOptions();
-            scenesPanel.DeselectFolder();
+            journalsPanel.DeselectFolder();
         }
         public void Move()
         {
             ToggleOptions();
-            scenesPanel.MoveSelected(this);
+            journalsPanel.MoveSelected(this);
         }
         public void ConfirmRename()
         {
@@ -328,7 +331,7 @@ namespace RPG
             string newName = string.IsNullOrEmpty(headerInput.text) ? Data.name : headerInput.text;
             header.text = newName;
 
-            SocketManager.EmitAsync("rename-scene-folder", async (callback) =>
+            SocketManager.EmitAsync("rename-journal-folder", async (callback) =>
             {
                 if (callback.GetValue().GetBoolean())
                 {
@@ -345,7 +348,7 @@ namespace RPG
         public void AddFolder()
         {
             ToggleOptions();
-            SocketManager.EmitAsync("create-scene-folder", async (callback) =>
+            SocketManager.EmitAsync("create-journal-folder", async (callback) =>
             {
                 // Check if the event was successful
                 if (callback.GetValue().GetBoolean())
@@ -356,7 +359,7 @@ namespace RPG
 
                     // Create the folder
                     string id = callback.GetValue(1).GetString();
-                    SceneFolder createdFolder = scenesPanel.CreateFolder(id, Path);
+                    JournalFolder createdFolder = journalsPanel.CreateFolder(id, Path);
 
                     // Activate rename field
                     createdFolder.Rename();
@@ -367,12 +370,12 @@ namespace RPG
                 MessageManager.QueueMessage(callback.GetValue(1).GetString());
             }, Path, "New folder");
         }
-        public void AddScene()
+        public void AddJournal()
         {
             ToggleOptions();
-            scenesPanel.CreateScene(Path);
+            journalsPanel.CreateJournal(Path);
         }
-        public void LoadData(Folder folder, ScenesPanel panel)
+        public void LoadData(Folder folder, JournalsPanel panel)
         {
             // Update fields
             Data = folder;
@@ -380,17 +383,39 @@ namespace RPG
             border.color = folder.color;
             headerInput.placeholder.GetComponent<TMP_Text>().text = folder.name;
             headerInput.text = folder.name;
-            scenesPanel = panel;
+            journalsPanel = panel;
             selectedColor = folder.color;
             selectedColor.a = 0.5f;
+
+            // This is a shared folder, fetch new folder name
+            if (Path.Contains("shared") && Id != "shared")
+            {
+                SocketManager.EmitAsync("get-user", async (callback) =>
+                {
+                    await UniTask.SwitchToMainThread();
+
+                    // Check if the event was successful
+                    if (callback.GetValue().GetBoolean())
+                    {
+                        string name = callback.GetValue(1).GetString();
+                        Data.name = name;
+                        headerInput.text = name;
+                        header.text = name;
+                        return;
+                    }
+
+                    // Send error message
+                    MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                }, Id);
+            }
         }
 
         public void CalculatePath(string parentPath)
         {
             Data.path = parentPath;
 
-            SceneFolder[] folders = GetComponentsInChildren<SceneFolder>();
-            SceneHolder[] scenes = GetComponentsInChildren<SceneHolder>();
+            JournalFolder[] folders = GetComponentsInChildren<JournalFolder>();
+            JournalHolder[] journals = GetComponentsInChildren<JournalHolder>();
 
             for (int i = 0; i < folders.Length; i++)
             {
@@ -399,12 +424,12 @@ namespace RPG
 
                 folders[i].CalculatePath(Path);
             }
-            for (int i = 0; i < scenes.Length; i++)
+            for (int i = 0; i < journals.Length; i++)
             {
-                // Continue if the scene isn't content of ours
-                if (scenes[i].transform.parent != Content) continue;
+                // Continue if the journal isn't content of ours
+                if (journals[i].transform.parent != Content) continue;
 
-                scenes[i].UpdatePath(Path);
+                journals[i].UpdatePath(Path);
             }
         }
     }

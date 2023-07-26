@@ -41,27 +41,36 @@ namespace RPG
         {
             // Add event listeners
             Events.OnBlueprintClicked.AddListener(HandleClick);
+            Events.OnBlueprintFolderClicked.AddListener(HandleClick);
             Events.OnBlueprintSelected.AddListener(HandleSelect);
             Events.OnBlueprintDeselected.AddListener(HandleDeselect);
             Events.OnBlueprintMoved.AddListener(HandleMoved);
             Events.OnPresetModified.AddListener(ModifyPreset);
             Events.OnPresetRemoved.AddListener(RemovePreset);
+            Events.OnSidePanelChanged.AddListener(CloseOptions);
         }
         private void OnDisable()
         {
             // Remove event listeners
             Events.OnBlueprintClicked.RemoveListener(HandleClick);
+            Events.OnBlueprintFolderClicked.RemoveListener(HandleClick);
             Events.OnBlueprintSelected.RemoveListener(HandleSelect);
             Events.OnBlueprintDeselected.RemoveListener(HandleDeselect);
             Events.OnBlueprintMoved.RemoveListener(HandleMoved);
             Events.OnPresetModified.RemoveListener(ModifyPreset);
-            Events.OnPresetRemoved.AddListener(RemovePreset);
+            Events.OnPresetRemoved.RemoveListener(RemovePreset);
+            Events.OnSidePanelChanged.RemoveListener(CloseOptions);
         }
 
         private void HandleClick(TokenHolder token)
         {
             // Close options panel if it's open and not ours
             if (optionsOpen && token != this) ToggleOptions();
+        }
+        private void HandleClick(TokenFolder folder)
+        {
+            // Close options panel if it's open
+            if (optionsOpen) ToggleOptions();
         }
         private void HandleSelect(TokenHolder token)
         {
@@ -176,6 +185,22 @@ namespace RPG
                 optionsPanel.GetComponent<ContentSizeFitter>().enabled = optionsOpen;
             });
         }
+        private void CloseOptions()
+        {
+            if (!optionsOpen) return;
+
+            optionsOpen = false;
+
+            LeanTween.size(optionsPanel, new Vector2(115.0f, 0.0f), 0.2f).setOnComplete(() =>
+            {
+                optionsPanel.transform.SetParent(transform, true);
+                optionsPanel.anchoredPosition = new Vector2(15.0f, -45.0f);
+                optionsPanel.SetAsLastSibling();
+
+                // Enable / disable content size fitter
+                optionsPanel.GetComponent<ContentSizeFitter>().enabled = false;
+            });
+        }
 
         public void Modify()
         {
@@ -254,7 +279,7 @@ namespace RPG
                     data.id = id;
                     tokensPanel = panel;
                     selectedColor = string.IsNullOrEmpty(path) ? tokensPanel.GetColor() : tokensPanel.GetDirectoryByPath(path).Data.color;
-                    this._path = path;
+                    _path = path;
                     LoadData(data);
                     return;
                 }

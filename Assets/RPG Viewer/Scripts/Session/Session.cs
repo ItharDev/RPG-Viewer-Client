@@ -14,6 +14,7 @@ namespace RPG
 
         public TokenManager TokenManager { get; private set; }
         public NoteManager NoteManager { get; private set; }
+        public JournalManager JournalManager { get; private set; }
         public GridManager Grid { get; private set; }
         public SceneData Settings { get; private set; }
         public static Session Instance { get; private set; }
@@ -47,6 +48,7 @@ namespace RPG
             // Get reference of the managers
             TokenManager = FindObjectOfType<TokenManager>();
             NoteManager = FindObjectOfType<NoteManager>();
+            JournalManager = FindObjectOfType<JournalManager>();
             Grid = FindObjectOfType<GridManager>();
         }
         private void Start()

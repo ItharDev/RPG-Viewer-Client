@@ -103,7 +103,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Visibility
+  m_text: Share page
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 7989ebb5b6038ed46a0add1e66186634, type: 2}
   m_sharedMaterial: {fileID: 2887277357835968653, guid: 7989ebb5b6038ed46a0add1e66186634, type: 2}
@@ -1190,8 +1190,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1820992818498590644}
-        m_TargetAssemblyTypeName: RPG.VisibilityPanel, Assembly-CSharp
+      - m_Target: {fileID: 5272008743041822796}
+        m_TargetAssemblyTypeName: RPG.CollaboratorPanel, Assembly-CSharp
         m_MethodName: ClosePanel
         m_Mode: 1
         m_Arguments:
@@ -1212,9 +1212,9 @@ GameObject:
   m_Component:
   - component: {fileID: 3209967977130894019}
   - component: {fileID: 3324742385859915854}
-  - component: {fileID: 1820992818498590644}
+  - component: {fileID: 5272008743041822796}
   m_Layer: 5
-  m_Name: Visibility Panel
+  m_Name: Collaborators Panel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1249,7 +1249,7 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5830714331654185521}
   m_CullTransparentMesh: 1
---- !u!114 &1820992818498590644
+--- !u!114 &5272008743041822796
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1258,11 +1258,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 5830714331654185521}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b90ef840967fa3e4fb368db848a5f520, type: 3}
+  m_Script: {fileID: 11500000, guid: 555a720fee19b1d49925ee4ecf26299e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   content: {fileID: 8051236053181827476}
-  holderPrefab: {fileID: 6348640699284137128, guid: 75543880eea954f49b26e389c2a01c4d, type: 3}
+  holderPrefab: {fileID: 2374806283998964349, guid: 0663283a94cfc534fa8c510823573b19, type: 3}
 --- !u!1 &6655811019662983622
 GameObject:
   m_ObjectHideFlags: 0
@@ -1768,9 +1768,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1820992818498590644}
-        m_TargetAssemblyTypeName: RPG.VisibilityPanel, Assembly-CSharp
-        m_MethodName: RefreshVisibility
+      - m_Target: {fileID: 5272008743041822796}
+        m_TargetAssemblyTypeName: RPG.CollaboratorPanel, Assembly-CSharp
+        m_MethodName: RefreshUsers
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

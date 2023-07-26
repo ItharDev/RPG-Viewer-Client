@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using LogicUI.FancyTextRendering;
@@ -13,7 +15,7 @@ using UnityEngine.UI;
 
 namespace RPG
 {
-    public class NoteUI : MonoBehaviour
+    public class Journal : MonoBehaviour
     {
         [Header("UI")]
         [SerializeField] private RectTransform resize;
@@ -26,10 +28,6 @@ namespace RPG
         [SerializeField] private TMP_InputField headerInput;
         [SerializeField] private TMP_Text header;
         [SerializeField] private GameObject options;
-        [SerializeField] private GameObject setPublic;
-        [SerializeField] private Image globalIcon;
-        [SerializeField] private Sprite globalSprite;
-        [SerializeField] private Sprite privateSprite;
         [SerializeField] private GameObject showOthers;
 
         [Header("Content")]
@@ -42,8 +40,7 @@ namespace RPG
         [SerializeField] private GameObject chooseImage;
 
         private RectTransform rect;
-        private NoteInfo info;
-        private NoteData data;
+        private JournalData data;
         private NoteSelection selection;
 
         private void Awake()
@@ -51,22 +48,40 @@ namespace RPG
             if (rect == null) rect = (RectTransform)transform;
         }
 
-        public void LoadData(NoteInfo _info, NoteData _data)
+        public void Instantiate(string id)
         {
-            info = _info;
+            SocketManager.EmitAsync("get-journal", async (callback) =>
+            {
+                await UniTask.SwitchToMainThread();
+
+                // Check if the event was successful
+                if (callback.GetValue().GetBoolean())
+                {
+                    JournalData data = JsonUtility.FromJson<JournalData>(callback.GetValue(1).ToString());
+                    data.id = id;
+                    LoadData(data);
+                }
+
+                // Send error message
+                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                Session.Instance.JournalManager.CloseJournal(id);
+                Destroy(gameObject);
+            }, id);
+        }
+
+        public void LoadData(JournalData _data)
+        {
             data = _data;
 
             textInput.text = data.text;
             headerInput.text = data.header;
             header.text = data.header;
             markdown.Source = data.text;
-            image.raycastTarget = info.IsOwner;
-            textInput.readOnly = !info.IsOwner;
-            header.raycastTarget = info.IsOwner;
-            chooseImage.SetActive(info.IsOwner && selection == NoteSelection.Image);
-            setPublic.SetActive(info.owner == GameData.User.id);
-            showOthers.SetActive(info.IsOwner);
-            globalIcon.sprite = info.global ? globalSprite : privateSprite;
+            image.raycastTarget = data.IsOwner || data.IsCollaborator;
+            textInput.readOnly = !data.IsOwner && !data.IsCollaborator;
+            header.raycastTarget = data.IsOwner || data.IsCollaborator;
+            chooseImage.SetActive((data.IsOwner || data.IsCollaborator) && selection == NoteSelection.Image);
+            showOthers.SetActive(data.IsOwner || data.IsCollaborator);
 
             if (string.IsNullOrEmpty(data.image))
             {
@@ -111,6 +126,7 @@ namespace RPG
                 return;
             }
 
+            image.color = Color.white;
             WebManager.Download(data.image, true, async (bytes) =>
             {
                 // Return if image was not found
@@ -123,22 +139,17 @@ namespace RPG
                 image.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
             });
         }
-        public void SetGlobal(bool _isGlobal)
+        public void UpdateCollaborators(List<Collaborator> collaborators)
         {
-            info.global = _isGlobal;
-            image.raycastTarget = info.IsOwner;
-            textInput.readOnly = !info.IsOwner;
-            header.raycastTarget = info.IsOwner;
-            chooseImage.SetActive(info.IsOwner && selection == NoteSelection.Image);
-            setPublic.SetActive(info.owner == GameData.User.id);
-            showOthers.SetActive(info.IsOwner);
-            globalIcon.sprite = info.global ? globalSprite : privateSprite;
-            if (!info.IsOwner) Close();
+            data.collaborators = collaborators;
+            if (data.IsOwner || data.IsCollaborator) return;
+
+            Close();
         }
 
         public void Close()
         {
-            Session.Instance.NoteManager.CloseNote(data.id);
+            Session.Instance.JournalManager.CloseJournal(data.id);
             Destroy(gameObject);
         }
         public void ToggleOptions()
@@ -148,7 +159,7 @@ namespace RPG
         public void ViewImage()
         {
             imageContent.SetActive(true);
-            chooseImage.SetActive(info.IsOwner);
+            chooseImage.SetActive(data.IsOwner || data.IsCollaborator);
             textContent.SetActive(false);
             selection = NoteSelection.Image;
         }
@@ -165,7 +176,7 @@ namespace RPG
             {
                 if (bytes == null) return;
 
-                SocketManager.EmitAsync("modify-note-image", (callback) =>
+                SocketManager.EmitAsync("modify-journal-image", (callback) =>
                 {
                     // Check if the event was successful
                     if (callback.GetValue().GetBoolean()) return;
@@ -191,26 +202,14 @@ namespace RPG
             });
             await Task.Yield();
         }
-
-        public void UpdateGlobal()
+        public void ShowJournal()
         {
-            SocketManager.EmitAsync("set-note-global", (callback) =>
-            {
-                // Check if the event was successful
-                if (callback.GetValue().GetBoolean()) return;
-
-                // Send error message
-                MessageManager.QueueMessage(callback.GetValue(1).GetString());
-            }, data.id, !info.global);
-        }
-        public void ShowNote()
-        {
-            SocketManager.EmitAsync("show-note", (callback) =>
+            SocketManager.EmitAsync("show-journal", (callback) =>
             {
                 // Check if the event was successful
                 if (callback.GetValue().GetBoolean())
                 {
-                    MessageManager.QueueMessage("Note sent to others");
+                    MessageManager.QueueMessage("Journal sent to others");
                     return;
                 }
 
@@ -218,16 +217,16 @@ namespace RPG
                 MessageManager.QueueMessage(callback.GetValue(1).GetString());
             }, data.id);
         }
-        public void SaveNote()
+        public void SaveJournal()
         {
-            SocketManager.EmitAsync("save-note", async (callback) =>
+            SocketManager.EmitAsync("save-journal", async (callback) =>
             {
                 await UniTask.SwitchToMainThread();
 
                 // Check if the event was successful
                 if (callback.GetValue().GetBoolean())
                 {
-                    MessageManager.QueueMessage("Note saved");
+                    MessageManager.QueueMessage("Journal saved");
                     FindObjectOfType<JournalsPanel>().LoadJournal(callback.GetValue(1).GetString(), "");
                     return;
                 }
@@ -240,7 +239,7 @@ namespace RPG
         {
             if (text == data.text) return;
 
-            SocketManager.EmitAsync("modify-note-text", async (callback) =>
+            SocketManager.EmitAsync("modify-journal-text", async (callback) =>
             {
                 // Check if the event was successful
                 if (callback.GetValue().GetBoolean()) return;
@@ -257,7 +256,7 @@ namespace RPG
         {
             if (text == data.header) return;
 
-            SocketManager.EmitAsync("modify-note-header", async (callback) =>
+            SocketManager.EmitAsync("modify-journal-header", async (callback) =>
             {
                 await UniTask.SwitchToMainThread();
 
@@ -320,9 +319,40 @@ namespace RPG
         }
     }
 
-    public enum NoteSelection
+    [Serializable]
+    public struct JournalData
     {
-        Text,
-        Image
+        public string id;
+        public string header;
+        public string owner;
+        public string text;
+        public string image;
+        public List<Collaborator> collaborators;
+
+        public bool IsOwner { get { return owner == GameData.User.id; } }
+        public bool IsCollaborator { get { return collaborators.FirstOrDefault(x => x.user == GameData.User.id).isCollaborator; } }
+
+        public JournalData(string _id, string _header, string _owner, string _text, string _image, List<Collaborator> _collaborators)
+        {
+            id = _id;
+            header = _header;
+            owner = _owner;
+            text = _text;
+            image = _image;
+            collaborators = _collaborators;
+        }
+    }
+
+    [Serializable]
+    public struct Collaborator
+    {
+        public string user;
+        public bool isCollaborator;
+
+        public Collaborator(string _user, bool _isCollaborator)
+        {
+            user = _user;
+            isCollaborator = _isCollaborator;
+        }
     }
 }

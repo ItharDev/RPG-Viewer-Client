@@ -200,7 +200,7 @@ namespace RPG
             if (joinDropdown.options.Count == 0) return;
 
             // Read current session's id
-            string id = sessions.Values.ElementAt(joinDropdown.value);
+            string id = sessions.Keys.ElementAt(joinDropdown.value);
 
             // Create new text editor
             TextEditor editor = new TextEditor

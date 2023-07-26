@@ -5,42 +5,49 @@ using System.Linq;
 using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using Networking;
-using SFB;
 using UnityEngine;
 
 namespace RPG
 {
-    public class ScenesPanel : MonoBehaviour
+    public class JournalsPanel : MonoBehaviour
     {
-        [SerializeField] private SceneFolder folderPrefab;
-        [SerializeField] private SceneHolder scenePrefab;
+        [SerializeField] private JournalFolder folderPrefab;
+        [SerializeField] private JournalHolder journalPrefab;
         [SerializeField] private Transform rootTransform;
+        [SerializeField] private CollaboratorPanel collaboratorPanel;
 
-        private Dictionary<string, SceneFolder> folders = new Dictionary<string, SceneFolder>();
-        private Dictionary<string, SceneHolder> scenes = new Dictionary<string, SceneHolder>();
+        private Dictionary<string, JournalFolder> folders = new Dictionary<string, JournalFolder>();
+        private Dictionary<string, JournalHolder> journals = new Dictionary<string, JournalHolder>();
 
         private bool loaded;
-        private SceneFolder selectedFolder;
-        private SceneHolder selectedScene;
+        private JournalFolder selectedFolder;
+        private JournalHolder selectedJournal;
         private float lastCount;
         private float lastColor;
 
         private void OnEnable()
         {
+            // Add event listeners
+            Events.OnSidePanelChanged.AddListener(DeselectJournal);
+            Events.OnJournalHeaderModified.AddListener(ModifyHeader);
+            Events.OnJournalRemoved.AddListener(RemoveCollaboration);
+            Events.OnCollaboratorsUpdated.AddListener(UpdateCollaboration);
+
             if (!loaded)
             {
                 loaded = true;
-                LoadScenes();
+                LoadJournals();
             }
-
-            // Add event listeners
-            Events.OnSidePanelChanged.AddListener(DeselectScene);
         }
         private void OnDisable()
         {
             // Remove event listeners
-            Events.OnSidePanelChanged.RemoveListener(DeselectScene);
+            Events.OnSidePanelChanged.RemoveListener(DeselectJournal);
+            Events.OnJournalHeaderModified.RemoveListener(ModifyHeader);
+            Events.OnJournalRemoved.RemoveListener(RemoveCollaboration);
+            Events.OnCollaboratorsUpdated.RemoveListener(UpdateCollaboration);
         }
+
         private void Update()
         {
             if (lastCount != rootTransform.childCount)
@@ -50,41 +57,65 @@ namespace RPG
             }
         }
 
+        private void ModifyHeader(string id, string text, string uid)
+        {
+            if (!journals.ContainsKey(id)) return;
+            journals[id].UpdateHeader(text);
+        }
+        private void RemoveCollaboration(string id)
+        {
+            if (!journals.ContainsKey(id)) return;
+            RemoveJournal(journals[id]);
+        }
+        private void UpdateCollaboration(string id, string owner, List<Collaborator> collaborators)
+        {
+            Debug.Log(id);
+            if (!journals.ContainsKey(id))
+            {
+                if (collaborators.FirstOrDefault(x => x.user == GameData.User.id).isCollaborator)
+                {
+                    LoadJournal(id, $"shared/{owner}");
+                }
+                return;
+            }
+            journals[id].UpdateCollaborators(collaborators);
+        }
+
         private void SortContent()
         {
-            List<SceneFolder> listOfFolders = folders.Values.ToList();
-            List<SceneHolder> listOfTokens = scenes.Values.ToList();
+            List<JournalFolder> listOfFolders = folders.Values.ToList();
+            List<JournalHolder> listOfJournals = journals.Values.ToList();
 
             listOfFolders.Sort(SortByName);
-            listOfTokens.Sort(SortByName);
+            listOfJournals.Sort(SortByName);
 
             for (int i = 0; i < folders.Count; i++)
             {
                 listOfFolders[i].transform.SetSiblingIndex(i);
             }
-            for (int i = 0; i < listOfTokens.Count; i++)
+            for (int i = 0; i < listOfJournals.Count; i++)
             {
-                listOfTokens[i].transform.SetSiblingIndex(i + folders.Count);
+                listOfJournals[i].transform.SetSiblingIndex(i + folders.Count);
             }
         }
-        private int SortByName(SceneFolder folderA, SceneFolder folderB)
+        private int SortByName(JournalFolder folderA, JournalFolder folderB)
         {
             return folderA.Data.name.CompareTo(folderB.Data.name);
         }
-        private int SortByName(SceneHolder holderA, SceneHolder holderB)
+        private int SortByName(JournalHolder holderA, JournalHolder holderB)
         {
-            return holderA.Data.info.name.CompareTo(holderB.Data.info.name);
+            return holderA.Data.header.CompareTo(holderB.Data.header);
         }
-        private void LoadScenes()
+        private void LoadJournals()
         {
-            SocketManager.EmitAsync("get-scenes", async (callback) =>
+            SocketManager.EmitAsync("get-journals", async (callback) =>
             {
                 // Check if the event was successful
                 if (callback.GetValue().GetBoolean())
                 {
                     await UniTask.SwitchToMainThread();
 
-                    // Enumerate scenes array
+                    // Enumerate journals array
                     var folders = callback.GetValue(1).GetProperty("folders").EnumerateObject().ToArray();
                     var contents = callback.GetValue(1).GetProperty("contents").EnumerateArray().ToArray();
 
@@ -94,10 +125,10 @@ namespace RPG
                         LoadDirectory(folders[i].Value, folders[i].Name, "");
                     }
 
-                    // Load scenes
+                    // Load journals
                     for (int i = 0; i < contents.Length; i++)
                     {
-                        LoadScene(contents[i].GetString(), "");
+                        LoadJournal(contents[i].GetString(), "");
                     }
                     return;
                 }
@@ -106,34 +137,37 @@ namespace RPG
                 MessageManager.QueueMessage(callback.GetValue(1).GetString());
             });
         }
-        private void LoadScene(string id, string path)
+        public void LoadJournal(string id, string path)
         {
             // Find target folder
-            SceneFolder targetFolder = GetDirectoryByPath(path);
+            JournalFolder targetFolder = GetDirectoryByPath(path);
 
-            // Instantiate scene
-            SceneHolder scene = Instantiate(scenePrefab, targetFolder == null ? rootTransform : targetFolder.Content);
-            scene.transform.SetAsLastSibling();
-            scene.LoadData(id, path, this);
+            // Instantiate journal
+            JournalHolder journal = Instantiate(journalPrefab, targetFolder == null ? rootTransform : targetFolder.Content);
+            journal.transform.SetAsLastSibling();
+            journal.LoadData(id, path, this);
 
-            // Add scene to dictionary
-            scenes.Add(id, scene);
+            // Add journal to dictionary
+            journals.Add(id, journal);
             SortContent();
         }
         private void LoadDirectory(System.Text.Json.JsonElement json, string id, string path)
         {
+            Debug.Log(id);
             // Load folder's data
             string name = json.GetProperty("name").GetString();
             var folders = json.GetProperty("folders").EnumerateObject().ToArray();
             var contents = json.GetProperty("contents").EnumerateArray().ToArray();
+
+            Debug.Log(id);
 
             // Create path to this directory
             string pathToThisFolder = string.IsNullOrEmpty(path) ? id : $"{path}/{id}";
             Folder data = new Folder(id, path, name, GetColor());
 
             // Instantiate folder
-            SceneFolder targetFolder = GetDirectoryByPath(path);
-            SceneFolder folder = Instantiate(folderPrefab, targetFolder == null ? rootTransform : targetFolder.Content);
+            JournalFolder targetFolder = GetDirectoryByPath(path);
+            JournalFolder folder = Instantiate(folderPrefab, targetFolder == null ? rootTransform : targetFolder.Content);
             folder.LoadData(data, this);
 
             // Add folder to dictionary
@@ -145,10 +179,10 @@ namespace RPG
                 LoadDirectory(folders[i].Value, folders[i].Name, pathToThisFolder);
             }
 
-            // Load tokens
+            // Load journals
             for (int i = 0; i < contents.Length; i++)
             {
-                LoadScene(contents[i].GetString(), pathToThisFolder);
+                LoadJournal(contents[i].GetString(), pathToThisFolder);
             }
 
             SortContent();
@@ -171,92 +205,55 @@ namespace RPG
             return UnityEngine.Random.Range(0, 12) * (1.0f / 12.0f);
         }
 
-        public async void CreateScene(string path)
+        public void CreateJournal(string path)
         {
-            await ImageTask(async (bytes) =>
+            JournalData data = new JournalData("", "New page", GameData.User.id, "", "", new List<Collaborator>());
+            SocketManager.EmitAsync("create-journal", async (callback) =>
             {
-                if (bytes == null) return;
+                await UniTask.SwitchToMainThread();
 
-                Texture2D texture = await AsyncImageLoader.CreateFromImageAsync(bytes);
-                float cellSize = texture.width * 0.0004f;
-                Vector2 gridPosition = new Vector2(-(texture.width * 0.005f), -(texture.height * 0.005f));
-                int rows = Mathf.RoundToInt(texture.height * 0.01f / cellSize);
-
-                SceneInfo info = new SceneInfo("New Scene", "", 0.0f);
-                GridData grid = new GridData(true, new Vector2Int(25, rows), cellSize, gridPosition, Color.black);
-                LightingSettings darkness = new LightingSettings(true, false, Color.black);
-                SceneData data = new SceneData(info, grid, darkness);
-                data.path = path;
-
-                SocketManager.EmitAsync("create-scene", async (callback) =>
+                // Check if the event was successful
+                if (callback.GetValue().GetBoolean())
                 {
-                    if (callback.GetValue().GetBoolean())
-                    {
-                        await UniTask.SwitchToMainThread();
-                        string id = callback.GetValue(1).GetString();
+                    string id = callback.GetValue(1).GetString();
 
-                        // Find target folder
-                        SceneFolder targetFolder = GetDirectoryByPath(data.path);
+                    LoadJournal(id, path);
+                    return;
+                }
 
-                        // Instantiate scene
-                        SceneHolder scene = Instantiate(scenePrefab, targetFolder == null ? rootTransform : targetFolder.Content);
-                        scene.transform.SetAsLastSibling();
-                        scene.LoadData(id, data.path, this);
-
-                        // Add scene to dictionary
-                        scenes.Add(id, scene);
-                        return;
-                    }
-
-                    // Send error message
-                    MessageManager.QueueMessage(callback.GetValue(1).GetString());
-                }, path, JsonUtility.ToJson(data), Convert.ToBase64String(bytes));
-            });
+                // Send error message
+                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+            }, path, JsonUtility.ToJson(data));
         }
-        private async Task ImageTask(Action<byte[]> callback)
-        {
-            // Only allow image files
-            ExtensionFilter[] extensions = new ExtensionFilter[] { new ExtensionFilter("Image Files", "png", "jpg", "jpeg", "webp") };
 
-            // Open file explorer
-            StandaloneFileBrowser.OpenFilePanelAsync("Select file", "", extensions, false, (string[] paths) =>
-            {
-                // Return if no items are selected
-                if (paths.Length == 0) callback(null);
-
-                // Read bytes from selected file
-                callback(File.ReadAllBytes(paths[0]));
-            });
-            await Task.Yield();
-        }
-        public SceneFolder CreateFolder(string id, string path)
+        public JournalFolder CreateFolder(string id, string path)
         {
             // Create path to this directory
             string pathToThisFolder = string.IsNullOrEmpty(path) ? id : $"{path}/{id}";
             Folder data = new Folder(id, path, "New folder", GetColor());
 
             // Instantiate folder
-            SceneFolder targetFolder = GetDirectoryByPath(path);
-            SceneFolder folder = Instantiate(folderPrefab, targetFolder == null ? rootTransform : targetFolder.Content);
+            JournalFolder targetFolder = GetDirectoryByPath(path);
+            JournalFolder folder = Instantiate(folderPrefab, targetFolder == null ? rootTransform : targetFolder.Content);
             folder.LoadData(data, this);
 
             // Add folder to dictionary
             this.folders.Add(id, folder);
             return folder;
         }
-        public void RemoveFolder(SceneFolder folder)
+        public void RemoveFolder(JournalFolder folder)
         {
-            List<SceneFolder> subFolders = GetFolders(folder);
-            List<SceneHolder> scenes = GetScenes(folder);
+            List<JournalFolder> subFolders = GetFolders(folder);
+            List<JournalHolder> journal = GetJournals(folder);
 
             for (int i = 0; i < subFolders.Count; i++)
             {
                 RemoveFolder(subFolders[i]);
             }
 
-            for (int i = 0; i < scenes.Count; i++)
+            for (int i = 0; i < journal.Count; i++)
             {
-                RemoveScene(scenes[i]);
+                RemoveJournal(journal[i]);
             }
 
             folders.Remove(folder.Id);
@@ -264,7 +261,7 @@ namespace RPG
         }
         public void CreateFolder()
         {
-            SocketManager.EmitAsync("create-scene-folder", async (callback) =>
+            SocketManager.EmitAsync("create-journal-folder", async (callback) =>
             {
                 // Check if the event was successful
                 if (callback.GetValue().GetBoolean())
@@ -273,7 +270,7 @@ namespace RPG
 
                     // Create the folder
                     string id = callback.GetValue(1).GetString();
-                    SceneFolder createdFolder = CreateFolder(id, "");
+                    JournalFolder createdFolder = CreateFolder(id, "");
 
                     // Activate rename field
                     createdFolder.Rename();
@@ -284,28 +281,28 @@ namespace RPG
                 MessageManager.QueueMessage(callback.GetValue(1).GetString());
             }, "", "New folder");
         }
-        public void RemoveScene(SceneHolder scene)
+        public void RemoveJournal(JournalHolder journal)
         {
-            scenes.Remove(scene.Id);
-            Destroy(scene.gameObject);
+            journals.Remove(journal.Id);
+            Destroy(journal.gameObject);
         }
-        public SceneFolder GetDirectoryByPath(string path)
+        public JournalFolder GetDirectoryByPath(string path)
         {
             // Find folder with specified path
             return folders.FirstOrDefault(item => item.Value.Path == path).Value;
         }
-        public bool IsSubFolderOf(SceneFolder folderToCheck, SceneFolder parentFolder)
+        public bool IsSubFolderOf(JournalFolder folderToCheck, JournalFolder parentFolder)
         {
             if (parentFolder == null || folderToCheck == null) return false;
 
-            List<SceneFolder> subFolders = parentFolder.GetComponentsInChildren<SceneFolder>(true).ToList();
+            List<JournalFolder> subFolders = parentFolder.GetComponentsInChildren<JournalFolder>(true).ToList();
             subFolders.Remove(parentFolder);
             return subFolders.Contains(folderToCheck);
         }
-        public List<SceneFolder> GetFolders(SceneFolder folder, bool deepSearch = false)
+        public List<JournalFolder> GetFolders(JournalFolder folder, bool deepSearch = false)
         {
-            List<SceneFolder> listOfFolders = new List<SceneFolder>();
-            SceneFolder[] folders = folder.Content.GetComponentsInChildren<SceneFolder>(false);
+            List<JournalFolder> listOfFolders = new List<JournalFolder>();
+            JournalFolder[] folders = folder.Content.GetComponentsInChildren<JournalFolder>(false);
             for (int i = 0; i < folders.Length; i++)
             {
                 if (deepSearch)
@@ -319,38 +316,38 @@ namespace RPG
 
             return listOfFolders;
         }
-        public List<SceneHolder> GetScenes(SceneFolder folder, bool deepSearch = false)
+        public List<JournalHolder> GetJournals(JournalFolder folder, bool deepSearch = false)
         {
-            List<SceneHolder> listOfScenes = new List<SceneHolder>();
-            SceneHolder[] holders = folder.Content.GetComponentsInChildren<SceneHolder>(false);
+            List<JournalHolder> listOfJournals = new List<JournalHolder>();
+            JournalHolder[] holders = folder.Content.GetComponentsInChildren<JournalHolder>(false);
             for (int i = 0; i < holders.Length; i++)
             {
                 if (deepSearch)
                 {
-                    listOfScenes.Add(holders[i]);
+                    listOfJournals.Add(holders[i]);
                     continue;
                 }
 
-                if (holders[i].transform.parent == folder.Content) listOfScenes.Add(holders[i]);
+                if (holders[i].transform.parent == folder.Content) listOfJournals.Add(holders[i]);
             }
 
-            return listOfScenes;
+            return listOfJournals;
         }
-        public void SelectFolder(SceneFolder folder)
+        public void SelectFolder(JournalFolder folder)
         {
-            // Deselect scene
-            selectedScene = null;
+            // Deselect journal
+            selectedJournal = null;
 
             // Store selected folder
             selectedFolder = folder;
-            Events.OnSceneFolderSelected?.Invoke(folder);
-            Events.OnSceneSelected?.Invoke(null);
+            Events.OnJournalFolderSelected?.Invoke(folder);
+            Events.OnJournalSelected?.Invoke(null);
         }
         public void MoveFolderRoot()
         {
             if (selectedFolder == null) return;
 
-            SocketManager.EmitAsync("move-scene-folder", async (callback) =>
+            SocketManager.EmitAsync("move-journal-folder", async (callback) =>
             {
                 await UniTask.SwitchToMainThread();
 
@@ -364,7 +361,7 @@ namespace RPG
                     // Calculate new path
                     selectedFolder.CalculatePath("");
 
-                    Events.OnSceneFolderMoved?.Invoke();
+                    Events.OnJournalFolderMoved?.Invoke();
                     selectedFolder = null;
                     return;
                 }
@@ -378,14 +375,14 @@ namespace RPG
         {
             // Send cancel event
             selectedFolder = null;
-            Events.OnSceneFolderDeselected?.Invoke();
-            Events.OnSceneDeselected?.Invoke();
+            Events.OnJournalFolderDeselected?.Invoke();
+            Events.OnJournalDeselected?.Invoke();
         }
-        public void MoveSelected(SceneFolder folder)
+        public void MoveSelected(JournalFolder folder)
         {
             if (selectedFolder != null)
             {
-                SocketManager.EmitAsync("move-scene-folder", async (callback) =>
+                SocketManager.EmitAsync("move-journal-folder", async (callback) =>
                 {
                     await UniTask.SwitchToMainThread();
 
@@ -399,7 +396,7 @@ namespace RPG
                         // Calculate new path
                         selectedFolder.CalculatePath(folder.Path);
 
-                        Events.OnSceneFolderMoved?.Invoke();
+                        Events.OnJournalFolderMoved?.Invoke();
                         selectedFolder = null;
                         return;
                     }
@@ -411,74 +408,91 @@ namespace RPG
             }
             else
             {
-                SocketManager.EmitAsync("move-scene", async (callback) =>
+                SocketManager.EmitAsync("move-journal", async (callback) =>
                 {
                     await UniTask.SwitchToMainThread();
 
                     if (callback.GetValue().GetBoolean())
                     {
                         // Set new transform
-                        selectedScene.transform.SetParent(folder.Content);
-                        selectedScene.transform.SetAsLastSibling();
+                        selectedJournal.transform.SetParent(folder.Content);
+                        selectedJournal.transform.SetAsLastSibling();
 
                         // Calculate new path
-                        selectedScene.UpdatePath(folder.Path);
+                        selectedJournal.UpdatePath(folder.Path);
 
-                        Events.OnSceneMoved?.Invoke();
-                        selectedScene = null;
+                        Events.OnJournalMoved?.Invoke();
+                        selectedJournal = null;
                         return;
                     }
 
                     // Send error message
                     MessageManager.QueueMessage(callback.GetValue(1).GetString());
-                    selectedScene = null;
-                }, selectedScene.Id, selectedScene.Path, folder.Path);
+                    selectedJournal = null;
+                }, selectedJournal.Id, selectedJournal.Path, folder.Path);
             }
         }
 
-        public void SelectScene(SceneHolder scene)
+        public void SelectJournal(JournalHolder journal)
         {
             // Deselect folder
             selectedFolder = null;
 
-            // Store selected scene
-            selectedScene = scene;
-            Events.OnSceneSelected?.Invoke(scene);
-            Events.OnSceneFolderSelected?.Invoke(null);
+            // Store selected journal
+            selectedJournal = journal;
+            Events.OnJournalSelected?.Invoke(journal);
+            Events.OnJournalFolderSelected?.Invoke(null);
         }
-        public void MoveSceneRoot()
+        public void MoveJournalRoot()
         {
-            if (selectedScene == null) return;
+            if (selectedJournal == null) return;
 
-            SocketManager.EmitAsync("move-scene", async (callback) =>
+            SocketManager.EmitAsync("move-journal", async (callback) =>
             {
                 await UniTask.SwitchToMainThread();
 
+                // Check if the event was successful
                 if (callback.GetValue().GetBoolean())
                 {
                     // Set new transform
-                    selectedScene.transform.SetParent(rootTransform);
-                    selectedScene.transform.SetAsLastSibling();
+                    selectedJournal.transform.SetParent(rootTransform);
+                    selectedJournal.transform.SetAsLastSibling();
 
                     // Calculate new path
-                    selectedScene.UpdatePath("");
+                    selectedJournal.UpdatePath("");
 
-                    Events.OnSceneMoved?.Invoke();
-                    selectedScene = null;
+                    Events.OnJournalMoved?.Invoke();
+                    selectedJournal = null;
                     return;
                 }
 
                 // Send error message
                 MessageManager.QueueMessage(callback.GetValue(1).GetString());
-                selectedScene = null;
-            }, selectedScene.Id, selectedScene.Path, "");
+                selectedJournal = null;
+            }, selectedJournal.Id, selectedJournal.Path, "");
         }
-        public void DeselectScene()
+        public void DeselectJournal()
         {
             // Send cancel event
-            selectedScene = null;
-            Events.OnSceneDeselected?.Invoke();
-            Events.OnSceneFolderDeselected?.Invoke();
+            selectedJournal = null;
+            Events.OnJournalDeselected?.Invoke();
+            Events.OnJournalFolderDeselected?.Invoke();
+        }
+
+        public void SharePage(JournalData data)
+        {
+            collaboratorPanel.LoadData(data.collaborators, (collaborators) =>
+            {
+                JournalData newData = new JournalData(data.id, data.header, data.owner, data.text, data.image, collaborators);
+                SocketManager.EmitAsync("share-journal", (callback) =>
+                {
+                    // Check if the event was successful
+                    if (callback.GetValue().GetBoolean()) return;
+
+                    // Send error message
+                    MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                }, data.id, JsonUtility.ToJson(newData));
+            });
         }
     }
 }

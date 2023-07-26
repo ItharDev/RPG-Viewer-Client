@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -9,15 +10,17 @@ namespace RPG
         [SerializeField] private RectTransform resolutionPanel;
         [SerializeField] private ResolutionHandler resolutionHandler;
 
-        public PauseHandler Instance { get; private set; }
+        public static PauseHandler Instance { get; private set; }
+
+        private List<BlockPause> blockers = new List<BlockPause>();
 
         private void Awake()
         {
             // Create instance
             if (Instance == null)
             {
-                DontDestroyOnLoad(gameObject);
                 Instance = this;
+                DontDestroyOnLoad(gameObject);
             }
             else Destroy(gameObject);
 
@@ -25,9 +28,18 @@ namespace RPG
         }
         private void Update()
         {
-            if (Input.GetKeyDown(KeyCode.Escape)) TogglePanel();
+            if (Input.GetKeyDown(KeyCode.Escape)) CheckBlockers();
         }
 
+        private void CheckBlockers()
+        {
+            for (int i = 0; i < blockers.Count; i++)
+            {
+                if (blockers[i] == null) blockers.RemoveAt(i);
+            }
+
+            if (blockers.Count == 0) TogglePanel();
+        }
         private void TogglePanel()
         {
             if (optionsPanel.gameObject.activeInHierarchy)
@@ -75,6 +87,15 @@ namespace RPG
         {
             TogglePanel();
             Application.Quit();
+        }
+
+        public void AddBlocker(BlockPause blocker)
+        {
+            if (!blockers.Contains(blocker)) blockers.Add(blocker);
+        }
+        public void RemoveBlocker(BlockPause blocker)
+        {
+            if (blockers.Contains(blocker)) blockers.Remove(blocker);
         }
     }
 }

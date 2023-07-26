@@ -1,19 +1,17 @@
+using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using Networking;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace RPG
 {
-    public class SceneHolder : MonoBehaviour
+    public class JournalHolder : MonoBehaviour
     {
-        [SerializeField] private Image icon;
         [SerializeField] private TMP_Text headerText;
-        [SerializeField] private GameObject headerBackground;
-        [SerializeField] private GameObject header;
-        [SerializeField] private TMP_InputField headerInput;
 
         [Header("Options")]
         [SerializeField] private RectTransform optionsPanel;
@@ -25,49 +23,51 @@ namespace RPG
         [SerializeField] private Image background;
         [SerializeField] private Color normalColor;
 
-        public string Path { get { return Data.path; } }
+        public string Path { get { return _path; } }
         public string Id { get { return Data.id; } }
 
-        public SceneData Data;
-        private ScenesPanel scenesPanel;
+        public JournalData Data;
+
+        private string _path;
+        private JournalsPanel journalsPanel;
         private bool optionsOpen;
         private Color selectedColor;
 
         private void OnEnable()
         {
             // Add event listeners
-            Events.OnSceneClicked.AddListener(HandleClick);
-            Events.OnSceneFolderClicked.AddListener(HandleClick);
-            Events.OnSceneSelected.AddListener(HandleSelect);
-            Events.OnSceneDeselected.AddListener(HandleDeselect);
-            Events.OnSceneMoved.AddListener(HandleMoved);
+            Events.OnJournalClicked.AddListener(HandleClick);
+            Events.OnJournalFolderClicked.AddListener(HandleClick);
+            Events.OnJournalSelected.AddListener(HandleSelect);
+            Events.OnJournalDeselected.AddListener(HandleDeselect);
+            Events.OnJournalMoved.AddListener(HandleMoved);
             Events.OnSidePanelChanged.AddListener(CloseOptions);
         }
         private void OnDisable()
         {
             // Remove event listeners
-            Events.OnSceneClicked.RemoveListener(HandleClick);
-            Events.OnSceneFolderClicked.RemoveListener(HandleClick);
-            Events.OnSceneSelected.RemoveListener(HandleSelect);
-            Events.OnSceneDeselected.RemoveListener(HandleDeselect);
-            Events.OnSceneMoved.RemoveListener(HandleMoved);
+            Events.OnJournalClicked.RemoveListener(HandleClick);
+            Events.OnJournalFolderClicked.RemoveListener(HandleClick);
+            Events.OnJournalSelected.RemoveListener(HandleSelect);
+            Events.OnJournalDeselected.RemoveListener(HandleDeselect);
+            Events.OnJournalMoved.RemoveListener(HandleMoved);
             Events.OnSidePanelChanged.RemoveListener(CloseOptions);
         }
 
-        private void HandleClick(SceneHolder scene)
+        private void HandleClick(JournalHolder journal)
         {
             // Close options panel if it's open and not ours
-            if (optionsOpen && scene != this) ToggleOptions();
+            if (optionsOpen && journal != this) ToggleOptions();
         }
-        private void HandleClick(SceneFolder folder)
+        private void HandleClick(JournalFolder folder)
         {
             // Close options panel if it's open
             if (optionsOpen) ToggleOptions();
         }
-        private void HandleSelect(SceneHolder scene)
+        private void HandleSelect(JournalHolder journal)
         {
-            // This scene was selected
-            if (scene == this)
+            // This journal was selected
+            if (journal == this)
             {
                 selectButton.SetActive(false);
                 rootButton.SetActive(true);
@@ -78,7 +78,7 @@ namespace RPG
                 return;
             }
 
-            // Allow to select another scene
+            // Allow to select another journal
             rootButton.SetActive(false);
             selectButton.SetActive(true);
             deselectButton.SetActive(false);
@@ -86,7 +86,7 @@ namespace RPG
         }
         private void HandleDeselect()
         {
-            // Allow scene selection
+            // Allow journal selection
             selectButton.SetActive(true);
             deselectButton.SetActive(false);
             rootButton.SetActive(false);
@@ -96,7 +96,7 @@ namespace RPG
         }
         private void HandleMoved()
         {
-            // Allow scene selection
+            // Allow journal selection
             selectButton.SetActive(true);
             deselectButton.SetActive(false);
             rootButton.SetActive(false);
@@ -105,18 +105,26 @@ namespace RPG
             background.color = normalColor;
         }
 
-        public void ClickScene(BaseEventData eventData)
+        public void ClickJournal(BaseEventData eventData)
         {
             // Get pointer data
             PointerEventData pointerData = (PointerEventData)eventData;
 
-            ToggleOptions();
+            if (pointerData.button == PointerEventData.InputButton.Left) OpenJournal();
+            else if (pointerData.button == PointerEventData.InputButton.Right) ToggleOptions();
 
-            // Send scene toggled event
-            Events.OnSceneClicked?.Invoke(this);
+            // Send journal toggled event
+            Events.OnJournalClicked?.Invoke(this);
+        }
+        private void OpenJournal()
+        {
+            Session.Instance.JournalManager.OpenJournal(Id);
         }
         private void ToggleOptions()
         {
+            // Prevent clicking shared journals
+            if (Path.Contains("shared")) return;
+
             // Toggle open state
             optionsOpen = !optionsOpen;
 
@@ -128,7 +136,7 @@ namespace RPG
             }
 
             // Calculate panel's target height
-            float targetSize = 90.0f;
+            float targetSize = 60.0f;
             if (selectButton.activeInHierarchy) targetSize += 30.0f;
             if (deselectButton.activeInHierarchy) targetSize += 30.0f;
             if (rootButton.activeInHierarchy) targetSize += 30.0f;
@@ -139,7 +147,7 @@ namespace RPG
                 if (!optionsOpen)
                 {
                     optionsPanel.transform.SetParent(transform, true);
-                    optionsPanel.anchoredPosition = new Vector2(15.0f, -100.0f);
+                    optionsPanel.anchoredPosition = new Vector2(15.0f, -35.0f);
                     optionsPanel.SetAsLastSibling();
                 }
 
@@ -164,60 +172,21 @@ namespace RPG
             });
         }
 
-        public void Play()
+        public void Share()
         {
-            ToggleOptions();
-            SocketManager.EmitAsync("set-state", (callback) =>
-            {
-                // Check if the event was successful
-                if (callback.GetValue().GetBoolean()) return;
-
-                // Send error message
-                MessageManager.QueueMessage(callback.GetValue(1).GetString());
-            }, Data.id, ConnectionManager.State.synced);
-        }
-        public void Rename()
-        {
-            ToggleOptions();
-            headerInput.gameObject.SetActive(true);
-            headerText.gameObject.SetActive(false);
-            header.SetActive(true);
-            headerInput.DeactivateInputField();
-            headerInput.ActivateInputField();
-            headerInput.Select();
-        }
-        public void ConfirmRename()
-        {
-            header.SetActive(false);
-            headerInput.gameObject.SetActive(false);
-            headerText.gameObject.SetActive(true);
-            string newName = string.IsNullOrEmpty(headerInput.text) ? Data.info.name : headerInput.text;
-
-            SocketManager.EmitAsync("rename-scene", async (callback) =>
-            {
-                await UniTask.SwitchToMainThread();
-                // Check if the event was successful
-                if (callback.GetValue().GetBoolean())
-                {
-                    headerText.text = newName;
-                    return;
-                }
-
-                // Send error message
-                MessageManager.QueueMessage(callback.GetValue(1).GetString());
-            }, Data.id, newName);
+            journalsPanel.SharePage(Data);
         }
         public void Delete()
         {
             ToggleOptions();
-            MessageManager.AskConfirmation(new Confirmation("Delete scene", "Delete", "Cancel", (result) =>
+            MessageManager.AskConfirmation(new Confirmation("Delete journal", "Delete", "Cancel", (result) =>
             {
-                if (result) SocketManager.EmitAsync("remove-scene", async (callback) =>
+                if (result) SocketManager.EmitAsync("remove-journal", async (callback) =>
                 {
                     await UniTask.SwitchToMainThread();
                     if (callback.GetValue().GetBoolean())
                     {
-                        scenesPanel.RemoveScene(this);
+                        journalsPanel.RemoveJournal(this);
                         return;
                     }
 
@@ -230,22 +199,22 @@ namespace RPG
         public void Select()
         {
             ToggleOptions();
-            scenesPanel.SelectScene(this);
+            journalsPanel.SelectJournal(this);
         }
         public void MoveRoot()
         {
             ToggleOptions();
-            scenesPanel.MoveSceneRoot();
+            journalsPanel.MoveJournalRoot();
         }
         public void Deselect()
         {
             ToggleOptions();
-            scenesPanel.DeselectScene();
+            journalsPanel.DeselectJournal();
         }
 
-        public void LoadData(string id, string path, ScenesPanel panel)
+        public void LoadData(string id, string path, JournalsPanel panel)
         {
-            SocketManager.EmitAsync("get-scene", async (callback) =>
+            SocketManager.EmitAsync("get-journal", async (callback) =>
             {
                 // Check if the event was successful
                 if (callback.GetValue().GetBoolean())
@@ -253,10 +222,11 @@ namespace RPG
                     await UniTask.SwitchToMainThread();
 
                     // Load Data
-                    SceneData data = JsonUtility.FromJson<SceneData>(callback.GetValue(1).ToString());
+                    JournalData data = JsonUtility.FromJson<JournalData>(callback.GetValue(1).ToString());
                     data.id = id;
-                    scenesPanel = panel;
-                    selectedColor = string.IsNullOrEmpty(path) ? scenesPanel.GetColor() : scenesPanel.GetDirectoryByPath(path).Data.color;
+                    _path = path;
+                    journalsPanel = panel;
+                    selectedColor = string.IsNullOrEmpty(path) ? journalsPanel.GetColor() : journalsPanel.GetDirectoryByPath(path).Data.color;
                     selectedColor.a = 0.5f;
                     LoadData(data);
                     return;
@@ -267,28 +237,30 @@ namespace RPG
         }
         public void UpdatePath(string newPath)
         {
-            Data.path = newPath;
-            selectedColor = string.IsNullOrEmpty(newPath) ? scenesPanel.GetColor() : scenesPanel.GetDirectoryByPath(newPath).Data.color;
+            _path = newPath;
+            selectedColor = string.IsNullOrEmpty(newPath) ? journalsPanel.GetColor() : journalsPanel.GetDirectoryByPath(newPath).Data.color;
         }
 
-        private void LoadData(SceneData data)
+        private void LoadData(JournalData data)
         {
             Data = data;
-            headerText.text = data.info.name;
-            headerBackground.SetActive(!string.IsNullOrEmpty(data.info.name));
-            WebManager.Download(data.info.image, true, async (bytes) =>
+            headerText.text = data.header;
+        }
+
+        public void UpdateHeader(string header)
+        {
+            Data.header = header;
+            headerText.text = header;
+        }
+        public void UpdateCollaborators(List<Collaborator> collaborators)
+        {
+            Data.collaborators = collaborators;
+            if (Data.IsOwner) return;
+
+            if (!Data.IsCollaborator && Path.Contains("shared"))
             {
-                // Return if image couldn't be loaded
-                if (bytes == null) return;
-
-                await UniTask.SwitchToMainThread();
-
-                // Generate texture
-                Texture2D texture = await AsyncImageLoader.CreateFromImageAsync(bytes);
-                icon.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
-                icon.color = Color.white;
-                icon.GetComponent<RectTransform>().sizeDelta = new Vector2(50.0f, 50.0f);
-            });
+                journalsPanel.RemoveJournal(this);
+            }
         }
     }
 }
