@@ -85,20 +85,26 @@ namespace RPG
                 {
                     await UniTask.SwitchToMainThread();
 
-                    // Enumerate tokens array
-                    var folders = callback.GetValue(1).GetProperty("folders").EnumerateObject().ToArray();
-                    var contents = callback.GetValue(1).GetProperty("contents").EnumerateArray().ToArray();
-
                     // Load folders
-                    for (int i = 0; i < folders.Length; i++)
+                    System.Text.Json.JsonElement folders;
+                    if (callback.GetValue(1).TryGetProperty("folders", out folders))
                     {
-                        LoadDirectory(folders[i].Value, folders[i].Name, "");
+                        var list = folders.EnumerateObject().ToArray();
+                        for (int i = 0; i < list.Length; i++)
+                        {
+                            LoadDirectory(list[i].Value, list[i].Name, "");
+                        }
                     }
 
                     // Load tokens
-                    for (int i = 0; i < contents.Length; i++)
+                    System.Text.Json.JsonElement contents;
+                    if (callback.GetValue(1).TryGetProperty("contents", out contents))
                     {
-                        LoadToken(contents[i].GetString(), "");
+                        var list = contents.EnumerateArray().ToArray();
+                        for (int i = 0; i < list.Length; i++)
+                        {
+                            LoadToken(list[i].GetString(), "");
+                        }
                     }
                     return;
                 }
@@ -182,11 +188,12 @@ namespace RPG
                 config.transform.SetAsLastSibling();
                 config.LoadData(new TokenData(), new PresetData(), bytes, "Create new Blueprint", (tokenData, image, lightData) =>
                 {
-                    SocketManager.EmitAsync("create-blueprint", (callback) =>
+                    SocketManager.EmitAsync("create-blueprint", async (callback) =>
                     {
                         // Check if the event was successful
                         if (callback.GetValue().GetBoolean())
                         {
+                            await UniTask.SwitchToMainThread();
                             string id = callback.GetValue(1).GetString();
 
                             tokenData.id = id;

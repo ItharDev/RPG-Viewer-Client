@@ -19,13 +19,9 @@ namespace RPG
         private void Awake()
         {
             rect = GetComponent<RectTransform>();
-        }
-        private void OnEnable()
-        {
-            // Add event listeners
             Events.OnGridChanged.AddListener(ReloadData);
         }
-        private void OnDisable()
+        private void OnDestroy()
         {
             // Add event listeners
             Events.OnGridChanged.RemoveListener(ReloadData);
@@ -36,11 +32,12 @@ namespace RPG
             data = newData;
         }
 
-        public void OpenPanel(GridData _data)
+        public void OpenPanel()
         {
+            if (data.cellSize == 0.0f) data = Session.Instance.Settings.grid;
             gameObject.SetActive(true);
             LeanTween.size(rect, new Vector2(250.0f, 117.0f), 0.2f);
-            LoadData(_data);
+            LoadData(data);
         }
         public void ClosePanel(bool saveData)
         {

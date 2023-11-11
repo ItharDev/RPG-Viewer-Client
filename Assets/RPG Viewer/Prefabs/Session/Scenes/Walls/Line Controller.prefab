@@ -25,13 +25,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5576902050134303276}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &5576902050134303275
 MonoBehaviour:
@@ -50,9 +50,18 @@ MonoBehaviour:
   doorColor: {r: 0.46666667, g: 1, b: 0.5176471, a: 1}
   invisibleColor: {r: 0.7127845, g: 0.4705882, b: 1, a: 1}
   hiddenDoorColor: {r: 1, g: 0.4705882, b: 0.4705882, a: 1}
+  fogColor: {r: 0.4705882, g: 0.73292845, b: 1, a: 1}
   lineTexture: {fileID: 2800000, guid: a26839e30014246278ee1dbe34a0df80, type: 3}
   collider2D: {fileID: 1151479745904877855}
   configurationPrefab: {fileID: 4062613650551601950, guid: 97e347183e057d24880f8ea2f23865f4, type: 3}
+  Data:
+    id: 
+    points: []
+    type: 0
+    open: 0
+    locked: 0
+  Type: 0
+  Points: []
 --- !u!68 &1151479745904877855
 EdgeCollider2D:
   m_ObjectHideFlags: 0
@@ -63,6 +72,25 @@ EdgeCollider2D:
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0

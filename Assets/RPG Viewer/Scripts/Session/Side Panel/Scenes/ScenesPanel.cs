@@ -84,20 +84,26 @@ namespace RPG
                 {
                     await UniTask.SwitchToMainThread();
 
-                    // Enumerate scenes array
-                    var folders = callback.GetValue(1).GetProperty("folders").EnumerateObject().ToArray();
-                    var contents = callback.GetValue(1).GetProperty("contents").EnumerateArray().ToArray();
-
                     // Load folders
-                    for (int i = 0; i < folders.Length; i++)
+                    System.Text.Json.JsonElement folders;
+                    if (callback.GetValue(1).TryGetProperty("folders", out folders))
                     {
-                        LoadDirectory(folders[i].Value, folders[i].Name, "");
+                        var list = folders.EnumerateObject().ToArray();
+                        for (int i = 0; i < list.Length; i++)
+                        {
+                            LoadDirectory(list[i].Value, list[i].Name, "");
+                        }
                     }
 
                     // Load scenes
-                    for (int i = 0; i < contents.Length; i++)
+                    System.Text.Json.JsonElement contents;
+                    if (callback.GetValue(1).TryGetProperty("contents", out contents))
                     {
-                        LoadScene(contents[i].GetString(), "");
+                        var list = contents.EnumerateArray().ToArray();
+                        for (int i = 0; i < list.Length; i++)
+                        {
+                            LoadScene(list[i].GetString(), "");
+                        }
                     }
                     return;
                 }

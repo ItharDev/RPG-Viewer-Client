@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -40,14 +41,19 @@ namespace RPG
         }
         private void OnEnable()
         {
-            SelectMove();
             // Add event listeners
             Events.OnStateChanged.AddListener(HandleStateChange);
+            Events.OnSettingChanged.AddListener(HandleSettingChange);
+
+            // SelectMove();
         }
+
         private void OnDisable()
         {
             // Remove event listeners
             Events.OnStateChanged.RemoveListener(HandleStateChange);
+            Events.OnSettingChanged.RemoveListener(HandleSettingChange);
+
         }
         private void Update()
         {
@@ -62,6 +68,11 @@ namespace RPG
         private void HandleStateChange(SessionState oldState, SessionState newState)
         {
             canvasGroup.alpha = string.IsNullOrEmpty(newState.scene) ? 0.0f : 1.0f;
+        }
+        private void HandleSettingChange(Setting setting)
+        {
+            if (setting == Setting.None) return;
+            SelectMove();
         }
 
         public void SelectMove()

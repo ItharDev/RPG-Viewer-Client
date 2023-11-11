@@ -198,8 +198,8 @@ namespace RPG
         }
         private void ToggleUI()
         {
-            canvasGroup.blocksRaycasts = !canvasGroup.blocksRaycasts;
-            canvasGroup.alpha = canvasGroup.blocksRaycasts ? 1.0f : 0.0f;
+            canvasGroup.blocksRaycasts = SocketManager.Socket.Connected;
+            canvasGroup.alpha = SocketManager.Socket.Connected ? 1.0f : 0.0f;
         }
 
         public void SignIn()

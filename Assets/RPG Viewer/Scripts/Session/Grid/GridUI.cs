@@ -121,8 +121,8 @@ namespace RPG
             else
             {
                 line.points3 = points;
-                Events.OnGridChanged?.Invoke(gridData, false, false);
             }
+            Events.OnGridChanged?.Invoke(gridData, false, false);
         }
         public void MoveCorner(CornerType type)
         {

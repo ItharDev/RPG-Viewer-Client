@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -36,7 +37,7 @@ namespace RPG
         public static SettingsHandler Instance { get; private set; }
         public Setting Setting { get { return activeSetting; } }
 
-        public GameView LastView = GameView.Player;
+        public GameView LastView = GameView.Clear;
 
         private Setting activeSetting;
         private Setting lastSetting;
@@ -53,12 +54,15 @@ namespace RPG
         {
             // Add event listeners
             Events.OnStateChanged.AddListener(HandleStateChange);
+            Events.OnToolChanged.AddListener(HandleToolChanged);
         }
         private void OnDisable()
         {
             // Remove event listeners
             Events.OnStateChanged.RemoveListener(HandleStateChange);
+            Events.OnToolChanged.RemoveListener(HandleToolChanged);
         }
+
         private void Update()
         {
             // Send tool change event whenever the user changes the tool
@@ -72,7 +76,17 @@ namespace RPG
         private void HandleStateChange(SessionState oldState, SessionState newState)
         {
             if (!ConnectionManager.Info.isMaster) return;
-            canvasGroup.alpha = (string.IsNullOrEmpty(newState.scene)) ? 0.0f : 1.0f;
+            canvasGroup.alpha = string.IsNullOrEmpty(newState.scene) ? 0.0f : 1.0f;
+            SelectClear();
+        }
+        private void HandleToolChanged(Tool tool)
+        {
+            if (tool == Tool.Move) return;
+            CloseWalls();
+            CloseLighting();
+            CloseView();
+            CloseGrid();
+            activeSetting = Setting.None;
         }
 
         public void ConfigureGrid()
@@ -80,7 +94,7 @@ namespace RPG
             if (gridConfiguration.gameObject.activeInHierarchy) return;
 
             gridConfiguration.transform.SetAsLastSibling();
-            gridConfiguration.OpenPanel(Session.Instance.Settings.grid);
+            gridConfiguration.OpenPanel();
         }
         public void SelectRegular()
         {
@@ -124,7 +138,7 @@ namespace RPG
         public void SelectHidden()
         {
             // Update selections
-            hiddenButton.Deselect();
+            hiddenButton.Select();
             doorsButton.Deselect();
             regularButton.Deselect();
             invisibleButton.Deselect();
@@ -156,6 +170,7 @@ namespace RPG
 
             // Update tool states
             LastView = GameView.Player;
+            activeSetting = Setting.Visibility;
             Events.OnViewChanged?.Invoke(GameView.Player);
         }
         public void SelectVision()
@@ -314,7 +329,7 @@ namespace RPG
 
             // Activate last tool selection
             if (LastView == GameView.Player) SelectPlayer();
-            else if (LastView == GameView.Vision) SelectPlayer();
+            else if (LastView == GameView.Vision) SelectVision();
             else SelectClear();
         }
         public void CloseView()
@@ -334,6 +349,7 @@ namespace RPG
         Walls_Hidden_Door,
         Walls_Fog,
         Lighting_Create,
-        Lighting_Delete
+        Lighting_Delete,
+        Visibility
     }
 }

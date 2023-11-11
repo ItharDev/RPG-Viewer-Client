@@ -48,7 +48,12 @@ namespace RPG
                 UpdateData();
             }
 
-            if (SettingsHandler.Instance.LastView == GameView.Player) HandleLayers();
+            if (SettingsHandler.Instance.LastView == GameView.Player && !ConnectionManager.Info.isMaster) HandleLayers();
+            else
+            {
+                canvas.sortingOrder = 1;
+                canvas.sortingLayerName = "Above Fog";
+            }
         }
 
         private void HandleLayers()
@@ -57,7 +62,7 @@ namespace RPG
             foreach (var token in Session.Instance.TokenManager.Tokens)
             {
                 float distance = Vector2.Distance(canvas.transform.position, token.Value.transform.position);
-                bool canOpen = token.Value.Permission.type != PermissionType.None;
+                bool canOpen = token.Value.Permission.type == PermissionType.Controller && token.Value.Visibility.visible;
 
                 if (distance <= Session.Instance.Grid.CellSize && canOpen) showDoor = true;
             }
@@ -154,7 +159,7 @@ namespace RPG
 
         public void OnClick(BaseEventData eventData)
         {
-            if (SettingsHandler.Instance.LastView == GameView.Player && canvas.sortingLayerName == "Defaulg") return;
+            if (SettingsHandler.Instance.LastView == GameView.Player && canvas.sortingLayerName == "Default") return;
             // Get pointer data
             PointerEventData pointerData = (PointerEventData)eventData;
             if (pointerData.button == PointerEventData.InputButton.Left) ToggleDoor();

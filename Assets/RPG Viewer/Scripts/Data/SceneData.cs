@@ -11,7 +11,6 @@ namespace RPG
         public LightingSettings darkness;
         public List<WallData> walls;
         public List<string> tokens;
-        public List<InitiativeData> initiatives;
 
         [NonSerialized] public string path;
         [NonSerialized] public string id;

@@ -44,7 +44,7 @@ namespace RPG
 
             if (data.effect.type == 1 && data.effect.frequency > 0)
             {
-                if (timer.GetMillisecs() > 1000f * data.effect.frequency)
+                if (timer.GetMillisecs() > 1000f / data.effect.frequency)
                 {
                     float tempAlpha = lightAlpha;
                     tempAlpha += Random.Range(-data.effect.strength * 0.01f, data.effect.strength * 0.01f);

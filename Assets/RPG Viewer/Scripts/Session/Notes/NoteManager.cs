@@ -142,7 +142,7 @@ namespace RPG
             Destroy(note.gameObject);
 
             if (!openNotes.ContainsKey(id)) return;
-            Destroy(openNotes[id]);
+            Destroy(openNotes[id].gameObject);
             RemoveNote(id);
         }
         private void ShowNote(string id)

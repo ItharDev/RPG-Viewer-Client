@@ -81,8 +81,8 @@ namespace RPG
             float angleToAdd = 0;
 
             // Define rotation direction A = left, D = right
-            if (Input.GetKeyDown(KeyCode.A)) angleToAdd = 45.0f;
-            if (Input.GetKeyDown(KeyCode.D)) angleToAdd = -45.0f;
+            if (Input.GetKeyDown(KeyCode.Q)) angleToAdd = 45.0f;
+            if (Input.GetKeyDown(KeyCode.E)) angleToAdd = -45.0f;
 
             // Return if no key was pressed
             if (angleToAdd == 0) return;
@@ -153,7 +153,7 @@ namespace RPG
         private void HandleMovement()
         {
             // Check if any of the arrow keys are pressed down
-            if (!CheckArrowKeys()) return;
+            if (!CheckManualMovement()) return;
 
             // Apply new target for the camera to follow
             FindObjectOfType<Camera2D>().FollowTarget(transform);
@@ -202,13 +202,11 @@ namespace RPG
             // Proceed to movement
             FinishMovement(movePoints);
         }
-        private bool CheckArrowKeys()
+        private bool CheckManualMovement()
         {
-            // Check if up or down arrow is pressed
-            if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.DownArrow)) return true;
+            if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.S)) return true;
+            if (Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.D)) return true;
 
-            // Check if left or righ arrow is pressed
-            if (Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.RightArrow)) return true;
             return false;
         }
 
@@ -349,9 +347,6 @@ namespace RPG
         }
         private bool CheckCollisions(List<Vector2> points)
         {
-            // Allow movement if we are the master client
-            if (ConnectionManager.Info.isMaster) return false;
-
             // Loop through each waypoint
             for (int i = 0; i < points.Count - 1; i++)
             {
@@ -363,6 +358,13 @@ namespace RPG
                 if (Physics2D.Raycast(points[i], direction, distance, blockingLayers).collider == null) continue;
 
                 // We have collided with something
+                // Allow movement if we are the master client
+                if (ConnectionManager.Info.isMaster)
+                {
+                    MessageManager.QueueMessage("This move would have collided with at least one wall");
+                    return false;
+                }
+
                 MessageManager.QueueMessage("Movement blocked by a wall");
                 return true;
             }

@@ -83,12 +83,14 @@ namespace RPG
         {
             // Check for colliders within radius
             List<Token> mounted = new List<Token>();
-            float radius = 0.009f * Data.dimensions.x >= Data.dimensions.y ? UI.Rect.sizeDelta.x : UI.Rect.sizeDelta.y;
-            Collider2D[] colliders = Physics2D.OverlapBoxAll(transform.position, new Vector2(radius, radius), 360, mountLayers);
+            float radius = (Data.dimensions.x >= Data.dimensions.y ? UI.Rect.sizeDelta.x : UI.Rect.sizeDelta.y) * 0.009f;
+            Debug.Log(radius);
+            Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, radius, mountLayers);
 
             // Loop through each collider
             for (var i = 0; i < colliders.Length; i++)
             {
+                Debug.Log(mounted.Count);
                 Token token = colliders[i].GetComponent<Token>();
 
                 // Don't count in ourselves
@@ -121,6 +123,10 @@ namespace RPG
 
             // Load lighting and vision
             Vision.Reload();
+
+            float cellSize = Session.Instance.Grid.CellSize;
+            Vector2Int dimensions = Data.dimensions;
+            boxCollider.size = new Vector2(100 * cellSize * (dimensions.x / 5.0f), 100 * cellSize * (dimensions.y / 5.0f));
         }
 
         private void SetPermission()
