@@ -30,7 +30,7 @@ namespace RPG
         {
             // Remove event listeners
             Events.OnSettingChanged.RemoveListener(ToggleUI);
-            Events.OnStateChanged.AddListener(ReloadWalls);
+            Events.OnStateChanged.RemoveListener(ReloadWalls);
         }
         private void Awake()
         {
@@ -75,6 +75,8 @@ namespace RPG
             {
                 // Continue if token is null
                 if (item == null) continue;
+
+                item.DestroyLine();
                 Destroy(item.gameObject);
             }
 
@@ -113,6 +115,7 @@ namespace RPG
             {
                 LineController controller = Instantiate(controllerPrefab, controllerParent);
                 controller.Initialise(list[i]);
+                controllers.Add(controller);
             }
         }
         public void SplitWall(LineController line, PointController point)
@@ -171,6 +174,7 @@ namespace RPG
                 if (callback.GetValue().GetBoolean())
                 {
                     controller.Data.id = callback.GetValue(1).GetString();
+                    controllers.Add(controller);
                     return;
                 }
 

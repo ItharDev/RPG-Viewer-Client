@@ -18,7 +18,7 @@ namespace RPG
         {
             // Get reference of our rect transform
             if (rect == null) rect = GetComponent<RectTransform>();
-            
+
             // Add event listeners
             Events.OnConnected.AddListener(OnConnected);
         }
@@ -33,6 +33,8 @@ namespace RPG
             string address = PlayerPrefs.GetString("Address");
             if (!string.IsNullOrEmpty(address)) SocketManager.Connect(address);
 
+            // Update fps
+            QualitySettings.vSyncCount = 0;
             int fps = PlayerPrefs.GetInt("FPS");
             if (fps != 0) UpdateFrameRate(fps);
         }

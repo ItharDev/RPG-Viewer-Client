@@ -1,4 +1,5 @@
 using System;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -42,7 +43,7 @@ namespace RPG
         private void OnEnable()
         {
             // Add event listeners
-            Events.OnStateChanged.AddListener(HandleStateChange);
+            Events.Test.AddListener(HandleStateChange);
             Events.OnSettingChanged.AddListener(HandleSettingChange);
 
             // SelectMove();
@@ -51,7 +52,7 @@ namespace RPG
         private void OnDisable()
         {
             // Remove event listeners
-            Events.OnStateChanged.RemoveListener(HandleStateChange);
+            Events.Test.RemoveListener(HandleStateChange);
             Events.OnSettingChanged.RemoveListener(HandleSettingChange);
 
         }
@@ -68,6 +69,7 @@ namespace RPG
         private void HandleStateChange(SessionState oldState, SessionState newState)
         {
             canvasGroup.alpha = string.IsNullOrEmpty(newState.scene) ? 0.0f : 1.0f;
+            canvasGroup.blocksRaycasts = !string.IsNullOrEmpty(newState.scene);
         }
         private void HandleSettingChange(Setting setting)
         {

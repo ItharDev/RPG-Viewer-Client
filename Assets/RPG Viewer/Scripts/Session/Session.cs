@@ -59,7 +59,7 @@ namespace RPG
 
         private void ChangeState(SessionState oldState, SessionState newState)
         {
-            if (newState.scene == null)
+            if (string.IsNullOrEmpty(newState.scene))
             {
                 // Return if there's no scene active
                 landingPage.transform.parent.gameObject.SetActive(true);
@@ -166,6 +166,7 @@ namespace RPG
                         MessageManager.RemoveMessage("Loading scene");
 
                         landingPage.transform.parent.gameObject.SetActive(false);
+                        Events.OnViewChanged?.Invoke(GameView.Clear);
                     });
 
                     return;

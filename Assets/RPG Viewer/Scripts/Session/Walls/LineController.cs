@@ -145,7 +145,7 @@ namespace RPG
             // Delete this wall if only single point is left
             if (Points.Count <= 1)
             {
-                if (line != null) Destroy(line.rectTransform.gameObject);
+                DestroyLine();
                 WallTools.Instance.RemoveWall(this);
             }
             else
@@ -391,6 +391,11 @@ namespace RPG
             draggedPoint.Initialise(color, this, false);
             dragging = true;
             continuing = true;
+        }
+
+        public void DestroyLine()
+        {
+            if (line != null) Destroy(line.rectTransform.gameObject);
         }
     }
 }

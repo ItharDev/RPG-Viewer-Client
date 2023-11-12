@@ -15,6 +15,9 @@ namespace RPG
         public static UnityEvent OnSignOut = new UnityEvent();
         public static UnityEvent OnRegister = new UnityEvent();
 
+        // Test (REMOVE)
+        public static UnityEvent<SessionState, SessionState> Test = new UnityEvent<SessionState, SessionState>();
+
         // Scene state
         public static UnityEvent<string> OnUserConnected = new UnityEvent<string>();
         public static UnityEvent<string> OnUserDisconnected = new UnityEvent<string>();

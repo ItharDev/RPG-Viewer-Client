@@ -85,20 +85,9 @@ namespace RPG
         {
             LeanTween.size((RectTransform)transform, new Vector2(180.0f, 0.0f), 0.2f).setOnComplete(() =>
             {
-                SaveData();
+                if (callback != null) callback?.Invoke(GetData());
                 gameObject.SetActive(false);
             });
-        }
-        private void SaveData()
-        {
-            // Create list of permissions
-            List<Visible> list = new List<Visible>();
-            for (int i = 0; i < holders.Count; i++)
-            {
-                list.Add(holders.ElementAt(i).Value.SaveData());
-            }
-
-            if (callback != null) callback?.Invoke(list);
         }
 
         private void SortContent()
@@ -115,6 +104,18 @@ namespace RPG
         private int SortByName(VisibilityHolder holderA, VisibilityHolder holderB)
         {
             return holderA.Name.CompareTo(holderB.Name);
+        }
+
+        public List<Visible> GetData()
+        {
+            // Create list of permissions
+            List<Visible> list = new List<Visible>();
+            for (int i = 0; i < holders.Count; i++)
+            {
+                list.Add(holders.ElementAt(i).Value.SaveData());
+            }
+
+            return list;
         }
     }
 }

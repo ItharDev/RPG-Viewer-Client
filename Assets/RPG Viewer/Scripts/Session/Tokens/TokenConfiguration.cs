@@ -247,6 +247,10 @@ namespace RPG
                 }
             }
 
+            // Visibility & permissions
+            data.visible = visibilityPanel.GetData();
+            data.permissions = permissionPanel.GetData();
+
             // Send callback
             callback?.Invoke(data, image, lightData);
         }

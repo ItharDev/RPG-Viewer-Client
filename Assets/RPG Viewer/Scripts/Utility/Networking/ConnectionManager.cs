@@ -58,7 +58,7 @@ namespace RPG
 
                 // Generate session info and state
                 Info = new SessionInfo(data.id, data.master, data.isMaster, users, sprite);
-                State = new SessionState(data.synced, data.scene);
+                State = new SessionState(data.synced, data.scene == null ? "" : data.scene);
                 SessionState oldState = new SessionState(false, "");
 
                 // Load session in background

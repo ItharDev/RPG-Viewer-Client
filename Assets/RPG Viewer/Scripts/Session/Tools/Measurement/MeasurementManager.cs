@@ -33,12 +33,7 @@ namespace RPG
 
         private void Awake()
         {
-            if (Instance == null)
-            {
-                Instance = this;
-                DontDestroyOnLoad(gameObject);
-            }
-            else Destroy(gameObject);
+            Instance = this;
         }
         private void OnEnable()
         {

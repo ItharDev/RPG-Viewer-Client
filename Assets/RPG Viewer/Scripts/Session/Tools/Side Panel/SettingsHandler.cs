@@ -1,4 +1,5 @@
 using System;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -53,9 +54,21 @@ namespace RPG
         private void OnEnable()
         {
             // Add event listeners
-            Events.OnStateChanged.AddListener(HandleStateChange);
+            // Events.OnStateChanged.AddListener(HandleStateChange);
+            Events.Test.AddListener(Test);
             Events.OnToolChanged.AddListener(HandleToolChanged);
         }
+
+        private async void Test(SessionState oldState, SessionState newState)
+        {
+            await UniTask.SwitchToMainThread();
+
+            if (!ConnectionManager.Info.isMaster) return;
+
+            canvasGroup.alpha = string.IsNullOrEmpty(newState.scene) ? 0.0f : 1.0f;
+            canvasGroup.blocksRaycasts = !string.IsNullOrEmpty(newState.scene);
+        }
+
         private void OnDisable()
         {
             // Remove event listeners
@@ -75,9 +88,7 @@ namespace RPG
 
         private void HandleStateChange(SessionState oldState, SessionState newState)
         {
-            if (!ConnectionManager.Info.isMaster) return;
-            canvasGroup.alpha = string.IsNullOrEmpty(newState.scene) ? 0.0f : 1.0f;
-            SelectClear();
+            Debug.Log("R");
         }
         private void HandleToolChanged(Tool tool)
         {

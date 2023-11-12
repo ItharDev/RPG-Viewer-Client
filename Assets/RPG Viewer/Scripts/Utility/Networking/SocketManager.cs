@@ -79,14 +79,15 @@ namespace Networking
             {
                 string scene = data.GetValue().GetString();
                 bool synced = data.GetValue(1).GetBoolean();
-
                 SessionState newState = new SessionState(synced, scene);
-                SessionState oldState = ConnectionManager.State;
+
                 EmitAsync("set-scene", async (callback) =>
                 {
                     await UniTask.SwitchToMainThread();
                     if (callback.GetValue().GetBoolean())
                     {
+                        SessionState oldState = ConnectionManager.State;
+                        Events.Test?.Invoke(oldState, newState);
                         Events.OnStateChanged?.Invoke(oldState, newState);
                         return;
                     }
