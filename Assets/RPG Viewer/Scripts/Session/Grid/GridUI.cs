@@ -10,12 +10,12 @@ namespace RPG
         [SerializeField] private CanvasGroup canvasGroup;
         [SerializeField] private bool drawGizmos;
         [SerializeField] private float lineWidth;
-        [SerializeField] private float moveSpeed;
         [SerializeField] private List<GridCorner> corners;
 
         private GridManager grid;
         private GridData gridData;
         private VectorLine line;
+        private float moveSpeed;
 
         private void Awake()
         {
@@ -101,21 +101,21 @@ namespace RPG
         private void UpdateGrid(float cellSize)
         {
             gridData.cellSize = cellSize;
-            moveSpeed = cellSize * 0.005f;
+            moveSpeed = cellSize * 0.001f;
             // Generate grid
             List<Vector3> points = new List<Vector3>();
 
             // Lines down X axis
             for (int i = 0; i <= gridData.dimensions.x; i++)
             {
-                points.Add(gridData.position + (new Vector2(i * gridData.cellSize, 0)));
-                points.Add(gridData.position + (new Vector2(i * gridData.cellSize, (gridData.dimensions.y) * gridData.cellSize)));
+                points.Add(gridData.position + new Vector2(i * gridData.cellSize, 0));
+                points.Add(gridData.position + new Vector2(i * gridData.cellSize, (gridData.dimensions.y) * gridData.cellSize));
             }
             // Lines down Y axis
             for (int i = 0; i <= gridData.dimensions.y; i++)
             {
-                points.Add(gridData.position + (new Vector2(0, i * gridData.cellSize)));
-                points.Add(gridData.position + (new Vector2((gridData.dimensions.x) * gridData.cellSize, i * gridData.cellSize)));
+                points.Add(gridData.position + new Vector2(0, i * gridData.cellSize));
+                points.Add(gridData.position + new Vector2(gridData.dimensions.x * gridData.cellSize, i * gridData.cellSize));
             }
             if (line == null) line = new VectorLine("Grid UI", points, lineWidth);
             else

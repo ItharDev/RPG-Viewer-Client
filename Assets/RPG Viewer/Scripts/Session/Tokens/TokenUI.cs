@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using Cysharp.Threading.Tasks;
 using Networking;
@@ -22,7 +21,6 @@ namespace RPG
         [SerializeField] private Image image;
         [SerializeField] private Image outlineImage;
         [SerializeField] private TMP_Text label;
-        [SerializeField] private GameObject rotateButton;
         [SerializeField] private CanvasGroup buttonsGroup;
         [SerializeField] private GameObject lockButton;
         [SerializeField] private GameObject visibilityButton;
@@ -51,8 +49,7 @@ namespace RPG
             get
             {
                 return RectTransformUtility.RectangleContainsScreenPoint(Rect, Camera.main.ScreenToWorldPoint(Input.mousePosition)) ||
-                token.Conditions.MouseOver ||
-                RectTransformUtility.RectangleContainsScreenPoint(rotateButton.GetComponent<RectTransform>(), Camera.main.ScreenToWorldPoint(Input.mousePosition));
+                token.Conditions.MouseOver;
             }
         }
         public bool Editing
@@ -64,13 +61,11 @@ namespace RPG
         }
 
         private Token token;
-        private Vector2 screenPos;
         private Outline outline;
-        private List<Token> rotatedTokens = new List<Token>();
         private TokenConfiguration config;
-
         private Shader outlineShader;
-        private Shader regularShader;
+
+        public float OriginalRotation;
 
         private void OnEnable()
         {
@@ -115,7 +110,6 @@ namespace RPG
             buttonsGroup.alpha = selected && ConnectionManager.Info.isMaster ? 1.0f : 0.0f;
             buttonsGroup.blocksRaycasts = selected && ConnectionManager.Info.isMaster ? true : false;
             conditionsButton.SetActive(selected);
-            rotateButton.SetActive(selected);
 
             if (string.IsNullOrEmpty(healthInput.text)) healthPanel.SetActive(selected);
             else healthPanel.SetActive(true);
@@ -236,6 +230,11 @@ namespace RPG
         {
             image.transform.eulerAngles = new Vector3(0.0f, 0.0f, value);
             token.Data.rotation = value;
+            OriginalRotation = value;
+        }
+        public void PreviewRotation(float value)
+        {
+            image.transform.eulerAngles = new Vector3(0.0f, 0.0f, value);
         }
         public void SetImage(Sprite sprite)
         {
@@ -320,90 +319,38 @@ namespace RPG
             });
         }
 
-        public void BeginRotate(BaseEventData eventData)
-        {
-            // Clear previous nearby tokens
-            rotatedTokens.Clear();
-
-            // Return if we aren't dragging whit LMB
-            PointerEventData pointerData = eventData as PointerEventData;
-            if (pointerData.button != PointerEventData.InputButton.Left) return;
-
-            // Store our position in screen space
-            screenPos = Camera.main.WorldToScreenPoint(transform.position);
-            Vector2 mouseDistance = (Vector2)Input.mousePosition - screenPos;
-
-            // Calculate angle offset
-            float offset = (Mathf.Atan2(transform.right.y, transform.right.x) - Mathf.Atan2(mouseDistance.y, mouseDistance.x)) * Mathf.Rad2Deg;
-
-            // Return if this is not a mount
-            if (token.Data.type != TokenType.Mount) return;
-
-            // Check for nearby tokens
-            rotatedTokens = token.GetNearbyTokens();
-
-            for (int i = 0; i < rotatedTokens.Count; i++)
-            {
-                // Initialise rotation
-                rotatedTokens[i].transform.parent = image.transform;
-            }
-        }
-        public void Rotate(BaseEventData eventData)
-        {
-            // Calculate new angle
-            Vector2 mouseDistance = (Vector2)Input.mousePosition - screenPos;
-            float angle = Mathf.Atan2(mouseDistance.y, mouseDistance.x) * Mathf.Rad2Deg;
-
-            // Rotate token
-            image.transform.eulerAngles = new Vector3(0, 0, angle);
-        }
-        public void EndRotate(BaseEventData eventData)
-        {
-            for (int i = 0; i < rotatedTokens.Count; i++)
-            {
-                // Check if token is still there
-                if (rotatedTokens[i] == null) continue;
-
-                // Update nearby tokens position
-                token.transform.parent = transform.parent;
-                token.Movement.MountedRotation();
-            }
-
-            // Update our rotation
-            token.Movement.FinishRotation(image.transform.eulerAngles.z, false);
-        }
-
         public void UpdateSorting()
         {
+            string targetLayer = "Characters";
             // Move token to correct sorting layer
             switch (token.Data.type)
             {
                 case TokenType.Character:
-                    canvas.sortingLayerName = "Characters";
                     // Check if we are dead
-                    if (token.Conditions.IsDead) canvas.sortingLayerName = "Dead Characters";
+                    if (token.Conditions.IsDead) targetLayer = "Dead Characters";
 
                     // Check if we are owners
-                    if (token.IsOwner) canvas.sortingLayerName = "Owned Characters";
+                    if (token.IsOwner) targetLayer = "Owned Characters";
                     break;
                 case TokenType.Mount:
-                    canvas.sortingLayerName = "Mounts";
+                    targetLayer = "Mounts";
 
                     // Check if we are dead
-                    if (token.Conditions.IsDead) canvas.sortingLayerName = "Dead Mounts";
+                    if (token.Conditions.IsDead) targetLayer = "Dead Mounts";
 
                     // Check if we are owners
-                    if (token.IsOwner) canvas.sortingLayerName = "Owned Mounts";
+                    if (token.IsOwner) targetLayer = "Owned Mounts";
                     break;
                 case TokenType.Item:
-                    canvas.sortingLayerName = "Items";
+                    targetLayer = "Items";
 
                     // Check if we are owners
-                    if (token.IsOwner) canvas.sortingLayerName = "Owned Items";
+                    if (token.IsOwner) targetLayer = "Owned Items";
                     break;
             }
 
-            uICanvas.sortingLayerName = outline.enabled ? "Above Fog" : canvas.sortingLayerName;
+            uICanvas.sortingLayerName = outline.enabled ? "Above Fog" : targetLayer;
+            canvas.sortingLayerName = outline.enabled ? "Above Fog" : targetLayer;
         }
         public void Resize()
         {

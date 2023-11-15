@@ -16,7 +16,7 @@ namespace RPG
         public static UnityEvent OnRegister = new UnityEvent();
 
         // Test (REMOVE)
-        public static UnityEvent<SessionState, SessionState> Test = new UnityEvent<SessionState, SessionState>();
+        public static UnityEvent<SessionState, SessionState> OnSceneChanged = new UnityEvent<SessionState, SessionState>();
 
         // Scene state
         public static UnityEvent<string> OnUserConnected = new UnityEvent<string>();
@@ -100,7 +100,8 @@ namespace RPG
         public static UnityEvent<string, int> OnConditionsModified = new UnityEvent<string, int>();
         public static UnityEvent<string, int> OnHealthModified = new UnityEvent<string, int>();
         public static UnityEvent<string, int> OnElevationModified = new UnityEvent<string, int>();
-        public static UnityEvent<string, float> OnTokenRotated = new UnityEvent<string, float>();
+        public static UnityEvent<string, float, string> OnTokenRotated = new UnityEvent<string, float, string>();
+        public static UnityEvent<string, float, string> OnTokenLightRotated = new UnityEvent<string, float, string>();
         public static UnityEvent<Token> OnTokenSelected = new UnityEvent<Token>();
 
         // Initiatives

@@ -10,6 +10,7 @@ namespace RPG
         [SerializeField] private TMP_InputField nameInput;
         [SerializeField] private TMP_Dropdown effectDropdown;
         [SerializeField] private TMP_InputField radiusInput;
+        [SerializeField] private TMP_InputField angleInput;
         [SerializeField] private TMP_InputField intensityInput;
         [SerializeField] private Image colorButton;
         [SerializeField] private TMP_InputField strengthInput;
@@ -24,7 +25,7 @@ namespace RPG
 
         public void LoadData(PresetData _data, Action<PresetData> onSelected)
         {
-            LeanTween.size((RectTransform)transform, new Vector2(300.0f, 239.0f), 0.2f);
+            LeanTween.size((RectTransform)transform, new Vector2(300.0f, 268.0f), 0.2f);
 
             data = _data;
             callback = onSelected;
@@ -33,6 +34,8 @@ namespace RPG
             nameInput.text = data.name;
             effectDropdown.value = data.effect.type;
             radiusInput.text = data.radius.ToString();
+            ((TMP_Text)radiusInput.placeholder).text = Session.Instance.Grid.Unit.name;
+            angleInput.text = data.angle.ToString();
             intensityInput.text = ((int)(data.color.a * 100.0f)).ToString();
             colorButton.color = _data.color;
             strengthInput.text = data.effect.strength.ToString();
@@ -58,7 +61,7 @@ namespace RPG
 
         public void ClosePanel(bool saveData = true)
         {
-            LeanTween.size((RectTransform)transform, new Vector2(0.0f, 239.0f), 0.2f).setOnComplete(() =>
+            LeanTween.size((RectTransform)transform, new Vector2(0.0f, 268.0f), 0.2f).setOnComplete(() =>
             {
                 if (saveData) SaveData();
                 if (hideWhenMinimised)
@@ -72,6 +75,7 @@ namespace RPG
         {
             data.name = string.IsNullOrEmpty(nameInput.text) ? data.name : nameInput.text;
             float.TryParse(radiusInput.text, out data.radius);
+            int.TryParse(angleInput.text, out data.angle);
             data.color = new Color(colorButton.color.r, colorButton.color.g, colorButton.color.b, data.color.a);
             data.effect.type = effectDropdown.value;
             float.TryParse(strengthInput.text, out data.effect.strength);

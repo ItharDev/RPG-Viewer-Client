@@ -183,11 +183,11 @@ namespace RPG
 
             for (int i = 0; i < totalDiagonals; i++)
             {
-                if (i % 2 == 0) totalDst += 5;
-                else totalDst += 10;
+                if (i % 2 == 0) totalDst += Session.Instance.Grid.Unit.scale;
+                else totalDst += Session.Instance.Grid.Unit.scale * 2;
             }
 
-            infoText.text = $"{totalDst} ft";
+            infoText.text = $"{totalDst} {Session.Instance.Grid.Unit.name}";
         }
     }
 

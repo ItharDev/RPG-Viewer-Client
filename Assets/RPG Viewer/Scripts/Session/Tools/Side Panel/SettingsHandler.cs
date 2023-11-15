@@ -55,11 +55,11 @@ namespace RPG
         {
             // Add event listeners
             // Events.OnStateChanged.AddListener(HandleStateChange);
-            Events.Test.AddListener(Test);
+            Events.OnSceneChanged.AddListener(ToggleUI);
             Events.OnToolChanged.AddListener(HandleToolChanged);
         }
 
-        private async void Test(SessionState oldState, SessionState newState)
+        private async void ToggleUI(SessionState oldState, SessionState newState)
         {
             await UniTask.SwitchToMainThread();
 

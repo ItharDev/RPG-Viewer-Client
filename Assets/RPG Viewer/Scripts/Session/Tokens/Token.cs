@@ -247,6 +247,7 @@ namespace RPG
         public int conditions;
         public bool locked;
         public float rotation;
+        public float lightRotation;
     }
 
     [Serializable]

@@ -9,11 +9,15 @@ namespace RPG
     {
         [SerializeField] private Light2D nightSource;
         [SerializeField] private Light2D visionSource;
+        [SerializeField] private Light2D highlight;
         [SerializeField] private LightSource lightSource;
 
         private Token token;
         private bool loaded;
         private bool updateRequired;
+        private float angleToAdd;
+        private float angleTimer;
+        private float originalRotation;
 
         private void OnEnable()
         {
@@ -37,8 +41,51 @@ namespace RPG
                 LoadVision();
                 LoadLighting();
                 ApplyVisibility();
+                SetRotation(token.Data.lightRotation);
                 updateRequired = false;
             }
+
+            if (!token.Selected || token.UI.Editing) return;
+            HandleRotation();
+        }
+
+        private void HandleRotation()
+        {
+            if (!Input.GetKey(KeyCode.Q) && !Input.GetKey(KeyCode.E)) return;
+
+            // Define rotation direction A = left, D = right
+            if (Input.GetKey(KeyCode.Q)) angleToAdd += 100.0f * Time.deltaTime;
+            if (Input.GetKey(KeyCode.E)) angleToAdd -= 100.0f * Time.deltaTime;
+
+            angleTimer += Time.deltaTime;
+
+            if (angleTimer >= 1.0f / 30.0f)
+            {
+                angleTimer = 0.0f;
+                FinishRotation(angleToAdd);
+                angleToAdd = 0.0f;
+            }
+        }
+
+        private void PreviewRotation(float value)
+        {
+            lightSource.transform.eulerAngles = new Vector3(0.0f, 0.0f, value);
+        }
+        public void FinishRotation(float angle, bool addAngle = true)
+        {
+            float targetAngle = addAngle ? token.Data.lightRotation + angle : angle;
+            token.Data.lightRotation = targetAngle;
+            PreviewRotation(targetAngle);
+            SocketManager.EmitAsync("rotate-token-light", (callback) =>
+            {
+                // Check if the event was successful
+                if (callback.GetValue().GetBoolean()) return;
+
+                token.Data.lightRotation = originalRotation;
+
+                // Send error message
+                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+            }, token.Data.id, targetAngle, GameData.User.id);
         }
 
         private void ModifyPreset(string _id, PresetData _data)
@@ -59,6 +106,13 @@ namespace RPG
         {
             nightSource.enabled = enabled;
             visionSource.enabled = enabled;
+            highlight.enabled = enabled;
+        }
+        public void SetRotation(float value)
+        {
+            lightSource.transform.eulerAngles = new Vector3(0.0f, 0.0f, value);
+            token.Data.lightRotation = value;
+            originalRotation = value;
         }
         public void ToggleLight(bool enabled)
         {
@@ -71,9 +125,10 @@ namespace RPG
         }
         private void LoadVision()
         {
-            float feetToUnits = Session.Instance.Grid.CellSize * 0.2f;
+            float feetToUnits = Session.Instance.Grid.CellSize / Session.Instance.Grid.Unit.scale;
             nightSource.size = token.Data.nightRadius * feetToUnits;
             visionSource.size = token.Data.visionRadius * feetToUnits;
+            highlight.size = Session.Instance.Grid.CellSize * 0.5f;
         }
         private void LoadLighting()
         {

@@ -72,6 +72,7 @@ namespace RPG
 
             // Update our position and scale
             transform.position = info.position;
+            transform.eulerAngles = new Vector3(0.0f, 0.0f, info.rotation);
             canvas.transform.localScale = new Vector3(cellSize * 0.03f, cellSize * 0.03f, 1.0f);
 
             // Enable UI

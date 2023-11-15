@@ -9,6 +9,8 @@ namespace RPG
     {
         [SerializeField] private TMP_InputField widthInput;
         [SerializeField] private TMP_InputField heightInput;
+        [SerializeField] private TMP_InputField unitName;
+        [SerializeField] private TMP_InputField unitScale;
         [SerializeField] private Image colorButton;
         [SerializeField] private Toggle snapToggle;
         [SerializeField] private FlexibleColorPicker colorPicker;
@@ -52,17 +54,19 @@ namespace RPG
         {
             Color initColor = data.color;
             initColor.a = 1.0f;
-            colorPicker.SetColor(data.color);
             colorPicker.gameObject.SetActive(true);
+            colorPicker.SetColor(data.color);
             colorButton.color = initColor;
         }
         public void LoadData(GridData _data)
         {
             data = _data;
             widthInput.text = _data.dimensions.x.ToString();
+            ((TMP_Text)widthInput.placeholder).text = Session.Instance.Grid.Unit.name;
             heightInput.text = _data.dimensions.y.ToString();
-            _data.color.a = 1.0f;
-            colorButton.color = _data.color;
+            ((TMP_Text)heightInput.placeholder).text = Session.Instance.Grid.Unit.name;
+            unitName.text = _data.unit.name;
+            unitScale.text = _data.unit.scale.ToString();
             colorPicker.SetColor(data.color);
             snapToggle.isOn = _data.snapToGrid;
         }
@@ -87,8 +91,12 @@ namespace RPG
             int x = int.Parse(widthInput.text);
             int y = int.Parse(heightInput.text);
 
+            int scale = string.IsNullOrEmpty(unitScale.text) ? data.unit.scale : int.Parse(unitScale.text);
+            string name = string.IsNullOrEmpty(unitName.text) ? data.unit.name : unitName.text;
+
             data.dimensions = new Vector2Int(x, y);
             data.snapToGrid = snapToggle.isOn;
+            data.unit = new GridUnit(unitName.text, scale);
 
             SocketManager.EmitAsync("modify-grid", (callback) =>
             {

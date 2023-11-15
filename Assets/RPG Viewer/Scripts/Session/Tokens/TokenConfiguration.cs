@@ -31,6 +31,7 @@ namespace RPG
         [SerializeField] private TMP_InputField nightInput;
         [SerializeField] private TMP_Dropdown effectDropdown;
         [SerializeField] private TMP_InputField radiusInput;
+        [SerializeField] private TMP_InputField angleInput;
         [SerializeField] private TMP_InputField intensityInput;
         [SerializeField] private Image colorButton;
         [SerializeField] private TMP_InputField strengthInput;
@@ -110,6 +111,7 @@ namespace RPG
             this.data.light = data.id;
             effectDropdown.value = data.effect.type;
             radiusInput.text = data.radius.ToString();
+            angleInput.text = data.angle.ToString();
             intensityInput.text = ((int)(data.color.a * 100.0f)).ToString();
             colorButton.color = data.color;
             strengthInput.text = data.effect.strength.ToString();
@@ -199,15 +201,22 @@ namespace RPG
             nameInput.text = data.name;
             typeDropdown.value = (int)data.type;
             widthInput.text = data.dimensions.x.ToString();
+            ((TMP_Text)widthInput.placeholder).text = Session.Instance.Grid.Unit.name;
             heightInput.text = data.dimensions.y.ToString();
+            ((TMP_Text)heightInput.placeholder).text = Session.Instance.Grid.Unit.name;
         }
         public void LoadLighting(PresetData preset)
         {
             lightData = preset;
             visionInput.text = data.visionRadius.ToString();
+            ((TMP_Text)visionInput.placeholder).text = Session.Instance.Grid.Unit.name;
             nightInput.text = data.nightRadius.ToString();
+            ((TMP_Text)nightInput.placeholder).text = Session.Instance.Grid.Unit.name;
             effectDropdown.value = preset.effect.type;
             radiusInput.text = preset.radius.ToString();
+            ((TMP_Text)radiusInput.placeholder).text = Session.Instance.Grid.Unit.name;
+            angleInput.text = preset.angle.ToString();
+            ((TMP_Text)angleInput.placeholder).text = Session.Instance.Grid.Unit.name;
             intensityInput.text = ((int)(preset.color.a * 100.0f)).ToString();
             preset.color.a = 1.0f;
             colorButton.color = preset.color;
@@ -233,6 +242,7 @@ namespace RPG
 
             // Lighting
             float.TryParse(radiusInput.text, out lightData.radius);
+            int.TryParse(angleInput.text, out lightData.angle);
             lightData.color = new Color(colorButton.color.r, colorButton.color.g, colorButton.color.b, lightData.color.a);
             lightData.effect.type = effectDropdown.value;
             float.TryParse(strengthInput.text, out lightData.effect.strength);

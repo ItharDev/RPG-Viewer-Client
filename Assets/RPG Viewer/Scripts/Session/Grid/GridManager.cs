@@ -5,12 +5,14 @@ namespace RPG
     public class GridManager : MonoBehaviour
     {
         public float CellSize { get { return cellSize; } }
+        public GridUnit Unit { get { return unit; } }
 
         private GridData gridData;
         private Vector2Int dimensions;
         private Vector2 worldSize;
         private float cellSize;
         private Vector2 position;
+        private GridUnit unit;
         public Cell[,] Grid { get; private set; }
 
         private void OnEnable()
@@ -35,6 +37,7 @@ namespace RPG
                 dimensions = gridData.dimensions;
                 cellSize = gridData.cellSize;
                 position = gridData.position;
+                unit = data.unit;
 
                 // Generate grid
                 worldSize = new Vector2(dimensions.x * cellSize, dimensions.y * cellSize);
@@ -119,7 +122,7 @@ namespace RPG
         {
             if (type == MeasurementType.Grid)
             {
-                float feet = 0;
+                float distance = 0;
                 Cell startCell = WorldPosToCell(start);
                 Cell endCell = WorldPosToCell(end);
 
@@ -132,21 +135,21 @@ namespace RPG
                     if (dstX >= dstY)
                     {
                         diagonals = dstY;
-                        feet += (dstX - dstY) * 5.0f;
+                        distance += (dstX - dstY) * unit.scale;
                     }
                     else if (dstY > dstX)
                     {
                         diagonals = dstX;
-                        feet += (dstY - dstX) * 5.0f;
+                        distance += (dstY - dstX) * unit.scale;
                     }
-                    else feet += (dstX + dstY) * 5;
+                    else distance += (dstX + dstY) * unit.scale;
                 }
 
-                return new MeasurementResult(startCell.worldPosition, endCell.worldPosition, feet, diagonals);
+                return new MeasurementResult(startCell.worldPosition, endCell.worldPosition, distance, diagonals);
             }
 
-            float distance = Vector2.Distance(end, start) / (CellSize * 0.2f);
-            return new MeasurementResult(start, end, distance, 0);
+            float finalDistance = Vector2.Distance(end, start) / (CellSize / unit.scale);
+            return new MeasurementResult(start, end, finalDistance, 0);
         }
     }
 }

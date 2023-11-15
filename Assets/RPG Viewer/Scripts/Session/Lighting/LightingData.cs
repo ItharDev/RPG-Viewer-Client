@@ -23,12 +23,14 @@ namespace RPG
     {
         public string id;
         public Vector2 position;
+        public float rotation;
         public bool enabled;
 
-        public LightData(string _id, Vector2 _position, bool _enabled)
+        public LightData(string _id, Vector2 _position, float _rotation, bool _enabled)
         {
             id = _id;
             position = _position;
+            rotation = _rotation;
             enabled = _enabled;
         }
     }
@@ -52,6 +54,7 @@ namespace RPG
         public string id;
         public string name;
         public float radius;
+        public int angle;
         public Color color;
         public LightEffect effect;
 

@@ -30,6 +30,7 @@ namespace RPG
             Events.OnHealthModified.AddListener(UpdateHealth);
             Events.OnElevationModified.AddListener(UpdateElevation);
             Events.OnTokenRotated.AddListener(RotateToken);
+            Events.OnTokenLightRotated.AddListener(RotateLight);
             Events.OnStateChanged.AddListener(ReloadTokens);
             Events.OnSceneLoaded.AddListener(LoadTokens);
             Events.OnTokenSelected.AddListener(SelectToken);
@@ -47,6 +48,7 @@ namespace RPG
             Events.OnHealthModified.RemoveListener(UpdateHealth);
             Events.OnElevationModified.RemoveListener(UpdateElevation);
             Events.OnTokenRotated.RemoveListener(RotateToken);
+            Events.OnTokenLightRotated.RemoveListener(RotateLight);
             Events.OnStateChanged.RemoveListener(ReloadTokens);
             Events.OnSceneLoaded.RemoveListener(LoadTokens);
             Events.OnTokenSelected.RemoveListener(SelectToken);
@@ -215,15 +217,25 @@ namespace RPG
 
             token.SetHealth(health);
         }
-        private void RotateToken(string id, float angle)
+        private void RotateToken(string id, float angle, string user)
         {
             // Find the correct token
             Token token = Tokens[id];
 
             // Check if token was found
-            if (token == null) return;
+            if (token == null || user == GameData.User.id) return;
 
             token.UI.SetRotation(angle);
+        }
+        private void RotateLight(string id, float angle, string user)
+        {
+            // Find the correct token
+            Token token = Tokens[id];
+
+            // Check if token was found
+            if (token == null || user == GameData.User.id) return;
+
+            token.Vision.SetRotation(angle);
         }
 
         private void LoadTokens(SceneData settings)

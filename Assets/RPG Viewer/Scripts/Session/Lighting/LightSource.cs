@@ -21,9 +21,12 @@ namespace RPG
         public void LoadData(PresetData _data)
         {
             data = _data;
-            source.size = data.radius * 0.2f * Session.Instance.Grid.CellSize;
+            source.size = data.radius * Session.Instance.Grid.Unit.scale * Session.Instance.Grid.CellSize;
             source.color = data.color;
             lightAlpha = data.color.a;
+
+            source.spotAngleInner = Mathf.Clamp(data.angle - 10.0f, 0.0f, 360.0f);
+            source.spotAngleOuter = Mathf.Clamp(data.angle, 0.0f, 360.0f);
 
             StopAllCoroutines();
             timer = TimerHelper.Create();
@@ -77,6 +80,11 @@ namespace RPG
 
             source.color.a = originalAlpha;
             StartCoroutine(PulseCoroutine());
+        }
+
+        public void Rotate(float angle)
+        {
+
         }
     }
 }

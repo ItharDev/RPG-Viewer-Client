@@ -87,7 +87,7 @@ namespace Networking
                     if (callback.GetValue().GetBoolean())
                     {
                         SessionState oldState = ConnectionManager.State;
-                        Events.Test?.Invoke(oldState, newState);
+                        Events.OnSceneChanged?.Invoke(oldState, newState);
                         Events.OnStateChanged?.Invoke(oldState, newState);
                         return;
                     }
@@ -290,9 +290,19 @@ namespace Networking
             {
                 string id = data.GetValue().GetString();
                 float angle = (float)data.GetValue(1).GetDouble();
+                string user = data.GetValue(2).GetString();
 
                 await UniTask.SwitchToMainThread();
-                Events.OnTokenRotated?.Invoke(id, angle);
+                Events.OnTokenRotated?.Invoke(id, angle, user);
+            });
+            Socket.On("rotate-token-light", async (data) =>
+            {
+                string id = data.GetValue().GetString();
+                float angle = (float)data.GetValue(1).GetDouble();
+                string user = data.GetValue(2).GetString();
+
+                await UniTask.SwitchToMainThread();
+                Events.OnTokenLightRotated?.Invoke(id, angle, user);
             });
 
             // Initiatives

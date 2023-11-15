@@ -11,17 +11,19 @@ namespace RPG
         public float cellSize;
         public Vector2 position;
         public Color color;
+        public GridUnit unit;
 
-        public GridData(bool _snapToGrid, Vector2Int _dimensions, float _cellSize, Vector2 _position, Color _color)
+        public GridData(bool _snapToGrid, Vector2Int _dimensions, float _cellSize, Vector2 _position, Color _color, GridUnit _unit)
         {
             snapToGrid = _snapToGrid;
             dimensions = _dimensions;
             cellSize = _cellSize;
             position = _position;
             color = _color;
+            unit = _unit;
         }
     }
-    
+
     [Serializable]
     public struct Cell
     {
@@ -32,6 +34,19 @@ namespace RPG
         {
             worldPosition = _worldPosition;
             gridPosition = _gridPosition;
+        }
+    }
+
+    [Serializable]
+    public struct GridUnit
+    {
+        public string name;
+        public int scale;
+
+        public GridUnit(string _name, int _scale)
+        {
+            name = _name;
+            scale = _scale;
         }
     }
 }

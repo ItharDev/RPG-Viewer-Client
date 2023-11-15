@@ -82,7 +82,7 @@ namespace RPG
         {
             callback = onSelected;
             gameObject.SetActive(true);
-            LeanTween.size((RectTransform)transform, new Vector2(160.0f, 239.0f), 0.2f);
+            LeanTween.size((RectTransform)transform, new Vector2(160.0f, 268.0f), 0.2f);
             LoadHolders();
         }
         public void ClosePanel()

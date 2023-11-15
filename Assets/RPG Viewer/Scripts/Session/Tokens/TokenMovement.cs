@@ -1,8 +1,5 @@
-using System;
 using System.Collections.Generic;
-using System.Data.Common;
 using System.Linq;
-using System.Runtime;
 using Networking;
 using Pathfinding;
 using UnityEngine;
@@ -23,7 +20,7 @@ namespace RPG
         public float MovementSpeed
         {
             // Transform feet per second to units per second
-            get { return (Session.Instance.Settings.grid.cellSize * 0.2f) * moveSpeed; }
+            get { return Session.Instance.Settings.grid.cellSize * Session.Instance.Grid.Unit.scale * moveSpeed; }
         }
 
         private Token token;
@@ -32,6 +29,8 @@ namespace RPG
         private List<Vector2> waypoints = new List<Vector2>();
         private List<Vector2> dragPoints = new List<Vector2>();
         private int currentWaypoint = 0;
+        private float angleToAdd;
+        private float angleTimer;
 
         private void OnEnable()
         {
@@ -78,64 +77,75 @@ namespace RPG
 
         private void HandleRotation()
         {
-            float angleToAdd = 0;
+            if (!Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.D)) return;
 
             // Define rotation direction A = left, D = right
-            if (Input.GetKeyDown(KeyCode.Q)) angleToAdd = 45.0f;
-            if (Input.GetKeyDown(KeyCode.E)) angleToAdd = -45.0f;
+            if (Input.GetKey(KeyCode.A)) angleToAdd += 100.0f * Time.deltaTime;
+            if (Input.GetKey(KeyCode.D)) angleToAdd -= 100.0f * Time.deltaTime;
 
-            // Return if no key was pressed
-            if (angleToAdd == 0) return;
+            angleTimer += Time.deltaTime;
 
-            // Proceed to rotate if this is not a mount
-            if (token.Data.type != TokenType.Mount)
+            if (angleTimer >= 1.0f / 30.0f)
             {
-                FinishRotation(angleToAdd);
-                return;
-            }
-
-            // Check nearby tokens
-            List<Token> nearby = token.GetNearbyTokens();
-
-            bool rotationUpdated = false;
-            for (int i = 0; i < nearby.Count; i++)
-            {
-                // Before updating rotation
-                if (!rotationUpdated)
+                angleTimer = 0.0f;
+                // Proceed to rotate if this is not a mount
+                if (token.Data.type != TokenType.Mount)
                 {
-                    // Initialise rotation
-                    nearby[i].transform.parent = rotateParent;
-
-                    // Update tokens rotation in last iteration
-                    if (i == nearby.Count - 1)
-                    {
-                        FinishRotation(angleToAdd);
-                        rotationUpdated = true;
-
-                        // Start the loop over
-                        i = 0;
-                    }
-
-                    // Prevent updating nearby tokens position before updation our own rotation
+                    FinishRotation(angleToAdd);
+                    angleToAdd = 0.0f;
                     return;
                 }
 
-                // Update nearby tokens position, after our own rotation has been updated
-                nearby[i].transform.parent = transform.parent;
-                nearby[i].Movement.MountedRotation();
+                // Check nearby tokens
+                List<Token> nearby = token.GetNearbyTokens();
+
+                bool rotationUpdated = false;
+                for (int i = 0; i < nearby.Count; i++)
+                {
+                    // Before updating rotation
+                    if (!rotationUpdated)
+                    {
+                        // Initialise rotation
+                        nearby[i].transform.parent = rotateParent;
+
+                        // Update tokens rotation in last iteration
+                        if (i == nearby.Count - 1)
+                        {
+                            FinishRotation(angleToAdd);
+                            rotationUpdated = true;
+
+                            // Start the loop over
+                            i = 0;
+                        }
+
+                        // Prevent updating nearby tokens position before updation our own rotation
+                        return;
+                    }
+
+                    // Update nearby tokens position, after our own rotation has been updated
+                    nearby[i].transform.parent = transform.parent;
+                    nearby[i].Movement.MountedRotation();
+
+                }
+
+                angleToAdd = 0.0f;
             }
         }
         public void FinishRotation(float angle, bool addAngle = true)
         {
             float targetAngle = addAngle ? token.Data.rotation + angle : angle;
+            token.Data.rotation = targetAngle;
+            token.UI.PreviewRotation(targetAngle);
             SocketManager.EmitAsync("rotate-token", (callback) =>
             {
                 // Check if the event was successful
                 if (callback.GetValue().GetBoolean()) return;
 
+                token.Data.rotation = token.UI.OriginalRotation;
+                token.UI.SetRotation(token.UI.OriginalRotation);
                 // Send error message
                 MessageManager.QueueMessage(callback.GetValue(1).GetString());
-            }, token.Data.id, targetAngle);
+            }, token.Data.id, targetAngle, GameData.User.id);
         }
         public void MountedRotation()
         {
@@ -204,8 +214,8 @@ namespace RPG
         }
         private bool CheckManualMovement()
         {
-            if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.S)) return true;
-            if (Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.D)) return true;
+            if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.DownArrow)) return true;
+            if (Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.RightArrow)) return true;
 
             return false;
         }

@@ -153,21 +153,21 @@ namespace RPG
 
                     // Send load event
                     WebManager.Download(settings.info.image, true, async (bytes) =>
-                    {
-                        await UniTask.SwitchToMainThread();
+                        {
+                            await UniTask.SwitchToMainThread();
 
-                        // Generate and apply texture
-                        Texture2D texture = await AsyncImageLoader.CreateFromImageAsync(bytes);
-                        sceneSprite.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
+                            // Generate and apply texture
+                            Texture2D texture = await AsyncImageLoader.CreateFromImageAsync(bytes);
+                            sceneSprite.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
 
-                        Events.OnSceneLoaded?.Invoke(settings);
+                            Events.OnSceneLoaded?.Invoke(settings);
 
-                        // Remove message when loading is completed
-                        MessageManager.RemoveMessage("Loading scene");
+                            // Remove message when loading is completed
+                            MessageManager.RemoveMessage("Loading scene");
 
-                        landingPage.transform.parent.gameObject.SetActive(false);
-                        Events.OnViewChanged?.Invoke(GameView.Clear);
-                    });
+                            landingPage.transform.parent.gameObject.SetActive(false);
+                            Events.OnViewChanged?.Invoke(ConnectionManager.Info.isMaster ? GameView.Clear : GameView.Player);
+                        });
 
                     return;
                 }
