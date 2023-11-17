@@ -25,8 +25,8 @@ namespace RPG
             source.color = data.color;
             lightAlpha = data.color.a;
 
-            source.spotAngleInner = Mathf.Clamp(data.angle - 10.0f, 0.0f, 360.0f);
-            source.spotAngleOuter = Mathf.Clamp(data.angle, 0.0f, 360.0f);
+            source.spotAngleInner = Mathf.Clamp(data.angle, 0.0f, 360.0f);
+            source.spotAngleOuter = Mathf.Clamp(data.angle + 10.0f, 0.0f, 360.0f);
 
             StopAllCoroutines();
             timer = TimerHelper.Create();

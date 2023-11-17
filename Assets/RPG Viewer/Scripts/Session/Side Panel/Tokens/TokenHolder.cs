@@ -295,6 +295,9 @@ namespace RPG
         }
         private void ModifyPreset(string id, PresetData data)
         {
+            // Return if the effect doesn't affect us
+            if (lightData.id != id) return;
+
             Data.light = id;
             lightData = data;
         }

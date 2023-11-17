@@ -66,7 +66,7 @@ namespace RPG
             effectDropdown.value = data.effect.type;
             radiusInput.text = data.radius.ToString();
             ((TMP_Text)radiusInput.placeholder).text = Session.Instance.Grid.Unit.name;
-            angleInput.text = data.radius.ToString();
+            angleInput.text = data.angle.ToString();
             intensityInput.text = ((int)(data.color.a * 100.0f)).ToString();
             colorButton.color = data.color;
             strengthInput.text = data.effect.strength.ToString();
