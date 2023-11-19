@@ -12,6 +12,7 @@ namespace RPG
         [SerializeField] private Toggle enabledToggle;
         [SerializeField] private TMP_InputField radiusInput;
         [SerializeField] private TMP_InputField angleInput;
+        [SerializeField] private TMP_InputField directionInput;
         [SerializeField] private TMP_InputField intensityInput;
         [SerializeField] private Image colorButton;
         [SerializeField] private TMP_InputField strengthInput;
@@ -67,6 +68,7 @@ namespace RPG
             radiusInput.text = data.radius.ToString();
             ((TMP_Text)radiusInput.placeholder).text = Session.Instance.Grid.Unit.name;
             angleInput.text = data.angle.ToString();
+            directionInput.text = info.rotation.ToString();
             intensityInput.text = ((int)(data.color.a * 100.0f)).ToString();
             colorButton.color = data.color;
             strengthInput.text = data.effect.strength.ToString();
@@ -114,6 +116,7 @@ namespace RPG
             radiusInput.text = preset.radius.ToString();
             ((TMP_Text)radiusInput.placeholder).text = Session.Instance.Grid.Unit.name;
             angleInput.text = preset.angle.ToString();
+            directionInput.text = info.rotation.ToString();
             intensityInput.text = ((int)(preset.color.a * 100.0f)).ToString();
             preset.color.a = 1.0f;
             colorButton.color = preset.color;
@@ -125,6 +128,7 @@ namespace RPG
         {
             float.TryParse(radiusInput.text, out lightData.radius);
             int.TryParse(angleInput.text, out lightData.angle);
+            int.TryParse(directionInput.text, out info.rotation);
             lightData.color = new Color(colorButton.color.r, colorButton.color.g, colorButton.color.b, lightData.color.a);
             lightData.effect.type = effectDropdown.value;
             info.enabled = enabledToggle.isOn;

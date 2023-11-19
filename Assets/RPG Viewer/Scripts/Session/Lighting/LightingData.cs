@@ -23,10 +23,10 @@ namespace RPG
     {
         public string id;
         public Vector2 position;
-        public float rotation;
+        public int rotation;
         public bool enabled;
 
-        public LightData(string _id, Vector2 _position, float _rotation, bool _enabled)
+        public LightData(string _id, Vector2 _position, int _rotation, bool _enabled)
         {
             id = _id;
             position = _position;
