@@ -405,7 +405,7 @@ namespace RPG
             // Teleport to new location if we are deactivated
             if (!gameObject.activeInHierarchy)
             {
-                transform.position = new Vector3(token.Data.position.x, token.Data.position.x, 0);
+                transform.position = new Vector3(token.Data.position.x, token.Data.position.y, 0);
                 return;
             }
 

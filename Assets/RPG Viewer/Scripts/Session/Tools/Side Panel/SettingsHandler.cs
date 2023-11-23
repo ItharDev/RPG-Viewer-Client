@@ -38,7 +38,7 @@ namespace RPG
         public static SettingsHandler Instance { get; private set; }
         public Setting Setting { get { return activeSetting; } }
 
-        public GameView LastView = GameView.Clear;
+        public GameView LastView = GameView.Player;
 
         private Setting activeSetting;
         private Setting lastSetting;
@@ -62,10 +62,14 @@ namespace RPG
         {
             await UniTask.SwitchToMainThread();
 
+            LastView = GameView.Player;
+
             if (!ConnectionManager.Info.isMaster) return;
 
             canvasGroup.alpha = string.IsNullOrEmpty(newState.scene) ? 0.0f : 1.0f;
             canvasGroup.blocksRaycasts = !string.IsNullOrEmpty(newState.scene);
+
+            LastView = GameView.Clear;
         }
 
         private void OnDisable()

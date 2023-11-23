@@ -59,7 +59,7 @@ namespace RPG
             if (token == null)
             {
                 Selected = false;
-                Enabled = ConnectionManager.Info.isMaster;
+                Enabled = Permission.type != PermissionType.None;
             }
             else
             {
@@ -67,7 +67,8 @@ namespace RPG
                 Enabled = Selected;
             }
 
-            Vision.ToggleVision(Enabled && Visibility.visible && (Data.enabled || ConnectionManager.Info.isMaster) && Permission.type != PermissionType.None);
+            if (Selected) FindObjectOfType<Camera2D>().FollowTarget(transform);
+            Vision.ToggleVision(Enabled && Visibility.visible && (Data.enabled || ConnectionManager.Info.isMaster));
         }
 
         private void HandleDeletion()
@@ -90,7 +91,6 @@ namespace RPG
             // Loop through each collider
             for (var i = 0; i < colliders.Length; i++)
             {
-                Debug.Log(mounted.Count);
                 Token token = colliders[i].GetComponent<Token>();
 
                 // Don't count in ourselves
