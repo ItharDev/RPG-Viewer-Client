@@ -54,12 +54,11 @@ namespace RPG
         private void OnEnable()
         {
             // Add event listeners
-            // Events.OnStateChanged.AddListener(HandleStateChange);
             Events.OnSceneChanged.AddListener(ToggleUI);
             Events.OnToolChanged.AddListener(HandleToolChanged);
         }
 
-        private async void ToggleUI(SessionState oldState, SessionState newState)
+        private async void ToggleUI(SessionState newState)
         {
             await UniTask.SwitchToMainThread();
 
@@ -72,7 +71,7 @@ namespace RPG
         private void OnDisable()
         {
             // Remove event listeners
-            Events.OnStateChanged.RemoveListener(HandleStateChange);
+            Events.OnSceneChanged.RemoveListener(ToggleUI);
             Events.OnToolChanged.RemoveListener(HandleToolChanged);
         }
 
@@ -86,10 +85,6 @@ namespace RPG
             }
         }
 
-        private void HandleStateChange(SessionState oldState, SessionState newState)
-        {
-            Debug.Log("R");
-        }
         private void HandleToolChanged(Tool tool)
         {
             if (tool == Tool.Move) return;

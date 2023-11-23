@@ -195,6 +195,8 @@ namespace RPG
 
             LoadAppearance();
             LoadLighting(_lightData);
+            permissionPanel.LoadData(data.permissions);
+            visibilityPanel.LoadData(data.visible);
         }
         private void LoadAppearance()
         {

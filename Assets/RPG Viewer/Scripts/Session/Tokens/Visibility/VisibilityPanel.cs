@@ -72,6 +72,11 @@ namespace RPG
             gameObject.SetActive(true);
             LeanTween.size((RectTransform)transform, new Vector2(180.0f, 146.0f), 0.2f);
         }
+        public void LoadData(List<Visible> data)
+        {
+            RemoveHolders();
+            LoadHolders(data);
+        }
         private void RemoveHolders()
         {
             foreach (var key in holders.Keys.ToList())

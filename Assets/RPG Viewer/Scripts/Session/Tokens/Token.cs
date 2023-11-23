@@ -59,7 +59,7 @@ namespace RPG
             if (token == null)
             {
                 Selected = false;
-                Enabled = true;
+                Enabled = ConnectionManager.Info.isMaster;
             }
             else
             {
@@ -67,7 +67,7 @@ namespace RPG
                 Enabled = Selected;
             }
 
-            Vision.ToggleVision(Enabled && Visibility.visible);
+            Vision.ToggleVision(Enabled && Visibility.visible && (Data.enabled || ConnectionManager.Info.isMaster) && Permission.type != PermissionType.None);
         }
 
         private void HandleDeletion()
@@ -199,7 +199,7 @@ namespace RPG
         {
             // Check if any player is the owner
             Permission owner = Data.permissions.FirstOrDefault(value => value.type == PermissionType.Controller);
-            if (!string.IsNullOrEmpty(owner.user))
+            if (string.IsNullOrEmpty(owner.user))
             {
                 FinishDeletion(true);
                 return;

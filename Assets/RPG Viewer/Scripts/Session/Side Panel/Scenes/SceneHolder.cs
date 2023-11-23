@@ -1,3 +1,4 @@
+using System;
 using Cysharp.Threading.Tasks;
 using Networking;
 using TMPro;
@@ -200,6 +201,8 @@ namespace RPG
                 if (callback.GetValue().GetBoolean())
                 {
                     headerText.text = newName;
+                    Data.info.name = newName;
+                    scenesPanel.SortContent();
                     return;
                 }
 
@@ -243,7 +246,7 @@ namespace RPG
             scenesPanel.DeselectScene();
         }
 
-        public void LoadData(string id, string path, ScenesPanel panel)
+        public void LoadData(string id, string path, ScenesPanel panel, Action onComplete)
         {
             SocketManager.EmitAsync("get-scene", async (callback) =>
             {
@@ -259,6 +262,7 @@ namespace RPG
                     selectedColor = string.IsNullOrEmpty(path) ? scenesPanel.GetColor() : scenesPanel.GetDirectoryByPath(path).Data.color;
                     selectedColor.a = 0.5f;
                     LoadData(data);
+                    onComplete?.Invoke();
                     return;
                 }
 

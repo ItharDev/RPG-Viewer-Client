@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using Networking;
@@ -334,6 +335,7 @@ namespace RPG
                 {
                     await UniTask.SwitchToMainThread();
                     Data.name = header.text;
+                    scenesPanel.SortContent();
                     return;
                 }
 
@@ -372,7 +374,7 @@ namespace RPG
             ToggleOptions();
             scenesPanel.CreateScene(Path);
         }
-        public void LoadData(Folder folder, ScenesPanel panel)
+        public void LoadData(Folder folder, ScenesPanel panel, Action onComplete)
         {
             // Update fields
             Data = folder;
@@ -383,6 +385,8 @@ namespace RPG
             scenesPanel = panel;
             selectedColor = folder.color;
             selectedColor.a = 0.5f;
+
+            onComplete?.Invoke();
         }
 
         public void CalculatePath(string parentPath)

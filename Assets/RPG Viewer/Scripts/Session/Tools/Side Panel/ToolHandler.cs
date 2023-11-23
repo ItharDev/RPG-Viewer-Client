@@ -66,7 +66,7 @@ namespace RPG
             }
         }
 
-        private void ToggleUI(SessionState oldState, SessionState newState)
+        private void ToggleUI(SessionState newState)
         {
             canvasGroup.alpha = (!string.IsNullOrEmpty(newState.scene) && (newState.synced || ConnectionManager.Info.isMaster)) ? 1.0f : 0.0f;
             canvasGroup.blocksRaycasts = !string.IsNullOrEmpty(newState.scene) && (newState.synced || ConnectionManager.Info.isMaster);

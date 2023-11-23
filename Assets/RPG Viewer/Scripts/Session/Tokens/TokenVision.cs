@@ -98,8 +98,8 @@ namespace RPG
         }
         private void ApplyVisibility()
         {
-            ToggleVision(token.Visibility.visible && token.Enabled);
-            ToggleLight(token.Visibility.visible);
+            ToggleVision(token.Enabled && token.Visibility.visible && (token.Data.enabled || ConnectionManager.Info.isMaster) && token.Permission.type != PermissionType.None);
+            ToggleLight(token.Visibility.visible && token.Data.enabled);
         }
 
         public void ToggleVision(bool enabled)

@@ -46,25 +46,25 @@ namespace RPG
             if (lastCount != rootTransform.childCount)
             {
                 lastCount = rootTransform.childCount;
-                SortContent();
+                if (lastCount > 1) SortContent();
             }
         }
 
-        private void SortContent()
+        public void SortContent()
         {
             List<SceneFolder> listOfFolders = folders.Values.ToList();
-            List<SceneHolder> listOfTokens = scenes.Values.ToList();
+            List<SceneHolder> listOfScenes = scenes.Values.ToList();
 
             listOfFolders.Sort(SortByName);
-            listOfTokens.Sort(SortByName);
+            listOfScenes.Sort(SortByName);
 
             for (int i = 0; i < folders.Count; i++)
             {
                 listOfFolders[i].transform.SetSiblingIndex(i);
             }
-            for (int i = 0; i < listOfTokens.Count; i++)
+            for (int i = 0; i < listOfScenes.Count; i++)
             {
-                listOfTokens[i].transform.SetSiblingIndex(i + folders.Count);
+                listOfScenes[i].transform.SetSiblingIndex(i + folders.Count);
             }
         }
         private int SortByName(SceneFolder folderA, SceneFolder folderB)
@@ -120,7 +120,7 @@ namespace RPG
             // Instantiate scene
             SceneHolder scene = Instantiate(scenePrefab, targetFolder == null ? rootTransform : targetFolder.Content);
             scene.transform.SetAsLastSibling();
-            scene.LoadData(id, path, this);
+            scene.LoadData(id, path, this, SortContent);
 
             // Add scene to dictionary
             scenes.Add(id, scene);
@@ -140,7 +140,7 @@ namespace RPG
             // Instantiate folder
             SceneFolder targetFolder = GetDirectoryByPath(path);
             SceneFolder folder = Instantiate(folderPrefab, targetFolder == null ? rootTransform : targetFolder.Content);
-            folder.LoadData(data, this);
+            folder.LoadData(data, this, SortContent);
 
             // Add folder to dictionary
             this.folders.Add(id, folder);
@@ -207,7 +207,7 @@ namespace RPG
                         // Instantiate scene
                         SceneHolder scene = Instantiate(scenePrefab, targetFolder == null ? rootTransform : targetFolder.Content);
                         scene.transform.SetAsLastSibling();
-                        scene.LoadData(id, data.path, this);
+                        scene.LoadData(id, data.path, this, SortContent);
 
                         // Add scene to dictionary
                         scenes.Add(id, scene);
@@ -244,7 +244,7 @@ namespace RPG
             // Instantiate folder
             SceneFolder targetFolder = GetDirectoryByPath(path);
             SceneFolder folder = Instantiate(folderPrefab, targetFolder == null ? rootTransform : targetFolder.Content);
-            folder.LoadData(data, this);
+            folder.LoadData(data, this, SortContent);
 
             // Add folder to dictionary
             this.folders.Add(id, folder);

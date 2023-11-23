@@ -87,7 +87,6 @@ namespace Networking
                     if (callback.GetValue().GetBoolean())
                     {
                         SessionState oldState = ConnectionManager.State;
-                        Events.OnSceneChanged?.Invoke(oldState, newState);
                         Events.OnStateChanged?.Invoke(oldState, newState);
                         return;
                     }
