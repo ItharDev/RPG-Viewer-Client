@@ -240,6 +240,7 @@ namespace RPG
             // Disable clone's vision and light
             dragObject.Vision.ToggleVision(false);
             dragObject.Vision.ToggleLight(false);
+            dragObject.Vision.EnableHighlight(false);
             dragObject.DisableCollider();
             dragObject.UI.SetAlpha(0.5f);
             dragObject.UI.DisableOutline();

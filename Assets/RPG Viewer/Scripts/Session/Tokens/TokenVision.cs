@@ -1,3 +1,4 @@
+using System.Linq;
 using Cysharp.Threading.Tasks;
 using FunkyCode;
 using Networking;
@@ -98,6 +99,8 @@ namespace RPG
         }
         private void ApplyVisibility()
         {
+            Permission isPlayer = token.Data.permissions.FirstOrDefault(value => value.type == PermissionType.Controller);
+            EnableHighlight(!string.IsNullOrEmpty(isPlayer.user));
             ToggleVision(token.Enabled && token.Visibility.visible && (token.Data.enabled || ConnectionManager.Info.isMaster) && token.Permission.type != PermissionType.None);
             ToggleLight(token.Visibility.visible && token.Data.enabled);
         }
@@ -106,6 +109,9 @@ namespace RPG
         {
             nightSource.enabled = enabled;
             visionSource.enabled = enabled;
+        }
+        public void EnableHighlight(bool enabled)
+        {
             highlight.enabled = enabled;
         }
         public void SetRotation(float value)
