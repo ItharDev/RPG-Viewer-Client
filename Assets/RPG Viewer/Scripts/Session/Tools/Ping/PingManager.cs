@@ -143,7 +143,6 @@ namespace RPG
 
             yield return new WaitForSeconds(1.0f);
             holdingPing = false;
-            Debug.Log(Vector2.Distance(startPos, GetMousePos()));
             if (Input.GetMouseButton(0) && Vector2.Distance(startPos, Input.mousePosition) < 5.0f) Ping(true);
         }
         private void Ping(bool strong)

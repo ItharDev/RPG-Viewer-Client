@@ -69,7 +69,6 @@ namespace RPG
         }
         private void UpdateCollaboration(string id, string owner, List<Collaborator> collaborators)
         {
-            Debug.Log(id);
             if (!journals.ContainsKey(id))
             {
                 if (collaborators.FirstOrDefault(x => x.user == GameData.User.id).isCollaborator)
@@ -153,13 +152,10 @@ namespace RPG
         }
         private void LoadDirectory(System.Text.Json.JsonElement json, string id, string path)
         {
-            Debug.Log(id);
             // Load folder's data
             string name = json.GetProperty("name").GetString();
             var folders = json.GetProperty("folders").EnumerateObject().ToArray();
             var contents = json.GetProperty("contents").EnumerateArray().ToArray();
-
-            Debug.Log(id);
 
             // Create path to this directory
             string pathToThisFolder = string.IsNullOrEmpty(path) ? id : $"{path}/{id}";

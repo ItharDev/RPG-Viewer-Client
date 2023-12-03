@@ -85,7 +85,6 @@ namespace RPG
             // Check for colliders within radius
             List<Token> mounted = new List<Token>();
             float radius = (Data.dimensions.x >= Data.dimensions.y ? UI.Rect.sizeDelta.x : UI.Rect.sizeDelta.y) * 0.009f;
-            Debug.Log(radius);
             Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, radius, mountLayers);
 
             // Loop through each collider

@@ -20,7 +20,7 @@ namespace RPG
         public float MovementSpeed
         {
             // Transform feet per second to units per second
-            get { return Session.Instance.Settings.grid.cellSize * Session.Instance.Grid.Unit.scale * moveSpeed; }
+            get { return Session.Instance.Settings.grid.cellSize * moveSpeed; }
         }
 
         private Token token;

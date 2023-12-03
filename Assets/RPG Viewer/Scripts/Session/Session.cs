@@ -133,7 +133,6 @@ namespace RPG
             landingPage.transform.parent.gameObject.SetActive(true);
             SocketManager.EmitAsync("get-scene", async (callback) =>
             {
-                Debug.Log("RRR");
                 // Check if the event was successful
                 if (callback.GetValue().GetBoolean())
                 {
@@ -166,7 +165,6 @@ namespace RPG
                             sceneSprite.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
 
                             Events.OnSceneLoaded?.Invoke(settings);
-                            Debug.Log("Runs");
                             Events.OnSceneChanged?.Invoke(ConnectionManager.State);
 
                             // Remove message when loading is completed

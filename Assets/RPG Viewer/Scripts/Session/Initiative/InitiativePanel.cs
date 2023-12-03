@@ -124,7 +124,6 @@ namespace RPG
         }
         private void AddInitiative(string userId)
         {
-            Debug.Log(userId);
             SocketManager.EmitAsync("get-user", async (callback) =>
             {
                 await UniTask.SwitchToMainThread();

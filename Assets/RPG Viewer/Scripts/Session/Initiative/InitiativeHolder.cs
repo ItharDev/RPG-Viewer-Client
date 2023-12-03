@@ -30,6 +30,8 @@ namespace RPG
             nameInput.placeholder.color = _data.visible ? visibleColor : hiddenColor;
             nameInput.textComponent.color = _data.visible ? visibleColor : hiddenColor;
             visibilityImage.sprite = _data.visible ? visibleSprite : hiddenSprite;
+
+            gameObject.SetActive(_data.visible || ConnectionManager.Info.isMaster);
         }
         public void SetVisible()
         {

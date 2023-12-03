@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using SFB;
@@ -29,19 +30,17 @@ namespace RPG
         [SerializeField] private Vector2 lightingPanelSize;
         [SerializeField] private TMP_InputField visionInput;
         [SerializeField] private TMP_InputField nightInput;
-        [SerializeField] private TMP_Dropdown effectDropdown;
-        [SerializeField] private TMP_InputField radiusInput;
-        [SerializeField] private TMP_InputField angleInput;
-        [SerializeField] private TMP_InputField intensityInput;
-        [SerializeField] private Image colorButton;
-        [SerializeField] private TMP_InputField strengthInput;
-        [SerializeField] private TMP_InputField frequencyInput;
         [SerializeField] private FlexibleColorPicker colorPicker;
+
+        [Space]
+        [SerializeField] private LightInput primary;
+        [SerializeField] private LightInput secondary;
 
         private RectTransform rect;
         private byte[] image;
         private TokenData data;
         private PresetData lightData;
+        private bool editingPrimary;
         private Action<TokenData, byte[], PresetData> callback;
 
         private void Awake()
@@ -109,13 +108,26 @@ namespace RPG
         {
             lightData = data;
             this.data.light = data.id;
-            effectDropdown.value = data.effect.type;
-            radiusInput.text = data.radius.ToString();
-            angleInput.text = data.angle.ToString();
-            intensityInput.text = ((int)(data.color.a * 100.0f)).ToString();
-            colorButton.color = data.color;
-            strengthInput.text = data.effect.strength.ToString();
-            frequencyInput.text = data.effect.frequency.ToString();
+
+            // Load primary
+            primary.effectDropdown.value = data.primary.effect.type;
+            primary.radiusInput.text = data.primary.radius.ToString();
+            primary.angleInput.text = data.primary.angle.ToString();
+            primary.intensityInput.text = ((int)(data.primary.color.a * 100.0f)).ToString();
+            data.primary.color.a = 1.0f;
+            primary.colorButton.color = data.primary.color;
+            primary.strengthInput.text = data.primary.effect.strength.ToString();
+            primary.frequencyInput.text = data.primary.effect.frequency.ToString();
+
+            // Load secondary
+            secondary.effectDropdown.value = data.secondary.effect.type;
+            secondary.radiusInput.text = data.secondary.radius.ToString();
+            secondary.angleInput.text = data.secondary.angle.ToString();
+            secondary.intensityInput.text = ((int)(data.secondary.color.a * 100.0f)).ToString();
+            data.secondary.color.a = 1.0f;
+            secondary.colorButton.color = data.secondary.color;
+            secondary.strengthInput.text = data.secondary.effect.strength.ToString();
+            secondary.frequencyInput.text = data.secondary.effect.frequency.ToString();
         }
 
         public async void ChooseImage()
@@ -168,22 +180,40 @@ namespace RPG
                 data.visible = visiblity;
             });
         }
-        public void OpenColor()
+        public void OpenColor(bool isPrimary)
         {
+            editingPrimary = isPrimary;
             colorPicker.gameObject.SetActive(true);
-            colorPicker.SetColor(lightData.color);
+            colorPicker.SetColor(isPrimary ? lightData.primary.color : lightData.secondary.color);
         }
         public void ChangeColor(Color color)
         {
-            lightData.color.a = color.a;
-            intensityInput.text = ((int)(color.a * 100.0f)).ToString();
-            color.a = 1.0f;
-            colorButton.color = color;
+            if (editingPrimary)
+            {
+                lightData.primary.color = color;
+                primary.intensityInput.text = ((int)(color.a * 100.0f)).ToString();
+                color.a = 1.0f;
+                primary.colorButton.color = color;
+            }
+            else
+            {
+                lightData.secondary.color = color;
+                secondary.intensityInput.text = ((int)(color.a * 100.0f)).ToString();
+                color.a = 1.0f;
+                secondary.colorButton.color = color;
+            }
         }
-        public void ChangeIntensity()
+        public void ChangeIntensity(bool isPrimary)
         {
-            lightData.color.a = float.Parse(intensityInput.text) * 0.01f;
-            colorPicker.SetColor(lightData.color);
+            editingPrimary = isPrimary;
+            if (isPrimary)
+            {
+                lightData.primary.color.a = float.Parse(primary.intensityInput.text) * 0.01f;
+            }
+            else
+            {
+                lightData.secondary.color.a = float.Parse(secondary.intensityInput.text) * 0.01f;
+            }
         }
         public void LoadData(TokenData _data, PresetData _lightData, byte[] _image, string _header, Action<TokenData, byte[], PresetData> _callback)
         {
@@ -195,6 +225,9 @@ namespace RPG
 
             LoadAppearance();
             LoadLighting(_lightData);
+            if (data.permissions == null) data.permissions = new List<Permission>();
+            if (data.visible == null) data.visible = new List<Visible>();
+
             permissionPanel.LoadData(data.permissions);
             visibilityPanel.LoadData(data.visible);
         }
@@ -210,20 +243,37 @@ namespace RPG
         public void LoadLighting(PresetData preset)
         {
             lightData = preset;
+
+            // Load vision
             visionInput.text = data.visionRadius.ToString();
             ((TMP_Text)visionInput.placeholder).text = Session.Instance.Grid.Unit.name;
             nightInput.text = data.nightRadius.ToString();
             ((TMP_Text)nightInput.placeholder).text = Session.Instance.Grid.Unit.name;
-            effectDropdown.value = preset.effect.type;
-            radiusInput.text = preset.radius.ToString();
-            ((TMP_Text)radiusInput.placeholder).text = Session.Instance.Grid.Unit.name;
-            angleInput.text = preset.angle.ToString();
-            ((TMP_Text)angleInput.placeholder).text = Session.Instance.Grid.Unit.name;
-            intensityInput.text = ((int)(preset.color.a * 100.0f)).ToString();
-            preset.color.a = 1.0f;
-            colorButton.color = preset.color;
-            strengthInput.text = preset.effect.strength.ToString();
-            frequencyInput.text = preset.effect.frequency.ToString();
+
+
+            // Load primary
+            primary.effectDropdown.value = preset.primary.effect.type;
+            primary.radiusInput.text = preset.primary.radius.ToString();
+            ((TMP_Text)primary.radiusInput.placeholder).text = Session.Instance.Grid.Unit.name;
+            primary.angleInput.text = preset.primary.angle.ToString();
+            ((TMP_Text)primary.angleInput.placeholder).text = Session.Instance.Grid.Unit.name;
+            primary.intensityInput.text = ((int)(preset.primary.color.a * 100.0f)).ToString();
+            preset.primary.color.a = 1.0f;
+            primary.colorButton.color = preset.primary.color;
+            primary.strengthInput.text = preset.primary.effect.strength.ToString();
+            primary.frequencyInput.text = preset.primary.effect.frequency.ToString();
+
+            // Load secondary
+            secondary.effectDropdown.value = preset.secondary.effect.type;
+            secondary.radiusInput.text = preset.secondary.radius.ToString();
+            ((TMP_Text)secondary.radiusInput.placeholder).text = Session.Instance.Grid.Unit.name;
+            secondary.angleInput.text = preset.secondary.angle.ToString();
+            ((TMP_Text)secondary.angleInput.placeholder).text = Session.Instance.Grid.Unit.name;
+            secondary.intensityInput.text = ((int)(preset.secondary.color.a * 100.0f)).ToString();
+            preset.secondary.color.a = 1.0f;
+            secondary.colorButton.color = preset.secondary.color;
+            secondary.strengthInput.text = preset.secondary.effect.strength.ToString();
+            secondary.frequencyInput.text = preset.secondary.effect.frequency.ToString();
         }
 
         private void SaveData()
@@ -236,19 +286,27 @@ namespace RPG
             int height = 5;
             int.TryParse(widthInput.text, out width);
             int.TryParse(heightInput.text, out height);
-            data.dimensions = new Vector2Int(width, height);
+            data.dimensions = new Vector2Int(width <= 0 ? 1 : width, height <= 0 ? 1 : height);
 
             // Vision
             float.TryParse(visionInput.text, out data.visionRadius);
             float.TryParse(nightInput.text, out data.nightRadius);
 
-            // Lighting
-            float.TryParse(radiusInput.text, out lightData.radius);
-            int.TryParse(angleInput.text, out lightData.angle);
-            lightData.color = new Color(colorButton.color.r, colorButton.color.g, colorButton.color.b, lightData.color.a);
-            lightData.effect.type = effectDropdown.value;
-            float.TryParse(strengthInput.text, out lightData.effect.strength);
-            float.TryParse(frequencyInput.text, out lightData.effect.frequency);
+            // Primary
+            float.TryParse(primary.radiusInput.text, out lightData.primary.radius);
+            float.TryParse(primary.angleInput.text, out lightData.primary.angle);
+            lightData.primary.color = new Color(primary.colorButton.color.r, primary.colorButton.color.g, primary.colorButton.color.b, lightData.primary.color.a);
+            lightData.primary.effect.type = primary.effectDropdown.value;
+            float.TryParse(primary.strengthInput.text, out lightData.primary.effect.strength);
+            float.TryParse(primary.frequencyInput.text, out lightData.primary.effect.frequency);
+
+            // Secondary
+            float.TryParse(secondary.radiusInput.text, out lightData.secondary.radius);
+            float.TryParse(secondary.angleInput.text, out lightData.secondary.angle);
+            lightData.secondary.color = new Color(secondary.colorButton.color.r, secondary.colorButton.color.g, secondary.colorButton.color.b, lightData.secondary.color.a);
+            lightData.secondary.effect.type = secondary.effectDropdown.value;
+            float.TryParse(secondary.strengthInput.text, out lightData.secondary.effect.strength);
+            float.TryParse(secondary.frequencyInput.text, out lightData.secondary.effect.frequency);
 
             if (!string.IsNullOrEmpty(lightData.id))
             {
@@ -265,6 +323,19 @@ namespace RPG
 
             // Send callback
             callback?.Invoke(data, image, lightData);
+        }
+
+        [Serializable]
+        private struct LightInput
+        {
+            public TMP_InputField radiusInput;
+            public TMP_InputField angleInput;
+            public TMP_InputField intensityInput;
+            public Image colorButton;
+
+            public TMP_Dropdown effectDropdown;
+            public TMP_InputField strengthInput;
+            public TMP_InputField frequencyInput;
         }
     }
 }

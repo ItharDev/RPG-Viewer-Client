@@ -53,10 +53,8 @@ namespace RPG
     {
         public string id;
         public string name;
-        public float radius;
-        public int angle;
-        public Color color;
-        public LightEffect effect;
+        public LightValues primary;
+        public LightValues secondary;
 
         public override bool Equals(object obj)
         {
@@ -81,6 +79,15 @@ namespace RPG
         {
             return JsonUtility.ToJson(data_1) != JsonUtility.ToJson(data_2);
         }
+    }
+
+    [Serializable]
+    public struct LightValues
+    {
+        public float radius;
+        public float angle;
+        public Color color;
+        public LightEffect effect;
     }
 
     [Serializable]
