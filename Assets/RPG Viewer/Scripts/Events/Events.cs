@@ -24,6 +24,7 @@ namespace RPG
         public static UnityEvent<SessionState, SessionState> OnStateChanged = new UnityEvent<SessionState, SessionState>();
         public static UnityEvent<SceneData> OnSceneLoaded = new UnityEvent<SceneData>();
         public static UnityEvent<string> OnLandingPageChanged = new UnityEvent<string>();
+        public static UnityEvent<string> OnSceneImageChanged = new UnityEvent<string>();
 
         // Side panel
         public static UnityEvent OnSidePanelChanged = new UnityEvent();
@@ -97,6 +98,7 @@ namespace RPG
         public static UnityEvent<string> OnTokenRemoved = new UnityEvent<string>();
         public static UnityEvent<string, bool> OnTokenEnabled = new UnityEvent<string, bool>();
         public static UnityEvent<string, bool> OnTokenLocked = new UnityEvent<string, bool>();
+        public static UnityEvent<string, bool> OnTokenLightToggled = new UnityEvent<string, bool>();
         public static UnityEvent<string, int> OnConditionsModified = new UnityEvent<string, int>();
         public static UnityEvent<string, int> OnHealthModified = new UnityEvent<string, int>();
         public static UnityEvent<string, int> OnElevationModified = new UnityEvent<string, int>();

@@ -1,4 +1,6 @@
+using System;
 using Networking;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -13,6 +15,11 @@ namespace RPG
         [SerializeField] private Sprite offIcon;
 
         [Space]
+        [SerializeField] private Image background;
+        [SerializeField] private Color selectedColor;
+        [SerializeField] private Color deselectedColor;
+
+        [Space]
         [SerializeField] private Color offColor;
         [SerializeField] private Color onColor;
         [SerializeField] private LightConfiguration configPrefab;
@@ -24,6 +31,10 @@ namespace RPG
         private LightData info;
         private bool loaded;
         private bool dragging;
+        private bool selected;
+
+        public LightData Info { get { return info; } }
+        public bool UsePreset { get { return info.id != id; } }
 
         private void Awake()
         {
@@ -34,12 +45,28 @@ namespace RPG
         {
             // Add event listeners
             Events.OnPresetModified.AddListener(ModifyPreset);
+            Events.OnSettingChanged.AddListener(ToggleSelection);
         }
         private void OnDisable()
         {
             // remove event listeners
             Events.OnPresetModified.RemoveListener(ModifyPreset);
+            Events.OnSettingChanged.RemoveListener(ToggleSelection);
         }
+
+        private void ToggleSelection(Setting setting)
+        {
+            switch (setting)
+            {
+                case Setting.Lighting_Copy:
+                    background.color = selected ? selectedColor : deselectedColor;
+                    break;
+                default:
+                    background.color = deselectedColor;
+                    break;
+            }
+        }
+
         private void Update()
         {
             if (!loaded && Session.Instance.Grid.Grid != null)
@@ -149,6 +176,7 @@ namespace RPG
             if (pointerData.button == PointerEventData.InputButton.Left)
             {
                 if (LightTools.Instance.Mode == LightMode.Create) ToggleLight();
+                else if (LightTools.Instance.Mode == LightMode.Copy) SelectLight();
                 else DeleteLight();
             }
             if (pointerData.button == PointerEventData.InputButton.Right) ModifyLight();
@@ -164,6 +192,22 @@ namespace RPG
                 // Send error message
                 MessageManager.QueueMessage(callback.GetValue(1).GetString());
             }, id, !info.enabled);
+        }
+        private void SelectLight()
+        {
+            LightTools.Instance.SelectLight(this);
+            Select();
+        }
+
+        private void Select()
+        {
+            background.color = selectedColor;
+            selected = true;
+        }
+        public void Deselect()
+        {
+            background.color = deselectedColor;
+            selected = false;
         }
         private void DeleteLight()
         {

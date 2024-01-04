@@ -42,14 +42,6 @@ namespace RPG
             // Remove event listeners
             Events.OnSidePanelChanged.RemoveListener(DeselectToken);
         }
-        private void Update()
-        {
-            if (lastCount != rootTransform.childCount)
-            {
-                lastCount = rootTransform.childCount;
-                SortContent();
-            }
-        }
 
         private void SortContent()
         {
@@ -121,11 +113,10 @@ namespace RPG
             // Instantiate token
             TokenHolder token = Instantiate(tokenPrefab, targetFolder == null ? rootTransform : targetFolder.Content);
             token.transform.SetAsLastSibling();
-            token.LoadData(id, path, this);
+            token.LoadData(id, path, this, targetFolder == null ? SortContent : targetFolder.SortContent);
 
             // Add token to dictionary
             tokens.Add(id, token);
-            SortContent();
         }
         private void LoadDirectory(System.Text.Json.JsonElement json, string id, string path)
         {
@@ -141,7 +132,7 @@ namespace RPG
             // Instantiate folder
             TokenFolder targetFolder = GetDirectoryByPath(path);
             TokenFolder folder = Instantiate(folderPrefab, targetFolder == null ? rootTransform : targetFolder.Content);
-            folder.LoadData(data, this);
+            folder.LoadData(data, this, targetFolder == null ? SortContent : targetFolder.SortContent);
 
             // Add folder to dictionary
             this.folders.Add(id, folder);
@@ -157,8 +148,6 @@ namespace RPG
             {
                 LoadToken(contents[i].GetString(), pathToThisFolder);
             }
-
-            SortContent();
         }
         public Color GetColor()
         {
@@ -226,13 +215,12 @@ namespace RPG
         public TokenFolder CreateFolder(string id, string path)
         {
             // Create path to this directory
-            string pathToThisFolder = string.IsNullOrEmpty(path) ? id : $"{path}/{id}";
             Folder data = new Folder(id, path, "New folder", GetColor());
 
             // Instantiate folder
             TokenFolder targetFolder = GetDirectoryByPath(path);
             TokenFolder folder = Instantiate(folderPrefab, targetFolder == null ? rootTransform : targetFolder.Content);
-            folder.LoadData(data, this);
+            folder.LoadData(data, this, targetFolder == null ? SortContent : targetFolder.SortContent);
 
             // Add folder to dictionary
             this.folders.Add(id, folder);
@@ -360,6 +348,8 @@ namespace RPG
 
                     Events.OnBlueprintFolderMoved?.Invoke();
                     selectedFolder = null;
+
+                    SortContent();
                     return;
                 }
 
@@ -395,6 +385,8 @@ namespace RPG
 
                         Events.OnBlueprintFolderMoved?.Invoke();
                         selectedFolder = null;
+
+                        folder.SortContent();
                         return;
                     }
 
@@ -420,6 +412,8 @@ namespace RPG
 
                         Events.OnBlueprintMoved?.Invoke();
                         selectedToken = null;
+
+                        folder.SortContent();
                         return;
                     }
 
@@ -459,6 +453,8 @@ namespace RPG
 
                     Events.OnBlueprintMoved?.Invoke();
                     selectedToken = null;
+
+                    SortContent();
                     return;
                 }
 

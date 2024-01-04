@@ -221,6 +221,8 @@ namespace RPG
                         string image = callback.GetValue(1).GetString();
                         tokenData.image = image;
                         LoadData(tokenData);
+
+                        GetComponentInParent<TokenFolder>(true).SortContent();
                         return;
                     }
 
@@ -265,7 +267,7 @@ namespace RPG
             tokensPanel.DeselectToken();
         }
 
-        public void LoadData(string id, string path, TokensPanel panel)
+        public void LoadData(string id, string path, TokensPanel panel, Action onComplete)
         {
             SocketManager.EmitAsync("get-blueprint", async (callback) =>
             {
@@ -281,6 +283,8 @@ namespace RPG
                     selectedColor = string.IsNullOrEmpty(path) ? tokensPanel.GetColor() : tokensPanel.GetDirectoryByPath(path).Data.color;
                     _path = path;
                     LoadData(data);
+
+                    onComplete?.Invoke();
                     return;
                 }
 

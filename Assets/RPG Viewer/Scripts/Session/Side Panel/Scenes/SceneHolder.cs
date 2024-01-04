@@ -202,7 +202,7 @@ namespace RPG
                 {
                     headerText.text = newName;
                     Data.info.name = newName;
-                    scenesPanel.SortContent();
+                    GetComponentInParent<SceneFolder>(true).SortContent();
                     return;
                 }
 

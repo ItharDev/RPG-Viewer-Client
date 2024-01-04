@@ -1,8 +1,5 @@
-using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using Networking;
 using UnityEngine;
@@ -22,7 +19,6 @@ namespace RPG
         private bool loaded;
         private JournalFolder selectedFolder;
         private JournalHolder selectedJournal;
-        private float lastCount;
         private float lastColor;
 
         private void OnEnable()
@@ -46,15 +42,6 @@ namespace RPG
             Events.OnJournalHeaderModified.RemoveListener(ModifyHeader);
             Events.OnJournalRemoved.RemoveListener(RemoveCollaboration);
             Events.OnCollaboratorsUpdated.RemoveListener(UpdateCollaboration);
-        }
-
-        private void Update()
-        {
-            if (lastCount != rootTransform.childCount)
-            {
-                lastCount = rootTransform.childCount;
-                SortContent();
-            }
         }
 
         private void ModifyHeader(string id, string text, string uid)
@@ -144,11 +131,10 @@ namespace RPG
             // Instantiate journal
             JournalHolder journal = Instantiate(journalPrefab, targetFolder == null ? rootTransform : targetFolder.Content);
             journal.transform.SetAsLastSibling();
-            journal.LoadData(id, path, this);
+            journal.LoadData(id, path, this, targetFolder == null ? SortContent : targetFolder.SortContent);
 
             // Add journal to dictionary
             journals.Add(id, journal);
-            SortContent();
         }
         private void LoadDirectory(System.Text.Json.JsonElement json, string id, string path)
         {
@@ -164,7 +150,7 @@ namespace RPG
             // Instantiate folder
             JournalFolder targetFolder = GetDirectoryByPath(path);
             JournalFolder folder = Instantiate(folderPrefab, targetFolder == null ? rootTransform : targetFolder.Content);
-            folder.LoadData(data, this);
+            folder.LoadData(data, this, targetFolder == null ? SortContent : targetFolder.SortContent);
 
             // Add folder to dictionary
             this.folders.Add(id, folder);
@@ -180,8 +166,6 @@ namespace RPG
             {
                 LoadJournal(contents[i].GetString(), pathToThisFolder);
             }
-
-            SortContent();
         }
         public Color GetColor()
         {
@@ -198,7 +182,7 @@ namespace RPG
         }
         private float GetRandomHue()
         {
-            return UnityEngine.Random.Range(0, 12) * (1.0f / 12.0f);
+            return Random.Range(0, 12) * (1.0f / 12.0f);
         }
 
         public void CreateJournal(string path)
@@ -231,7 +215,7 @@ namespace RPG
             // Instantiate folder
             JournalFolder targetFolder = GetDirectoryByPath(path);
             JournalFolder folder = Instantiate(folderPrefab, targetFolder == null ? rootTransform : targetFolder.Content);
-            folder.LoadData(data, this);
+            folder.LoadData(data, this, targetFolder == null ? SortContent : targetFolder.SortContent);
 
             // Add folder to dictionary
             this.folders.Add(id, folder);
@@ -359,6 +343,8 @@ namespace RPG
 
                     Events.OnJournalFolderMoved?.Invoke();
                     selectedFolder = null;
+
+                    SortContent();
                     return;
                 }
 
@@ -394,6 +380,8 @@ namespace RPG
 
                         Events.OnJournalFolderMoved?.Invoke();
                         selectedFolder = null;
+
+                        folder.SortContent();
                         return;
                     }
 
@@ -419,6 +407,8 @@ namespace RPG
 
                         Events.OnJournalMoved?.Invoke();
                         selectedJournal = null;
+
+                        folder.SortContent();
                         return;
                     }
 
@@ -459,6 +449,8 @@ namespace RPG
 
                     Events.OnJournalMoved?.Invoke();
                     selectedJournal = null;
+
+                    SortContent();
                     return;
                 }
 

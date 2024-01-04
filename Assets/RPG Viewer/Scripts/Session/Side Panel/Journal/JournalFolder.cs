@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using Networking;
@@ -49,7 +50,6 @@ namespace RPG
         private Color selectedColor;
         private bool requireSend;
         private float lastSize;
-        private float lastCount;
 
         private void OnEnable()
         {
@@ -86,11 +86,6 @@ namespace RPG
             {
                 lastSize = content.sizeDelta.y;
                 Resize();
-            }
-            if (lastCount != content.transform.childCount)
-            {
-                lastCount = content.transform.childCount;
-                SortContent();
             }
         }
 
@@ -179,7 +174,7 @@ namespace RPG
             // Reset background color
             background.color = normalColor;
         }
-        private void SortContent()
+        public void SortContent()
         {
             List<JournalFolder> folders = journalsPanel.GetFolders(this);
             List<JournalHolder> holders = journalsPanel.GetJournals(this);
@@ -337,6 +332,7 @@ namespace RPG
                 {
                     await UniTask.SwitchToMainThread();
                     Data.name = header.text;
+                    GetComponentInParent<JournalFolder>(true).SortContent();
                     return;
                 }
 
@@ -375,7 +371,7 @@ namespace RPG
             ToggleOptions();
             journalsPanel.CreateJournal(Path);
         }
-        public void LoadData(Folder folder, JournalsPanel panel)
+        public void LoadData(Folder folder, JournalsPanel panel, Action onComplete)
         {
             // Update fields
             Data = folder;
@@ -401,6 +397,7 @@ namespace RPG
                         Data.name = name;
                         headerInput.text = name;
                         header.text = name;
+                        onComplete?.Invoke();
                         return;
                     }
 

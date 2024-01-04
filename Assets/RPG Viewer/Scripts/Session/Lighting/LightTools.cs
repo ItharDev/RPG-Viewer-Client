@@ -12,6 +12,7 @@ namespace RPG
         public bool MouseOver;
 
         private bool interactable;
+        private Light selectedLight;
         public LightMode Mode;
 
         private void Awake()
@@ -32,6 +33,7 @@ namespace RPG
         {
             if (!interactable || Mode == LightMode.Delete) return;
             if (Input.GetKey(KeyCode.LeftShift) && Input.GetMouseButtonUp(0) && !MouseOver) CreateLight();
+            if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.V) && !MouseOver && selectedLight != null && Mode == LightMode.Copy) PasteLight(selectedLight.Info, selectedLight.UsePreset);
         }
 
         private void ToggleUI(Setting setting)
@@ -45,6 +47,9 @@ namespace RPG
             {
                 case Setting.Lighting_Create:
                     Mode = LightMode.Create;
+                    break;
+                case Setting.Lighting_Copy:
+                    Mode = LightMode.Copy;
                     break;
                 case Setting.Lighting_Delete:
                     Mode = LightMode.Delete;
@@ -67,11 +72,32 @@ namespace RPG
                 MessageManager.QueueMessage(callback.GetValue(1).GetString());
             }, JsonUtility.ToJson(data), JsonUtility.ToJson(info));
         }
+        private void PasteLight(LightData info, bool UsePreset)
+        {
+            Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            info.position = mousePos;
+
+            SocketManager.EmitAsync("paste-light", (callback) =>
+            {
+                // Check if the event was successful
+                if (callback.GetValue().GetBoolean()) return;
+
+                // Send error message
+                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+            }, JsonUtility.ToJson(info), UsePreset);
+        }
+
+        public void SelectLight(Light light)
+        {
+            if (selectedLight != null) selectedLight.Deselect();
+            selectedLight = light;
+        }
     }
 
     public enum LightMode
     {
         Create,
+        Copy,
         Delete
     }
 }

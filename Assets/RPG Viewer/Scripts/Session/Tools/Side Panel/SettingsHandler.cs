@@ -1,5 +1,9 @@
 using System;
+using System.IO;
+using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
+using Networking;
+using SFB;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -19,6 +23,7 @@ namespace RPG
         [SerializeField] private ToolButton fogButton;
         [SerializeField] private ToolButton lightingButton;
         [SerializeField] private ToolButton createButton;
+        [SerializeField] private ToolButton copyButton;
         [SerializeField] private ToolButton deleteButton;
         [SerializeField] private ToolButton viewButton;
         [SerializeField] private ToolButton playerButton;
@@ -217,9 +222,21 @@ namespace RPG
             // Update selections
             createButton.Select();
             deleteButton.Deselect();
+            copyButton.Deselect();
 
             // Update tool states
             activeSetting = Setting.Lighting_Create;
+            lastLighting = activeSetting;
+        }
+        public void SelectCopy()
+        {
+            // Update selections
+            copyButton.Select();
+            createButton.Deselect();
+            deleteButton.Deselect();
+
+            // Update tool states
+            activeSetting = Setting.Lighting_Copy;
             lastLighting = activeSetting;
         }
         public void SelectDelete()
@@ -227,6 +244,7 @@ namespace RPG
             // Update selections
             deleteButton.Select();
             createButton.Deselect();
+            copyButton.Deselect();
 
             // Update tool states
             activeSetting = Setting.Lighting_Delete;
@@ -310,6 +328,7 @@ namespace RPG
 
             // Activate last tool selection
             if (lastLighting == Setting.Lighting_Create) SelectCreate();
+            else if (lastLighting == Setting.Lighting_Copy) SelectCopy();
             else SelectDelete();
         }
         public void CloseLighting()
@@ -347,6 +366,42 @@ namespace RPG
             viewMask.enabled = true;
             viewButton.Deselect();
         }
+
+        public async void SelectImage()
+        {
+            // Update selections
+            CloseGrid();
+            CloseLighting();
+            CloseWalls();
+
+            await ImageTask((bytes) =>
+            {
+                if (bytes != null) SocketManager.EmitAsync("change-scene-image", (callback) =>
+                {
+                    // Check if the event was successful
+                    if (callback.GetValue().GetBoolean()) return;
+
+                    // Send error mesage
+                    MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                }, Convert.ToBase64String(bytes)); ;
+            });
+        }
+        private async Task ImageTask(Action<byte[]> callback)
+        {
+            // Only allow image files
+            ExtensionFilter[] extensions = new ExtensionFilter[] { new ExtensionFilter("Image Files", "png", "jpg", "jpeg", "webp") };
+
+            // Open file explorer
+            StandaloneFileBrowser.OpenFilePanelAsync("Select file", "", extensions, false, (string[] paths) =>
+            {
+                // Return if no items are selected
+                if (paths.Length == 0) callback(null);
+
+                // Read bytes from selected file
+                callback(File.ReadAllBytes(paths[0]));
+            });
+            await Task.Yield();
+        }
     }
 
     public enum Setting
@@ -359,6 +414,7 @@ namespace RPG
         Walls_Hidden_Door,
         Walls_Fog,
         Lighting_Create,
+        Lighting_Copy,
         Lighting_Delete,
         Visibility
     }

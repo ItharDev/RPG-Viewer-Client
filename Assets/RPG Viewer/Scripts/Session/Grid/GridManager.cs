@@ -105,7 +105,7 @@ namespace RPG
             foreach (var cell in Grid)
             {
                 Vector2 finalPoint = cell.worldPosition;
-                if ((tokenSize.x % 10 < 2.5f || tokenSize.y % 10 < 2.5f) && (tokenSize.x >= 5.0f && tokenSize.y >= 5.0f)) finalPoint -= new Vector2(cellSize * 0.5f, cellSize * 0.5f);
+                if ((tokenSize.x % (unit.scale * 2) < (unit.scale / 2) || tokenSize.y % (unit.scale * 2) < (unit.scale / 2)) && (tokenSize.x >= unit.scale && tokenSize.y >= unit.scale)) finalPoint -= new Vector2(cellSize * 0.5f, cellSize * 0.5f);
                 float distance = Vector2.Distance(point, finalPoint);
 
                 if ((closest == 0) || distance < closest)

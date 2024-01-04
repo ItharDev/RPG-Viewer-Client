@@ -26,6 +26,7 @@ namespace RPG
             Events.OnTokenRemoved.AddListener(RemoveToken);
             Events.OnTokenEnabled.AddListener(EnableToken);
             Events.OnTokenLocked.AddListener(LockToken);
+            Events.OnTokenLightToggled.AddListener(ToggleLight);
             Events.OnConditionsModified.AddListener(UpdateConditions);
             Events.OnHealthModified.AddListener(UpdateHealth);
             Events.OnElevationModified.AddListener(UpdateElevation);
@@ -44,6 +45,7 @@ namespace RPG
             Events.OnTokenRemoved.RemoveListener(RemoveToken);
             Events.OnTokenEnabled.RemoveListener(EnableToken);
             Events.OnTokenLocked.RemoveListener(LockToken);
+            Events.OnTokenLightToggled.RemoveListener(ToggleLight);
             Events.OnConditionsModified.RemoveListener(UpdateConditions);
             Events.OnHealthModified.RemoveListener(UpdateHealth);
             Events.OnElevationModified.RemoveListener(UpdateElevation);
@@ -206,6 +208,16 @@ namespace RPG
             if (token == null) return;
 
             token.SetLocked(locked);
+        }
+        private void ToggleLight(string id, bool enabled)
+        {
+            // Find the correct token
+            Token token = Tokens[id];
+
+            // Check if token was found
+            if (token == null) return;
+
+            token.ToggleLight(enabled);
         }
         private void UpdateHealth(string id, int health)
         {

@@ -356,11 +356,11 @@ namespace RPG
         {
             // Calculate correct canvas scale
             float cellSize = Session.Instance.Grid.CellSize;
-            Vector2Int dimensions = token.Data.dimensions;
-            float targetSize = dimensions.x >= dimensions.y ? cellSize * (dimensions.y / 5.0f) : cellSize * (dimensions.x / 5.0f);
+            Vector2 dimensions = token.Data.dimensions;
+            float targetSize = dimensions.x >= dimensions.y ? cellSize * (dimensions.y / Session.Instance.Grid.Unit.scale) : cellSize * (dimensions.x / Session.Instance.Grid.Unit.scale);
 
             // Apply scaling
-            Rect.sizeDelta = new Vector2(100 * cellSize * (dimensions.x / 5.0f), 100 * cellSize * (dimensions.y / 5.0f));
+            Rect.sizeDelta = new Vector2(100 * cellSize * (dimensions.x / Session.Instance.Grid.Unit.scale), 100 * cellSize * (dimensions.y / Session.Instance.Grid.Unit.scale));
             uICanvas.transform.localScale = new Vector3(targetSize, targetSize, 1.0f);
         }
     }

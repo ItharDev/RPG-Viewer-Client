@@ -102,6 +102,13 @@ namespace Networking
                 await UniTask.SwitchToMainThread();
                 Events.OnLandingPageChanged?.Invoke(id);
             });
+            Socket.On("change-scene-image", async (data) =>
+            {
+                string id = data.GetValue().GetString();
+
+                await UniTask.SwitchToMainThread();
+                Events.OnSceneImageChanged?.Invoke(id);
+            });
 
             // Walls
             Socket.On("create-wall", async (data) =>
@@ -260,6 +267,14 @@ namespace Networking
 
                 await UniTask.SwitchToMainThread();
                 Events.OnTokenLocked?.Invoke(id, locked);
+            });
+            Socket.On("toggle-token-light", async (data) =>
+            {
+                string id = data.GetValue().GetString();
+                bool enabled = data.GetValue(1).GetBoolean();
+
+                await UniTask.SwitchToMainThread();
+                Events.OnTokenLightToggled?.Invoke(id, enabled);
             });
             Socket.On("update-conditions", async (data) =>
             {

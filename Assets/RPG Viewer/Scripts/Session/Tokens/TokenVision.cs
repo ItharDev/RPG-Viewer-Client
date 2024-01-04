@@ -47,7 +47,26 @@ namespace RPG
             }
 
             if (!token.Selected || token.UI.Editing) return;
+
             HandleRotation();
+            HandleLight();
+        }
+
+        private void HandleLight()
+        {
+            if (Input.GetKeyDown(KeyCode.Space)) ToggleLight();
+        }
+
+        private void ToggleLight()
+        {
+            SocketManager.EmitAsync("toggle-token-light", (callback) =>
+            {
+                // Check if the event was successful
+                if (callback.GetValue().GetBoolean()) return;
+
+                // Send error message
+                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+            }, token.Data.id, !token.Data.lightEnabled);
         }
 
         private void HandleRotation()
@@ -102,7 +121,7 @@ namespace RPG
             Permission isPlayer = token.Data.permissions.FirstOrDefault(value => value.type == PermissionType.Controller);
             EnableHighlight(!string.IsNullOrEmpty(isPlayer.user));
             ToggleVision(token.Enabled && token.Visibility.visible && (token.Data.enabled || ConnectionManager.Info.isMaster) && token.Permission.type != PermissionType.None);
-            ToggleLight(token.Visibility.visible && token.Data.enabled);
+            ToggleLight(token.Visibility.visible && token.Data.enabled && token.Data.lightEnabled);
         }
 
         public void ToggleVision(bool enabled)
@@ -134,7 +153,7 @@ namespace RPG
             float feetToUnits = Session.Instance.Grid.CellSize / Session.Instance.Grid.Unit.scale;
             nightSource.size = token.Data.nightRadius * feetToUnits;
             visionSource.size = token.Data.visionRadius * feetToUnits;
-            highlight.size = Session.Instance.Grid.CellSize * 0.5f;
+            highlight.size = Session.Instance.Grid.CellSize * (token.Data.dimensions.x / Session.Instance.Grid.Unit.scale) * 0.5f;
         }
         private void LoadLighting()
         {
@@ -148,7 +167,6 @@ namespace RPG
                     token.Lighting = data;
                     token.Lighting.id = token.Data.light;
                     lightSource.LoadData(data);
-                    lightSource.Toggle(token.Data.enabled);
                     return;
                 }
 

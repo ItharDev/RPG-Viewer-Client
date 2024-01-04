@@ -124,8 +124,8 @@ namespace RPG
             Vision.Reload();
 
             float cellSize = Session.Instance.Grid.CellSize;
-            Vector2Int dimensions = Data.dimensions;
-            boxCollider.size = new Vector2(100 * cellSize * (dimensions.x / 5.0f), 100 * cellSize * (dimensions.y / 5.0f));
+            Vector2 dimensions = Data.dimensions;
+            boxCollider.size = new Vector2(100 * cellSize * (dimensions.x / Session.Instance.Grid.Unit.scale), 100 * cellSize * (dimensions.y / Session.Instance.Grid.Unit.scale));
         }
 
         private void SetPermission()
@@ -175,6 +175,11 @@ namespace RPG
             // Enable / disable vision and image
             Vision.Reload();
             UI.Toggle(enabled);
+        }
+        public void ToggleLight(bool enabled)
+        {
+            Data.lightEnabled = enabled;
+            Vision.ToggleLight(enabled);
         }
         public void SetElevation(int elevation)
         {
@@ -234,7 +239,7 @@ namespace RPG
         public TokenType type;
         public List<Permission> permissions;
         public List<Visible> visible;
-        public Vector2Int dimensions;
+        public Vector2 dimensions;
         public float visionRadius;
         public float nightRadius;
         public string image;
@@ -247,6 +252,7 @@ namespace RPG
         public bool locked;
         public float rotation;
         public float lightRotation;
+        public bool lightEnabled;
     }
 
     [Serializable]

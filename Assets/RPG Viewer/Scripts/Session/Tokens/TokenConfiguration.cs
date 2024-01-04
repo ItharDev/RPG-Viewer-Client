@@ -282,11 +282,11 @@ namespace RPG
             data.name = nameInput.text;
             data.type = (TokenType)typeDropdown.value;
 
-            int width = 5;
-            int height = 5;
-            int.TryParse(widthInput.text, out width);
-            int.TryParse(heightInput.text, out height);
-            data.dimensions = new Vector2Int(width <= 0 ? 1 : width, height <= 0 ? 1 : height);
+            float width = 5;
+            float height = 5;
+            float.TryParse(widthInput.text, out width);
+            float.TryParse(heightInput.text, out height);
+            data.dimensions = new Vector2(width <= 0 ? 1 : width, height <= 0 ? 1 : height);
 
             // Vision
             float.TryParse(visionInput.text, out data.visionRadius);

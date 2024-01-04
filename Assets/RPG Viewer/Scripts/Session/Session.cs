@@ -24,6 +24,7 @@ namespace RPG
             // Add event listeners
             Events.OnStateChanged.AddListener(ChangeState);
             Events.OnLandingPageChanged.AddListener(UpdateLandingPage);
+            Events.OnSceneImageChanged.AddListener(UpdateSceneImage);
             Events.OnGridChanged.AddListener(UpdateGrid);
             Events.OnLightingChanged.AddListener(UpdateLighting);
             Events.OnUserConnected.AddListener(ConnectUser);
@@ -34,6 +35,7 @@ namespace RPG
             // Remove event listeners
             Events.OnStateChanged.RemoveListener(ChangeState);
             Events.OnLandingPageChanged.RemoveListener(UpdateLandingPage);
+            Events.OnSceneImageChanged.RemoveListener(UpdateSceneImage);
             Events.OnGridChanged.RemoveListener(UpdateGrid);
             Events.OnLightingChanged.RemoveListener(UpdateLighting);
             Events.OnUserConnected.AddListener(ConnectUser);
@@ -125,6 +127,30 @@ namespace RPG
                 ConnectionManager.Info.background = sprite;
                 landingPage.sprite = sprite;
                 MessageManager.RemoveMessage("Loading new landing page");
+            });
+        }
+        private void UpdateSceneImage(string id)
+        {
+            MessageManager.QueueMessage("Loading new image");
+
+            WebManager.Download(id, true, async (bytes) =>
+            {
+                // Check if landing page exists
+                if (bytes == null)
+                {
+                    MessageManager.QueueMessage("Failed to load image, please try again");
+                    return;
+                }
+
+                await UniTask.SwitchToMainThread();
+
+                // Create landing page texture
+                Texture2D texture = await AsyncImageLoader.CreateFromImageAsync(bytes);
+                Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
+
+                sceneSprite.sprite = sprite;
+                Settings.info.image = id;
+                MessageManager.RemoveMessage("Loading new image");
             });
         }
 

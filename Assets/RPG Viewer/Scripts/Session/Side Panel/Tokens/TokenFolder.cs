@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using Networking;
@@ -49,7 +50,6 @@ namespace RPG
         private Color selectedColor;
         private bool requireSend;
         private float lastSize;
-        private float lastCount;
 
         private void OnEnable()
         {
@@ -86,11 +86,6 @@ namespace RPG
             {
                 lastSize = content.sizeDelta.y;
                 Resize();
-            }
-            if (lastCount != content.transform.childCount)
-            {
-                lastCount = content.transform.childCount;
-                SortContent();
             }
         }
 
@@ -179,7 +174,7 @@ namespace RPG
             // Reset background color
             background.color = normalColor;
         }
-        private void SortContent()
+        public void SortContent()
         {
             List<TokenFolder> folders = tokensPanel.GetFolders(this);
             List<TokenHolder> holders = tokensPanel.GetTokens(this);
@@ -334,6 +329,7 @@ namespace RPG
                 {
                     await UniTask.SwitchToMainThread();
                     Data.name = header.text;
+                    GetComponentInParent<TokenFolder>(true).SortContent();
                     return;
                 }
 
@@ -372,7 +368,7 @@ namespace RPG
             ToggleOptions();
             tokensPanel.CreateToken(Path);
         }
-        public void LoadData(Folder folder, TokensPanel panel)
+        public void LoadData(Folder folder, TokensPanel panel, Action onComplete)
         {
             // Update fields
             Data = folder;
@@ -383,6 +379,8 @@ namespace RPG
             tokensPanel = panel;
             selectedColor = folder.color;
             selectedColor.a = 0.5f;
+
+            onComplete?.Invoke();
         }
 
         public void CalculatePath(string parentPath)

@@ -50,7 +50,6 @@ namespace RPG
         private Color selectedColor;
         private bool requireSend;
         private float lastSize;
-        private float lastCount;
 
         private void OnEnable()
         {
@@ -87,11 +86,6 @@ namespace RPG
             {
                 lastSize = content.sizeDelta.y;
                 Resize();
-            }
-            if (lastCount != content.transform.childCount)
-            {
-                lastCount = content.transform.childCount;
-                SortContent();
             }
         }
 
@@ -180,7 +174,7 @@ namespace RPG
             // Reset background color
             background.color = normalColor;
         }
-        private void SortContent()
+        public void SortContent()
         {
             List<SceneFolder> folders = scenesPanel.GetFolders(this);
             List<SceneHolder> holders = scenesPanel.GetScenes(this);
@@ -335,7 +329,7 @@ namespace RPG
                 {
                     await UniTask.SwitchToMainThread();
                     Data.name = header.text;
-                    scenesPanel.SortContent();
+                    GetComponentInParent<SceneFolder>(true).SortContent();
                     return;
                 }
 

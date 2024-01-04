@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using Networking;
@@ -212,7 +213,7 @@ namespace RPG
             journalsPanel.DeselectJournal();
         }
 
-        public void LoadData(string id, string path, JournalsPanel panel)
+        public void LoadData(string id, string path, JournalsPanel panel, Action onComplete)
         {
             SocketManager.EmitAsync("get-journal", async (callback) =>
             {
@@ -229,6 +230,7 @@ namespace RPG
                     selectedColor = string.IsNullOrEmpty(path) ? journalsPanel.GetColor() : journalsPanel.GetDirectoryByPath(path).Data.color;
                     selectedColor.a = 0.5f;
                     LoadData(data);
+                    onComplete?.Invoke();
                     return;
                 }
 
@@ -251,6 +253,7 @@ namespace RPG
         {
             Data.header = header;
             headerText.text = header;
+            GetComponentInParent<JournalFolder>(true).SortContent();
         }
         public void UpdateCollaborators(List<Collaborator> collaborators)
         {
