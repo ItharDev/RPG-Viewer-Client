@@ -60,7 +60,40 @@ namespace RPG
             {
                 if (collaborators.FirstOrDefault(x => x.user == GameData.User.id).isCollaborator)
                 {
-                    LoadJournal(id, $"shared/{owner}");
+                    // Check if the collaboration folder exists
+                    JournalFolder target = GetDirectoryByPath($"shared/{owner}");
+                    if (string.IsNullOrEmpty(target.Id))
+                    {
+                        SocketManager.EmitAsync("get-user", async (callback) =>
+                        {
+                            await UniTask.SwitchToMainThread();
+
+                            // Check if the event was successful
+                            if (callback.GetValue().GetBoolean())
+                            {
+                                // Load folder's data
+                                string name = callback.GetValue().GetString();
+                                Folder data = new Folder(owner, $"shared/{owner}", name, GetColor());
+
+                                // Instantiate folder
+                                JournalFolder targetFolder = GetDirectoryByPath("shared");
+                                JournalFolder folder = Instantiate(folderPrefab, targetFolder == null ? rootTransform : targetFolder.Content);
+                                folder.LoadData(data, this, targetFolder == null ? SortContent : targetFolder.SortContent);
+
+                                // Add folder to dictionary
+                                this.folders.Add(owner, folder);
+                                LoadJournal(id, $"shared/{owner}");
+                                return;
+                            }
+
+                            // Send error message
+                            MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                        }, owner);
+                    }
+                    else
+                    {
+                        LoadJournal(id, $"shared/{owner}");
+                    }
                 }
                 return;
             }
