@@ -1,0 +1,46 @@
+ - vasta toinen kartan latauskerta lataa kartan
+ - nuolella gridin liikuttaminen liikuttaa gridiä liikaa yhdellä painalluksella
+
+ - journal sivun pystyy siirtämään ulos kuvaruudulta niin ettei sitä voi enää siirtää tai sulkea
+ - Screenfresh rate ei vaikuta ruudun päivitysnopeuteen
+
+ - visibility ja permissions ei päivity ellei x:stä ensin sulje niiden ikkunoita
+ - pelaajahahmon deletoimista ei pyydetä vahvistamaan.
+ - kun karttoja vaihtaa, jää edellisen kartan seinät näkymään uuteen karttaan
+ - valon angleksi on laitettava 370 astetta, jos haluaa 360 asteen valaistuksen
+ - light angle muuttuu edelleen jossain tapauksissa samaksi kuin radius
+ - esc ei aina avaa pause menua
+
+ ? valojen intensiteetti muuttuu itsekseen kun klikkailee muita ominaisuuksia
+ - valojen copy paste
+ ? joka kerta kun haluaa säätää grid configuraatiota, niin se resetoi aikaisemman grid color asetuksen
+
+
+ - Presettejä tehdessä ei voi valita light coloria
+ - Presettejä tehdessä light intencity ei tallennu 
+ ? tokenilla kun valitsee light coloria, niin light intencity muuttuu 100:ksi
+ - kun tokenilla muuttaa ensimmäisen valon intensiteettiä, niin se muuttuu myös toisella valolla noin sekunnin kuluttua vaikka valoarvo asetuksissa pysyy alkuperäisenä
+ - tokenin valon kääntäminen näppäimistältä ei toimi
+
+
+
+
+ - valaisun ja näkökentän etäisyydet on liian lyhytet
+ - valaistus presetin muuttaminen ei muuta hahmon mukana olevaa valoa
+ - tokenia luotaessa ei voi samalla antaa permissioineita (eikä määritellä visibilityä)
+
+
+ ? Kakkosvalon efekti vaikuttaa ykkösvalon toimintaan (Flickering)
+ ? valon presettiä tallennettaessa light intencity pienenee aina yhdellä
+ ? klikkaamalla light coloria light intencity pienenee yhdellä
+ ? tokenin haamuvalo kun pelaajien token laitettu näkymättömäksi 
+
+
+
+
+
+
+
+
+
+
