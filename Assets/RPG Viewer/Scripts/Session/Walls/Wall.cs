@@ -65,7 +65,7 @@ namespace RPG
                 float distance = Vector2.Distance(canvas.transform.position, token.Value.transform.position);
                 bool canOpen = token.Value.Permission.type == PermissionType.Controller && token.Value.Visibility.visible;
 
-                if (distance <= Session.Instance.Grid.CellSize && canOpen) showDoor = true;
+                if (distance <= Session.Instance.Grid.CellSize * 2.0f && canOpen) showDoor = true;
             }
 
             canvas.sortingOrder = showDoor ? 1 : 0;
