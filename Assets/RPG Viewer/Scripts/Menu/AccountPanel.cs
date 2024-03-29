@@ -20,6 +20,10 @@ namespace RPG
         [SerializeField] private TMP_InputField signInEmail;
         [SerializeField] private TMP_InputField signInPassword;
 
+        [Header("Change name")]
+        [SerializeField] private GameObject namePanel;
+        [SerializeField] private TMP_InputField nameInput;
+
         [Header("Register")]
         [SerializeField] private GameObject registerPanel;
         [SerializeField] private TMP_InputField registerEmail;
@@ -105,6 +109,22 @@ namespace RPG
                 menu.OpenRegister?.Invoke();
             }
         }
+        public void OpenName()
+        {
+            // Close panel if it's open
+            if (rect.sizeDelta.x != 0 && namePanel.activeInHierarchy)
+            {
+                ClosePanel();
+                return;
+            }
+            else
+            {
+                // Open name panel
+                namePanel.SetActive(true);
+                LeanTween.size(rect, new Vector2(340.0f, 110.0f), 0.2f);
+                menu.OpenSignIn?.Invoke();
+            }
+        }
         public void ClosePanel()
         {
             // Close panel
@@ -113,6 +133,7 @@ namespace RPG
                 // Hide panels
                 registerPanel.SetActive(false);
                 signInPanel.SetActive(false);
+                namePanel.SetActive(false);
             });
         }
 
@@ -130,6 +151,7 @@ namespace RPG
             registerVerification.text = "";
             registerName.text = "";
             infoText.text = name;
+            nameInput.text = name;
 
             // Enable / disable buttons
             signInButton.SetActive(false);
@@ -230,6 +252,28 @@ namespace RPG
                 // Send error message
                 MessageManager.QueueMessage(callback.GetValue(1).GetString());
             }, "", signInEmail.text, signInPassword.text);
+        }
+        public void ChangeName()
+        {
+            // Check if sign in information is valid
+            if (string.IsNullOrEmpty(nameInput.text)) return;
+
+            SocketManager.EmitAsync("change-name", async (callback) =>
+            {
+                // Check if the event was successful
+                if (callback.GetValue().GetBoolean())
+                {
+                    await UniTask.SwitchToMainThread();
+
+
+                    MessageManager.QueueMessage("Username updated");
+                    Events.OnSignIn?.Invoke(GameData.User.id, nameInput.text);
+                    return;
+                }
+
+                // Send error message
+                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+            }, nameInput.text);
         }
         public void SignOutButton()
         {
