@@ -1,5 +1,6 @@
 using System;
-using System.Runtime.Serialization;
+using System.Collections.Generic;
+using System.Linq;
 using FunkyCode;
 using Networking;
 using UnityEngine;
@@ -19,21 +20,44 @@ namespace RPG
 
         private Canvas canvas;
         private EdgeCollider2D edgeCollider;
+        private CircleCollider2D interactableCollider;
         private LightCollider2D lightCollider;
         private bool loaded;
         private WallData data;
+        private bool showDoor;
+        private List<Token> tokensInRange = new List<Token>();
 
         private void OnEnable()
         {
             // Get reference of out canvas and colliders
             if (canvas == null) canvas = GetComponentInChildren<Canvas>(true);
             if (edgeCollider == null) edgeCollider = GetComponent<EdgeCollider2D>();
+            if (interactableCollider == null) interactableCollider = GetComponentInChildren<CircleCollider2D>();
             if (lightCollider == null) lightCollider = GetComponent<LightCollider2D>();
 
             // Add event listeners
             Events.OnSettingChanged.AddListener(ToggleUI);
             Events.OnViewChanged.AddListener(HandleView);
+            Events.OnTokenCreated.AddListener(HandleLayers);
+            Events.OnTokenModified.AddListener(HandleLayers);
+            Events.OnSceneLoaded.AddListener(HandleLayers);
         }
+
+        private void HandleLayers(SceneData data)
+        {
+            HandleLayers();
+        }
+
+        private void HandleLayers(string id, TokenData data)
+        {
+            HandleLayers();
+        }
+
+        private void HandleLayers(TokenData data)
+        {
+            HandleLayers();
+        }
+
         private void OnDisable()
         {
             // Remove event listeners
@@ -48,25 +72,39 @@ namespace RPG
                 loaded = true;
                 UpdateData();
             }
-
-            if (SettingsHandler.Instance.LastView == GameView.Player && !ConnectionManager.Info.isMaster) HandleLayers();
-            else
-            {
-                canvas.sortingOrder = 1;
-                canvas.sortingLayerName = "Above Fog";
-            }
         }
 
         private void HandleLayers()
         {
-            bool showDoor = false;
-            foreach (var token in Session.Instance.TokenManager.Tokens)
-            {
-                float distance = Vector2.Distance(canvas.transform.position, token.Value.transform.position);
-                bool canOpen = token.Value.Permission.type == PermissionType.Controller && token.Value.Visibility.visible;
+            Debug.Log("Runs");
+            bool state = false;
 
-                if (distance <= Session.Instance.Grid.CellSize * 2.0f && canOpen) showDoor = true;
+            foreach (var token in tokensInRange)
+            {
+                if (token.Data.type == TokenType.Character && token.Permission.type == PermissionType.Controller && token.Visibility.visible) state = true;
             }
+
+            // New token has entered the radius
+            if (state)
+            {
+                bool enableDoor = false;
+                foreach (var item in tokensInRange)
+                {
+                    bool hasView = true;
+                    // Check if the token can see the door
+                    RaycastHit2D[] results = Physics2D.RaycastAll(canvas.transform.position, item.transform.position - canvas.transform.position, Vector2.Distance(item.transform.position, canvas.transform.position) + Session.Instance.Grid.CellSize * 0.01f);
+                    for (int i = 0; i < results.Length; i++)
+                    {
+                        bool isWall = results[i].transform.gameObject.CompareTag("Wall");
+                        bool hitDetectionCollider = results[i].collider.GetType() == typeof(CircleCollider2D);
+                        bool hitOurSelves = results[i].transform.gameObject == gameObject;
+                        if (isWall && !hitDetectionCollider && !hitOurSelves) hasView = false;
+                    }
+                    if (hasView) enableDoor = true;
+                }
+                showDoor = enableDoor;
+            }
+            else showDoor = false;
 
             canvas.sortingOrder = showDoor ? 1 : 0;
             canvas.sortingLayerName = showDoor ? "Above Fog" : "Default";
@@ -99,6 +137,7 @@ namespace RPG
             else ToggleUI(data.type == WallType.Door);
 
             lightCollider.Initialize();
+            HandleLayers();
         }
         private void HandleCollider()
         {
@@ -108,6 +147,9 @@ namespace RPG
 
             lightCollider.enabled = edgeCollider.enabled;
             lightCollider.maskType = LightCollider2D.MaskType.None;
+
+            interactableCollider.radius = Session.Instance.Grid.CellSize * 2.0f;
+            interactableCollider.offset = (data.points[0] + data.points[1]) / 2f;
 
             // Update layer
             gameObject.layer = 8;
@@ -121,6 +163,27 @@ namespace RPG
                 gameObject.layer = 6;
                 lightCollider.enabled = true;
                 edgeCollider.enabled = false;
+            }
+        }
+
+        private void OnTriggerEnter2D(Collider2D other)
+        {
+            if (other.gameObject.layer == 11) tokensInRange.Add(other.GetComponent<Token>());
+            if (SettingsHandler.Instance.LastView == GameView.Player && data.type == WallType.Door) HandleLayers();
+        }
+        private void OnTriggerExit2D(Collider2D other)
+        {
+            Token token = other.GetComponent<Token>();
+            if (other.gameObject.layer == 11) tokensInRange.Remove(token);
+            if (SettingsHandler.Instance.LastView == GameView.Player && data.type == WallType.Door) HandleLayers();
+        }
+        private void OnTriggerStay2D(Collider2D other)
+        {
+            if (SettingsHandler.Instance.LastView == GameView.Player && data.type == WallType.Door) HandleLayers();
+            else
+            {
+                canvas.sortingOrder = 1;
+                canvas.sortingLayerName = "Above Fog";
             }
         }
 

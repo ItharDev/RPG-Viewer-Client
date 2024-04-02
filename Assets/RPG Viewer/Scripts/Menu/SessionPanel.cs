@@ -91,6 +91,8 @@ namespace RPG
                 if (callback.GetValue().GetBoolean())
                 {
                     await UniTask.SwitchToMainThread();
+                    joinDropdown.ClearOptions();
+                    sessions.Clear();
 
                     // Enumerate session array
                     var list = callback.GetValue(1).EnumerateArray().ToArray();
