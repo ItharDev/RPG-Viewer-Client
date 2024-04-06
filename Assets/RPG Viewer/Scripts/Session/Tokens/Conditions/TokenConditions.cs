@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Networking;
 using UnityEngine;
@@ -37,6 +38,13 @@ namespace RPG
             {
                 holders[i].transform.SetSiblingIndex(i);
             }
+        }
+        private void Update()
+        {
+            // Return if token is not selected or we are edting any fields
+            if (!token.Selected || token.UI.Editing) return;
+
+            if (Input.GetKeyDown(KeyCode.X)) ToggleCondition(deadCondition);
         }
 
         public void SetConditions(int conditions)
