@@ -299,13 +299,17 @@ namespace RPG
             if (!Input.GetKey(KeyCode.LeftControl)) dragPoints.Add(pos);
             Destroy(dragObject.gameObject);
 
+            Session.Instance.TokenManager.HandleMultiMovement(token, dragPoints);
+        }
+        public void EndMovement(List<Vector2> _dragPoints)
+        {
             // Return if movement would collide with walls
-            if (CheckCollisions(dragPoints)) return;
+            if (CheckCollisions(_dragPoints)) return;
 
             // Proceed to movement if this is not a mount
             if (token.Data.type != TokenType.Mount)
             {
-                FinishMovement(dragPoints);
+                FinishMovement(_dragPoints);
                 return;
             }
 
@@ -315,7 +319,7 @@ namespace RPG
             for (int i = 0; i < nearby.Count; i++)
             {
                 // Generate new list from points and calculate offset
-                List<Vector2> points = new List<Vector2>(dragPoints);
+                List<Vector2> points = new List<Vector2>(_dragPoints);
                 Vector2 offset = nearby[i].transform.position - transform.position;
 
                 // Add offset for each point
@@ -329,7 +333,7 @@ namespace RPG
             }
 
             // Proceed to movement
-            FinishMovement(dragPoints);
+            FinishMovement(_dragPoints);
         }
 
         private void UpdatePosition()

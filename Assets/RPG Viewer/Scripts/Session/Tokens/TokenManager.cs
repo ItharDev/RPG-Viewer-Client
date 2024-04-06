@@ -3,6 +3,7 @@ using System.Linq;
 using Cysharp.Threading.Tasks;
 using Networking;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace RPG
 {
@@ -12,10 +13,12 @@ namespace RPG
         [SerializeField] private Transform tokenParent;
 
         public Dictionary<string, Token> Tokens = new Dictionary<string, Token>();
+        public bool TokenHovered;
 
         private List<Token> myTokens = new List<Token>();
+        private List<Token> tokensToSelect = new List<Token>();
 
-        private int selectedToken = 0;
+        private List<int> selectedTokens = new List<int>();
 
         private void OnEnable()
         {
@@ -53,7 +56,6 @@ namespace RPG
             Events.OnTokenLightRotated.RemoveListener(RotateLight);
             Events.OnStateChanged.RemoveListener(ReloadTokens);
             Events.OnSceneLoaded.RemoveListener(LoadTokens);
-            Events.OnTokenSelected.RemoveListener(SelectToken);
         }
         private void Update()
         {
@@ -61,10 +63,10 @@ namespace RPG
             if (myTokens.Count != 0 && Input.GetKeyDown(KeyCode.Tab))
             {
                 // Reset selection at the end of list
-                if (selectedToken >= myTokens.Count) selectedToken = 0;
+                if (selectedTokens[selectedTokens.Count] >= myTokens.Count) selectedTokens = new List<int>() { 0 };
 
-                Events.OnTokenSelected?.Invoke(myTokens[selectedToken]);
-                selectedToken++;
+                Events.OnTokenSelected?.Invoke(myTokens[selectedTokens[0]], false);
+                selectedTokens[0]++;
             }
         }
 
@@ -316,12 +318,39 @@ namespace RPG
             myTokens.Clear();
         }
 
-        public void SelectToken(Token token)
+        public void SelectToken(Token token, bool multiSelection = false)
         {
-            if (token == null) return;
-
             // Update index of selected token
-            selectedToken = myTokens.IndexOf(token);
+            if (token == null) selectedTokens = new List<int>();
+            else if (multiSelection)
+            {
+                if (selectedTokens.Contains(myTokens.IndexOf(token))) selectedTokens.Remove(myTokens.IndexOf(token));
+                else selectedTokens.Add(myTokens.IndexOf(token));
+            }
+            else selectedTokens = new List<int>() { myTokens.IndexOf(token) };
+
+            tokensToSelect = new List<Token>();
+            for (int i = 0; i < selectedTokens.Count; i++)
+            {
+                tokensToSelect.Add(myTokens[selectedTokens[i]]);
+            }
+            Events.OnTokensSelected?.Invoke(tokensToSelect);
+        }
+        public void HoverToken(bool hovered)
+        {
+            TokenHovered = hovered;
+        }
+        public void HandleMultiMovement(Token original, List<Vector2> dragPoints)
+        {
+            if (tokensToSelect.Count == 0)
+            {
+                original.Movement.EndMovement(dragPoints);
+                return;
+            }
+            for (int i = 0; i < tokensToSelect.Count; i++)
+            {
+                tokensToSelect[i].Movement.EndMovement(dragPoints);
+            }
         }
     }
 }

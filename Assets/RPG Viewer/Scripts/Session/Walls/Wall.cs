@@ -17,6 +17,7 @@ namespace RPG
         [SerializeField] private Color regularColor;
         [SerializeField] private Color secretColor;
         [SerializeField] private GameObject lockedIcon;
+        [SerializeField] private GameObject info;
 
         private Canvas canvas;
         private EdgeCollider2D edgeCollider;
@@ -58,6 +59,11 @@ namespace RPG
             HandleLayers();
         }
 
+        public void HandleLocked()
+        {
+            if (!ConnectionManager.Info.isMaster) info.SetActive(!info.activeInHierarchy);
+        }
+
         private void OnDisable()
         {
             // Remove event listeners
@@ -76,7 +82,6 @@ namespace RPG
 
         private void HandleLayers()
         {
-            Debug.Log("Runs");
             bool state = false;
 
             foreach (var token in tokensInRange)
@@ -122,6 +127,7 @@ namespace RPG
             canvas.transform.position = (data.points[0] + data.points[1]) / 2f;
             doorIcon.sprite = data.open ? openSprite : closedSprite;
             lockedIcon.SetActive(data.locked);
+            info.SetActive(ConnectionManager.Info.isMaster);
             doorIcon.color = data.type == WallType.Hidden_Door ? secretColor : regularColor;
 
             HandleCollider();

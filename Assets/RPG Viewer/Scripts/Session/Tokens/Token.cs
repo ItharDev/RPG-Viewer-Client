@@ -39,12 +39,12 @@ namespace RPG
             if (Conditions == null) Conditions = GetComponent<TokenConditions>();
 
             // Add event listeners
-            Events.OnTokenSelected.AddListener(HandleSelection);
+            Events.OnTokensSelected.AddListener(HandleSelection);
         }
         private void OnDisable()
         {
             // Remove event listeners
-            Events.OnTokenSelected.RemoveListener(HandleSelection);
+            Events.OnTokensSelected.RemoveListener(HandleSelection);
         }
         private void Update()
         {
@@ -54,16 +54,16 @@ namespace RPG
             HandleDeletion();
         }
 
-        private void HandleSelection(Token token)
+        private void HandleSelection(List<Token> tokens)
         {
-            if (token == null)
+            if (tokens.Count == 0)
             {
                 Selected = false;
                 Enabled = Permission.type != PermissionType.None;
             }
             else
             {
-                Selected = token == this;
+                Selected = tokens.Contains(this);
                 Enabled = Selected;
             }
 

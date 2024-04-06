@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Cysharp.Threading.Tasks;
 using Networking;
@@ -77,13 +78,13 @@ namespace RPG
 
             // Add event listeners
             Events.OnToolChanged.AddListener(HandleRaycast);
-            Events.OnTokenSelected.AddListener(HandleSelection);
+            Events.OnTokensSelected.AddListener(HandleSelection);
         }
         private void OnDisable()
         {
             // Remove event listeners
             Events.OnToolChanged.RemoveListener(HandleRaycast);
-            Events.OnTokenSelected.RemoveListener(HandleSelection);
+            Events.OnTokensSelected.RemoveListener(HandleSelection);
         }
         private void Awake()
         {
@@ -95,17 +96,17 @@ namespace RPG
             // Return if token is not selected
             if (!token.Selected) return;
 
-            if (Input.GetMouseButtonDown(0) && !MouseOver)
+            if (Input.GetMouseButtonDown(0) && !MouseOver && !Session.Instance.TokenManager.TokenHovered)
             {
                 if (token.Conditions.IsOpen) token.Conditions.ToggleConditions();
-                Events.OnTokenSelected?.Invoke(null);
+                Events.OnTokenSelected?.Invoke(null, false);
             }
 
             HandleElevation();
         }
-        private void HandleSelection(Token _token)
+        private void HandleSelection(List<Token> tokens)
         {
-            bool selected = _token == token;
+            bool selected = tokens.Contains(token);
             outline.enabled = selected;
             buttonsGroup.alpha = selected && ConnectionManager.Info.isMaster ? 1.0f : 0.0f;
             buttonsGroup.blocksRaycasts = selected && ConnectionManager.Info.isMaster ? true : false;
@@ -284,16 +285,18 @@ namespace RPG
         {
             // Get pointer data
             PointerEventData pointerData = eventData as PointerEventData;
-            if (pointerData.button == PointerEventData.InputButton.Left) Events.OnTokenSelected?.Invoke(token);
+            if (pointerData.button == PointerEventData.InputButton.Left) Events.OnTokenSelected?.Invoke(token, Input.GetKey(KeyCode.LeftControl));
             else if (pointerData.button == PointerEventData.InputButton.Right) ModifyToken();
         }
         public void OnPointerEnter(BaseEventData eventData)
         {
             outline.enabled = true;
+            Session.Instance.TokenManager.HoverToken(true);
         }
         public void OnPointerExit(BaseEventData eventData)
         {
             if (!token.Selected) outline.enabled = false;
+            Session.Instance.TokenManager.HoverToken(false);
         }
 
         private void ModifyToken()
