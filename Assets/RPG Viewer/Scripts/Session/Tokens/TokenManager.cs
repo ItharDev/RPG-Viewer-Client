@@ -18,7 +18,7 @@ namespace RPG
         private List<Token> myTokens = new List<Token>();
         private List<Token> tokensToSelect = new List<Token>();
 
-        private List<int> selectedTokens = new List<int>();
+        private List<int> selectedTokens = new List<int>() { 0 };
 
         private void OnEnable()
         {
@@ -62,8 +62,8 @@ namespace RPG
             // Iterate through my tokens
             if (myTokens.Count != 0 && Input.GetKeyDown(KeyCode.Tab))
             {
-                // Reset selection at the end of list
-                if (selectedTokens[selectedTokens.Count] >= myTokens.Count) selectedTokens = new List<int>() { 0 };
+                if (selectedTokens.Count == 0) selectedTokens = new List<int>() { 0 };
+                else if (selectedTokens[0] >= myTokens.Count) selectedTokens = new List<int>() { 0 };
 
                 Events.OnTokenSelected?.Invoke(myTokens[selectedTokens[0]], false);
                 selectedTokens[0]++;

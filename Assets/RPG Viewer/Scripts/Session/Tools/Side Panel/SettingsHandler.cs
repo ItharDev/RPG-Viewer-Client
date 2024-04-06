@@ -21,6 +21,7 @@ namespace RPG
         [SerializeField] private ToolButton doorsButton;
         [SerializeField] private ToolButton hiddenButton;
         [SerializeField] private ToolButton fogButton;
+        [SerializeField] private ToolButton environemntButton;
         [SerializeField] private ToolButton lightingButton;
         [SerializeField] private ToolButton createButton;
         [SerializeField] private ToolButton copyButton;
@@ -119,6 +120,7 @@ namespace RPG
             doorsButton.Deselect();
             hiddenButton.Deselect();
             fogButton.Deselect();
+            environemntButton.Deselect();
 
             // Update tool states
             activeSetting = Setting.Walls_Regular;
@@ -132,6 +134,7 @@ namespace RPG
             doorsButton.Deselect();
             hiddenButton.Deselect();
             fogButton.Deselect();
+            environemntButton.Deselect();
 
             // Update tool states
             activeSetting = Setting.Walls_Invisible;
@@ -145,6 +148,7 @@ namespace RPG
             invisibleButton.Deselect();
             hiddenButton.Deselect();
             fogButton.Deselect();
+            environemntButton.Deselect();
 
             // Update tool states
             activeSetting = Setting.Walls_Door;
@@ -158,6 +162,7 @@ namespace RPG
             regularButton.Deselect();
             invisibleButton.Deselect();
             fogButton.Deselect();
+            environemntButton.Deselect();
 
             // Update tool states
             activeSetting = Setting.Walls_Hidden_Door;
@@ -171,9 +176,24 @@ namespace RPG
             regularButton.Deselect();
             invisibleButton.Deselect();
             fogButton.Select();
+            environemntButton.Deselect();
 
             // Update tool states
             activeSetting = Setting.Walls_Fog;
+            lastWalls = activeSetting;
+        }
+        public void SelectEnvironment()
+        {
+            // Update selections
+            hiddenButton.Deselect();
+            doorsButton.Deselect();
+            regularButton.Deselect();
+            invisibleButton.Deselect();
+            fogButton.Deselect();
+            environemntButton.Select();
+
+            // Update tool states
+            activeSetting = Setting.Walls_Environment;
             lastWalls = activeSetting;
         }
         public void SelectPlayer()
@@ -300,6 +320,9 @@ namespace RPG
             // Activate last tool selection
             if (lastWalls == Setting.Walls_Regular) SelectRegular();
             else if (lastWalls == Setting.Walls_Invisible) SelectInvisible();
+            else if (lastWalls == Setting.Walls_Fog) SelectFog();
+            else if (lastWalls == Setting.Walls_Environment) SelectEnvironment();
+            else if (lastWalls == Setting.Walls_Invisible) SelectInvisible();
             else SelectDoors();
         }
         public void CloseWalls()
@@ -413,6 +436,7 @@ namespace RPG
         Walls_Door,
         Walls_Hidden_Door,
         Walls_Fog,
+        Walls_Environment,
         Lighting_Create,
         Lighting_Copy,
         Lighting_Delete,

@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using FunkyCode;
 using Networking;
 using UnityEngine;
@@ -18,6 +16,7 @@ namespace RPG
         [SerializeField] private Color secretColor;
         [SerializeField] private GameObject lockedIcon;
         [SerializeField] private GameObject info;
+        [SerializeField] private LightEventListener eventListener;
 
         private Canvas canvas;
         private EdgeCollider2D edgeCollider;
@@ -27,6 +26,7 @@ namespace RPG
         private WallData data;
         private bool showDoor;
         private List<Token> tokensInRange = new List<Token>();
+        private float lastVisibility;
 
         private void OnEnable()
         {
@@ -77,6 +77,14 @@ namespace RPG
             {
                 loaded = true;
                 UpdateData();
+            }
+
+            if (lastVisibility != eventListener.visability && data.type == WallType.Environment)
+            {
+                lastVisibility = eventListener.visability;
+                lightCollider.maskType = LightCollider2D.MaskType.Collider2D;
+                lightCollider.maskLit = lastVisibility > 0.0f ? FunkyCode.LightSettings.MaskLit.Lit : FunkyCode.LightSettings.MaskLit.Unlit;
+                lightCollider.UpdateLoop();
             }
         }
 
@@ -152,7 +160,7 @@ namespace RPG
             edgeCollider.enabled = !data.open;
 
             lightCollider.enabled = edgeCollider.enabled;
-            lightCollider.maskType = LightCollider2D.MaskType.None;
+            lightCollider.maskType = data.type == WallType.Environment ? LightCollider2D.MaskType.Collider2D : LightCollider2D.MaskType.None;
 
             interactableCollider.radius = Session.Instance.Grid.CellSize * 2.0f;
             interactableCollider.offset = (data.points[0] + data.points[1]) / 2f;

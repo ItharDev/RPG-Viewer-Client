@@ -11,6 +11,7 @@ namespace RPG
         [SerializeField] private Color wallColor;
         [SerializeField] private Color doorColor;
         [SerializeField] private Color invisibleColor;
+        [SerializeField] private Color environmentColor;
         [SerializeField] private Color hiddenDoorColor;
         [SerializeField] private Color fogColor;
         [SerializeField] private Texture lineTexture;
@@ -290,6 +291,9 @@ namespace RPG
                     break;
                 case WallType.Fog:
                     color = fogColor;
+                    break;
+                case WallType.Environment:
+                    color = environmentColor;
                     break;
             }
 

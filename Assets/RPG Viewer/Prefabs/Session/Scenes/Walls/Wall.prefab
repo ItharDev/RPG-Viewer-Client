@@ -498,6 +498,7 @@ GameObject:
   - component: {fileID: 8072945699963796108}
   - component: {fileID: 5171787778920249449}
   - component: {fileID: 9090390008203064742}
+  - component: {fileID: 8388944265900574841}
   m_Layer: 0
   m_Name: Wall
   m_TagString: Wall
@@ -579,7 +580,7 @@ MonoBehaviour:
   shadowDistanceMin: 0.5
   shadowDistanceMax: 1
   shadowTranslucency: 0
-  maskType: 0
+  maskType: 5
   maskLit: 1
   maskPivot: 0
   maskLayer: 0
@@ -595,7 +596,7 @@ MonoBehaviour:
     spriteRenderer: {fileID: 0}
   mainShape:
     shadowType: 3
-    maskType: 0
+    maskType: 5
     maskPivot: 0
     transform: {fileID: 5154031117390506501}
 --- !u!114 &5171787778920249449
@@ -617,6 +618,7 @@ MonoBehaviour:
   secretColor: {r: 0.59607846, g: 0.16078432, b: 0.16078432, a: 1}
   lockedIcon: {fileID: 385017950779753435}
   info: {fileID: 3637647598992757243}
+  eventListener: {fileID: 8388944265900574841}
 --- !u!50 &9090390008203064742
 Rigidbody2D:
   serializedVersion: 4
@@ -644,6 +646,20 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
+--- !u!114 &8388944265900574841
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3636752552033122916}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d10005d7ce600784e93451bdcd95fa31, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  useDistance: 0
+  visability: 0
 --- !u!1 &3637647598992757243
 GameObject:
   m_ObjectHideFlags: 0
