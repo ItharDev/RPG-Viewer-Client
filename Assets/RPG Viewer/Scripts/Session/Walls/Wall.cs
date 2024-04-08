@@ -140,14 +140,7 @@ namespace RPG
 
             HandleCollider();
 
-            if (ConnectionManager.Info.isMaster)
-            {
-                bool toolActivated = SettingsHandler.Instance.Setting.ToString().ToLower().Contains("walls");
-                bool isDoor = data.type.ToString().ToLower().Contains("door");
-
-                // Show UI if tool is not selected
-                if (!toolActivated) ToggleUI(isDoor);
-            }
+            if (ConnectionManager.Info.isMaster) HandleView(SettingsHandler.Instance.LastView);
             else ToggleUI(data.type == WallType.Door);
 
             lightCollider.Initialize();
@@ -229,10 +222,10 @@ namespace RPG
 
             // Enable / disable UI based on setting
             bool toolSelected = SettingsHandler.Instance.Setting.ToString().ToLower().Contains("walls");
-            bool isDoor = data.type.ToString().ToLower().Contains("door");
 
             // Show UI if tool is not selected
-            ToggleUI(!toolSelected && isDoor);
+            ToggleUI(view == GameView.Player ? !toolSelected && data.type == WallType.Door : !toolSelected && data.type.ToString().ToLower().Contains("door"));
+            if (view == GameView.Player) HandleLayers();
         }
 
         public void OnClick(BaseEventData eventData)
