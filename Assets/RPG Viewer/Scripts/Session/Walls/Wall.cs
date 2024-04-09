@@ -176,11 +176,31 @@ namespace RPG
 
         private void OnTriggerEnter2D(Collider2D other)
         {
+            if (other.gameObject.CompareTag("MainCamera"))
+            {
+                HandleCollider();
+                eventListener.enabled = data.type == WallType.Environment;
+                interactableCollider.enabled = true;
+                if (ConnectionManager.Info.isMaster) HandleView(SettingsHandler.Instance.LastView);
+                else ToggleUI(data.type == WallType.Door);
+                return;
+            }
+
             if (other.gameObject.layer == 11) tokensInRange.Add(other.GetComponent<Token>());
             if (SettingsHandler.Instance.LastView == GameView.Player && data.type == WallType.Door) HandleLayers();
         }
         private void OnTriggerExit2D(Collider2D other)
         {
+            if (other.gameObject.CompareTag("MainCamera"))
+            {
+                lightCollider.enabled = false;
+                canvas.enabled = false;
+                eventListener.enabled = false;
+                interactableCollider.enabled = false;
+                ToggleUI(false);
+                return;
+            }
+
             Token token = other.GetComponent<Token>();
             if (other.gameObject.layer == 11) tokensInRange.Remove(token);
             if (SettingsHandler.Instance.LastView == GameView.Player && data.type == WallType.Door) HandleLayers();

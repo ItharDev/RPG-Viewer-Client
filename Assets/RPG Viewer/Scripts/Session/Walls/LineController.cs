@@ -8,13 +8,13 @@ namespace RPG
     public class LineController : MonoBehaviour
     {
         [SerializeField] private PointController pointPrefab;
+        [SerializeField] private Transform pointParent;
         [SerializeField] private Color wallColor;
         [SerializeField] private Color doorColor;
         [SerializeField] private Color invisibleColor;
         [SerializeField] private Color environmentColor;
         [SerializeField] private Color hiddenDoorColor;
         [SerializeField] private Color fogColor;
-        [SerializeField] private Texture lineTexture;
         [SerializeField] private new EdgeCollider2D collider2D;
         [SerializeField] private WallConfiguration configurationPrefab;
 
@@ -117,6 +117,14 @@ namespace RPG
             line.Selected(Input.mousePosition, 10, out selectedIndex);
             if (selectedIndex != -1 && !hovered) Events.OnLineHovered?.Invoke(this);
             if (selectedIndex == -1 && hovered) Events.OnLineHovered?.Invoke(null);
+        }
+        private void OnBecameInvisible()
+        {
+            pointParent.gameObject.SetActive(false);
+        }
+        private void OnBecameVisible()
+        {
+            pointParent.gameObject.SetActive(true);
         }
 
         private void HandleSorting(LineController controller)
@@ -225,12 +233,12 @@ namespace RPG
             // Initialise the first and second points to mouse position
             Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             mousePos.z = -1.0f;
-            PointController initialPoint = Instantiate(pointPrefab, transform);
+            PointController initialPoint = Instantiate(pointPrefab, pointParent);
             initialPoint.transform.localPosition = mousePos;
             Points.Add(initialPoint);
             initialPoint.Initialise(color, this, true, false);
 
-            draggedPoint = Instantiate(pointPrefab, transform);
+            draggedPoint = Instantiate(pointPrefab, pointParent);
             draggedPoint.transform.localPosition = mousePos;
             Points.Add(draggedPoint);
             draggedPoint.Initialise(color, this, false, false);
@@ -313,7 +321,7 @@ namespace RPG
         {
             for (int i = 0; i < Data.points.Count; i++)
             {
-                PointController point = Instantiate(pointPrefab, transform);
+                PointController point = Instantiate(pointPrefab, pointParent);
                 point.transform.localPosition = new Vector3(Data.points[i].x, Data.points[i].y, -1.0f);
                 Points.Add(point);
                 point.Initialise(color, this, true);
@@ -381,7 +389,7 @@ namespace RPG
             // Initialise the first and second points to mouse position
             Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             mousePos.z = -1.0f;
-            draggedPoint = Instantiate(pointPrefab, transform);
+            draggedPoint = Instantiate(pointPrefab, pointParent);
             draggedPoint.transform.localPosition = mousePos;
             if (Points.IndexOf(point) == 0)
             {

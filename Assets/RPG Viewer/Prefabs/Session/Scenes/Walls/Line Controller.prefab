@@ -1,5 +1,36 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1540924762779382680
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1957551024534215564}
+  m_Layer: 0
+  m_Name: Points
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1957551024534215564
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1540924762779382680}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5576902050134303274}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5576902050134303276
 GameObject:
   m_ObjectHideFlags: 0
@@ -30,7 +61,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 1957551024534215564}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &5576902050134303275
@@ -46,13 +78,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pointPrefab: {fileID: 1779710219827849978, guid: b026793aeee395842bf99190e81e3b5e, type: 3}
+  pointParent: {fileID: 1957551024534215564}
   wallColor: {r: 0.90588236, g: 0.81960785, b: 0.69411767, a: 1}
   doorColor: {r: 0.46666667, g: 1, b: 0.5176471, a: 1}
   invisibleColor: {r: 0.7127845, g: 0.4705882, b: 1, a: 1}
   environmentColor: {r: 1, g: 0.6647059, b: 0.4705882, a: 1}
   hiddenDoorColor: {r: 1, g: 0.4705882, b: 0.4705882, a: 1}
   fogColor: {r: 0.4705882, g: 0.73292845, b: 1, a: 1}
-  lineTexture: {fileID: 2800000, guid: a26839e30014246278ee1dbe34a0df80, type: 3}
   collider2D: {fileID: 1151479745904877855}
   configurationPrefab: {fileID: 4062613650551601950, guid: 97e347183e057d24880f8ea2f23865f4, type: 3}
   Data:

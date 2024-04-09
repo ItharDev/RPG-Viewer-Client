@@ -13,9 +13,13 @@ namespace RPG
 
         [SerializeField] private CinemachineVirtualCamera mainVCam;
 
+        [Space]
         [SerializeField] private float camZoomMax = 2.0f;
         [SerializeField] private float camZoomMin = 50.0f;
         [SerializeField] private float camZoomSpeed = 1.0f;
+
+        [Space]
+        [SerializeField] private BoxCollider2D cullingCollider;
 
         private bool panActive;
         private Vector2 panPosition;
@@ -59,9 +63,10 @@ namespace RPG
         }
         private void HandleCameraZoom()
         {
-            targetOrthographicSize -= (Input.mouseScrollDelta.y * camZoomSpeed);
+            targetOrthographicSize -= Input.mouseScrollDelta.y * camZoomSpeed;
             targetOrthographicSize = Mathf.Clamp(targetOrthographicSize, camZoomMax, camZoomMin);
             mainVCam.m_Lens.OrthographicSize = Mathf.Lerp(mainVCam.m_Lens.OrthographicSize, targetOrthographicSize, Time.deltaTime * 10.0f);
+            cullingCollider.size = new Vector2(targetOrthographicSize * 2.0f * (16.0f / 9.0f), targetOrthographicSize * 2.0f);
         }
 
         public void UpdateSettings(Texture2D texture)

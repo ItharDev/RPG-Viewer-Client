@@ -9,7 +9,6 @@ namespace RPG
     {
         [SerializeField] private LineController controllerPrefab;
         [SerializeField] private Transform controllerParent;
-        [SerializeField] private CanvasGroup canvasGroup;
 
         public static WallTools Instance { get; private set; }
         public bool MouseOver;
@@ -86,8 +85,7 @@ namespace RPG
         private void ToggleUI(Setting setting)
         {
             bool enabled = setting.ToString().ToLower().Contains("walls");
-            canvasGroup.alpha = enabled ? 1.0f : 0.0f;
-            canvasGroup.blocksRaycasts = enabled;
+            controllerParent.gameObject.SetActive(enabled);
             interactable = enabled;
 
             switch (setting)
