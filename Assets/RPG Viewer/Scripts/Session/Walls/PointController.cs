@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 namespace RPG
 {
-    public class PointController : MonoBehaviour
+    public class PointController : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
         [SerializeField] private Image image;
         [SerializeField] private Image selection;
@@ -13,7 +13,7 @@ namespace RPG
         private bool selected;
         private PointController hoveredPoint;
         private LineController controller;
-        private bool Hovered { get { return RectTransformUtility.RectangleContainsScreenPoint((RectTransform)image.transform, Camera.main.ScreenToWorldPoint(Input.mousePosition)); } }
+        private bool hovered;
         private Vector3 MousePos
         {
             get
@@ -40,11 +40,11 @@ namespace RPG
         {
             if (selected)
             {
-                if (!Hovered && Input.GetMouseButtonDown(0)) Events.OnPointClicked?.Invoke(null);
+                if (!hovered && Input.GetMouseButtonDown(0)) Events.OnPointClicked?.Invoke(null);
                 if (Input.GetKeyDown(KeyCode.Backspace) || Input.GetKeyDown(KeyCode.Delete)) DeletePoint();
                 if (Input.GetKeyDown(KeyCode.Space)) WallTools.Instance.SplitWall(controller, this);
             }
-            if (Hovered && !dragging)
+            if (hovered && !dragging)
             {
                 if (hoveredPoint == null)
                 {
@@ -52,7 +52,7 @@ namespace RPG
                     return;
                 }
             }
-            if (!Hovered && hoveredPoint == this) Events.OnPointHovered?.Invoke(null);
+            if (!hovered && hoveredPoint == this) Events.OnPointHovered?.Invoke(null);
             if (dragging)
             {
                 if (Input.GetMouseButtonUp(0)) dragging = false;
@@ -138,6 +138,16 @@ namespace RPG
             if (dragging) return;
 
             if (pointerData.button == PointerEventData.InputButton.Left) Events.OnPointClicked?.Invoke(this);
+        }
+
+        public void OnPointerEnter(PointerEventData eventData)
+        {
+            hovered = true;
+        }
+
+        public void OnPointerExit(PointerEventData eventData)
+        {
+            hovered = false;
         }
     }
 }

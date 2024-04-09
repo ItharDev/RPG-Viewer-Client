@@ -136,6 +136,7 @@ namespace RPG
             doorIcon.sprite = data.open ? openSprite : closedSprite;
             lockedIcon.SetActive(data.locked);
             info.SetActive(ConnectionManager.Info.isMaster);
+            eventListener.enabled = data.type == WallType.Environment;
             doorIcon.color = data.type == WallType.Hidden_Door ? secretColor : regularColor;
 
             HandleCollider();
@@ -214,7 +215,7 @@ namespace RPG
         private void ToggleUI(bool enabled)
         {
             // Enable / disable canvas
-            canvas.enabled = enabled;
+            canvas.gameObject.SetActive(enabled);
         }
         private void HandleView(GameView view)
         {
