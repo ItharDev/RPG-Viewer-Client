@@ -282,8 +282,8 @@ namespace RPG
             data.name = nameInput.text;
             data.type = (TokenType)typeDropdown.value;
 
-            float width = 5;
-            float height = 5;
+            float width;
+            float height;
             float.TryParse(widthInput.text, out width);
             float.TryParse(heightInput.text, out height);
             data.dimensions = new Vector2(width <= 0 ? 1 : width, height <= 0 ? 1 : height);

@@ -5,6 +5,8 @@ namespace RPG
 {
     public class ViewManager : MonoBehaviour
     {
+        [SerializeField] private LightingManager2D lightingManager;
+
         private void OnEnable()
         {
             // Add event listeners
@@ -22,6 +24,10 @@ namespace RPG
 
         private void ChangeView(GameView view)
         {
+            CameraSettings settings = lightingManager.cameras.Get(0);
+            settings.cameraType = view == GameView.Clear ? CameraSettings.CameraType.Custom : CameraSettings.CameraType.MainCamera;
+            lightingManager.cameras.Set(0, settings);
+
             // Return if fog is disabled
             if (!Session.Instance.Settings.darkness.enabled)
             {
@@ -44,6 +50,10 @@ namespace RPG
         }
         private void LoadView(SceneData data)
         {
+            CameraSettings settings = lightingManager.cameras.Get(0);
+            settings.cameraType = SettingsHandler.Instance.LastView == GameView.Clear ? CameraSettings.CameraType.Custom : CameraSettings.CameraType.MainCamera;
+            lightingManager.cameras.Set(0, settings);
+
             // Return if fog is disabled
             if (!data.darkness.enabled)
             {
@@ -83,12 +93,20 @@ namespace RPG
         }
         private void LoadClear()
         {
+            CameraSettings settings = lightingManager.cameras.Get(0);
+            settings.cameraType = CameraSettings.CameraType.Custom;
+            lightingManager.cameras.Set(0, settings);
+
             Lighting2D.LightmapPresets[0].darknessColor.a = 0.0f;
             Lighting2D.LightmapPresets[1].darknessColor.a = 0.0f;
         }
 
         private void ChangeLighting(LightingSettings data, bool globalUpdate)
         {
+            CameraSettings settings = lightingManager.cameras.Get(0);
+            settings.cameraType = SettingsHandler.Instance.LastView == GameView.Clear ? CameraSettings.CameraType.Custom : CameraSettings.CameraType.MainCamera;
+            lightingManager.cameras.Set(0, settings);
+
             // Return if fog is disabled
             if (!data.enabled)
             {
