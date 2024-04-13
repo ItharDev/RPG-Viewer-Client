@@ -391,7 +391,7 @@ namespace RPG
         public void FinishMovement(List<Vector2> points)
         {
             // Generate data
-            MovementData movement = new MovementData(token.Data.id, points);
+            MovementData movement = new MovementData(token.Data.id, points, Input.GetKey(KeyCode.LeftShift) && ConnectionManager.Info.isMaster);
 
             SocketManager.EmitAsync("move-token", (callback) =>
             {
@@ -408,7 +408,7 @@ namespace RPG
             token.Data.position = data.points[data.points.Count - 1];
 
             // Teleport to new location if we are deactivated
-            if (!gameObject.activeInHierarchy)
+            if (!gameObject.activeInHierarchy || data.teleport)
             {
                 transform.position = new Vector3(token.Data.position.x, token.Data.position.y, 0);
                 return;

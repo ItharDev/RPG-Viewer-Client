@@ -302,11 +302,13 @@ namespace RPG
     {
         public string id;
         public List<Vector2> points;
+        public bool teleport;
 
-        public MovementData(string _id, List<Vector2> _points)
+        public MovementData(string _id, List<Vector2> _points, bool _teleport)
         {
             id = _id;
             points = _points;
+            teleport = _teleport;
         }
     }
 }
