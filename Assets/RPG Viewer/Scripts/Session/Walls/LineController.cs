@@ -35,7 +35,7 @@ namespace RPG
         private bool hovered;
         private int selectedIndex;
 
-        private void OnEnable()
+        private void Awake()
         {
             // Add event listeners
             Events.OnPointDragged.AddListener(DragPoint);
@@ -43,8 +43,10 @@ namespace RPG
             Events.OnLineHovered.AddListener(HandleSorting);
             Events.OnPointDeleted.AddListener(DeletePoint);
             Events.OnSettingChanged.AddListener(ToggleUI);
+
+            ToggleUI(SettingsHandler.Instance.Setting);
         }
-        private void OnDisable()
+        private void OnDestroy()
         {
             // Remove event listeners
             Events.OnPointDragged.RemoveListener(DragPoint);

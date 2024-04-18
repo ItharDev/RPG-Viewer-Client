@@ -65,6 +65,7 @@ namespace RPG
             {
                 // Return if there's no scene active
                 landingPage.transform.parent.gameObject.SetActive(true);
+                Events.OnSceneChanged?.Invoke(newState);
                 return;
             }
 

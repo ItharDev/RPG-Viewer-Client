@@ -342,7 +342,7 @@ namespace RPG
         }
         public void HandleMultiMovement(Token original, List<Vector2> dragPoints)
         {
-            if (tokensToSelect.Count == 0)
+            if (!tokensToSelect.Contains(original))
             {
                 original.Movement.EndMovement(dragPoints);
                 return;

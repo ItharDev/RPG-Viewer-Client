@@ -64,20 +64,6 @@ namespace RPG
             Events.OnToolChanged.AddListener(HandleToolChanged);
         }
 
-        private async void ToggleUI(SessionState newState)
-        {
-            await UniTask.SwitchToMainThread();
-
-            LastView = GameView.Player;
-
-            if (!ConnectionManager.Info.isMaster) return;
-
-            canvasGroup.alpha = string.IsNullOrEmpty(newState.scene) ? 0.0f : 1.0f;
-            canvasGroup.blocksRaycasts = !string.IsNullOrEmpty(newState.scene);
-
-            LastView = GameView.Clear;
-        }
-
         private void OnDisable()
         {
             // Remove event listeners
@@ -103,6 +89,20 @@ namespace RPG
             CloseView();
             CloseGrid();
             activeSetting = Setting.None;
+        }
+
+        private async void ToggleUI(SessionState newState)
+        {
+            await UniTask.SwitchToMainThread();
+
+            LastView = GameView.Player;
+
+            if (!ConnectionManager.Info.isMaster) return;
+
+            canvasGroup.alpha = string.IsNullOrEmpty(newState.scene) ? 0.0f : 1.0f;
+            canvasGroup.blocksRaycasts = !string.IsNullOrEmpty(newState.scene);
+
+            LastView = GameView.Clear;
         }
 
         public void ConfigureGrid()
@@ -137,8 +137,8 @@ namespace RPG
             environemntButton.Deselect();
 
             // Update tool states
-            activeSetting = Setting.Walls_Invisible;
             lastWalls = activeSetting;
+            activeSetting = Setting.Walls_Invisible;
         }
         public void SelectDoors()
         {

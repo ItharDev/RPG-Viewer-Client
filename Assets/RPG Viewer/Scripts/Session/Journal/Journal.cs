@@ -126,7 +126,6 @@ namespace RPG
                 return;
             }
 
-            image.color = Color.white;
             WebManager.Download(data.image, true, async (bytes) =>
             {
                 // Return if image was not found
@@ -137,6 +136,7 @@ namespace RPG
                 // Generate texture
                 Texture2D texture = await AsyncImageLoader.CreateFromImageAsync(bytes);
                 image.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
+                image.color = Color.white;
             });
         }
         public void UpdateCollaborators(List<Collaborator> collaborators)

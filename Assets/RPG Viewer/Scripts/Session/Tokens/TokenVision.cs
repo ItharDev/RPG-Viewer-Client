@@ -27,11 +27,21 @@ namespace RPG
 
             // Add event listeners
             Events.OnPresetModified.AddListener(ModifyPreset);
+            Events.OnLightingChanged.AddListener(HandleEvents);
         }
         private void OnDisable()
         {
             // remove event listeners
             Events.OnPresetModified.RemoveListener(ModifyPreset);
+            Events.OnLightingChanged.RemoveListener(HandleEvents);
+        }
+
+        private void HandleEvents(LightingSettings data, bool globalUpdate)
+        {
+            if (globalUpdate)
+            {
+                visionSource.eventPresetId = data.globalLighting ? 1 : 0;
+            }
         }
 
         private void Update()
@@ -42,6 +52,7 @@ namespace RPG
                 LoadVision();
                 LoadLighting();
                 ApplyVisibility();
+                HandleEvents(Session.Instance.Settings.darkness, true);
                 SetRotation(token.Data.lightRotation);
                 updateRequired = false;
             }
@@ -119,7 +130,7 @@ namespace RPG
         private void ApplyVisibility()
         {
             Permission isPlayer = token.Data.permissions.FirstOrDefault(value => value.type == PermissionType.Controller);
-            EnableHighlight(!string.IsNullOrEmpty(isPlayer.user));
+            EnableHighlight(!string.IsNullOrEmpty(isPlayer.user) && token.Enabled && token.Visibility.visible);
             ToggleVision(token.Enabled && token.Visibility.visible && (token.Data.enabled || ConnectionManager.Info.isMaster) && token.Permission.type != PermissionType.None);
             ToggleLight(token.Visibility.visible && token.Data.enabled && token.Data.lightEnabled);
         }

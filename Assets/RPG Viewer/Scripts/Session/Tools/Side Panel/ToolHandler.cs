@@ -43,15 +43,15 @@ namespace RPG
         private void OnEnable()
         {
             // Add event listeners
+            Events.OnStateChanged.AddListener(ToggleUI);
             Events.OnSceneChanged.AddListener(ToggleUI);
             Events.OnSettingChanged.AddListener(HandleSettingChange);
-
-            // SelectMove();
         }
 
         private void OnDisable()
         {
             // Remove event listeners
+            Events.OnStateChanged.RemoveListener(ToggleUI);
             Events.OnSceneChanged.RemoveListener(ToggleUI);
             Events.OnSettingChanged.RemoveListener(HandleSettingChange);
 
@@ -66,6 +66,11 @@ namespace RPG
             }
         }
 
+        private void ToggleUI(SessionState oldState, SessionState newState)
+        {
+            canvasGroup.alpha = (!string.IsNullOrEmpty(newState.scene) && (newState.synced || ConnectionManager.Info.isMaster)) ? 1.0f : 0.0f;
+            canvasGroup.blocksRaycasts = !string.IsNullOrEmpty(newState.scene) && (newState.synced || ConnectionManager.Info.isMaster);
+        }
         private void ToggleUI(SessionState newState)
         {
             canvasGroup.alpha = (!string.IsNullOrEmpty(newState.scene) && (newState.synced || ConnectionManager.Info.isMaster)) ? 1.0f : 0.0f;
