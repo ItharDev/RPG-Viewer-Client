@@ -8,6 +8,7 @@ namespace RPG
     {
         [SerializeField] private Image image;
         [SerializeField] private Image selection;
+        [SerializeField] private GraphicRaycaster raycaster;
 
         private bool dragging;
         private bool selected;
@@ -120,17 +121,14 @@ namespace RPG
                 Events.OnPointDragged?.Invoke(this);
                 dragging = true;
             }
+
+            raycaster.enabled = false;
         }
         public void OnEndDrag(BaseEventData eventData)
         {
             dragging = false;
-            Events.OnPointHovered?.Invoke(this);
+            raycaster.enabled = true;
 
-            // Return if dragging with other than right click
-            PointerEventData pointerData = (PointerEventData)eventData;
-            if (pointerData.button != PointerEventData.InputButton.Left) return;
-
-            Events.OnPointDragged?.Invoke(null);
         }
         public void OnClick(BaseEventData eventData)
         {
