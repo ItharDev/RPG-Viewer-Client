@@ -234,7 +234,7 @@ namespace RPG
                     return;
                 }
 
-                MessageManager.QueueMessage(callback.GetValue().GetString());
+                MessageManager.QueueMessage(callback.GetValue(1).GetString());
             }, id);
         }
         public void UpdatePath(string newPath)

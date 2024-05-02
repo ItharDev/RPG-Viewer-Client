@@ -250,11 +250,11 @@ namespace RPG
         {
             SocketManager.EmitAsync("get-scene", async (callback) =>
             {
+                await UniTask.SwitchToMainThread();
+
                 // Check if the event was successful
                 if (callback.GetValue().GetBoolean())
                 {
-                    await UniTask.SwitchToMainThread();
-
                     // Load Data
                     SceneData data = JsonUtility.FromJson<SceneData>(callback.GetValue(1).ToString());
                     data.id = id;
@@ -266,7 +266,10 @@ namespace RPG
                     return;
                 }
 
-                MessageManager.QueueMessage(callback.GetValue().GetString());
+                Data = new SceneData(new SceneInfo(), new GridData(), new LightingSettings());
+                Data.id = id;
+                panel.RemoveScene(this);
+                MessageManager.QueueMessage(callback.GetValue(1).GetString());
             }, id);
         }
         public void UpdatePath(string newPath)

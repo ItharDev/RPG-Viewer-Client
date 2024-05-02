@@ -47,8 +47,8 @@ namespace RPG
             List<SceneFolder> listOfFolders = folders.Values.ToList();
             List<SceneHolder> listOfScenes = scenes.Values.ToList();
 
-            listOfFolders.Sort(SortByName);
-            listOfScenes.Sort(SortByName);
+            // listOfFolders.Sort(SortByName);
+            // listOfScenes.Sort(SortByName);
 
             for (int i = 0; i < folders.Count; i++)
             {
@@ -112,10 +112,8 @@ namespace RPG
             // Instantiate scene
             SceneHolder scene = Instantiate(scenePrefab, targetFolder == null ? rootTransform : targetFolder.Content);
             scene.transform.SetAsLastSibling();
-            scene.LoadData(id, path, this, targetFolder == null ? SortContent : targetFolder.SortContent);
-
-            // Add scene to dictionary
             scenes.Add(id, scene);
+            scene.LoadData(id, path, this, targetFolder == null ? SortContent : targetFolder.SortContent);
         }
         private void LoadDirectory(System.Text.Json.JsonElement json, string id, string path)
         {
@@ -131,10 +129,8 @@ namespace RPG
             // Instantiate folder
             SceneFolder targetFolder = GetDirectoryByPath(path);
             SceneFolder folder = Instantiate(folderPrefab, targetFolder == null ? rootTransform : targetFolder.Content);
-            folder.LoadData(data, this, targetFolder == null ? SortContent : targetFolder.SortContent);
-
-            // Add folder to dictionary
             this.folders.Add(id, folder);
+            folder.LoadData(data, this, targetFolder == null ? SortContent : targetFolder.SortContent);
 
             // Load folders
             for (int i = 0; i < folders.Length; i++)
@@ -142,7 +138,7 @@ namespace RPG
                 LoadDirectory(folders[i].Value, folders[i].Name, pathToThisFolder);
             }
 
-            // Load tokens
+            // Load scenes
             for (int i = 0; i < contents.Length; i++)
             {
                 LoadScene(contents[i].GetString(), pathToThisFolder);
@@ -196,10 +192,8 @@ namespace RPG
                         // Instantiate scene
                         SceneHolder scene = Instantiate(scenePrefab, targetFolder == null ? rootTransform : targetFolder.Content);
                         scene.transform.SetAsLastSibling();
-                        scene.LoadData(id, data.path, this, targetFolder == null ? SortContent : targetFolder.SortContent);
-
-                        // Add scene to dictionary
                         scenes.Add(id, scene);
+                        scene.LoadData(id, data.path, this, targetFolder == null ? SortContent : targetFolder.SortContent);
                         return;
                     }
 
@@ -233,10 +227,8 @@ namespace RPG
             // Instantiate folder
             SceneFolder targetFolder = GetDirectoryByPath(path);
             SceneFolder folder = Instantiate(folderPrefab, targetFolder == null ? rootTransform : targetFolder.Content);
-            folder.LoadData(data, this, targetFolder == null ? SortContent : targetFolder.SortContent);
-
-            // Add folder to dictionary
             folders.Add(id, folder);
+            folder.LoadData(data, this, targetFolder == null ? SortContent : targetFolder.SortContent);
             return folder;
         }
         public void RemoveFolder(SceneFolder folder)
@@ -281,8 +273,11 @@ namespace RPG
         }
         public void RemoveScene(SceneHolder scene)
         {
+            Debug.Log("Runs");
             scenes.Remove(scene.Id);
+            Debug.Log("Runs 1");
             Destroy(scene.gameObject);
+            Debug.Log("Runs 2");
         }
         public SceneFolder GetDirectoryByPath(string path)
         {
