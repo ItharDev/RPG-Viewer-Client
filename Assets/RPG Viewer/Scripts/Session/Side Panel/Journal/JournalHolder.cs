@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using Networking;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -215,6 +214,11 @@ namespace RPG
 
         public void LoadData(string id, string path, JournalsPanel panel, Action onComplete)
         {
+            Data = new JournalData
+            {
+                id = id,
+                header = name
+            };
             SocketManager.EmitAsync("get-journal", async (callback) =>
             {
                 // Check if the event was successful
@@ -234,7 +238,7 @@ namespace RPG
                     return;
                 }
 
-                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                panel.RemoveJournal(this);
             }, id);
         }
         public void UpdatePath(string newPath)

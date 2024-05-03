@@ -269,6 +269,11 @@ namespace RPG
 
         public void LoadData(string id, string path, TokensPanel panel, Action onComplete)
         {
+            Data = new TokenData
+            {
+                id = id,
+                name = ""
+            };
             SocketManager.EmitAsync("get-blueprint", async (callback) =>
             {
                 // Check if the event was successful
@@ -288,8 +293,7 @@ namespace RPG
                     return;
                 }
 
-                // Send error message
-                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                panel.RemoveToken(this);
             }, id);
         }
         public void UpdatePath(string newPath)

@@ -248,6 +248,10 @@ namespace RPG
 
         public void LoadData(string id, string path, ScenesPanel panel, Action onComplete)
         {
+            Data = new SceneData(new SceneInfo("", "", 0), new GridData(), new LightingSettings())
+            {
+                id = id
+            };
             SocketManager.EmitAsync("get-scene", async (callback) =>
             {
                 await UniTask.SwitchToMainThread();
@@ -266,10 +270,7 @@ namespace RPG
                     return;
                 }
 
-                Data = new SceneData(new SceneInfo(), new GridData(), new LightingSettings());
-                Data.id = id;
                 panel.RemoveScene(this);
-                MessageManager.QueueMessage(callback.GetValue(1).GetString());
             }, id);
         }
         public void UpdatePath(string newPath)

@@ -47,8 +47,8 @@ namespace RPG
             List<SceneFolder> listOfFolders = folders.Values.ToList();
             List<SceneHolder> listOfScenes = scenes.Values.ToList();
 
-            // listOfFolders.Sort(SortByName);
-            // listOfScenes.Sort(SortByName);
+            listOfFolders.Sort(SortByName);
+            listOfScenes.Sort(SortByName);
 
             for (int i = 0; i < folders.Count; i++)
             {
@@ -273,11 +273,8 @@ namespace RPG
         }
         public void RemoveScene(SceneHolder scene)
         {
-            Debug.Log("Runs");
             scenes.Remove(scene.Id);
-            Debug.Log("Runs 1");
             Destroy(scene.gameObject);
-            Debug.Log("Runs 2");
         }
         public SceneFolder GetDirectoryByPath(string path)
         {
