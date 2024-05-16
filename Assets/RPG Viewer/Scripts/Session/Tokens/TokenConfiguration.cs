@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using Networking;
 using SFB;
 using TMPro;
 using UnityEngine;
@@ -152,6 +153,22 @@ namespace RPG
                 callback(File.ReadAllBytes(paths[0]));
             });
             await Task.Yield();
+        }
+
+        public void ShowImage()
+        {
+            SocketManager.EmitAsync("show-image", (callback) =>
+            {
+                // Check if the event was successful
+                if (callback.GetValue().GetBoolean())
+                {
+                    MessageManager.QueueMessage("Token image sent to others");
+                    return;
+                }
+
+                // Send error message
+                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+            }, data.image, GameData.User.id);
         }
 
         public void ClosePanel(bool saveData = true)

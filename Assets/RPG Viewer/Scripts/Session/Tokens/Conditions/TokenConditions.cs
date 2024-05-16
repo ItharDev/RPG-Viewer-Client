@@ -66,7 +66,7 @@ namespace RPG
         public void ToggleConditions(bool instant = false)
         {
             IsOpen = !IsOpen;
-            LeanTween.size(conditionsPanel, new Vector2(IsOpen ? 105.0f : 0.0f, 130.0f), instant ? 0.0f : 0.2f);
+            LeanTween.size(conditionsPanel, new Vector2(IsOpen ? 105.0f : 0.0f, 155.0f), instant ? 0.0f : 0.2f);
         }
         public void ToggleCondition(ConditionHolder holder)
         {

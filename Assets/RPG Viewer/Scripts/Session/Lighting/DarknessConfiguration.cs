@@ -10,6 +10,7 @@ namespace RPG
         [SerializeField] private Toggle enabledToggle;
         [SerializeField] private Image colorButton;
         [SerializeField] private Toggle globalToggle;
+        [SerializeField] private TMP_InputField visionInput;
         [SerializeField] private FlexibleColorPicker colorPicker;
 
         private RectTransform rect;
@@ -38,7 +39,7 @@ namespace RPG
         public void OpenPanel(LightingSettings _data)
         {
             gameObject.SetActive(true);
-            LeanTween.size(rect, new Vector2(250.0f, 117.0f), 0.2f);
+            LeanTween.size(rect, new Vector2(250.0f, 146.0f), 0.2f);
             LoadData(_data);
         }
         public void ClosePanel(bool saveData)
@@ -65,6 +66,9 @@ namespace RPG
             colorButton.color = _data.color;
             colorPicker.SetColor(data.color);
             globalToggle.isOn = _data.globalLighting;
+
+            visionInput.text = data.visionRange.ToString();
+            ((TMP_Text)visionInput.placeholder).text = Session.Instance.Grid.Unit.name;
         }
         public void ChangeColor(Color color)
         {
@@ -78,6 +82,10 @@ namespace RPG
         {
             data.enabled = enabledToggle.isOn;
             data.globalLighting = globalToggle.isOn;
+            if (string.IsNullOrEmpty(visionInput.text)) visionInput.text = "0";
+            float visionRange = float.Parse(visionInput.text);
+            if (visionRange < 0.0f) visionRange = 0.0f;
+            data.visionRange = visionRange;
 
             SocketManager.EmitAsync("modify-lighting", (callback) =>
             {

@@ -9,12 +9,14 @@ namespace RPG
         public bool enabled;
         public bool globalLighting;
         public Color color;
+        public float visionRange;
 
-        public LightingSettings(bool _enabled, bool _globalLighting, Color _color)
+        public LightingSettings(bool _enabled, bool _globalLighting, Color _color, float _visionRange)
         {
             enabled = _enabled;
             globalLighting = _globalLighting;
             color = _color;
+            visionRange = _visionRange;
         }
     }
 

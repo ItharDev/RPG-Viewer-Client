@@ -41,6 +41,8 @@ namespace RPG
             if (globalUpdate)
             {
                 visionSource.eventPresetId = data.globalLighting ? 1 : 0;
+                float feetToUnits = Session.Instance.Grid.CellSize / Session.Instance.Grid.Unit.scale;
+                visionSource.size = (data.visionRange == 0.0f ? token.Data.visionRadius : data.visionRange) * feetToUnits;
             }
         }
 
@@ -163,7 +165,7 @@ namespace RPG
         {
             float feetToUnits = Session.Instance.Grid.CellSize / Session.Instance.Grid.Unit.scale;
             nightSource.size = token.Data.nightRadius * feetToUnits;
-            visionSource.size = token.Data.visionRadius * feetToUnits;
+            visionSource.size = (Session.Instance.Settings.darkness.visionRange == 0.0f ? token.Data.visionRadius : Session.Instance.Settings.darkness.visionRange) * feetToUnits;
             highlight.size = Session.Instance.Grid.CellSize * (token.Data.dimensions.x / Session.Instance.Grid.Unit.scale) * 0.5f;
         }
         private void LoadLighting()

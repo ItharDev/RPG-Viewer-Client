@@ -104,6 +104,7 @@ namespace RPG
         public static UnityEvent<string, int> OnElevationModified = new UnityEvent<string, int>();
         public static UnityEvent<string, float, string> OnTokenRotated = new UnityEvent<string, float, string>();
         public static UnityEvent<string, float, string> OnTokenLightRotated = new UnityEvent<string, float, string>();
+        public static UnityEvent<string, string> OnImageShowed = new UnityEvent<string, string>();
         public static UnityEvent<Token, bool> OnTokenSelected = new UnityEvent<Token, bool>();
         public static UnityEvent<List<Token>> OnTokensSelected = new UnityEvent<List<Token>>();
 

@@ -1,4 +1,6 @@
+using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace RPG
@@ -10,6 +12,7 @@ namespace RPG
         [SerializeField] private Color selectedColor;
         [SerializeField] private Color deselectedColor;
         [SerializeField] private Token token;
+        [SerializeField] private GameObject hover;
 
         private void OnEnable()
         {
@@ -27,6 +30,17 @@ namespace RPG
         public void Select()
         {
             token.Conditions.ToggleCondition(this);
+        }
+
+        public void Hover()
+        {
+            hover.SetActive(true);
+            hover.GetComponentInChildren<TMP_Text>().text = Condition.name;
+        }
+
+        public void EndHover()
+        {
+            hover.SetActive(false);
         }
     }
 }

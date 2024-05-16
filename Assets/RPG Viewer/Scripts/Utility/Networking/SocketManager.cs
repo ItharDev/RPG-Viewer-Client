@@ -318,6 +318,14 @@ namespace Networking
                 await UniTask.SwitchToMainThread();
                 Events.OnTokenLightRotated?.Invoke(id, angle, user);
             });
+            Socket.On("show-image", async (data) =>
+            {
+                string id = data.GetValue().GetString();
+                string uid = data.GetValue(1).GetString();
+
+                await UniTask.SwitchToMainThread();
+                Events.OnImageShowed?.Invoke(id, uid);
+            });
 
             // Initiatives
             Socket.On("create-initiative", async (data) =>
