@@ -171,7 +171,7 @@ namespace RPG
                 config.transform.SetParent(UICanvas.Instance.transform);
                 config.transform.localPosition = Vector3.zero;
                 config.transform.SetAsLastSibling();
-                config.LoadData(new TokenData(), new PresetData(), bytes, "Create new Blueprint", (tokenData, image, lightData) =>
+                config.LoadData(new TokenData(), new PresetData(), bytes, "Create new Blueprint", (tokenData, image, art, lightData) =>
                 {
                     SocketManager.EmitAsync("create-blueprint", async (callback) =>
                     {
@@ -188,7 +188,7 @@ namespace RPG
 
                         // Send error message
                         MessageManager.QueueMessage(callback.GetValue(1).GetString());
-                    }, path, JsonUtility.ToJson(tokenData), JsonUtility.ToJson(lightData), Convert.ToBase64String(image));
+                    }, path, JsonUtility.ToJson(tokenData), JsonUtility.ToJson(lightData), Convert.ToBase64String(image), art == null ? null : Convert.ToBase64String(art));
                 });
             });
         }

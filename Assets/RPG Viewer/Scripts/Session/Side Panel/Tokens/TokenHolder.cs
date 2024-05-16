@@ -210,7 +210,7 @@ namespace RPG
             config.transform.localPosition = Vector3.zero;
             config.transform.SetAsLastSibling();
 
-            config.LoadData(Data, lightData, icon.sprite.texture.GetRawTextureData(), "Modify Blueprint", (tokenData, image, lightData) =>
+            config.LoadData(Data, lightData, icon.sprite.texture.GetRawTextureData(), "Modify Blueprint", (tokenData, image, art, lightData) =>
             {
                 bool imageChanged = !image.SequenceEqual(icon.sprite.texture.GetRawTextureData());
                 SocketManager.EmitAsync("modify-blueprint", async (callback) =>
@@ -219,7 +219,9 @@ namespace RPG
                     if (callback.GetValue().GetBoolean())
                     {
                         string image = callback.GetValue(1).GetString();
+                        string art = callback.GetValue(2).GetString();
                         tokenData.image = image;
+                        tokenData.art = art;
                         LoadData(tokenData);
 
                         GetComponentInParent<TokenFolder>(true).SortContent();
@@ -228,7 +230,7 @@ namespace RPG
 
                     // Send error message
                     MessageManager.QueueMessage(callback.GetValue(1).GetString());
-                }, Id, JsonUtility.ToJson(tokenData), JsonUtility.ToJson(lightData), imageChanged ? Convert.ToBase64String(image) : null);
+                }, Id, JsonUtility.ToJson(tokenData), JsonUtility.ToJson(lightData), imageChanged ? Convert.ToBase64String(image) : null, art == null ? null : Convert.ToBase64String(art));
             });
         }
         public void Delete()

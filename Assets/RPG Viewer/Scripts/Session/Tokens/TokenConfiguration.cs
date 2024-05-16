@@ -19,6 +19,7 @@ namespace RPG
         [SerializeField] private Vector2 appearancePanelSize;
         [SerializeField] private TMP_InputField nameInput;
         [SerializeField] private TMP_Dropdown typeDropdown;
+        [SerializeField] private GameObject artButton;
         [SerializeField] private TMP_InputField widthInput;
         [SerializeField] private TMP_InputField heightInput;
         [SerializeField] private PermissionPanel permissionPanel;
@@ -39,10 +40,11 @@ namespace RPG
 
         private RectTransform rect;
         private byte[] image;
+        private byte[] art;
         private TokenData data;
         private PresetData lightData;
         private bool editingPrimary;
-        private Action<TokenData, byte[], PresetData> callback;
+        private Action<TokenData, byte[], byte[], PresetData> callback;
 
         private void Awake()
         {
@@ -131,11 +133,13 @@ namespace RPG
             secondary.frequencyInput.text = data.secondary.effect.frequency.ToString();
         }
 
-        public async void ChooseImage()
+        public async void ChooseImage(bool art)
         {
             await ImageTask((bytes) =>
             {
-                if (bytes != null) image = bytes;
+                if (bytes == null) return;
+                if (art) this.art = bytes;
+                else image = bytes;
             });
         }
         private async Task ImageTask(Action<byte[]> callback)
@@ -155,7 +159,7 @@ namespace RPG
             await Task.Yield();
         }
 
-        public void ShowImage()
+        public void ShowImage(bool art)
         {
             SocketManager.EmitAsync("show-image", (callback) =>
             {
@@ -168,7 +172,7 @@ namespace RPG
 
                 // Send error message
                 MessageManager.QueueMessage(callback.GetValue(1).GetString());
-            }, data.image, GameData.User.id);
+            }, art ? data.art : data.image, GameData.User.id);
         }
 
         public void ClosePanel(bool saveData = true)
@@ -232,7 +236,7 @@ namespace RPG
                 lightData.secondary.color.a = float.Parse(secondary.intensityInput.text) * 0.01f;
             }
         }
-        public void LoadData(TokenData _data, PresetData _lightData, byte[] _image, string _header, Action<TokenData, byte[], PresetData> _callback)
+        public void LoadData(TokenData _data, PresetData _lightData, byte[] _image, string _header, Action<TokenData, byte[], byte[], PresetData> _callback)
         {
             data = _data;
             lightData = _lightData;
@@ -247,6 +251,14 @@ namespace RPG
 
             permissionPanel.LoadData(data.permissions);
             visibilityPanel.LoadData(data.visible);
+
+            if (string.IsNullOrEmpty(_data.art))
+            {
+                artButton.SetActive(false);
+                return;
+            }
+
+            art = null;
         }
         private void LoadAppearance()
         {
@@ -339,7 +351,7 @@ namespace RPG
             data.permissions = permissionPanel.GetData();
 
             // Send callback
-            callback?.Invoke(data, image, lightData);
+            callback?.Invoke(data, image, art, lightData);
         }
 
         [Serializable]

@@ -307,7 +307,7 @@ namespace RPG
             config.transform.SetParent(UICanvas.Instance.transform);
             config.transform.localPosition = Vector3.zero;
             config.transform.SetAsLastSibling();
-            config.LoadData(token.Data, token.Lighting, image.sprite.texture.GetRawTextureData(), "Modify Token", (data, image, lighting) =>
+            config.LoadData(token.Data, token.Lighting, image.sprite.texture.GetRawTextureData(), "Modify Token", (data, image, art, lighting) =>
             {
                 bool imageChanged = !image.SequenceEqual(this.image.sprite.texture.GetRawTextureData());
                 SocketManager.EmitAsync("modify-token", async (callback) =>
@@ -317,8 +317,7 @@ namespace RPG
 
                     // Send error message
                     MessageManager.QueueMessage(callback.GetValue(1).GetString());
-                }, token.Id, JsonUtility.ToJson(data), JsonUtility.ToJson(lighting), imageChanged ? Convert.ToBase64String(image) : null);
-
+                }, token.Id, JsonUtility.ToJson(data), JsonUtility.ToJson(lighting), imageChanged ? Convert.ToBase64String(image) : null, art == null ? null : Convert.ToBase64String(art));
             });
         }
 
