@@ -248,6 +248,7 @@ namespace RPG
 
         public void LoadData(string id, string path, ScenesPanel panel, Action onComplete)
         {
+            scenesPanel = panel;
             Data = new SceneData(new SceneInfo("", "", 0), new GridData(), new LightingSettings())
             {
                 id = id
@@ -262,7 +263,6 @@ namespace RPG
                     // Load Data
                     SceneData data = JsonUtility.FromJson<SceneData>(callback.GetValue(1).ToString());
                     data.id = id;
-                    scenesPanel = panel;
                     selectedColor = string.IsNullOrEmpty(path) ? scenesPanel.GetColor() : scenesPanel.GetDirectoryByPath(path).Data.color;
                     selectedColor.a = 0.5f;
                     LoadData(data);

@@ -271,6 +271,7 @@ namespace RPG
 
         public void LoadData(string id, string path, TokensPanel panel, Action onComplete)
         {
+            tokensPanel = panel;
             Data = new TokenData
             {
                 id = id,
@@ -286,7 +287,6 @@ namespace RPG
 
                     TokenData data = JsonUtility.FromJson<TokenData>(callback.GetValue(1).ToString());
                     data.id = id;
-                    tokensPanel = panel;
                     selectedColor = string.IsNullOrEmpty(path) ? tokensPanel.GetColor() : tokensPanel.GetDirectoryByPath(path).Data.color;
                     _path = path;
                     LoadData(data);

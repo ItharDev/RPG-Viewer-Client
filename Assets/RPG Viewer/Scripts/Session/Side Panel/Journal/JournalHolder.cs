@@ -214,6 +214,7 @@ namespace RPG
 
         public void LoadData(string id, string path, JournalsPanel panel, Action onComplete)
         {
+            journalsPanel = panel;
             Data = new JournalData
             {
                 id = id,
@@ -230,7 +231,6 @@ namespace RPG
                     JournalData data = JsonUtility.FromJson<JournalData>(callback.GetValue(1).ToString());
                     data.id = id;
                     _path = path;
-                    journalsPanel = panel;
                     selectedColor = string.IsNullOrEmpty(path) ? journalsPanel.GetColor() : journalsPanel.GetDirectoryByPath(path).Data.color;
                     selectedColor.a = 0.5f;
                     LoadData(data);
