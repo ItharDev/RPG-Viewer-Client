@@ -35,4 +35,5 @@ public enum ConditionFlag
     Restrained = 262144,
     Stunned = 524288,
     Unconscious = 1048576,
+    Dying = 2097152
 }
