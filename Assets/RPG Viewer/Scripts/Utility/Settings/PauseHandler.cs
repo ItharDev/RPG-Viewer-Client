@@ -12,8 +12,6 @@ namespace RPG
 
         public static PauseHandler Instance { get; private set; }
 
-        private List<BlockPause> blockers = new List<BlockPause>();
-
         private void Awake()
         {
             // Create instance
@@ -28,18 +26,9 @@ namespace RPG
         }
         private void Update()
         {
-            if (Input.GetKeyDown(KeyCode.Escape)) CheckBlockers();
+            if (Input.GetKeyDown(KeyCode.Escape)) TogglePanel();
         }
 
-        private void CheckBlockers()
-        {
-            for (int i = 0; i < blockers.Count; i++)
-            {
-                if (blockers[i] == null) blockers.RemoveAt(i);
-            }
-
-            if (blockers.Count == 0) TogglePanel();
-        }
         private void TogglePanel()
         {
             if (optionsPanel.gameObject.activeInHierarchy)
@@ -89,13 +78,7 @@ namespace RPG
             Application.Quit();
         }
 
-        public void AddBlocker(BlockPause blocker)
-        {
-            if (!blockers.Contains(blocker)) blockers.Add(blocker);
-        }
-        public void RemoveBlocker(BlockPause blocker)
-        {
-            if (blockers.Contains(blocker)) blockers.Remove(blocker);
-        }
+        public void AddBlocker(BlockPause blocker) { }
+        public void RemoveBlocker(BlockPause blocker) { }
     }
 }
