@@ -113,7 +113,7 @@ namespace RPG
             conditionsButton.SetActive(selected);
 
             healthPanel.SetActive(selected || (token.IsOwner && token.Data.health != 0));
-            elevationPanel.SetActive(selected || (token.IsOwner && token.Data.elevation != 0));
+            elevationPanel.SetActive(selected || token.Data.elevation != 0);
             UpdateSorting();
         }
 
