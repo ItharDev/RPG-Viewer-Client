@@ -112,11 +112,8 @@ namespace RPG
             buttonsGroup.blocksRaycasts = selected && ConnectionManager.Info.isMaster ? true : false;
             conditionsButton.SetActive(selected);
 
-            if (string.IsNullOrEmpty(healthInput.text)) healthPanel.SetActive(selected);
-            else healthPanel.SetActive(true);
-
-            if (string.IsNullOrEmpty(elevationInput.text)) elevationPanel.SetActive(selected);
-            else elevationPanel.SetActive(true);
+            healthPanel.SetActive(selected);
+            elevationPanel.SetActive(selected);
             UpdateSorting();
         }
 
