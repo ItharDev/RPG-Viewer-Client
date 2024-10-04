@@ -112,8 +112,8 @@ namespace RPG
             buttonsGroup.blocksRaycasts = selected && ConnectionManager.Info.isMaster ? true : false;
             conditionsButton.SetActive(selected);
 
-            healthPanel.SetActive(selected);
-            elevationPanel.SetActive(selected);
+            healthPanel.SetActive(selected || (token.IsOwner && token.Data.health != 0));
+            elevationPanel.SetActive(selected || (token.IsOwner && token.Data.elevation != 0));
             UpdateSorting();
         }
 
@@ -160,16 +160,14 @@ namespace RPG
                 return;
             }
 
-            healthPanel.SetActive(token.Selected);
-            if (!token.Selected) healthPanel.SetActive(value != 0);
+            healthPanel.SetActive(token.Selected || value != 0);
         }
         public void SetElevation(int value)
         {
             elevationInput.interactable = token.IsOwner;
             elevationInput.text = value == 0 ? "" : value.ToString();
 
-            elevationPanel.SetActive(token.Selected);
-            if (!token.Selected) elevationPanel.SetActive(value != 0);
+            elevationPanel.SetActive(token.Selected || value != 0);
         }
         public void UpdateHealth()
         {
