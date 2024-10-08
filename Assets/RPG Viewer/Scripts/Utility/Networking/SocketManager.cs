@@ -513,6 +513,62 @@ namespace Networking
                 await UniTask.SwitchToMainThread();
                 Events.OnPing?.Invoke(position, strong);
             });
+
+            Socket.On("create-portal", async (data) =>
+            {
+                string id = data.GetValue().GetString();
+                PortalData portal = JsonUtility.FromJson<PortalData>(data.GetValue(1).ToString());
+
+                await UniTask.SwitchToMainThread();
+                Events.OnPortalCreated?.Invoke(id, portal);
+            });
+            Socket.On("move-portal", async (data) =>
+            {
+                string id = data.GetValue().GetString();
+                Vector2 position = JsonUtility.FromJson<Vector2>(data.GetValue(1).GetString());
+
+                await UniTask.SwitchToMainThread();
+                Events.OnPortalMoved?.Invoke(id, position);
+            });
+            Socket.On("link-portal", async (data) =>
+            {
+                string id = data.GetValue().GetString();
+                string link = data.GetValue(1).GetString();
+
+                await UniTask.SwitchToMainThread();
+                Events.OnPortalLinked?.Invoke(id, link);
+            });
+            Socket.On("activate-portal", async (data) =>
+            {
+                string id = data.GetValue().GetString();
+                bool active = data.GetValue(1).GetBoolean();
+
+                await UniTask.SwitchToMainThread();
+                Events.OnPortalEnabled?.Invoke(id, active);
+            });
+            Socket.On("remove-portal", async (data) =>
+            {
+                string id = data.GetValue().GetString();
+
+                await UniTask.SwitchToMainThread();
+                Events.OnPortalRemoved?.Invoke(id);
+            });
+            Socket.On("set-portal-radius", async (data) =>
+            {
+                string id = data.GetValue().GetString();
+                float radius = (float)data.GetValue(1).GetDouble();
+
+                await UniTask.SwitchToMainThread();
+                Events.OnPortalRadiusUpdated?.Invoke(id, radius);
+            });
+            Socket.On("set-portal-continuous", async (data) =>
+            {
+                string id = data.GetValue().GetString();
+                bool continuous = data.GetValue(1).GetBoolean();
+
+                await UniTask.SwitchToMainThread();
+                Events.OnPortalBehaviourUpdated?.Invoke(id, continuous);
+            });
         }
 
         public static void Connect(string address)

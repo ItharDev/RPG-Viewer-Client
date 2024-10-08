@@ -10,6 +10,7 @@ namespace RPG
         public GridData grid;
         public LightingSettings darkness;
         public List<WallData> walls;
+        public List<PortalData> portals;
         public List<string> tokens;
 
         [NonSerialized] public string path;

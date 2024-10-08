@@ -30,11 +30,16 @@ namespace RPG
         [SerializeField] private ToolButton playerButton;
         [SerializeField] private ToolButton visionButton;
         [SerializeField] private ToolButton clearButton;
+        [SerializeField] private ToolButton portalsButton;
+        [SerializeField] private ToolButton createPortalButton;
+        [SerializeField] private ToolButton linkPortalButton;
+        [SerializeField] private ToolButton deletePortalButton;
 
         [Header("Masks")]
         [SerializeField] private RectMask2D gridMask;
         [SerializeField] private RectMask2D wallsMask;
         [SerializeField] private RectMask2D lightingMask;
+        [SerializeField] private RectMask2D portalMask;
         [SerializeField] private RectMask2D viewMask;
 
         [Header("Configuration")]
@@ -50,6 +55,7 @@ namespace RPG
         private Setting lastSetting;
         private Setting lastWalls = Setting.Walls_Regular;
         private Setting lastLighting = Setting.Lighting_Create;
+        private Setting lastPortal = Setting.Portals_Create;
 
         private void Awake()
         {
@@ -88,6 +94,7 @@ namespace RPG
             CloseLighting();
             CloseView();
             CloseGrid();
+            ClosePortals();
             activeSetting = Setting.None;
         }
 
@@ -271,12 +278,47 @@ namespace RPG
             lastLighting = activeSetting;
         }
 
+        public void SelectCreatePortal()
+        {
+            // Update selections
+            createPortalButton.Select();
+            deletePortalButton.Deselect();
+            linkPortalButton.Deselect();
+
+            // Update tool states
+            activeSetting = Setting.Portals_Create;
+            lastPortal = activeSetting;
+        }
+        public void SelectLinkPortal()
+        {
+            // Update selections
+            linkPortalButton.Select();
+            createPortalButton.Deselect();
+            deletePortalButton.Deselect();
+
+            // Update tool states
+            activeSetting = Setting.Portals_Link;
+            lastPortal = activeSetting;
+        }
+        public void SelectDeletePortal()
+        {
+            // Update selections
+            deletePortalButton.Select();
+            createPortalButton.Deselect();
+            linkPortalButton.Deselect();
+
+            // Update tool states
+            activeSetting = Setting.Portals_Delete;
+            lastPortal = activeSetting;
+        }
+
         public void OpenGrid()
         {
             // Update selections
             CloseWalls();
             CloseLighting();
             CloseView();
+            ClosePortals();
 
             // Close panel if it's open
             if (!gridMask.enabled)
@@ -303,6 +345,7 @@ namespace RPG
             CloseGrid();
             CloseLighting();
             CloseView();
+            ClosePortals();
 
             // Close panel if it's open
             if (!wallsMask.enabled)
@@ -336,6 +379,7 @@ namespace RPG
             CloseGrid();
             CloseWalls();
             CloseView();
+            ClosePortals();
 
             // Close panel if it's open
             if (!lightingMask.enabled)
@@ -359,12 +403,43 @@ namespace RPG
             lightingMask.enabled = true;
             lightingButton.Deselect();
         }
+        public void OpenPortals()
+        {
+            // Update selections
+            CloseGrid();
+            CloseLighting();
+            CloseWalls();
+            CloseView();
+
+            // Close panel if it's open
+            if (!portalMask.enabled)
+            {
+                ClosePortals();
+                activeSetting = Setting.None;
+                return;
+            }
+
+            // Update rect size
+            portalMask.enabled = false;
+            portalsButton.Select();
+
+            // Activate last tool selection
+            if (lastPortal == Setting.Portals_Create) SelectCreatePortal();
+            else if (lastPortal == Setting.Portals_Delete) SelectLinkPortal();
+            else SelectDeletePortal();
+        }
+        public void ClosePortals()
+        {
+            portalMask.enabled = true;
+            portalsButton.Deselect();
+        }
         public void OpenView()
         {
             // Update selections
             CloseGrid();
             CloseLighting();
             CloseWalls();
+            ClosePortals();
 
             // Close panel if it's open
             if (!viewMask.enabled)
@@ -396,6 +471,7 @@ namespace RPG
             CloseGrid();
             CloseLighting();
             CloseWalls();
+            ClosePortals();
 
             await ImageTask((bytes) =>
             {
@@ -440,6 +516,9 @@ namespace RPG
         Lighting_Create,
         Lighting_Copy,
         Lighting_Delete,
+        Portals_Create,
+        Portals_Link,
+        Portals_Delete,
         Visibility
     }
 }
