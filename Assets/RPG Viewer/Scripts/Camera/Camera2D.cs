@@ -78,9 +78,10 @@ namespace RPG
         {
             StartCoroutine(MoveCoroutine(position, 0.1f, zoom));
         }
-        public void FollowTarget(Transform target)
+        public void FollowTarget(Transform target, bool instant = false)
         {
-            mainVCam.m_Follow = target;
+            CinemachineBrain cinemachineBrain = Camera.main.GetComponent<CinemachineBrain>();
+            mainVCam.Follow = target;
         }
         private IEnumerator SaveView()
         {

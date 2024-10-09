@@ -254,6 +254,7 @@ namespace RPG
         public float rotation;
         public float lightRotation;
         public bool lightEnabled;
+        public bool teleportProtection;
     }
 
     [Serializable]

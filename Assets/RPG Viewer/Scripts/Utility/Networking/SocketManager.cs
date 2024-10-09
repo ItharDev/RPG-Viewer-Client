@@ -522,6 +522,14 @@ namespace Networking
                 await UniTask.SwitchToMainThread();
                 Events.OnPortalCreated?.Invoke(id, portal);
             });
+            Socket.On("modify-portal", async (data) =>
+            {
+                string id = data.GetValue().GetString();
+                PortalData portal = JsonUtility.FromJson<PortalData>(data.GetValue(1).ToString());
+
+                await UniTask.SwitchToMainThread();
+                Events.OnPortalModified?.Invoke(id, portal);
+            });
             Socket.On("move-portal", async (data) =>
             {
                 string id = data.GetValue().GetString();
@@ -553,21 +561,13 @@ namespace Networking
                 await UniTask.SwitchToMainThread();
                 Events.OnPortalRemoved?.Invoke(id);
             });
-            Socket.On("set-portal-radius", async (data) =>
+            Socket.On("enter-portal", async (data) =>
             {
                 string id = data.GetValue().GetString();
-                float radius = (float)data.GetValue(1).GetDouble();
+                Vector2 position = JsonUtility.FromJson<Vector2>(data.GetValue(1).ToString());
 
                 await UniTask.SwitchToMainThread();
-                Events.OnPortalRadiusUpdated?.Invoke(id, radius);
-            });
-            Socket.On("set-portal-continuous", async (data) =>
-            {
-                string id = data.GetValue().GetString();
-                bool continuous = data.GetValue(1).GetBoolean();
-
-                await UniTask.SwitchToMainThread();
-                Events.OnPortalBehaviourUpdated?.Invoke(id, continuous);
+                Events.OnTokenTeleported?.Invoke(id, position);
             });
         }
 

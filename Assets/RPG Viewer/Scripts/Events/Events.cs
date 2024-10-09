@@ -69,12 +69,12 @@ namespace RPG
 
         // Portals
         public static UnityEvent<string, PortalData> OnPortalCreated = new UnityEvent<string, PortalData>();
+        public static UnityEvent<string, PortalData> OnPortalModified = new UnityEvent<string, PortalData>();
         public static UnityEvent<string, Vector2> OnPortalMoved = new UnityEvent<string, Vector2>();
         public static UnityEvent<string, bool> OnPortalEnabled = new UnityEvent<string, bool>();
         public static UnityEvent<string> OnPortalRemoved = new UnityEvent<string>();
         public static UnityEvent<string, string> OnPortalLinked = new UnityEvent<string, string>();
-        public static UnityEvent<string, float> OnPortalRadiusUpdated = new UnityEvent<string, float>();
-        public static UnityEvent<string, bool> OnPortalBehaviourUpdated = new UnityEvent<string, bool>();
+        public static UnityEvent<string, Vector2> OnTokenTeleported = new UnityEvent<string, Vector2>();
 
         // Grid
         public static UnityEvent<GridData, bool, bool> OnGridChanged = new UnityEvent<GridData, bool, bool>();

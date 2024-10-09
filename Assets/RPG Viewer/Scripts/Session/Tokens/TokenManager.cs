@@ -38,6 +38,7 @@ namespace RPG
             Events.OnStateChanged.AddListener(ReloadTokens);
             Events.OnSceneLoaded.AddListener(LoadTokens);
             Events.OnTokenSelected.AddListener(SelectToken);
+            Events.OnTokenTeleported.AddListener(TeleportToken);
         }
         private void OnDisable()
         {
@@ -56,6 +57,8 @@ namespace RPG
             Events.OnTokenLightRotated.RemoveListener(RotateLight);
             Events.OnStateChanged.RemoveListener(ReloadTokens);
             Events.OnSceneLoaded.RemoveListener(LoadTokens);
+            Events.OnTokenSelected.RemoveListener(SelectToken);
+            Events.OnTokenTeleported.RemoveListener(TeleportToken);
         }
         private void Update()
         {
@@ -105,6 +108,7 @@ namespace RPG
             // Check if token was found
             if (token == null) return;
 
+            token.Data.teleportProtection = false;
             token.Movement.AddWaypoints(data);
         }
         private void ModifyToken(string id, TokenData data)
@@ -336,6 +340,7 @@ namespace RPG
             }
             Events.OnTokensSelected?.Invoke(tokensToSelect);
         }
+
         public void HoverToken(bool hovered)
         {
             TokenHovered = hovered;
@@ -351,6 +356,29 @@ namespace RPG
             {
                 tokensToSelect[i].Movement.EndMovement(dragPoints);
             }
+        }
+
+        public void HandlePortal(Token token, Portal portal)
+        {
+            if (token == null) return;
+            SocketManager.EmitAsync("enter-portal", (callback) =>
+            {
+                // Check if the event was successful
+                if (callback.GetValue().GetBoolean()) return;
+
+                // Send error message
+                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+            }, token.Id, portal.Id);
+        }
+        public void TeleportToken(string id, Vector2 destination)
+        {
+            // Find the correct token
+            Token token = Tokens[id];
+
+            // Check if token was found
+            if (token == null) return;
+
+            token.Movement.Teleport(destination);
         }
     }
 }

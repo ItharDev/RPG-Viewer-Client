@@ -31,6 +31,7 @@ namespace RPG
         private int currentWaypoint = 0;
         private float angleToAdd;
         private float angleTimer;
+        private Portal activePortal;
 
         private void OnEnable()
         {
@@ -338,7 +339,7 @@ namespace RPG
 
         private void UpdatePosition()
         {
-            // Check if we are close enough to teh next waypoint
+            // Check if we are close enough to the next waypoint
             if (currentWaypoint >= waypoints.Count) currentWaypoint = 1;
 
             if (Vector2.Distance(waypoints[currentWaypoint], transform.position) < 0.01f)
@@ -351,6 +352,14 @@ namespace RPG
                 {
                     currentWaypoint = 1;
                     waypoints.Clear();
+
+                    // Check if we are inside a portal
+                    if (activePortal == null) return;
+
+                    // Check if the portal is in stationary mode
+                    if (activePortal.IsProximity) return;
+                    Session.Instance.TokenManager.HandlePortal(token, activePortal);
+
                 }
             }
 
@@ -427,6 +436,28 @@ namespace RPG
                 // Send error message
                 MessageManager.QueueMessage(callback.GetValue(1).GetString());
             }, token.Id, !token.Data.locked);
+        }
+
+        public void EnterPortal(Portal portal)
+        {
+            if (token.Data.teleportProtection) return;
+            activePortal = portal;
+            if (portal.IsProximity) Session.Instance.TokenManager.HandlePortal(token, portal);
+        }
+
+        public void ExitPortal(Portal portal)
+        {
+            activePortal = null;
+        }
+        public void Teleport(Vector2 position)
+        {
+            token.Data.teleportProtection = true;
+            token.Data.position = position;
+            transform.position = new Vector3(token.Data.position.x, token.Data.position.y, 0);
+            waypoints.Clear();
+
+            if (!token.IsOwner || (ConnectionManager.Info.isMaster && !token.Selected)) return;
+            FindObjectOfType<Camera2D>().FollowTarget(transform, true);
         }
     }
 }

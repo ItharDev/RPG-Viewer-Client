@@ -12,25 +12,36 @@ namespace RPG
     {
         [Header("Configuration")]
         [SerializeField] private Image icon;
+        [SerializeField] private Image radiusOutline;
         [SerializeField] private Color disabledColor;
         [SerializeField] private Color activeColor;
+        [SerializeField] private LayerMask blockingLayers;
+        [SerializeField] private PortalConfiguration configPrefab;
+
+        private PortalConfiguration activeConfig;
 
         public string Id;
+        public PortalData Data;
+
+        public bool IsProximity => Data.continuous;
+        public bool IsStationary => !Data.continuous;
+        public bool IsActive => Data.active;
 
         private Canvas canvas;
-        private PortalData data;
+        private CircleCollider2D radiusCollider;
         private Portal linkedPortal;
         private bool dragging;
         private bool linking;
         private Vector2 linkPosition;
 
         private VectorLine linkLine;
-        private Color lineColor => data.active ? activeColor : disabledColor;
+        private Color lineColor => Data.active ? activeColor : disabledColor;
 
         private void Awake()
         {
             // Get reference of our canvas
             if (canvas == null) canvas = GetComponentInChildren<Canvas>();
+            if (radiusCollider == null) radiusCollider = GetComponent<CircleCollider2D>();
         }
         private void OnEnable()
         {
@@ -66,32 +77,55 @@ namespace RPG
             DrawLink();
         }
 
+        private void OnTriggerEnter2D(Collider2D other)
+        {
+            if (!IsActive || linkedPortal == null) return;
+            if (other.CompareTag("Token"))
+            {
+                Vector2 direction = other.transform.position - transform.position;
+                if (Physics2D.Raycast(transform.position, direction, direction.magnitude, blockingLayers).collider != null) return;
+                if (!other.TryGetComponent<TokenMovement>(out var token)) return;
+                token.EnterPortal(this);
+            }
+        }
+        private void OnTriggerExit2D(Collider2D other)
+        {
+            if (other.CompareTag("Token"))
+            {
+                if (!other.TryGetComponent<TokenMovement>(out var token)) return;
+                token.ExitPortal(this);
+            }
+        }
+
         private void ToggleUI(Setting setting)
         {
             bool enabled = SettingsHandler.Instance.Setting == Setting.Portals_Link;
             if (linkLine != null) linkLine.active = enabled;
         }
 
-        public void LoadData(string _id, PortalData _data)
+        public void LoadData(string id, PortalData data)
         {
-            Id = _id;
-            data = _data;
+            Id = id;
+            Data = data;
 
-            icon.color = data.active ? activeColor : disabledColor;
+            icon.color = Data.active ? activeColor : disabledColor;
+            radiusOutline.color = icon.color;
 
             float cellSize = Session.Instance.Grid.CellSize;
 
             // Update our position and scale
-            transform.position = data.position;
+            transform.position = Data.position;
             canvas.transform.localScale = new Vector3(cellSize * 0.03f, cellSize * 0.03f, 1.0f);
+            radiusCollider.radius = data.radius / Session.Instance.Grid.Unit.scale * Session.Instance.Grid.CellSize;
+            radiusOutline.transform.parent.localScale = new Vector3(2.0f * radiusCollider.radius / canvas.transform.localScale.x, 2.0f * radiusCollider.radius / canvas.transform.localScale.y, 1.0f);
         }
 
         public void CreateLink()
         {
-            if (string.IsNullOrEmpty(data.link)) return;
+            if (string.IsNullOrEmpty(Data.link)) return;
 
             // Get the linked portal
-            if (PortalManager.Instance.Portals.TryGetValue(data.link, out Portal portal)) linkedPortal = portal;
+            if (PortalManager.Instance.Portals.TryGetValue(Data.link, out Portal portal)) linkedPortal = portal;
 
             DrawLink();
             bool enabled = SettingsHandler.Instance.Setting == Setting.Portals_Link;
@@ -131,7 +165,7 @@ namespace RPG
 
         public void Link(Portal portal)
         {
-            data.link = portal.Id;
+            Data.link = portal.Id;
             linkedPortal = portal;
 
             DrawLink();
@@ -141,24 +175,15 @@ namespace RPG
 
         public void SetEnabled(bool active)
         {
-            data.active = active;
+            Data.active = active;
             icon.color = active ? activeColor : disabledColor;
+            radiusOutline.color = icon.color;
         }
 
         public void UpdatePosition(Vector2 position)
         {
-            data.position = position;
+            Data.position = position;
             transform.position = position;
-        }
-
-        public void UpdateRadius(float radius)
-        {
-            data.radius = radius;
-        }
-
-        public void SetContinuous(bool continuo)
-        {
-            data.continuous = continuo;
         }
 
         public void BeginDrag(BaseEventData eventData)
@@ -198,7 +223,33 @@ namespace RPG
                 else if (PortalManager.Instance.Mode == PortalMode.Link) linking = PortalManager.Instance.SelectLink(this);
                 else DeletePortal();
             }
+            else if (pointerData.button == PointerEventData.InputButton.Right) OpenConfiguration();
         }
+
+        private void OpenConfiguration()
+        {
+            if (activeConfig != null) return;
+
+            activeConfig = Instantiate(configPrefab);
+            activeConfig.transform.SetParent(UICanvas.Instance.transform);
+            activeConfig.transform.localPosition = Vector3.zero;
+            activeConfig.transform.SetAsLastSibling();
+            activeConfig.OpenPanel(Data, (data) =>
+            {
+                data.position = transform.position;
+                data.link = Data.link;
+                data.id = Id;
+                SocketManager.EmitAsync("modify-portal", (callback) =>
+                {
+                    // Check if the event was successful
+                    if (callback.GetValue().GetBoolean()) return;
+
+                    // Send error message
+                    MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                }, Id, JsonUtility.ToJson(data));
+            });
+        }
+
         public void OnHoverEnter(BaseEventData eventData)
         {
             if (!PortalManager.Instance.Linking) return;
@@ -225,7 +276,7 @@ namespace RPG
 
                 // Send error message
                 MessageManager.QueueMessage(callback.GetValue(1).GetString());
-            }, Id, !data.active);
+            }, Id, !Data.active);
         }
 
         private void DeletePortal()
@@ -243,6 +294,20 @@ namespace RPG
         public void ApplyLink(Vector2 position)
         {
             linkPosition = position;
+        }
+
+        public void UpdateData(PortalData data)
+        {
+            Data = data;
+            icon.color = Data.active ? activeColor : disabledColor;
+            radiusOutline.color = icon.color;
+
+            // Update our position and scale
+            transform.position = Data.position;
+            radiusCollider.radius = data.radius / Session.Instance.Grid.Unit.scale * Session.Instance.Grid.CellSize;
+            radiusOutline.transform.parent.localScale = new Vector3(2.0f * radiusCollider.radius / canvas.transform.localScale.x, 2.0f * radiusCollider.radius / canvas.transform.localScale.y, 1.0f);
+
+            CreateLink();
         }
     }
 

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Networking;
@@ -20,7 +19,7 @@ namespace RPG
         private bool interactable;
         private Portal linkSource;
 
-        private float defaultRadius => Session.Instance.Grid.CellSize;
+        private float defaultRadius => Session.Instance.Grid.Unit.scale;
 
         private void Awake()
         {
@@ -30,12 +29,11 @@ namespace RPG
         {
             // Add event listeners
             Events.OnPortalCreated.AddListener(CreatePortal);
+            Events.OnPortalModified.AddListener(ModifyPortal);
             Events.OnPortalMoved.AddListener(MovePortal);
             Events.OnPortalEnabled.AddListener(EnablePortal);
             Events.OnPortalRemoved.AddListener(RemovePortal);
             Events.OnPortalLinked.AddListener(LinkPortal);
-            Events.OnPortalRadiusUpdated.AddListener(UpdateRadius);
-            Events.OnPortalBehaviourUpdated.AddListener(SetContinuous);
             Events.OnStateChanged.AddListener(ReloadPortals);
             Events.OnSceneLoaded.AddListener(LoadPortals);
             Events.OnSettingChanged.AddListener(ToggleUI);
@@ -44,12 +42,11 @@ namespace RPG
         {
             // Remove event listeners
             Events.OnPortalCreated.RemoveListener(CreatePortal);
+            Events.OnPortalModified.RemoveListener(ModifyPortal);
             Events.OnPortalMoved.RemoveListener(MovePortal);
             Events.OnPortalEnabled.RemoveListener(EnablePortal);
             Events.OnPortalRemoved.RemoveListener(RemovePortal);
             Events.OnPortalLinked.RemoveListener(LinkPortal);
-            Events.OnPortalRadiusUpdated.RemoveListener(UpdateRadius);
-            Events.OnPortalBehaviourUpdated.RemoveListener(SetContinuous);
             Events.OnStateChanged.RemoveListener(ReloadPortals);
             Events.OnSceneLoaded.RemoveListener(LoadPortals);
             Events.OnSettingChanged.RemoveListener(ToggleUI);
@@ -122,26 +119,6 @@ namespace RPG
             }, JsonUtility.ToJson(mousePos), defaultRadius);
         }
 
-        private void UpdateRadius(string id, float radius)
-        {
-            // Check if the portal exists
-            if (Portals.ContainsKey(id))
-            {
-                // Update the portal's radius
-                Portals[id].UpdateRadius(radius);
-            }
-        }
-
-        private void SetContinuous(string id, bool active)
-        {
-            // Check if the portal exists
-            if (Portals.ContainsKey(id))
-            {
-                // Update the portal's behaviour
-                Portals[id].SetContinuous(active);
-            }
-        }
-
         private void CreatePortal(string id, PortalData data)
         {
             // Instantiate portal and load its data
@@ -150,6 +127,16 @@ namespace RPG
 
             // Store portal to dictionary
             Portals.Add(id, portal);
+        }
+
+        private void ModifyPortal(string id, PortalData data)
+        {
+            // Check if the portal exists
+            if (Portals.ContainsKey(id))
+            {
+                // Move the portal to the new position
+                Portals[id].UpdateData(data);
+            }
         }
 
         private void MovePortal(string id, Vector2 position)
