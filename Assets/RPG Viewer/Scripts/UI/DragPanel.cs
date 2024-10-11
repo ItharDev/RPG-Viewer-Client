@@ -1,46 +1,65 @@
+using System;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.EventSystems;
 
 namespace RPG
 {
-    public class DragPanel : MonoBehaviour
+    public class DragPanel : MonoBehaviour, IBeginDragHandler, IDragHandler
     {
-        [SerializeField] private RectTransform dragRect;
+        [SerializeField] private RectTransform targetPanel;
         [SerializeField] private bool useWorldPos;
 
-        private bool dragging;
         private Vector2 offset;
+        private Vector2 screenSize;
 
-        public UnityEvent minimise = new UnityEvent();
-
-        public void OnBeginDrag(BaseEventData baseEventData)
+        public void OnBeginDrag(PointerEventData eventData)
         {
-            PointerEventData eventData = baseEventData as PointerEventData;
             if (eventData.button == PointerEventData.InputButton.Left)
             {
-                dragging = true;
-                offset = useWorldPos ? transform.position - Camera.main.ScreenToWorldPoint(Input.mousePosition) : transform.position - Input.mousePosition;
+                if (targetPanel == null) return;
+
+                screenSize = (GetComponentInParent<Canvas>().transform as RectTransform).sizeDelta;
+                offset = useWorldPos ? targetPanel.anchoredPosition - (Vector2)Camera.main.ScreenToWorldPoint(Input.mousePosition) : targetPanel.anchoredPosition - (Vector2)Input.mousePosition;
             }
         }
 
-        public void OnDrag(BaseEventData baseEventData)
+        public void OnDrag(PointerEventData eventData)
         {
-            PointerEventData eventData = baseEventData as PointerEventData;
-            if (dragging) transform.position = useWorldPos ? (Vector2)Camera.main.ScreenToWorldPoint(Input.mousePosition) + offset : (Vector2)Input.mousePosition + offset;
+            targetPanel.anchoredPosition = useWorldPos ? (Vector2)Camera.main.ScreenToWorldPoint(Input.mousePosition) + offset : (Vector2)Input.mousePosition + offset;
+            KeepOnScreen();
         }
 
-        public void OnEndDrag(BaseEventData baseEventData)
+        private void KeepOnScreen()
         {
-            PointerEventData eventData = baseEventData as PointerEventData;
-            dragging = false;
-        }
+            float targetX = targetPanel.anchoredPosition.x;
+            float targetY = targetPanel.anchoredPosition.y;
 
-        public void OnPointerClick(BaseEventData baseEventData)
+            if (IsTooHigh(screenSize))
+                targetY = (screenSize.y / 2f) - (targetPanel.sizeDelta.y * (1f - targetPanel.pivot.y));
+            if (IsTooLow(screenSize))
+                targetY = -(screenSize.y / 2f) + (targetPanel.sizeDelta.y * targetPanel.pivot.y);
+            if (IsTooFarRight(screenSize))
+                targetX = (screenSize.x / 2f) - (targetPanel.sizeDelta.x * (1f - targetPanel.pivot.x));
+            if (IsTooFarLeft(screenSize))
+                targetX = -(screenSize.x / 2f) + (targetPanel.sizeDelta.x * targetPanel.pivot.x);
+
+            targetPanel.anchoredPosition = new Vector2(targetX, targetY);
+        }
+        private bool IsTooHigh(Vector2 refRes)
         {
-            PointerEventData eventData = baseEventData as PointerEventData;
-            if (eventData.button != PointerEventData.InputButton.Left || eventData.clickCount < 2) return;
-            minimise.Invoke();
+            return targetPanel.anchoredPosition.y + (targetPanel.sizeDelta.y * (1f - targetPanel.pivot.y)) > refRes.y / 2f;
+        }
+        private bool IsTooLow(Vector2 refRes)
+        {
+            return targetPanel.anchoredPosition.y - (targetPanel.sizeDelta.y * targetPanel.pivot.y) < -refRes.y / 2f;
+        }
+        private bool IsTooFarRight(Vector2 refRes)
+        {
+            return targetPanel.anchoredPosition.x + (targetPanel.sizeDelta.x * (1f - targetPanel.pivot.x)) > refRes.x / 2f;
+        }
+        private bool IsTooFarLeft(Vector2 refRes)
+        {
+            return targetPanel.anchoredPosition.x - (targetPanel.sizeDelta.x * targetPanel.pivot.x) < -refRes.x / 2f;
         }
     }
 }

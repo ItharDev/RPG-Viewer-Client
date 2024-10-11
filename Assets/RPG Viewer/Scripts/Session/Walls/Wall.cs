@@ -1,9 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Cysharp.Threading.Tasks;
+using System.Collections.Generic;
 using FunkyCode;
 using Networking;
-using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -12,196 +9,268 @@ namespace RPG
 {
     public class Wall : MonoBehaviour
     {
-        [SerializeField] private new EdgeCollider2D collider2D;
-        [SerializeField] private LightCollider2D lightCollider;
-        [SerializeField] private Image doorImage;
+        [SerializeField] private Image doorIcon;
+        [SerializeField] private Sprite closedSprite;
+        [SerializeField] private Sprite openSprite;
+        [SerializeField] private Color regularColor;
+        [SerializeField] private Color secretColor;
+        [SerializeField] private GameObject lockedIcon;
+        [SerializeField] private GameObject info;
+        [SerializeField] private LightEventListener eventListener;
 
-        [SerializeField] private Sprite openDoor;
-        [SerializeField] private Sprite closeDoor;
-        [SerializeField] private Color normalColor;
-        [SerializeField] private Color hiddenColor;
+        private Canvas canvas;
+        private EdgeCollider2D edgeCollider;
+        private CircleCollider2D interactableCollider;
+        private LightCollider2D lightCollider;
+        private bool loaded;
+        private WallData data;
+        private bool showDoor;
+        private List<Token> tokensInRange = new List<Token>();
+        private float lastVisibility;
 
-        [SerializeField] private GameObject configPanel;
+        private void OnEnable()
+        {
+            // Get reference of out canvas and colliders
+            if (canvas == null) canvas = GetComponentInChildren<Canvas>(true);
+            if (edgeCollider == null) edgeCollider = GetComponent<EdgeCollider2D>();
+            if (interactableCollider == null) interactableCollider = GetComponentInChildren<CircleCollider2D>();
+            if (lightCollider == null) lightCollider = GetComponent<LightCollider2D>();
 
-        public WallData Data;
+            // Add event listeners
+            Events.OnSettingChanged.AddListener(ToggleUI);
+            Events.OnViewChanged.AddListener(HandleView);
+            Events.OnTokenCreated.AddListener(HandleLayers);
+            Events.OnTokenModified.AddListener(HandleLayers);
+            Events.OnSceneLoaded.AddListener(HandleLayers);
+        }
 
+        private void HandleLayers(SceneData data)
+        {
+            HandleLayers();
+        }
+
+        private void HandleLayers(string id, TokenData data)
+        {
+            HandleLayers();
+        }
+
+        private void HandleLayers(TokenData data)
+        {
+            HandleLayers();
+        }
+
+        public void HandleLocked()
+        {
+            if (!ConnectionManager.Info.isMaster) info.SetActive(!info.activeInHierarchy);
+        }
+
+        private void OnDisable()
+        {
+            // Remove event listeners
+            Events.OnSettingChanged.RemoveListener(ToggleUI);
+            Events.OnViewChanged.RemoveListener(HandleView);
+        }
         private void Update()
         {
-            bool showDoor = false;
-            if (!SessionManager.IsMaster)
+            // Load settings after grid has been initialised
+            if (!loaded && Session.Instance.Grid.Grid != null)
             {
-                for (int i = 0; i < SessionManager.Session.Tokens.Count; i++)
+                loaded = true;
+                UpdateData();
+            }
+
+            if (lastVisibility != eventListener.visability && data.type == WallType.Environment)
+            {
+                lastVisibility = eventListener.visability;
+                lightCollider.maskType = LightCollider2D.MaskType.Collider2D;
+                lightCollider.maskLit = lastVisibility > 0.0f ? FunkyCode.LightSettings.MaskLit.Lit : FunkyCode.LightSettings.MaskLit.Unlit;
+                lightCollider.UpdateLoop();
+            }
+        }
+
+        private void HandleLayers()
+        {
+            bool state = false;
+
+            foreach (var token in tokensInRange)
+            {
+                if (token.Data.type == TokenType.Character && token.Permission.type == PermissionType.Controller && token.Visibility.visible) state = true;
+            }
+
+            // New token has entered the radius
+            if (state)
+            {
+                bool enableDoor = false;
+                foreach (var item in tokensInRange)
                 {
-                    if (SessionManager.Session.Tokens[i].Permission.permission == PermissionType.Owner && Vector2.Distance(GetComponentInChildren<Canvas>(true).transform.position, SessionManager.Session.Tokens[i].transform.position) <= SessionManager.Session.Settings.grid.cellSize) showDoor = true;
+                    bool hasView = true;
+                    // Check if the token can see the door
+                    RaycastHit2D[] results = Physics2D.RaycastAll(canvas.transform.position, item.transform.position - canvas.transform.position, Vector2.Distance(item.transform.position, canvas.transform.position) + Session.Instance.Grid.CellSize * 0.01f);
+                    for (int i = 0; i < results.Length; i++)
+                    {
+                        bool isWall = results[i].transform.gameObject.CompareTag("Wall");
+                        bool hitDetectionCollider = results[i].collider.GetType() == typeof(CircleCollider2D);
+                        bool hitOurSelves = results[i].transform.gameObject == gameObject;
+                        if (isWall && !hitDetectionCollider && !hitOurSelves) hasView = false;
+                    }
+                    if (hasView) enableDoor = true;
                 }
+                showDoor = enableDoor;
             }
-            if (showDoor || SessionManager.IsMaster)
+            else showDoor = false;
+
+            canvas.sortingOrder = showDoor ? 1 : 0;
+            canvas.sortingLayerName = showDoor ? "Above Fog" : "Default";
+        }
+
+        private void UpdateData()
+        {
+            float cellSize = Session.Instance.Grid.CellSize;
+
+            // Update canvas
+            canvas.transform.localScale = new Vector3(cellSize * 0.03f, cellSize * 0.03f, 1.0f);
+            canvas.sortingOrder = ConnectionManager.Info.isMaster ? 1 : 0;
+            canvas.sortingLayerName = SettingsHandler.Instance.LastView == GameView.Clear ? "Above Fog" : "Default";
+
+            canvas.transform.position = (data.points[0] + data.points[1]) / 2f;
+            doorIcon.sprite = data.open ? openSprite : closedSprite;
+            lockedIcon.SetActive(data.locked);
+            info.SetActive(ConnectionManager.Info.isMaster);
+            eventListener.enabled = data.type == WallType.Environment;
+            doorIcon.color = data.type == WallType.Hidden_Door ? secretColor : regularColor;
+
+            HandleCollider();
+
+            if (ConnectionManager.Info.isMaster) HandleView(SettingsHandler.Instance.LastView);
+            else ToggleUI(data.type == WallType.Door);
+
+            lightCollider.Initialize();
+            HandleLayers();
+        }
+        private void HandleCollider()
+        {
+            // Update colliders
+            edgeCollider.points = data.points.ToArray();
+            edgeCollider.enabled = !data.open;
+
+            lightCollider.enabled = edgeCollider.enabled;
+            lightCollider.maskType = data.type == WallType.Environment ? LightCollider2D.MaskType.Collider2D : LightCollider2D.MaskType.None;
+
+            interactableCollider.radius = Session.Instance.Grid.CellSize * 2.0f;
+            interactableCollider.offset = (data.points[0] + data.points[1]) / 2f;
+
+            // Update layer
+            gameObject.layer = 8;
+            if (data.type == WallType.Invisible)
             {
-                GetComponentInChildren<Canvas>(true).sortingOrder = 1;
-                GetComponentInChildren<Canvas>(true).sortingLayerName = "Above Fog";
+                gameObject.layer = 7;
+                lightCollider.enabled = false;
             }
+            else if (data.type == WallType.Fog)
+            {
+                gameObject.layer = 6;
+                lightCollider.enabled = true;
+                edgeCollider.enabled = false;
+            }
+        }
+
+        private void OnTriggerEnter2D(Collider2D other)
+        {
+            if (other.gameObject.layer == 11) tokensInRange.Add(other.GetComponent<Token>());
+            if (SettingsHandler.Instance.LastView == GameView.Player && data.type == WallType.Door) HandleLayers();
+        }
+        private void OnTriggerExit2D(Collider2D other)
+        {
+            Token token = other.GetComponent<Token>();
+            if (other.gameObject.layer == 11) tokensInRange.Remove(token);
+            if (SettingsHandler.Instance.LastView == GameView.Player && data.type == WallType.Door) HandleLayers();
+        }
+        private void OnTriggerStay2D(Collider2D other)
+        {
+            if (SettingsHandler.Instance.LastView == GameView.Player && data.type == WallType.Door) HandleLayers();
             else
             {
-                GetComponentInChildren<Canvas>(true).sortingOrder = 0;
-                GetComponentInChildren<Canvas>(true).sortingLayerName = "Default";
+                canvas.sortingOrder = 1;
+                canvas.sortingLayerName = "Above Fog";
             }
         }
 
-        public void GenerateWall(WallData wall)
+        public void LoadData(WallData _data)
         {
-            doorImage.transform.parent.gameObject.SetActive(false);
+            data = _data;
+            loaded = false;
 
-            Data = wall;
-            collider2D.SetPoints(Data.points);
-            collider2D.enabled = !Data.open;
-            lightCollider.enabled = collider2D.enabled;
-            lightCollider.maskType = LightCollider2D.MaskType.None;
-            GetComponentInChildren<Canvas>(true).sortingOrder = SessionManager.IsMaster ? 1 : 0;
+            ToggleUI(false);
+            HandleCollider();
+        }
+        private void ToggleUI(Setting setting)
+        {
+            // Enable / disable UI based on setting
+            bool toolSelected = setting.ToString().ToLower().Contains("walls");
+            bool isDoor = data.type.ToString().ToLower().Contains("door");
 
-            switch (Data.type)
+            // Show UI if tool is not selected
+            ToggleUI(!toolSelected && isDoor);
+        }
+        private void ToggleUI(bool enabled)
+        {
+            // Enable / disable canvas
+            canvas.gameObject.SetActive(enabled);
+        }
+        private void HandleView(GameView view)
+        {
+            canvas.sortingLayerName = view == GameView.Clear ? "Above Fog" : "Default";
+
+            // Enable / disable UI based on setting
+            bool toolSelected = SettingsHandler.Instance.Setting.ToString().ToLower().Contains("walls");
+
+            // Show UI if tool is not selected
+            ToggleUI(view == GameView.Player ? !toolSelected && data.type == WallType.Door : !toolSelected && data.type.ToString().ToLower().Contains("door"));
+            if (view == GameView.Player) HandleLayers();
+        }
+
+        public void OnClick(BaseEventData eventData)
+        {
+            if (SettingsHandler.Instance.LastView == GameView.Player && canvas.sortingLayerName == "Default") return;
+            // Get pointer data
+            PointerEventData pointerData = (PointerEventData)eventData;
+            if (pointerData.button == PointerEventData.InputButton.Left) ToggleDoor();
+            if (pointerData.button == PointerEventData.InputButton.Right) LockDoor();
+        }
+
+        private void ToggleDoor()
+        {
+            if (!ConnectionManager.Info.isMaster && data.locked)
             {
-                case WallType.Wall:
-                    gameObject.layer = 8;
-                    doorImage.transform.parent.gameObject.SetActive(false);
-                    doorImage.color = normalColor;
-                    break;
-                case WallType.Door:
-                    gameObject.layer = 8;
-                    GetComponentInChildren<Canvas>().transform.position = (wall.points[0] + wall.points[wall.points.Count - 1]) / 2f;
-                    GetComponentInChildren<Canvas>().transform.gameObject.SetActive(true);
-
-                    doorImage.transform.parent.gameObject.SetActive(true);
-                    doorImage.sprite = Data.open ? openDoor : closeDoor;
-                    doorImage.color = normalColor;
-                    break;
-                case WallType.Invisible:
-                    gameObject.layer = 7;
-                    doorImage.color = normalColor;
-                    lightCollider.enabled = false;
-                    break;
-                case WallType.Hidden_Door:
-                    gameObject.layer = 8;
-                    if (!SessionManager.IsMaster) break;
-
-                    GetComponentInChildren<Canvas>().transform.position = (wall.points[0] + wall.points[wall.points.Count - 1]) / 2f;
-                    GetComponentInChildren<Canvas>().transform.gameObject.SetActive(true);
-
-                    doorImage.transform.parent.gameObject.SetActive(true);
-                    doorImage.sprite = Data.open ? openDoor : closeDoor;
-                    doorImage.color = hiddenColor;
-                    break;
+                MessageManager.QueueMessage("This door is locked");
+                return;
             }
 
-            lightCollider.Initialize();
-        }
-        public void SetState(bool state)
-        {
-            Data.open = state;
-            collider2D.enabled = !Data.open;
-            lightCollider.enabled = collider2D.enabled;
-            doorImage.sprite = Data.open ? openDoor : closeDoor;
-        }
-        public void ModifyDoor(WallData wall)
-        {
-            doorImage.transform.parent.gameObject.SetActive(false);
-
-            Data = wall;
-            collider2D.enabled = !Data.open;
-            lightCollider.enabled = collider2D.enabled;
-            lightCollider.maskType = LightCollider2D.MaskType.None;
-            GetComponentInChildren<Canvas>(true).sortingOrder = SessionManager.IsMaster ? 1 : 0;
-
-            switch (Data.type)
+            WallData newData = data;
+            newData.open = !newData.open;
+            SocketManager.EmitAsync("modify-wall", (callback) =>
             {
-                case WallType.Wall:
-                    gameObject.layer = 8;
-                    doorImage.transform.parent.gameObject.SetActive(false);
-                    doorImage.color = normalColor;
-                    break;
-                case WallType.Door:
-                    gameObject.layer = 8;
-                    GetComponentInChildren<Canvas>().transform.position = (wall.points[0] + wall.points[wall.points.Count - 1]) / 2f;
-                    GetComponentInChildren<Canvas>().transform.gameObject.SetActive(true);
+                // Check if the event was successful
+                if (callback.GetValue().GetBoolean()) return;
 
-                    doorImage.transform.parent.gameObject.SetActive(true);
-                    doorImage.sprite = Data.open ? openDoor : closeDoor;
-                    doorImage.color = normalColor;
-                    break;
-                case WallType.Invisible:
-                    gameObject.layer = 7;
-                    doorImage.color = normalColor;
-                    lightCollider.enabled = false;
-                    break;
-                case WallType.Hidden_Door:
-                    gameObject.layer = 8;
-                    if (!SessionManager.IsMaster) break;
-
-                    GetComponentInChildren<Canvas>().transform.position = (wall.points[0] + wall.points[wall.points.Count - 1]) / 2f;
-                    GetComponentInChildren<Canvas>().transform.gameObject.SetActive(true);
-
-                    doorImage.transform.parent.gameObject.SetActive(true);
-                    doorImage.sprite = Data.open ? openDoor : closeDoor;
-                    doorImage.color = hiddenColor;
-                    break;
-            }
-
-            lightCollider.Initialize();
+                // Send error message
+                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+            }, JsonUtility.ToJson(newData));
         }
-
-        public async void ToggleDoor(BaseEventData eventData)
+        private void LockDoor()
         {
-            PointerEventData pointerData = eventData as PointerEventData;
-            if (pointerData.button == PointerEventData.InputButton.Left)
+            if (!ConnectionManager.Info.isMaster) return;
+
+            WallData newData = data;
+            newData.locked = !newData.locked;
+            SocketManager.EmitAsync("modify-wall", (callback) =>
             {
-                if (Data.locked && !SessionManager.IsMaster)
-                {
-                    MessageManager.QueueMessage("This door is lockced");
-                    return;
-                }
+                // Check if the event was successful
+                if (callback.GetValue().GetBoolean()) return;
 
-                await SocketManager.Socket.EmitAsync("toggle-door", async (callback) =>
-                {
-                    await UniTask.SwitchToMainThread();
-                    if (!callback.GetValue().GetBoolean()) MessageManager.QueueMessage(callback.GetValue(1).GetString());
-                }, Data.id, !Data.open);
-            }
-            else if (pointerData.button == PointerEventData.InputButton.Right)
-            {
-                if (SessionManager.IsMaster) OpenConfig();
-            }
-        }
-        public async void ChangeData(WallData data)
-        {
-            data.points = Data.points;
-            data.id = Data.id;
-            data.open = Data.open;
-
-            await SocketManager.Socket.EmitAsync("modify-door", async (callback) =>
-            {
-                await UniTask.SwitchToMainThread();
-                if (!callback.GetValue().GetBoolean()) MessageManager.QueueMessage(callback.GetValue(1).GetString());
-            }, JsonUtility.ToJson(data));
-        }
-
-        private void OpenConfig()
-        {
-            configPanel.SetActive(true);
-            configPanel.transform.SetParent(GameObject.Find("Main Canvas").transform);
-            configPanel.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
-            configPanel.transform.SetAsLastSibling();
-
-            configPanel.GetComponentInChildren<Toggle>(true).isOn = Data.locked;
-            configPanel.GetComponentInChildren<TMP_Dropdown>(true).value = Data.type == WallType.Door ? 0 : 1;
-        }
-        public void SaveConfig()
-        {
-            WallData data = new WallData()
-            {
-                locked = configPanel.GetComponentInChildren<Toggle>(true).isOn,
-                type = configPanel.GetComponentInChildren<TMP_Dropdown>(true).value == 0 ? WallType.Door : WallType.Hidden_Door
-            };
-
-            ChangeData(data);
+                // Send error message
+                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+            }, JsonUtility.ToJson(newData));
         }
     }
 }

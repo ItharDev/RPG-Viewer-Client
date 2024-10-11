@@ -1,5 +1,5 @@
 ﻿using System.Collections;
-using System.Transactions;
+using System.IO;
 using Cinemachine;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -8,26 +8,38 @@ namespace RPG
 {
     public class Camera2D : MonoBehaviour
     {
-        public Color BackgroundColor;
+        public float Zoom { get { return mainVCam.m_Lens.OrthographicSize; } }
         public bool UsePan = false;
 
         [SerializeField] private CinemachineVirtualCamera mainVCam;
 
+        [Space]
         [SerializeField] private float camZoomMax = 2.0f;
         [SerializeField] private float camZoomMin = 50.0f;
         [SerializeField] private float camZoomSpeed = 1.0f;
+
+        [Space]
+        [SerializeField] private BoxCollider2D cullingCollider;
 
         private bool panActive;
         private Vector2 panPosition;
         private float targetOrthographicSize = 5;
 
+        private void OnEnable()
+        {
+            StartCoroutine(SaveView());
+        }
+        private void OnDisable()
+        {
+            StopAllCoroutines();
+        }
         private void Update()
         {
             HandleCameraZoom();
 
             if (UsePan)
             {
-                if (Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject())
+                if (!Input.GetKey(KeyCode.LeftShift) && Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject())
                 {
                     panActive = true;
                     panPosition = (Vector2)Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -51,24 +63,33 @@ namespace RPG
         }
         private void HandleCameraZoom()
         {
-            targetOrthographicSize -= (Input.mouseScrollDelta.y * camZoomSpeed);
+            targetOrthographicSize -= Input.mouseScrollDelta.y * camZoomSpeed;
             targetOrthographicSize = Mathf.Clamp(targetOrthographicSize, camZoomMax, camZoomMin);
             mainVCam.m_Lens.OrthographicSize = Mathf.Lerp(mainVCam.m_Lens.OrthographicSize, targetOrthographicSize, Time.deltaTime * 10.0f);
+            cullingCollider.size = new Vector2(targetOrthographicSize * 2.0f * (16.0f / 9.0f), targetOrthographicSize * 2.0f);
         }
 
         public void UpdateSettings(Texture2D texture)
         {
             camZoomMin = (texture.width >= texture.height ? texture.width : texture.height) * 0.01f;
             camZoomMax = (texture.width >= texture.height ? texture.width : texture.height) * 0.0004f;
-            SessionManager.Session.Loaders++;
         }
         public void MoveToPosition(Vector2 position, bool zoom = true)
         {
             StartCoroutine(MoveCoroutine(position, 0.1f, zoom));
         }
-        public void FollowTarget(Transform target)
+        public void FollowTarget(Transform target, bool instant = false)
         {
-            mainVCam.m_Follow = target;
+            CinemachineBrain cinemachineBrain = Camera.main.GetComponent<CinemachineBrain>();
+            mainVCam.Follow = target;
+        }
+        private IEnumerator SaveView()
+        {
+            string path = $"{Application.persistentDataPath}{Path.DirectorySeparatorChar}{GameData.User.id}_last_session.png";
+            ScreenCapture.CaptureScreenshot(path);
+
+            yield return new WaitForSeconds(5.0f);
+            StartCoroutine(SaveView());
         }
 
         private IEnumerator MoveCoroutine(Vector2 position, float time, bool zoom)

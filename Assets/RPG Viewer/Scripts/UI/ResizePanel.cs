@@ -1,53 +1,55 @@
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.EventSystems;
 
 namespace RPG
 {
-    public class ResizePanel : MonoBehaviour, IPointerDownHandler, IDragHandler
+    public class ResizePanel : MonoBehaviour, IBeginDragHandler, IDragHandler
     {
+        [SerializeField] private RectTransform targetPanel;
+        [SerializeField] private bool allowX;
+        [SerializeField] private bool allowY;
 
-        public Vector2 minSize;
-        public Vector2 maxSize;
-
-        private RectTransform rectTransform;
         private Vector2 currentPointerPosition;
         private Vector2 previousPointerPosition;
+        private Vector2 minSize;
+        private Vector2 maxSize;
 
-        public UnityEvent onResize = new UnityEvent();
-
-        void Awake()
+        public void UpdateRange(Vector2 _minSize, Vector2 _maxSize)
         {
-            rectTransform = transform.parent.GetComponent<RectTransform>();
+            // Set new min and max values
+            minSize = _minSize;
+            maxSize = _maxSize;
+        }
+        public void UpdatePermissions(bool _x, bool _y)
+        {
+            // Set new resize permissions
+            allowX = _x;
+            allowY = _y;
         }
 
-        public void OnPointerDown(PointerEventData data)
+        public void OnBeginDrag(PointerEventData eventData)
         {
-            rectTransform.SetAsLastSibling();
-            RectTransformUtility.ScreenPointToLocalPointInRectangle(rectTransform, data.position, data.pressEventCamera, out previousPointerPosition);
+            // Get current pointer position
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(targetPanel, eventData.position, eventData.pressEventCamera, out previousPointerPosition);
         }
-
-        public void OnDrag(PointerEventData data)
+        public void OnDrag(PointerEventData eventData)
         {
-            if (rectTransform == null)
-                return;
+            // Store panel's current size
+            Vector2 sizeDelta = targetPanel.sizeDelta;
 
-            Vector2 sizeDelta = rectTransform.sizeDelta;
+            // Get new pointer position
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(targetPanel, eventData.position, eventData.pressEventCamera, out currentPointerPosition);
 
-            RectTransformUtility.ScreenPointToLocalPointInRectangle(rectTransform, data.position, data.pressEventCamera, out currentPointerPosition);
+            // Calculate size difference
             Vector2 resizeValue = currentPointerPosition - previousPointerPosition;
 
-            sizeDelta += new Vector2(resizeValue.x, -resizeValue.y);
-            sizeDelta = new Vector2(
-                Mathf.Clamp(sizeDelta.x, minSize.x, maxSize.x),
-                Mathf.Clamp(sizeDelta.y, minSize.y, maxSize.y)
-                );
+            // Calculate new panel size
+            sizeDelta += new Vector2(allowX ? resizeValue.x : 0.0f, allowY ? -resizeValue.y : 0.0f);
+            sizeDelta = new Vector2(Mathf.Clamp(sizeDelta.x, minSize.x, maxSize.x), Mathf.Clamp(sizeDelta.y, minSize.y, maxSize.y));
 
-            rectTransform.sizeDelta = sizeDelta;
-
+            // Update panel's size
+            targetPanel.sizeDelta = sizeDelta;
             previousPointerPosition = currentPointerPosition;
-
-            onResize.Invoke();
         }
     }
 }

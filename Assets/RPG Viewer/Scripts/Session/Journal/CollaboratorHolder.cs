@@ -8,33 +8,40 @@ namespace RPG
 {
     public class CollaboratorHolder : MonoBehaviour
     {
-        [SerializeField] private TMP_Text text;
+        [SerializeField] private TMP_Text header;
         [SerializeField] private Toggle toggle;
 
-        private string uid;
+        public string Name;
+        private Collaborator data;
 
-        public async void LoadData(Collaborator data)
+        public Collaborator SaveData()
         {
-            uid = data.user;
-            text.text = data.user;
+            return new Collaborator(data.user, toggle.isOn);
+        }
+        public void LoadData(Collaborator _data)
+        {
+            data = _data;
+            header.text = data.user;
             toggle.isOn = data.isCollaborator;
-
-            await SocketManager.Socket.EmitAsync("get-user", async (callback) =>
-            {
-                await UniTask.SwitchToMainThread();
-                if (callback.GetValue().GetBoolean()) text.text = callback.GetValue(1).GetProperty("name").GetString();
-                else MessageManager.QueueMessage(callback.GetValue(1).GetString());
-            }, uid);
-
+            GetUser();
         }
 
-        public Collaborator GetData()
+        private void GetUser()
         {
-            return new Collaborator()
+            SocketManager.EmitAsync("get-user", async (callback) =>
             {
-                user = uid,
-                isCollaborator = toggle.isOn
-            };
+                await UniTask.SwitchToMainThread();
+
+                // Check if the event was successful
+                if (callback.GetValue().GetBoolean())
+                {
+                    header.text = callback.GetValue(1).GetString();
+                    return;
+                }
+
+                // Send error message
+                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+            }, data.user);
         }
     }
 }

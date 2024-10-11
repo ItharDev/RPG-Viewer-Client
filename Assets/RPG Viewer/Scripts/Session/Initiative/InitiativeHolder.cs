@@ -1,4 +1,4 @@
-using System.Diagnostics;
+using Networking;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -9,64 +9,57 @@ namespace RPG
     {
         [SerializeField] private TMP_InputField nameInput;
         [SerializeField] private TMP_InputField valueInput;
-        [SerializeField] private Image visibilityImage;
-
-        [SerializeField] private Sprite visibleImage;
-        [SerializeField] private Sprite hiddenImage;
 
         [SerializeField] private Color visibleColor;
         [SerializeField] private Color hiddenColor;
-
-
-        private InitiativeController controller;
-        private Vector2 offset;
+        [SerializeField] private Image visibilityImage;
+        [SerializeField] private Sprite visibleSprite;
+        [SerializeField] private Sprite hiddenSprite;
 
         public InitiativeData Data;
+        private bool visible;
 
-        public void LoadData(InitiativeController _controller, InitiativeData _data)
+        public void LoadData(InitiativeData _data)
         {
-            controller = _controller;
             Data = _data;
+            visible = Data.visible;
 
             nameInput.text = _data.name;
-            valueInput.text = string.IsNullOrEmpty(_data.roll) ? "0" : _data.roll;
-            visibilityImage.sprite = Data.visible ? visibleImage : hiddenImage;
+            valueInput.text = _data.roll == 0 ? "0" : _data.roll.ToString();
 
-            nameInput.placeholder.color = Data.visible ? new Color(visibleColor.r, visibleColor.g, visibleColor.b, 0.5f) : new Color(hiddenColor.r, hiddenColor.g, hiddenColor.b, 0.5f); nameInput.placeholder.color = Data.visible ? new Color(visibleColor.r, visibleColor.g, visibleColor.b, 0.5f) : new Color(hiddenColor.r, hiddenColor.g, hiddenColor.b, 0.5f);
-            nameInput.textComponent.color = Data.visible ? visibleColor : hiddenColor;
-        }
-        public void SetIndex(int index)
-        {
-            Data.index = index;
-            transform.SetSiblingIndex(index);
-        }
-        public void UpdateIndex()
-        {
-            Data.index = transform.GetSiblingIndex();
-        }
+            nameInput.placeholder.color = _data.visible ? visibleColor : hiddenColor;
+            nameInput.textComponent.color = _data.visible ? visibleColor : hiddenColor;
+            visibilityImage.sprite = _data.visible ? visibleSprite : hiddenSprite;
 
-        [System.Obsolete]
-        public void UpdateVisibility()
-        {
-            Data.visible = !Data.visible;
-            visibilityImage.sprite = Data.visible ? visibleImage : hiddenImage;
-            nameInput.placeholder.color = Data.visible ? new Color(visibleColor.r, visibleColor.g, visibleColor.b, 0.5f) : new Color(hiddenColor.r, hiddenColor.g, hiddenColor.b, 0.5f); nameInput.placeholder.color = Data.visible ? new Color(visibleColor.r, visibleColor.g, visibleColor.b, 0.5f) : new Color(hiddenColor.r, hiddenColor.g, hiddenColor.b, 0.5f);
-            nameInput.textComponent.color = Data.visible ? visibleColor : hiddenColor;
-            controller.UpdateHolder();
+            gameObject.SetActive(_data.visible || ConnectionManager.Info.isMaster);
         }
-
-        [System.Obsolete]
-        public void ModifyData()
+        public void SetVisible()
         {
-            Data.name = nameInput.text;
-            Data.roll = string.IsNullOrEmpty(valueInput.text) ? "0" : valueInput.text;
-            controller.UpdateHolder();
+            visible = !visible;
+            Modify();
         }
-
-        [System.Obsolete]
-        public void RemoveHolder()
+        public void Modify()
         {
-            controller.RemoveHolder(this);
+            InitiativeData data = new InitiativeData(Data.id, nameInput.text, int.Parse(valueInput.text), visible);
+            SocketManager.EmitAsync("modify-initiative", (callback) =>
+            {
+                // Check if the event was successful
+                if (callback.GetValue().GetBoolean()) return;
+
+                // Send error message
+                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+            }, Data.id, JsonUtility.ToJson(data));
+        }
+        public void Remove()
+        {
+            SocketManager.EmitAsync("remove-initiative", (callback) =>
+            {
+                // Check if the event was successful
+                if (callback.GetValue().GetBoolean()) return;
+
+                // Send error message
+                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+            }, Data.id);
         }
     }
 }

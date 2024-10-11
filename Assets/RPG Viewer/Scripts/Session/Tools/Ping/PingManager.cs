@@ -1,174 +1,165 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Net.Http.Headers;
 using Cysharp.Threading.Tasks;
 using Networking;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 namespace RPG
 {
     public class PingManager : MonoBehaviour
     {
+        [SerializeField] private Camera2D camera2D;
         [SerializeField] private GameObject pingPrefab;
         [SerializeField] private PointerHandler pointerPrefab;
         [SerializeField] private Transform pointerParent;
         [SerializeField] private float tickSpeed;
         [SerializeField] private float pointerMoveThreshold;
 
-        private Vector2 pingStartPos;
+        private Vector2 pointerStartPos;
         private bool pointing;
+        private bool holdingPing;
 
         private float currentTime;
         private float TickSpeed { get { return 1 / tickSpeed; } }
 
+        private bool toolEnabled;
         private Vector2 lastPointerPos;
-        private Vector2 currentPointerPos;
         private PointerHandler myPointer;
+        private PingType pingType;
         private Dictionary<string, PointerHandler> pointers = new Dictionary<string, PointerHandler>();
 
-
-        private void Start()
+        private void OnEnable()
         {
-            SocketManager.Socket.On("ping", async (data) =>
-            {
-                await UniTask.SwitchToMainThread();
-                Vector2 pos = JsonUtility.FromJson<Vector2>(data.GetValue().GetString());
-                HandlePing(pos, data.GetValue(1).GetBoolean());
-            });
-
-            SocketManager.Socket.On("start-pointer", async (data) =>
-            {
-                await UniTask.SwitchToMainThread();
-                Vector2 pos = JsonUtility.FromJson<Vector2>(data.GetValue().GetString());
-                string id = data.GetValue(1).GetString();
-
-                var pointer = Instantiate(pointerPrefab, pointerParent);
-                pointer.transform.position = pos;
-                pointers.Add(id, pointer);
-            });
-            SocketManager.Socket.On("update-pointer", async (data) =>
-            {
-                await UniTask.SwitchToMainThread();
-                Vector2 pos = JsonUtility.FromJson<Vector2>(data.GetValue().GetString());
-                string id = data.GetValue(1).GetString();
-
-                if (pointers.ContainsKey(id)) pointers[id].UpdatePointer(pos);
-            });
-            SocketManager.Socket.On("end-pointer", async (data) =>
-            {
-                await UniTask.SwitchToMainThread();
-                string id = data.GetValue().GetString();
-
-                if (pointers.ContainsKey(id))
-                {
-                    var pointer = pointers[id];
-                    pointers.Remove(id);
-                    Destroy(pointer.gameObject);
-                }
-            });
+            // Add event listeners
+            Events.OnPointerStarted.AddListener(StartPointer);
+            Events.OnPointerUpdated.AddListener(UpdatePointer);
+            Events.OnPointerStopped.AddListener(StopPointer);
+            Events.OnPing.AddListener(Ping);
+            Events.OnToolChanged.AddListener(TogglePointer);
+        }
+        private void OnDisable()
+        {
+            // Remove event listeners
+            Events.OnPointerStarted.RemoveListener(StartPointer);
+            Events.OnPointerUpdated.RemoveListener(UpdatePointer);
+            Events.OnPointerStopped.RemoveListener(StopPointer);
+            Events.OnPing.RemoveListener(Ping);
+            Events.OnToolChanged.RemoveListener(TogglePointer);
         }
         private void Update()
         {
             currentTime += Time.deltaTime;
 
-            if (Input.GetMouseButtonDown(1) && GetComponent<StateManager>().ToolState == ToolState.Ping)
+            if (toolEnabled && Input.GetMouseButtonDown(0) && Input.GetKey(KeyCode.LeftShift))
             {
-                if (GetComponent<StateManager>().PingType == PingType.Ping)
-                {
-                    pingStartPos = Input.mousePosition;
-                    StartCoroutine(StartPing());
-                }
-                else
-                {
-                    lastPointerPos = GetMousePos();
-                    pointing = true;
-                    InitialisePointer(lastPointerPos);
-                }
+                if (pingType == PingType.Pointer) StartPointer();
+                else StartCoroutine(StartPing());
             }
 
-            if (pointing && Input.GetMouseButton(1))
+            if (pointing)
             {
-                currentPointerPos = GetMousePos();
-                if (currentTime >= TickSpeed)
-                {
-                    currentTime = 0;
-                    if (Vector2.Distance(lastPointerPos, currentPointerPos) >= pointerMoveThreshold)
-                    {
-                        lastPointerPos = currentPointerPos;
-                        if (myPointer != null) MovePointer(currentPointerPos);
-                    }
-                }
+                if (Input.GetMouseButtonUp(0)) StopPointer();
+                if (currentTime >= TickSpeed) UpdatePointer();
             }
 
-            if (Input.GetMouseButtonUp(1))
+            if (holdingPing)
             {
-                if (GetComponent<StateManager>().PingType == PingType.Ping)
+                if (Input.GetMouseButtonUp(0))
                 {
+                    holdingPing = false;
                     StopAllCoroutines();
-                    if (Vector2.Distance(pingStartPos, Input.mousePosition) < 5.0f) Ping(false);
-                }
-                else
-                {
-                    pointing = false;
-                    lastPointerPos = Vector2.zero;
-                    currentPointerPos = Vector2.zero;
-                    StopPointer();
+                    Ping(false);
                 }
             }
         }
 
-        public async void HandlePing(Vector2 location, bool strong)
+        private void StartPointer(string id, Vector2 position)
         {
-            if (strong) FindObjectOfType<Camera2D>().MoveToPosition(location);
-            var ping = Instantiate(pingPrefab, location, Quaternion.identity);
-            ping.GetComponent<Canvas>().sortingLayerName = "Above Fog";
-            await UniTask.Delay(10000);
+            if (id == GameData.User.id) return;
+
+            PointerHandler pointer = Instantiate(pointerPrefab, pointerParent);
+            pointer.transform.position = position;
+            pointers.Add(id, pointer);
+        }
+        private void UpdatePointer(string id, Vector2 position)
+        {
+            if (pointers.ContainsKey(id)) pointers[id].UpdatePointer(position);
+        }
+        private void StopPointer(string id)
+        {
+            if (pointers.ContainsKey(id))
+            {
+                PointerHandler pointer = pointers[id];
+                pointers.Remove(id);
+                Destroy(pointer.gameObject);
+            }
+        }
+        private async void Ping(Vector2 position, bool strong)
+        {
+            if (strong) camera2D.MoveToPosition(position);
+
+            var ping = Instantiate(pingPrefab, position, Quaternion.identity, pointerParent);
+
+            float cellSize = Session.Instance.Grid.CellSize;
+            ping.transform.localScale = new Vector3(cellSize * 0.03f, cellSize * 0.03f, 1.0f);
+
+            await UniTask.Delay(6000);
             if (ping != null) Destroy(ping);
         }
 
-        private void Ping(bool strong)
+        private void StartPointer()
         {
-            if (EventSystem.current.IsPointerOverGameObject()) return;
-            var pingPos = (Vector2)Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            pingStartPos = Vector2.zero;
+            pointerStartPos = GetMousePos();
+            pointing = true;
+            camera2D.UsePan = false;
 
-            SocketManager.Socket.Emit("ping", JsonUtility.ToJson(pingPos), strong);
-        }
-        private IEnumerator StartPing()
-        {
-            yield return new WaitForSeconds(1.0f);
-            if (Input.GetMouseButton(1) && Vector2.Distance(pingStartPos, Input.mousePosition) < 5.0f) Ping(true);
-        }
-
-        private void InitialisePointer(Vector2 pos)
-        {
             myPointer = Instantiate(pointerPrefab, pointerParent);
-            myPointer.transform.position = pos;
+            myPointer.transform.position = pointerStartPos;
 
-            SocketManager.Socket.Emit("start-pointer", JsonUtility.ToJson(pos), SocketManager.UserId);
-            Debug.Log("Start pointer");
+            SocketManager.Emit("start-pointer", JsonUtility.ToJson(pointerStartPos));
         }
-        private void MovePointer(Vector2 pos)
+        private void UpdatePointer()
         {
-            myPointer.UpdatePointer(pos);
-
-            SocketManager.Socket.Emit("update-pointer", JsonUtility.ToJson(pos), SocketManager.UserId);
-            Debug.Log("Update pointer");
+            currentTime = 0.0f;
+            Vector2 newPos = GetMousePos();
+            myPointer.UpdatePointer(newPos);
+            if (Vector2.Distance(lastPointerPos, newPos) >= pointerMoveThreshold)
+            {
+                lastPointerPos = newPos;
+                SocketManager.Emit("update-pointer", JsonUtility.ToJson(newPos));
+            }
         }
         private void StopPointer()
         {
-            if (myPointer == null) return;
+            pointing = false;
+            camera2D.UsePan = true;
             Destroy(myPointer.gameObject);
+            SocketManager.Emit("stop-pointer", GameData.User.id);
+        }
+        private IEnumerator StartPing()
+        {
+            holdingPing = true;
+            Vector2 startPos = Input.mousePosition;
 
-            SocketManager.Socket.Emit("end-pointer", SocketManager.UserId);
-            Debug.Log("Stop pointer");
+            yield return new WaitForSeconds(1.0f);
+            holdingPing = false;
+            if (Input.GetMouseButton(0) && Vector2.Distance(startPos, Input.mousePosition) < 5.0f) Ping(true);
+        }
+        private void Ping(bool strong)
+        {
+            Vector2 mousePos = GetMousePos();
+            SocketManager.Emit("ping", JsonUtility.ToJson(mousePos), strong);
+        }
+        private void TogglePointer(Tool tool)
+        {
+            toolEnabled = tool.ToString().ToLower().Contains("ping");
+            if (tool == Tool.Ping_Ping) pingType = PingType.Ping;
+            else if (tool == Tool.Ping_Pointer) pingType = PingType.Pointer;
         }
 
         private Vector2 GetMousePos()
         {
-            Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            return mousePos;
+            return Camera.main.ScreenToWorldPoint(Input.mousePosition);
         }
     }
 

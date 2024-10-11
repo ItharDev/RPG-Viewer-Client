@@ -46,15 +46,7 @@ MonoBehaviour:
       layerSetting:
         list:
         - layerID: 0
-          type: 1
-          sorting: 0
-          sortingIgnore: 0
-          shadowEffect: 2
-          shadowEffectLayer: 0
-          maskLit: 0
-          maskLitDistance: 1
-        - layerID: 1
-          type: 1
+          type: 0
           sorting: 0
           sortingIgnore: 0
           shadowEffect: 2
@@ -67,15 +59,15 @@ MonoBehaviour:
       layerSetting:
         list:
         - layerID: 0
-    - name: 'Preset (Id: 1)'
+    - name: Event Preset
       layerSetting:
         list:
         - layerID: 0
   qualitySettings:
-    lightTextureSize: 2
-    lightEffectTextureSize: 2
-    lightFilterMode: 2
-    lightmapFilterMode: 2
+    lightTextureSize: 1
+    lightEffectTextureSize: 1
+    lightFilterMode: 1
+    lightmapFilterMode: 1
     updateMethod: 0
     coreAxis: 0
     projection: 0
@@ -89,8 +81,7 @@ MonoBehaviour:
   layers:
     colliderLayers:
       names:
-      - Block Vision
-      - Block Everything
+      - Block Light
     lightLayers:
       names:
       - Regular Lights

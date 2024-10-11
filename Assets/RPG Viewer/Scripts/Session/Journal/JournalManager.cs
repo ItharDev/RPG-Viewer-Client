@@ -1,76 +1,83 @@
 using System.Collections.Generic;
-using System.Linq;
-using Networking;
 using UnityEngine;
 
 namespace RPG
 {
     public class JournalManager : MonoBehaviour
     {
-        [SerializeField] private MasterPanel masterPanel;
-        [SerializeField] private JournalPanel panelPrefab;
+        [SerializeField] private Journal journalPrefab;
 
-        private Dictionary<string, JournalPanel> openPanels = new Dictionary<string, JournalPanel>();
+        private Dictionary<string, Journal> openJournals = new Dictionary<string, Journal>();
 
-        public void ShowJournal(JournalData data)
+        private void OnEnable()
         {
-            if (openPanels.ContainsKey(data.id))
-            {
-                openPanels[data.id].Show();
-            }
-            else
-            {
-                var panel = Instantiate(panelPrefab, GameObject.Find("Main Canvas").transform);
-                panel.LoadData(data, this);
-                panel.GetComponent<RectTransform>().sizeDelta = new Vector2(600.0f, 750.0f);
-                panel.GetComponent<RectTransform>().anchoredPosition = new Vector2(660.0f, -165.0f);
-                panel.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
-                panel.transform.SetAsLastSibling();
-                openPanels.Add(data.id, panel);
-            }
+            // Add event listeners
+            Events.OnJournalTextModified.AddListener(ModifyText);
+            Events.OnJournalHeaderModified.AddListener(ModifyHeader);
+            Events.OnJournalImageModified.AddListener(ModifyImage);
+            Events.OnJournalRemoved.AddListener(RemoveJournal);
+            Events.OnJournalShowed.AddListener(ShowJournal);
+            Events.OnCollaboratorsUpdated.AddListener(UpdateCollaborators);
         }
-        public void CloseJournal(JournalPanel panel)
+        private void OnDisable()
         {
-            if (openPanels.ContainsValue(panel)) openPanels.Remove(panel.Data.id);
-            Destroy(panel.gameObject);
+            // Remove event listeners
+            Events.OnJournalTextModified.RemoveListener(ModifyText);
+            Events.OnJournalHeaderModified.RemoveListener(ModifyHeader);
+            Events.OnJournalImageModified.RemoveListener(ModifyImage);
+            Events.OnJournalRemoved.RemoveListener(RemoveJournal);
+            Events.OnJournalShowed.RemoveListener(ShowJournal);
+            Events.OnCollaboratorsUpdated.RemoveListener(UpdateCollaborators);
         }
-        public void RemoveJournal(string id)
-        {
-            masterPanel.RemoveJournal(id);
 
-            if (openPanels.ContainsKey(id))
-            {
-                Destroy(openPanels[id].gameObject);
-                openPanels.Remove(id);
-            }
-        }
-        public void ModifyText(string id, string text)
+        private void ModifyText(string id, string text, string uid)
         {
-            masterPanel.UpdateJournalText(id, text);
+            // Load new info
+            if (openJournals.ContainsKey(id)) openJournals[id].ReloadText(text, uid != GameData.User.id);
 
-            if (openPanels.ContainsKey(id)) openPanels[id].UpdateText(text);
         }
-        public void ModifyHeader(string id, string text)
+        private void ModifyHeader(string id, string text, string uid)
         {
-            masterPanel.UpdateJournalHeader(id, text);
+            // Load new info
+            if (openJournals.ContainsKey(id)) openJournals[id].ReloadHeader(text, uid != GameData.User.id);
+        }
+        private void ModifyImage(string id, string text)
+        {
+            // Load new info
+            if (openJournals.ContainsKey(id)) openJournals[id].ReloadImage(text);
+        }
+        private void RemoveJournal(string id)
+        {
+            if (!openJournals.ContainsKey(id)) return;
+            Destroy(openJournals[id]);
+            RemoveJournal(id);
+        }
+        private void ShowJournal(string id)
+        {
+            OpenJournal(id);
+        }
+        private void UpdateCollaborators(string id, string owner, List<Collaborator> collaborators)
+        {
+            if (!openJournals.ContainsKey(id)) return;
+            openJournals[id].UpdateCollaborators(collaborators);
+        }
 
-            if (openPanels.ContainsKey(id)) openPanels[id].UpdateHeader(text);
-        }
-        public void ModifyImage(string id, string text)
+        public void OpenJournal(string id)
         {
-            masterPanel.UpdateJournalImage(id, text);
+            if (openJournals.ContainsKey(id)) return;
 
-            if (openPanels.ContainsKey(id)) openPanels[id].UpdateImage(text);
+            Journal journal = Instantiate(journalPrefab);
+            journal.transform.SetParent(UICanvas.Instance.transform);
+            journal.transform.SetAsLastSibling();
+            journal.transform.localPosition = Vector3.zero;
+
+            journal.Instantiate(id);
+            openJournals.Add(id, journal);
         }
-        public void SetCollaborators(string id, List<Collaborator> collaborators)
+        public void CloseJournal(string id)
         {
-            var collaborator = collaborators.FirstOrDefault(x => x.user == SocketManager.UserId);
-            if (collaborator.user != SocketManager.UserId) RemoveJournal(id);
-            else
-            {
-                if (!collaborator.isCollaborator) RemoveJournal(id);
-                else masterPanel.LoadJournal(id, "shared");
-            }
+            if (!openJournals.ContainsKey(id)) return;
+            openJournals.Remove(id);
         }
     }
 }
