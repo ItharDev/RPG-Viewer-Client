@@ -19,7 +19,7 @@ namespace RPG
         {
             callback = _callback;
             gameObject.SetActive(true);
-            LeanTween.size(rect, new Vector2(250.0f, 117.0f), 0.2f);
+            LeanTween.size(rect, new Vector2(250.0f, 146.0f), 0.2f);
             LoadData(_data);
         }
 

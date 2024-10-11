@@ -110,6 +110,7 @@ namespace RPG
 
             icon.sprite = enabled ? modifyIcon : regularIcon;
             canvas.enabled = (Data.active && Data.visible) || enabled;
+            canvas.sortingLayerName = enabled ? "Above Fog" : "Default";
             radiusIndicator.SetActive(enabled);
         }
 
@@ -123,7 +124,7 @@ namespace RPG
             else icon.color = Data.active ? activeColor : disabledColor;
 
             icon.sprite = enabled ? modifyIcon : regularIcon;
-            radiusOutline.color = icon.color;
+            radiusOutline.color = Data.active ? activeColor : disabledColor;
 
             float cellSize = Session.Instance.Grid.CellSize;
 
@@ -133,6 +134,7 @@ namespace RPG
             radiusCollider.radius = data.radius / Session.Instance.Grid.Unit.scale * Session.Instance.Grid.CellSize;
             radiusOutline.transform.parent.localScale = new Vector3(2.0f * radiusCollider.radius / canvas.transform.localScale.x, 2.0f * radiusCollider.radius / canvas.transform.localScale.y, 1.0f);
             canvas.enabled = (Data.active && Data.visible) || enabled;
+            canvas.sortingLayerName = enabled ? "Above Fog" : "Default";
             radiusIndicator.SetActive(enabled);
         }
 
@@ -197,7 +199,7 @@ namespace RPG
             else icon.color = active ? activeColor : disabledColor;
 
             icon.sprite = enabled ? modifyIcon : regularIcon;
-            radiusOutline.color = icon.color;
+            radiusOutline.color = Data.active ? activeColor : disabledColor;
             canvas.enabled = (active && Data.visible) || enabled;
         }
 
