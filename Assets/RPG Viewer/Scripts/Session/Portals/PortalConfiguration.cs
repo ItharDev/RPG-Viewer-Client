@@ -8,6 +8,7 @@ namespace RPG
     public class PortalConfiguration : MonoBehaviour
     {
         [SerializeField] private Toggle activeToggle;
+        [SerializeField] private Toggle visibleToggle;
         [SerializeField] private TMP_Dropdown modeDropdown;
         [SerializeField] private TMP_InputField radiusInput;
         [SerializeField] private RectTransform rect;
@@ -34,6 +35,7 @@ namespace RPG
         private void LoadData(PortalData data)
         {
             activeToggle.isOn = data.active;
+            visibleToggle.isOn = data.visible;
             modeDropdown.value = data.continuous ? 1 : 0;
             radiusInput.text = data.radius.ToString();
         }
@@ -50,6 +52,7 @@ namespace RPG
             PortalData data = new PortalData
             {
                 active = activeToggle.isOn,
+                visible = visibleToggle.isOn,
                 continuous = modeDropdown.value == 1,
                 radius = radius
             };
