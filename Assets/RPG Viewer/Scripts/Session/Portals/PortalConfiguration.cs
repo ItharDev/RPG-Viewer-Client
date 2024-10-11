@@ -27,7 +27,7 @@ namespace RPG
             LeanTween.size(rect, new Vector2(250.0f, 0.0f), 0.2f).setOnComplete(() =>
             {
                 if (saveData) SaveData();
-                gameObject.SetActive(false);
+                Destroy(gameObject);
             });
         }
 

@@ -65,7 +65,6 @@ namespace RPG
         private void ToggleUI(Setting setting)
         {
             bool enabled = setting.ToString().ToLower().Contains("portals");
-            canvasGroup.alpha = enabled ? 1.0f : 0.0f;
             canvasGroup.blocksRaycasts = enabled;
             interactable = enabled;
 
@@ -155,7 +154,7 @@ namespace RPG
             if (Portals.ContainsKey(id))
             {
                 // Enable or disable the portal
-                Portals[id].SetEnabled(active);
+                Portals[id].SetActive(active);
             }
         }
 

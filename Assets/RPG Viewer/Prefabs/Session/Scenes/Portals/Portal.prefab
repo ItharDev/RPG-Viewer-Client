@@ -195,7 +195,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1134548780382554929
 RectTransform:
   m_ObjectHideFlags: 0
@@ -301,9 +301,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   icon: {fileID: 7425781202829931842}
+  regularIcon: {fileID: 21300000, guid: 85bffb92f64039e4a8ee947968a611c2, type: 3}
+  modifyIcon: {fileID: 21300000, guid: 412fd2845ab51a64aaffdd963c71dc19, type: 3}
   radiusOutline: {fileID: 7203410388856943583}
+  radiusIndicator: {fileID: 1827072583420822448}
   disabledColor: {r: 0.59607846, g: 0.16078432, b: 0.16078432, a: 1}
   activeColor: {r: 0.16113384, g: 0.6698113, b: 0.5159134, a: 1}
+  normalColor: {r: 0.90588236, g: 0.81960785, b: 0.69411767, a: 1}
   blockingLayers:
     serializedVersion: 2
     m_Bits: 384
@@ -314,6 +318,7 @@ MonoBehaviour:
     position: {x: 0, y: 0}
     radius: 0
     active: 0
+    visible: 0
     link: 
     continuous: 0
 --- !u!58 &3765619778467757576

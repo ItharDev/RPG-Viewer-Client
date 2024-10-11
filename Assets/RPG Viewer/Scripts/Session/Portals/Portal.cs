@@ -12,9 +12,13 @@ namespace RPG
     {
         [Header("Configuration")]
         [SerializeField] private Image icon;
+        [SerializeField] private Sprite regularIcon;
+        [SerializeField] private Sprite modifyIcon;
         [SerializeField] private Image radiusOutline;
+        [SerializeField] private GameObject radiusIndicator;
         [SerializeField] private Color disabledColor;
         [SerializeField] private Color activeColor;
+        [SerializeField] private Color normalColor;
         [SerializeField] private LayerMask blockingLayers;
         [SerializeField] private PortalConfiguration configPrefab;
 
@@ -99,8 +103,14 @@ namespace RPG
 
         private void ToggleUI(Setting setting)
         {
-            bool enabled = SettingsHandler.Instance.Setting == Setting.Portals_Link;
+            bool enabled = SettingsHandler.Instance.Setting.ToString().ToLower().Contains("portal");
             if (linkLine != null) linkLine.active = enabled;
+            if (!enabled) icon.color = normalColor;
+            else icon.color = Data.active ? activeColor : disabledColor;
+
+            icon.sprite = enabled ? modifyIcon : regularIcon;
+            canvas.enabled = (Data.active && Data.visible) || enabled;
+            radiusIndicator.SetActive(enabled);
         }
 
         public void LoadData(string id, PortalData data)
@@ -108,7 +118,11 @@ namespace RPG
             Id = id;
             Data = data;
 
-            icon.color = Data.active ? activeColor : disabledColor;
+            bool enabled = SettingsHandler.Instance.Setting.ToString().ToLower().Contains("portal");
+            if (!enabled) icon.color = normalColor;
+            else icon.color = Data.active ? activeColor : disabledColor;
+
+            icon.sprite = enabled ? modifyIcon : regularIcon;
             radiusOutline.color = icon.color;
 
             float cellSize = Session.Instance.Grid.CellSize;
@@ -118,6 +132,8 @@ namespace RPG
             canvas.transform.localScale = new Vector3(cellSize * 0.03f, cellSize * 0.03f, 1.0f);
             radiusCollider.radius = data.radius / Session.Instance.Grid.Unit.scale * Session.Instance.Grid.CellSize;
             radiusOutline.transform.parent.localScale = new Vector3(2.0f * radiusCollider.radius / canvas.transform.localScale.x, 2.0f * radiusCollider.radius / canvas.transform.localScale.y, 1.0f);
+            canvas.enabled = (Data.active && Data.visible) || enabled;
+            radiusIndicator.SetActive(enabled);
         }
 
         public void CreateLink()
@@ -173,11 +189,16 @@ namespace RPG
             if (linkLine != null) linkLine.active = enabled;
         }
 
-        public void SetEnabled(bool active)
+        public void SetActive(bool active)
         {
+            bool enabled = SettingsHandler.Instance.Setting.ToString().ToLower().Contains("portal");
             Data.active = active;
-            icon.color = active ? activeColor : disabledColor;
+            if (!enabled) icon.color = normalColor;
+            else icon.color = active ? activeColor : disabledColor;
+
+            icon.sprite = enabled ? modifyIcon : regularIcon;
             radiusOutline.color = icon.color;
+            canvas.enabled = (active && Data.visible) || enabled;
         }
 
         public void UpdatePosition(Vector2 position)
@@ -299,7 +320,12 @@ namespace RPG
         public void UpdateData(PortalData data)
         {
             Data = data;
-            icon.color = Data.active ? activeColor : disabledColor;
+            bool enabled = SettingsHandler.Instance.Setting.ToString().ToLower().Contains("portal");
+            if (!enabled) icon.color = normalColor;
+            else icon.color = Data.active ? activeColor : disabledColor;
+
+            icon.sprite = enabled ? modifyIcon : regularIcon;
+            canvas.enabled = (Data.active && Data.visible) || enabled;
             radiusOutline.color = icon.color;
 
             // Update our position and scale
@@ -318,6 +344,7 @@ namespace RPG
         public Vector2 position;
         public float radius;
         public bool active;
+        public bool visible;
         public string link;
         public bool continuous;
     }
