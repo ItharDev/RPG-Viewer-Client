@@ -16,6 +16,8 @@ namespace RPG
         [SerializeField] private TokenHolder tokenPrefab;
         [SerializeField] private Transform rootTransform;
         [SerializeField] private TokenConfiguration configPrefab;
+        [SerializeField] private RectTransform topPanel;
+        [SerializeField] private RectTransform bottomPanel;
 
         private Dictionary<string, TokenFolder> folders = new Dictionary<string, TokenFolder>();
         private Dictionary<string, TokenHolder> tokens = new Dictionary<string, TokenHolder>();
@@ -32,6 +34,13 @@ namespace RPG
             {
                 loaded = true;
                 LoadTokens();
+            }
+
+            if (!ConnectionManager.Info.isMaster)
+            {
+                topPanel.gameObject.SetActive(false);
+                bottomPanel.gameObject.SetActive(true);
+                bottomPanel.sizeDelta = new Vector2(210.0f, 1000.0f);
             }
 
             // Add event listeners
