@@ -118,6 +118,13 @@ namespace RPG
                 {
                     await UniTask.SwitchToMainThread();
 
+
+                    // Instantiate public folder
+                    Folder data = new Folder("public", "", "Public", GetColor());
+                    TokenFolder folder = Instantiate(folderPrefab, rootTransform);
+                    folders.Add("public", folder);
+                    folder.LoadData(data, this, SortContent);
+
                     // Load tokens
                     System.Text.Json.JsonElement contents;
                     if (callback.GetValue(1).TryGetProperty("contents", out contents))
@@ -206,7 +213,7 @@ namespace RPG
                     SocketManager.EmitAsync("create-blueprint", async (callback) =>
                     {
                         if (path.Contains("public")) return;
-                        
+
                         // Check if the event was successful
                         if (callback.GetValue().GetBoolean())
                         {
