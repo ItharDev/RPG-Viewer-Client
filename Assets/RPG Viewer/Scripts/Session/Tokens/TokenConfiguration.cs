@@ -344,6 +344,7 @@ namespace RPG
                 if (lightData != PresetManager.Instance.GetPreset(lightData.id))
                 {
                     lightData.id = data.id;
+                    lightData.name = "";
                     data.light = data.id;
                 }
             }

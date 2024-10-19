@@ -11,6 +11,7 @@ namespace RPG
         [SerializeField] private Toggle enabledToggle;
         [SerializeField] private TMP_InputField directionInput;
         [SerializeField] private FlexibleColorPicker colorPicker;
+        [SerializeField] private TMP_Text presetInfo;
 
         [Space]
         [SerializeField] private LightInput primary;
@@ -86,6 +87,8 @@ namespace RPG
             secondary.colorButton.color = data.secondary.color;
             secondary.strengthInput.text = data.secondary.effect.strength.ToString();
             secondary.frequencyInput.text = data.secondary.effect.frequency.ToString();
+
+            presetInfo.text = string.IsNullOrEmpty(lightData.name) ? "No preset" : lightData.name;
         }
         public void ClosePanel(bool saveData = true)
         {
@@ -118,6 +121,7 @@ namespace RPG
                 secondary.colorButton.color = color;
             }
 
+            ModifyField();
         }
         public void ChangeIntensity(bool isPrimary)
         {
@@ -169,6 +173,8 @@ namespace RPG
             secondary.colorButton.color = preset.secondary.color;
             secondary.strengthInput.text = preset.secondary.effect.strength.ToString();
             secondary.frequencyInput.text = preset.secondary.effect.frequency.ToString();
+
+            presetInfo.text = string.IsNullOrEmpty(lightData.name) ? "No preset" : lightData.name;
         }
 
         private void SaveData()
@@ -198,12 +204,18 @@ namespace RPG
                 if (lightData != PresetManager.Instance.GetPreset(lightData.id))
                 {
                     lightData.id = id;
+                    lightData.name = "";
                     info.id = id;
                 }
             }
 
             // Send callback
             callback?.Invoke(info, lightData);
+        }
+
+        public void ModifyField()
+        {
+            presetInfo.text = "No preset";
         }
 
         [Serializable]
