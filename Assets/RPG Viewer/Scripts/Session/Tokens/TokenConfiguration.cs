@@ -27,8 +27,8 @@ namespace RPG
 
         [Header("Lighting")]
         [SerializeField] private CanvasGroup lightingPanel;
-        [SerializeField] private CanvasGroup presetsButton;
         [SerializeField] private PresetList presetList;
+        [SerializeField] private TMP_Text presetInfo;
         [SerializeField] private Vector2 lightingPanelSize;
         [SerializeField] private TMP_InputField visionInput;
         [SerializeField] private TMP_InputField nightInput;
@@ -68,12 +68,10 @@ namespace RPG
             // Enable / disable raycasting
             appearancePanel.blocksRaycasts = true;
             lightingPanel.blocksRaycasts = false;
-            presetsButton.blocksRaycasts = false;
 
             // Show / hide panels
             appearancePanel.LeanAlpha(1.0f, 0.2f);
             lightingPanel.LeanAlpha(0.0f, 0.2f);
-            presetsButton.LeanAlpha(0.0f, 0.2f);
 
             LeanTween.size(rect, appearancePanelSize, 0.2f);
             presetList.ClosePanel();
@@ -83,12 +81,10 @@ namespace RPG
             // Enable / disable raycasting
             lightingPanel.blocksRaycasts = true;
             appearancePanel.blocksRaycasts = false;
-            presetsButton.blocksRaycasts = true;
 
             // Show / hide panels
             lightingPanel.LeanAlpha(1.0f, 0.2f);
             appearancePanel.LeanAlpha(0.0f, 0.2f);
-            presetsButton.LeanAlpha(1.0f, 0.2f);
 
             LeanTween.size(rect, lightingPanelSize, 0.2f);
         }
@@ -131,6 +127,8 @@ namespace RPG
             secondary.colorButton.color = data.secondary.color;
             secondary.strengthInput.text = data.secondary.effect.strength.ToString();
             secondary.frequencyInput.text = data.secondary.effect.frequency.ToString();
+
+            presetInfo.text = string.IsNullOrEmpty(lightData.name) ? "No preset" : lightData.name;
         }
 
         public async void ChooseImage(bool art)
@@ -223,6 +221,8 @@ namespace RPG
                 color.a = 1.0f;
                 secondary.colorButton.color = color;
             }
+
+            ModifyField();
         }
         public void ChangeIntensity(bool isPrimary)
         {
@@ -303,6 +303,8 @@ namespace RPG
             secondary.colorButton.color = preset.secondary.color;
             secondary.strengthInput.text = preset.secondary.effect.strength.ToString();
             secondary.frequencyInput.text = preset.secondary.effect.frequency.ToString();
+
+            presetInfo.text = string.IsNullOrEmpty(lightData.name) ? "No preset" : lightData.name;
         }
 
         private void SaveData()
@@ -352,6 +354,11 @@ namespace RPG
 
             // Send callback
             callback?.Invoke(data, image, art, lightData);
+        }
+
+        public void ModifyField()
+        {
+            presetInfo.text = "No preset";
         }
 
         [Serializable]

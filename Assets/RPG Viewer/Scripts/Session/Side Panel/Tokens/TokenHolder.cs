@@ -129,7 +129,8 @@ namespace RPG
             PointerEventData pointerData = (PointerEventData)eventData;
             if (pointerData.button != PointerEventData.InputButton.Left) return;
 
-            if (!string.IsNullOrEmpty(ConnectionManager.State.scene) && ConnectionManager.State.synced) InstantiateDrag();
+            if (string.IsNullOrEmpty(ConnectionManager.State.scene) || (ConnectionManager.State.synced && !ConnectionManager.Info.isMaster)) return;
+            InstantiateDrag();
         }
 
         private void InstantiateDrag()
