@@ -150,7 +150,7 @@ namespace RPG
 
                     // Send error message
                     MessageManager.QueueMessage(callback.GetValue(1).GetString());
-                }, JsonUtility.ToJson(newData), JsonUtility.ToJson(lightData));
+                }, JsonUtility.ToJson(newData), JsonUtility.ToJson(lightData), Path.Contains("public"));
             });
         }
         private void ToggleOptions()
