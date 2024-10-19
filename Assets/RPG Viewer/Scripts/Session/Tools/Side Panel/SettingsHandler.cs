@@ -21,6 +21,7 @@ namespace RPG
         [SerializeField] private ToolButton doorsButton;
         [SerializeField] private ToolButton hiddenButton;
         [SerializeField] private ToolButton fogButton;
+        [SerializeField] private ToolButton darknessButton;
         [SerializeField] private ToolButton environemntButton;
         [SerializeField] private ToolButton lightingButton;
         [SerializeField] private ToolButton createButton;
@@ -127,6 +128,7 @@ namespace RPG
             doorsButton.Deselect();
             hiddenButton.Deselect();
             fogButton.Deselect();
+            darknessButton.Deselect();
             environemntButton.Deselect();
 
             // Update tool states
@@ -141,6 +143,7 @@ namespace RPG
             doorsButton.Deselect();
             hiddenButton.Deselect();
             fogButton.Deselect();
+            darknessButton.Deselect();
             environemntButton.Deselect();
 
             // Update tool states
@@ -155,6 +158,7 @@ namespace RPG
             invisibleButton.Deselect();
             hiddenButton.Deselect();
             fogButton.Deselect();
+            darknessButton.Deselect();
             environemntButton.Deselect();
 
             // Update tool states
@@ -169,6 +173,7 @@ namespace RPG
             regularButton.Deselect();
             invisibleButton.Deselect();
             fogButton.Deselect();
+            darknessButton.Deselect();
             environemntButton.Deselect();
 
             // Update tool states
@@ -183,6 +188,7 @@ namespace RPG
             regularButton.Deselect();
             invisibleButton.Deselect();
             fogButton.Select();
+            darknessButton.Deselect();
             environemntButton.Deselect();
 
             // Update tool states
@@ -197,7 +203,23 @@ namespace RPG
             regularButton.Deselect();
             invisibleButton.Deselect();
             fogButton.Deselect();
+            darknessButton.Deselect();
             environemntButton.Select();
+
+            // Update tool states
+            activeSetting = Setting.Walls_Environment;
+            lastWalls = activeSetting;
+        }
+        public void SelectDarkness()
+        {
+            // Update selections
+            hiddenButton.Deselect();
+            doorsButton.Deselect();
+            regularButton.Deselect();
+            invisibleButton.Deselect();
+            fogButton.Select();
+            darknessButton.Deselect();
+            environemntButton.Deselect();
 
             // Update tool states
             activeSetting = Setting.Walls_Environment;
@@ -513,6 +535,7 @@ namespace RPG
         Walls_Hidden_Door,
         Walls_Fog,
         Walls_Environment,
+        Walls_Darkness,
         Lighting_Create,
         Lighting_Copy,
         Lighting_Delete,

@@ -108,6 +108,9 @@ namespace RPG
                 case Setting.Walls_Environment:
                     wallType = WallType.Environment;
                     break;
+                case Setting.Walls_Darkness:
+                    wallType = WallType.Darkness;
+                    break;
             }
         }
         public void LoadWalls(List<WallData> list)

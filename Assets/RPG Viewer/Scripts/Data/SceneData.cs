@@ -67,7 +67,8 @@ namespace RPG
         Invisible,
         Hidden_Door,
         Fog,
-        Environment
+        Environment,
+        Darkness
     }
 
     [Serializable]

@@ -17,6 +17,7 @@ namespace RPG
         [SerializeField] private GameObject lockedIcon;
         [SerializeField] private GameObject info;
         [SerializeField] private LightEventListener eventListener;
+        [SerializeField] private List<LightRoom2D> lightRooms;
 
         private Canvas canvas;
         private EdgeCollider2D edgeCollider;
@@ -138,6 +139,11 @@ namespace RPG
             info.SetActive(ConnectionManager.Info.isMaster);
             eventListener.enabled = data.type == WallType.Environment;
             doorIcon.color = data.type == WallType.Hidden_Door ? secretColor : regularColor;
+
+            for (int i = 0; i < lightRooms.Count; i++)
+            {
+                lightRooms[i].enabled = data.type == WallType.Darkness;
+            }
 
             HandleCollider();
 
