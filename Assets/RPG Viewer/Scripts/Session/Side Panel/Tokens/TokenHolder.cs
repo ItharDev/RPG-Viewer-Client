@@ -155,6 +155,7 @@ namespace RPG
         }
         private void ToggleOptions()
         {
+
             // Toggle open state
             optionsOpen = !optionsOpen;
 
@@ -170,6 +171,7 @@ namespace RPG
             if (selectButton.activeInHierarchy) targetSize += 30.0f;
             if (deselectButton.activeInHierarchy) targetSize += 30.0f;
             if (rootButton.activeInHierarchy) targetSize += 30.0f;
+            if (Path.Contains("public")) targetSize = 60.0f;
 
             LeanTween.size(optionsPanel, new Vector2(110.0f, optionsOpen ? targetSize : 0.0f), 0.2f).setOnComplete(() =>
             {
@@ -215,6 +217,8 @@ namespace RPG
                 bool imageChanged = !image.SequenceEqual(icon.sprite.texture.GetRawTextureData());
                 SocketManager.EmitAsync("modify-blueprint", async (callback) =>
                 {
+                    if (Path.Contains("public")) return;
+
                     await UniTask.SwitchToMainThread();
                     if (callback.GetValue().GetBoolean())
                     {
@@ -240,6 +244,8 @@ namespace RPG
             {
                 if (result) SocketManager.EmitAsync("remove-blueprint", async (callback) =>
                 {
+                    if (Path.Contains("public")) return;
+
                     await UniTask.SwitchToMainThread();
                     if (callback.GetValue().GetBoolean())
                     {
@@ -316,10 +322,11 @@ namespace RPG
             Data.light = Data.id;
             lightData = data;
 
-            SocketManager.EmitAsync("modify-blueprint", (callback) =>
-            {
+            // TODO: Implement lighting preset removal
+            // SocketManager.EmitAsync("modify-blueprint", (callback) =>
+            // {
 
-            }, Id, JsonUtility.ToJson(Data), JsonUtility.ToJson(lightData), null);
+            // }, Id, JsonUtility.ToJson(Data), JsonUtility.ToJson(lightData), null);
 
         }
 

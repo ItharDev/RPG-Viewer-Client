@@ -48,6 +48,9 @@ namespace RPG
         public static UnityEvent<TokenHolder> OnBlueprintSelected = new UnityEvent<TokenHolder>();
         public static UnityEvent OnBlueprintDeselected = new UnityEvent();
         public static UnityEvent OnBlueprintMoved = new UnityEvent();
+        public static UnityEvent<string> OnBlueprintCreated = new UnityEvent<string>();
+        public static UnityEvent<string> OnBlueprintModified = new UnityEvent<string>();
+        public static UnityEvent<string> OnBlueprintRemoved = new UnityEvent<string>();
 
         // Side panel (Journals)
         public static UnityEvent<JournalFolder> OnJournalFolderClicked = new UnityEvent<JournalFolder>();

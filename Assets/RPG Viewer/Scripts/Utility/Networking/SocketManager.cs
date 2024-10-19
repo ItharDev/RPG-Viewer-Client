@@ -569,6 +569,29 @@ namespace Networking
                 await UniTask.SwitchToMainThread();
                 Events.OnTokenTeleported?.Invoke(id, position);
             });
+
+            // Blueprints
+            Socket.On("create-blueprint", async (data) =>
+            {
+                string id = data.GetValue().GetString();
+
+                await UniTask.SwitchToMainThread();
+                Events.OnBlueprintCreated?.Invoke(id);
+            });
+            Socket.On("modify-blueprint", async (data) =>
+            {
+                string id = data.GetValue().GetString();
+
+                await UniTask.SwitchToMainThread();
+                Events.OnBlueprintModified?.Invoke(id);
+            });
+            Socket.On("remove-blueprint", async (data) =>
+            {
+                string id = data.GetValue().GetString();
+
+                await UniTask.SwitchToMainThread();
+                Events.OnBlueprintRemoved?.Invoke(id);
+            });
         }
 
         public static void Connect(string address)

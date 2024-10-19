@@ -36,11 +36,18 @@ namespace RPG
 
             // Add event listeners
             Events.OnSidePanelChanged.AddListener(DeselectToken);
+            Events.OnBlueprintCreated.AddListener(CreatePublicToken);
+            Events.OnBlueprintModified.AddListener(ModifyPublicToken);
+            Events.OnBlueprintRemoved.AddListener(DeletePublicToken);
         }
+
         private void OnDisable()
         {
             // Remove event listeners
             Events.OnSidePanelChanged.RemoveListener(DeselectToken);
+            Events.OnBlueprintCreated.RemoveListener(CreatePublicToken);
+            Events.OnBlueprintModified.RemoveListener(ModifyPublicToken);
+            Events.OnBlueprintRemoved.RemoveListener(DeletePublicToken);
         }
 
         private void SortContent()
@@ -70,7 +77,7 @@ namespace RPG
         }
         private void LoadTokens()
         {
-            SocketManager.EmitAsync("get-blueprints", async (callback) =>
+            if (ConnectionManager.Info.isMaster) SocketManager.EmitAsync("get-blueprints", async (callback) =>
             {
                 // Check if the event was successful
                 if (callback.GetValue().GetBoolean())
@@ -96,6 +103,29 @@ namespace RPG
                         for (int i = 0; i < list.Length; i++)
                         {
                             LoadToken(list[i].GetString(), "");
+                        }
+                    }
+                    return;
+                }
+
+                // Send error message
+                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+            });
+            else SocketManager.EmitAsync("get-public-blueprints", async (callback) =>
+            {
+                // Check if the event was successful
+                if (callback.GetValue().GetBoolean())
+                {
+                    await UniTask.SwitchToMainThread();
+
+                    // Load tokens
+                    System.Text.Json.JsonElement contents;
+                    if (callback.GetValue(1).TryGetProperty("contents", out contents))
+                    {
+                        var list = contents.EnumerateArray().ToArray();
+                        for (int i = 0; i < list.Length; i++)
+                        {
+                            LoadToken(list[i].GetString(), "public");
                         }
                     }
                     return;
@@ -175,6 +205,8 @@ namespace RPG
                 {
                     SocketManager.EmitAsync("create-blueprint", async (callback) =>
                     {
+                        if (path.Contains("public")) return;
+                        
                         // Check if the event was successful
                         if (callback.GetValue().GetBoolean())
                         {
@@ -464,6 +496,30 @@ namespace RPG
             selectedToken = null;
             Events.OnBlueprintDeselected?.Invoke();
             Events.OnBlueprintFolderDeselected?.Invoke();
+        }
+
+        private void CreatePublicToken(string id)
+        {
+            LoadToken(id, "public");
+        }
+
+        private void ModifyPublicToken(string id)
+        {
+            // Find target token
+            TokenHolder targetToken = tokens[id];
+            targetToken.LoadData(id, "public", this, null);
+        }
+
+        private void DeletePublicToken(string id)
+        {
+            // Find target token
+            TokenHolder targetToken = tokens[id];
+            tokens.Remove(id);
+            Destroy(targetToken.gameObject);
+
+            // Reload public folder
+            TokenFolder publicFolder = GetDirectoryByPath("public");
+            publicFolder.SortContent();
         }
     }
 }

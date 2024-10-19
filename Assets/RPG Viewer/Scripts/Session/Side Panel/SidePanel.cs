@@ -57,10 +57,9 @@ namespace RPG
             {
                 imageButton.gameObject.SetActive(false);
                 syncButton.gameObject.SetActive(false);
-                tokensButton.gameObject.SetActive(false);
                 scenesButton.gameObject.SetActive(false);
-                targetWidthOpen = 110.0f;
-                targetWidthClose = 50.0f;
+                targetWidthOpen = 160.0f;
+                targetWidthClose = 100.0f;
             }
 
             ClosePanel();

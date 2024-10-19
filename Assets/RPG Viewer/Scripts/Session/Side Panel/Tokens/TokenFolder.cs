@@ -238,6 +238,7 @@ namespace RPG
             if (moveHereButton.activeInHierarchy) targetSize += 30.0f;
             if (deselectButton.activeInHierarchy) targetSize += 30.0f;
             if (rootButton.activeInHierarchy) targetSize += 30.0f;
+            if (Path.Contains("public")) targetSize = 30.0f;
 
             LeanTween.size(optionsPanel, new Vector2(115.0f, optionsOpen ? targetSize : 0.0f), 0.2f).setOnComplete(() =>
             {
@@ -318,6 +319,12 @@ namespace RPG
         }
         public void ConfirmRename()
         {
+            if (headerInput.text == "Public")
+            {
+                MessageManager.QueueMessage("Folder name cannot be 'Public'");
+                return;
+            }
+
             headerInput.gameObject.SetActive(false);
             header.gameObject.SetActive(true);
             string newName = string.IsNullOrEmpty(headerInput.text) ? Data.name : headerInput.text;
