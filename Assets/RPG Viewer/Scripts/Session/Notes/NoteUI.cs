@@ -20,6 +20,7 @@ namespace RPG
         [SerializeField] private LayoutElement layoutElement;
         [SerializeField] private ImageWithIndependentRoundedCorners corners;
         [SerializeField] private ImageWithIndependentRoundedCorners topCorners;
+        [SerializeField] private Vector2 maxSize;
 
         [Header("Top Panel")]
 
@@ -67,6 +68,7 @@ namespace RPG
             setPublic.SetActive(info.owner == GameData.User.id);
             showOthers.SetActive(info.IsOwner);
             globalIcon.sprite = info.global ? globalSprite : privateSprite;
+            rect.localScale = Vector3.one;
 
             if (string.IsNullOrEmpty(data.image))
             {
@@ -85,6 +87,8 @@ namespace RPG
                 Texture2D texture = await AsyncImageLoader.CreateFromImageAsync(bytes);
                 image.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
                 image.color = Color.white;
+                CaclulateImageSize(texture.width, texture.height);
+
             });
 
             ViewImage();
@@ -293,6 +297,26 @@ namespace RPG
             markdown.gameObject.SetActive(false);
             textInput.gameObject.SetActive(true);
             textInput.Select();
+        }
+
+        private void CaclulateImageSize(float width, float height)
+        {
+            float ratio = width / height;
+
+            if (ratio > 1)
+            {
+                width = Mathf.Min(maxSize.x, Screen.width);
+                height = Mathf.Min(width / ratio + 65.0f, Screen.height);
+            }
+            else if (ratio < 1)
+            {
+                height = Mathf.Min(maxSize.y + 65.0f, Screen.height);
+                width = height * ratio;
+            }
+            else width = height = Mathf.Min(maxSize.y + 65.0f, Screen.height);
+
+            rect.sizeDelta = new Vector2(width, height);
+            rect.anchoredPosition = new Vector2(-rect.sizeDelta.x / 2, rect.sizeDelta.y / 2);
         }
 
         public void ResizePanel(BaseEventData eventData)
