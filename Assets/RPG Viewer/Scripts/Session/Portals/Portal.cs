@@ -57,6 +57,10 @@ namespace RPG
             // Remove event listeners
             Events.OnSettingChanged.RemoveListener(ToggleUI);
         }
+        private void OnDestroy()
+        {
+            if (linkLine != null) Destroy(linkLine.rectTransform.gameObject);
+        }
         private void Update()
         {
             if (dragging)
@@ -157,28 +161,32 @@ namespace RPG
             Vector2 endPoint = linkPosition == Vector2.zero ? linking ? Camera.main.ScreenToWorldPoint(Input.mousePosition) : linkedPortal.transform.position : linkPosition;
             Vector2 startPoint = transform.position;
 
-            Vector2 adjustedStartPoint = Camera.main.WorldToScreenPoint(startPoint + 0.35f * Session.Instance.Grid.CellSize * (endPoint - startPoint).normalized);
-            Vector2 adjustedEndPoint = Camera.main.WorldToScreenPoint(endPoint + 0.35f * Session.Instance.Grid.CellSize * (startPoint - endPoint).normalized);
+            Vector3 adjustedStartPoint = startPoint + 0.35f * Session.Instance.Grid.CellSize * (endPoint - startPoint).normalized;
+            Vector3 adjustedEndPoint = endPoint + 0.35f * Session.Instance.Grid.CellSize * (startPoint - endPoint).normalized;
 
-            List<Vector2> points = new List<Vector2>
+            adjustedStartPoint.z = adjustedEndPoint.z = -2.0f;
+
+            List<Vector3> points = new List<Vector3>
             {
                 adjustedStartPoint,
                 adjustedEndPoint
             };
+
             if (linkLine == null)
             {
-                linkLine = new VectorLine("Link arrow", points, 1.0f, LineType.Continuous, Joins.Weld);
+                linkLine = new VectorLine("Link arrow", points, 1.0f);
+                linkLine.lineType = LineType.Continuous;
                 linkLine.rectTransform.gameObject.layer = 5;
                 linkLine.endCap = "Arrow";
                 linkLine.color = lineColor;
             }
             else
             {
-                linkLine.points2 = points;
+                linkLine.points3 = points;
                 linkLine.color = lineColor;
             }
 
-            linkLine.Draw();
+            linkLine.Draw3D();
         }
 
         public void Link(Portal portal)
