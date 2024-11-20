@@ -16,7 +16,8 @@ namespace RPG
         [SerializeField] private Color secretColor;
         [SerializeField] private GameObject lockedIcon;
         [SerializeField] private GameObject info;
-        [SerializeField] private LightEventListener eventListener;
+        [SerializeField] private LightEventListener lightListener;
+        [SerializeField] private LightEventListener visionListener;
         [SerializeField] private List<LightRoom2D> lightRooms;
 
         private Canvas canvas;
@@ -79,13 +80,15 @@ namespace RPG
                 loaded = true;
                 UpdateData();
             }
-
-            if (lastVisibility != eventListener.visability && data.type == WallType.Environment)
+        }
+        private void LateUpdate()
+        {
+            if (lastVisibility != lightListener.visability * visionListener.visability && data.type == WallType.Environment)
             {
-                lastVisibility = eventListener.visability;
+                lastVisibility = lightListener.visability * visionListener.visability;
                 lightCollider.maskType = LightCollider2D.MaskType.Collider2D;
                 lightCollider.maskLit = lastVisibility > 0.0f ? FunkyCode.LightSettings.MaskLit.Lit : FunkyCode.LightSettings.MaskLit.Unlit;
-                lightCollider.UpdateLoop();
+                lightCollider.Initialize();
             }
         }
 
@@ -137,7 +140,8 @@ namespace RPG
             doorIcon.sprite = data.open ? openSprite : closedSprite;
             lockedIcon.SetActive(data.locked);
             info.SetActive(ConnectionManager.Info.isMaster);
-            eventListener.enabled = data.type == WallType.Environment;
+            lightListener.enabled = data.type == WallType.Environment;
+            visionListener.enabled = data.type == WallType.Environment;
             doorIcon.color = data.type == WallType.Hidden_Door ? secretColor : regularColor;
 
             for (int i = 0; i < lightRooms.Count; i++)

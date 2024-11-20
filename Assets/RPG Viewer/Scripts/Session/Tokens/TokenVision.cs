@@ -40,7 +40,6 @@ namespace RPG
         {
             if (globalUpdate)
             {
-                visionSource.eventPresetId = data.globalLighting ? 1 : 0;
                 float feetToUnits = Session.Instance.Grid.CellSize / Session.Instance.Grid.Unit.scale;
                 visionSource.size = (data.visionRange == 0.0f ? token.Data.visionRadius : data.visionRange) * feetToUnits;
             }

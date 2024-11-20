@@ -109,24 +109,26 @@ namespace RPG
             this.data.light = data.id;
 
             // Load primary
-            primary.effectDropdown.value = data.primary.effect.type;
-            primary.radiusInput.text = data.primary.radius.ToString();
-            primary.angleInput.text = data.primary.angle.ToString();
-            primary.intensityInput.text = ((int)(data.primary.color.a * 100.0f)).ToString();
+            primary.effectDropdown.SetValueWithoutNotify(data.primary.effect.type);
+            primary.radiusInput.SetTextWithoutNotify(data.primary.radius.ToString());
+            ((TMP_Text)primary.radiusInput.placeholder).text = Session.Instance.Grid.Unit.name;
+            primary.angleInput.SetTextWithoutNotify(data.primary.angle.ToString());
+            primary.intensityInput.SetTextWithoutNotify(((int)(data.primary.color.a * 100.0f)).ToString());
             data.primary.color.a = 1.0f;
             primary.colorButton.color = data.primary.color;
-            primary.strengthInput.text = data.primary.effect.strength.ToString();
-            primary.frequencyInput.text = data.primary.effect.frequency.ToString();
+            primary.strengthInput.SetTextWithoutNotify(data.primary.effect.strength.ToString());
+            primary.frequencyInput.SetTextWithoutNotify(data.primary.effect.frequency.ToString());
 
             // Load secondary
-            secondary.effectDropdown.value = data.secondary.effect.type;
-            secondary.radiusInput.text = data.secondary.radius.ToString();
-            secondary.angleInput.text = data.secondary.angle.ToString();
-            secondary.intensityInput.text = ((int)(data.secondary.color.a * 100.0f)).ToString();
+            secondary.effectDropdown.SetValueWithoutNotify(data.secondary.effect.type);
+            secondary.radiusInput.SetTextWithoutNotify(data.secondary.radius.ToString());
+            ((TMP_Text)secondary.radiusInput.placeholder).text = Session.Instance.Grid.Unit.name;
+            secondary.angleInput.SetTextWithoutNotify(data.secondary.angle.ToString());
+            secondary.intensityInput.SetTextWithoutNotify(((int)(data.secondary.color.a * 100.0f)).ToString());
             data.secondary.color.a = 1.0f;
             secondary.colorButton.color = data.secondary.color;
-            secondary.strengthInput.text = data.secondary.effect.strength.ToString();
-            secondary.frequencyInput.text = data.secondary.effect.frequency.ToString();
+            secondary.strengthInput.SetTextWithoutNotify(data.secondary.effect.strength.ToString());
+            secondary.frequencyInput.SetTextWithoutNotify(data.secondary.effect.frequency.ToString());
 
             presetInfo.text = string.IsNullOrEmpty(lightData.name) ? "No preset" : lightData.name;
         }
@@ -202,22 +204,22 @@ namespace RPG
         public void OpenColor(bool isPrimary)
         {
             editingPrimary = isPrimary;
-            colorPicker.gameObject.SetActive(true);
             colorPicker.SetColor(isPrimary ? lightData.primary.color : lightData.secondary.color);
+            colorPicker.gameObject.SetActive(true);
         }
         public void ChangeColor(Color color)
         {
             if (editingPrimary)
             {
                 lightData.primary.color = color;
-                primary.intensityInput.text = ((int)(color.a * 100.0f)).ToString();
+                primary.intensityInput.text = Mathf.RoundToInt(color.a * 100.0f).ToString();
                 color.a = 1.0f;
                 primary.colorButton.color = color;
             }
             else
             {
                 lightData.secondary.color = color;
-                secondary.intensityInput.text = ((int)(color.a * 100.0f)).ToString();
+                secondary.intensityInput.text = Mathf.RoundToInt(color.a * 100.0f).ToString();
                 color.a = 1.0f;
                 secondary.colorButton.color = color;
             }
@@ -281,28 +283,28 @@ namespace RPG
 
 
             // Load primary
-            primary.effectDropdown.value = preset.primary.effect.type;
-            primary.radiusInput.text = preset.primary.radius.ToString();
+            primary.effectDropdown.SetValueWithoutNotify(preset.primary.effect.type);
+            primary.radiusInput.SetTextWithoutNotify(preset.primary.radius.ToString());
             ((TMP_Text)primary.radiusInput.placeholder).text = Session.Instance.Grid.Unit.name;
-            primary.angleInput.text = preset.primary.angle.ToString();
+            primary.angleInput.SetTextWithoutNotify(preset.primary.angle.ToString());
             ((TMP_Text)primary.angleInput.placeholder).text = Session.Instance.Grid.Unit.name;
-            primary.intensityInput.text = ((int)(preset.primary.color.a * 100.0f)).ToString();
+            primary.intensityInput.SetTextWithoutNotify(((int)(preset.primary.color.a * 100.0f)).ToString());
             preset.primary.color.a = 1.0f;
             primary.colorButton.color = preset.primary.color;
-            primary.strengthInput.text = preset.primary.effect.strength.ToString();
-            primary.frequencyInput.text = preset.primary.effect.frequency.ToString();
+            primary.strengthInput.SetTextWithoutNotify(preset.primary.effect.strength.ToString());
+            primary.frequencyInput.SetTextWithoutNotify(preset.primary.effect.frequency.ToString());
 
             // Load secondary
-            secondary.effectDropdown.value = preset.secondary.effect.type;
-            secondary.radiusInput.text = preset.secondary.radius.ToString();
+            secondary.effectDropdown.SetValueWithoutNotify(preset.secondary.effect.type);
+            secondary.radiusInput.SetTextWithoutNotify(preset.secondary.radius.ToString());
             ((TMP_Text)secondary.radiusInput.placeholder).text = Session.Instance.Grid.Unit.name;
-            secondary.angleInput.text = preset.secondary.angle.ToString();
+            secondary.angleInput.SetTextWithoutNotify(preset.secondary.angle.ToString());
             ((TMP_Text)secondary.angleInput.placeholder).text = Session.Instance.Grid.Unit.name;
-            secondary.intensityInput.text = ((int)(preset.secondary.color.a * 100.0f)).ToString();
+            secondary.intensityInput.SetTextWithoutNotify(((int)(preset.secondary.color.a * 100.0f)).ToString());
             preset.secondary.color.a = 1.0f;
             secondary.colorButton.color = preset.secondary.color;
-            secondary.strengthInput.text = preset.secondary.effect.strength.ToString();
-            secondary.frequencyInput.text = preset.secondary.effect.frequency.ToString();
+            secondary.strengthInput.SetTextWithoutNotify(preset.secondary.effect.strength.ToString());
+            secondary.frequencyInput.SetTextWithoutNotify(preset.secondary.effect.frequency.ToString());
 
             presetInfo.text = string.IsNullOrEmpty(lightData.name) ? "No preset" : lightData.name;
         }

@@ -54,8 +54,8 @@ namespace RPG
         {
             Color initColor = data.color;
             initColor.a = 1.0f;
-            colorPicker.gameObject.SetActive(true);
             colorPicker.SetColor(data.color);
+            colorPicker.gameObject.SetActive(true);
             colorButton.color = initColor;
         }
         public void LoadData(GridData _data)
@@ -67,7 +67,6 @@ namespace RPG
             ((TMP_Text)heightInput.placeholder).text = Session.Instance.Grid.Unit.name;
             unitName.text = _data.unit.name;
             unitScale.text = _data.unit.scale.ToString();
-            colorPicker.SetColor(data.color);
             snapToggle.isOn = _data.snapToGrid;
         }
         public void ChangeColor(Color color)

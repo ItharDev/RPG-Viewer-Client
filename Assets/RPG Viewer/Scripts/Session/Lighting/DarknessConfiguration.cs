@@ -64,7 +64,6 @@ namespace RPG
             data = _data;
             _data.color.a = 1.0f;
             colorButton.color = _data.color;
-            colorPicker.SetColor(data.color);
             globalToggle.isOn = _data.globalLighting;
 
             visionInput.text = data.visionRange.ToString();
