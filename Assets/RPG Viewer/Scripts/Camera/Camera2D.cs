@@ -25,14 +25,6 @@ namespace RPG
         private Vector2 panPosition;
         private float targetOrthographicSize = 5;
 
-        private void OnEnable()
-        {
-            StartCoroutine(SaveView());
-        }
-        private void OnDisable()
-        {
-            StopAllCoroutines();
-        }
         private void Update()
         {
             HandleCameraZoom();
@@ -82,14 +74,6 @@ namespace RPG
         {
             CinemachineBrain cinemachineBrain = Camera.main.GetComponent<CinemachineBrain>();
             mainVCam.Follow = target;
-        }
-        private IEnumerator SaveView()
-        {
-            string path = $"{Application.persistentDataPath}{Path.DirectorySeparatorChar}{GameData.User.id}_last_session.png";
-            ScreenCapture.CaptureScreenshot(path);
-
-            yield return new WaitForSeconds(5.0f);
-            StartCoroutine(SaveView());
         }
 
         private IEnumerator MoveCoroutine(Vector2 position, float time, bool zoom)

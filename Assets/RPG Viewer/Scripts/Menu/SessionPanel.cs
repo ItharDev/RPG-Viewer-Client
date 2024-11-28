@@ -85,6 +85,9 @@ namespace RPG
 
         private void FetchLicences()
         {
+            // Read last session data
+            string lastSession = PlayerPrefs.GetString($"{GameData.User.id}_last_session");
+
             SocketManager.EmitAsync("load-licences", async (callback) =>
             {
                 // Check if the event was successful
@@ -102,14 +105,16 @@ namespace RPG
                         // Read session data
                         string id = list[i].GetProperty("id").GetString();
                         string name = list[i].GetProperty("name").GetString();
+                        string landingPage = list[i].GetProperty("landingPage").GetString();
 
                         // Add session and update dropdown
                         sessions.Add(id, name);
                         joinDropdown.AddOptions(new List<string>() { name });
                         joinDropdown.RefreshShownValue();
+
+                        if (id == lastSession) LoadLastSession(landingPage);
                     }
 
-                    LoadLastSession();
                     return;
                 }
 
@@ -118,10 +123,9 @@ namespace RPG
             });
         }
 
-        private void LoadLastSession()
+        private void LoadLastSession(string landingPage)
         {
-            string path = $"{GameData.User.id}_last_session.png";
-            WebManager.DownloadLocal(path, async (bytes) =>
+            WebManager.Download(landingPage, true, async (bytes) =>
             {
                 await UniTask.SwitchToMainThread();
 
