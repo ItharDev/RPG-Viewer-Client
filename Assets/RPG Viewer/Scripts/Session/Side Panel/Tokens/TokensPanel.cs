@@ -519,11 +519,11 @@ namespace RPG
             LoadToken(id, "public");
         }
 
-        private void ModifyPublicToken(string id)
+        private void ModifyToken(string id)
         {
             // Find target token
             TokenHolder targetToken = tokens[id];
-            targetToken.LoadData(id, "public", this, null);
+            targetToken.LoadData(id, targetToken.Path, this, null);
         }
 
         private void DeletePublicToken(string id)
