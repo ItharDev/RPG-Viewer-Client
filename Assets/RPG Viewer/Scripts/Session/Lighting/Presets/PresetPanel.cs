@@ -37,7 +37,7 @@ namespace RPG
             primary.radiusInput.text = data.primary.radius.ToString();
             ((TMP_Text)primary.radiusInput.placeholder).text = Session.Instance.Grid.Unit.name;
             primary.angleInput.text = data.primary.angle.ToString();
-            primary.intensityInput.text = ((int)(data.primary.color.a * 100.0f)).ToString();
+            primary.intensityInput.text = Mathf.RoundToInt(data.primary.color.a * 100.0f).ToString();
             primary.colorButton.color = _data.primary.color;
             primary.strengthInput.text = data.primary.effect.strength.ToString();
             primary.frequencyInput.text = data.primary.effect.frequency.ToString();
@@ -47,7 +47,7 @@ namespace RPG
             secondary.radiusInput.text = data.secondary.radius.ToString();
             ((TMP_Text)secondary.radiusInput.placeholder).text = Session.Instance.Grid.Unit.name;
             secondary.angleInput.text = data.secondary.angle.ToString();
-            secondary.intensityInput.text = ((int)(data.secondary.color.a * 100.0f)).ToString();
+            secondary.intensityInput.text = Mathf.RoundToInt(data.secondary.color.a * 100.0f).ToString();
             secondary.colorButton.color = _data.secondary.color;
             secondary.strengthInput.text = data.secondary.effect.strength.ToString();
             secondary.frequencyInput.text = data.secondary.effect.frequency.ToString();
@@ -63,14 +63,14 @@ namespace RPG
             if (editingPrimary)
             {
                 data.primary.color = color;
-                primary.intensityInput.text = ((int)(color.a * 100.0f)).ToString();
+                primary.intensityInput.text = Mathf.RoundToInt(color.a * 100.0f).ToString();
                 color.a = 1.0f;
                 primary.colorButton.color = color;
             }
             else
             {
                 data.secondary.color = color;
-                secondary.intensityInput.text = ((int)(color.a * 100.0f)).ToString();
+                secondary.intensityInput.text = Mathf.RoundToInt(color.a * 100.0f).ToString();
                 color.a = 1.0f;
                 secondary.colorButton.color = color;
             }

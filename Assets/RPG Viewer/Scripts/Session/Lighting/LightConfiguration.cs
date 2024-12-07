@@ -70,7 +70,7 @@ namespace RPG
             ((TMP_Text)primary.radiusInput.placeholder).text = Session.Instance.Grid.Unit.name;
             primary.angleInput.SetTextWithoutNotify(data.primary.angle.ToString());
             directionInput.SetTextWithoutNotify(info.rotation.ToString());
-            primary.intensityInput.SetTextWithoutNotify(((int)(data.primary.color.a * 100.0f)).ToString());
+            primary.intensityInput.SetTextWithoutNotify(Mathf.RoundToInt(data.primary.color.a * 100.0f).ToString());
             data.primary.color.a = 1.0f;
             primary.colorButton.color = data.primary.color;
             primary.strengthInput.SetTextWithoutNotify(data.primary.effect.strength.ToString());
@@ -82,7 +82,7 @@ namespace RPG
             ((TMP_Text)secondary.radiusInput.placeholder).text = Session.Instance.Grid.Unit.name;
             secondary.angleInput.SetTextWithoutNotify(data.secondary.angle.ToString());
             directionInput.SetTextWithoutNotify(info.rotation.ToString());
-            secondary.intensityInput.SetTextWithoutNotify(((int)(data.secondary.color.a * 100.0f)).ToString());
+            secondary.intensityInput.SetTextWithoutNotify(Mathf.RoundToInt(data.secondary.color.a * 100.0f).ToString());
             data.secondary.color.a = 1.0f;
             secondary.colorButton.color = data.secondary.color;
             secondary.strengthInput.SetTextWithoutNotify(data.secondary.effect.strength.ToString());
