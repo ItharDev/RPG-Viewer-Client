@@ -46,7 +46,7 @@ namespace RPG
             // Add event listeners
             Events.OnSidePanelChanged.AddListener(DeselectToken);
             Events.OnBlueprintCreated.AddListener(CreatePublicToken);
-            Events.OnBlueprintModified.AddListener(ModifyPublicToken);
+            Events.OnBlueprintModified.AddListener(ModifyToken);
             Events.OnBlueprintRemoved.AddListener(DeletePublicToken);
         }
 
@@ -55,7 +55,7 @@ namespace RPG
             // Remove event listeners
             Events.OnSidePanelChanged.RemoveListener(DeselectToken);
             Events.OnBlueprintCreated.RemoveListener(CreatePublicToken);
-            Events.OnBlueprintModified.RemoveListener(ModifyPublicToken);
+            Events.OnBlueprintModified.RemoveListener(ModifyToken);
             Events.OnBlueprintRemoved.RemoveListener(DeletePublicToken);
         }
 
