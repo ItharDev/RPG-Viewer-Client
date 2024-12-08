@@ -9,6 +9,7 @@ namespace RPG
     {
         [SerializeField] private MenuHandler menu;
         [SerializeField] private TMP_InputField addressInput;
+        [SerializeField] private TMP_InputField portInput;
         [SerializeField] private Slider fpsSlider;
         [SerializeField] private TMP_InputField fpsInput;
 
@@ -49,8 +50,9 @@ namespace RPG
         private void OnConnected()
         {
             // Clear address bar
-            if (!string.IsNullOrEmpty(addressInput.text)) PlayerPrefs.SetString("Address", addressInput.text);
+            if (!string.IsNullOrEmpty(addressInput.text) && !string.IsNullOrEmpty(addressInput.text)) PlayerPrefs.SetString("address", $"{addressInput.text}:{portInput.text}");
             addressInput.text = "";
+            portInput.text = "";
         }
 
         public void OpenPanel()
@@ -64,9 +66,9 @@ namespace RPG
 
             // Open panel
             menu.OpenSettings?.Invoke();
-            LeanTween.size(rect, new Vector2(430.0f, 150.0f), 0.2f);
+            LeanTween.size(rect, new Vector2(420.0f, 150.0f), 0.2f);
         }
-        public void ClosePanel()
+        private void ClosePanel()
         {
             // Close panel
             LeanTween.size(rect, new Vector2(0.0f, 0.0f), 0.2f);
@@ -74,7 +76,7 @@ namespace RPG
         public void Connect()
         {
             // Send connection event
-            string address = addressInput.text;
+            string address = $"{addressInput.text}:{portInput.text}";
             SocketManager.Connect(address);
         }
 
@@ -92,7 +94,7 @@ namespace RPG
         {
             GameData.FrameRate = (int)fpsSlider.value;
             Application.targetFrameRate = (int)fpsSlider.value;
-            PlayerPrefs.SetInt("FPS", (int)fpsSlider.value);
+            PlayerPrefs.SetInt("fps", (int)fpsSlider.value);
 
             MessageManager.QueueMessage("Frame rate updated");
         }
