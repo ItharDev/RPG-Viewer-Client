@@ -31,12 +31,12 @@ namespace RPG
         private void Start()
         {
             // Connect automatically if there's address available
-            string address = PlayerPrefs.GetString("Address");
+            string address = PlayerPrefs.GetString("address");
             if (!string.IsNullOrEmpty(address)) SocketManager.Connect(address);
 
             // Update fps
             QualitySettings.vSyncCount = 0;
-            int fps = PlayerPrefs.GetInt("FPS");
+            int fps = PlayerPrefs.GetInt("fps");
             if (fps != 0) UpdateFrameRate(fps);
         }
 

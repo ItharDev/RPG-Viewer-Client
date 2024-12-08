@@ -72,14 +72,14 @@ namespace RPG
                 // Open sign in panel
                 registerPanel.SetActive(false);
                 signInPanel.SetActive(true);
-                LeanTween.size(rect, new Vector2(340.0f, 150.0f), 0.2f);
+                LeanTween.size(rect, new Vector2(320.0f, 300.0f), 0.2f);
                 menu.OpenSignIn?.Invoke();
             });
             else
             {
                 // Open sign in panel
                 signInPanel.SetActive(true);
-                LeanTween.size(rect, new Vector2(340.0f, 150.0f), 0.2f);
+                LeanTween.size(rect, new Vector2(320.0f, 300.0f), 0.2f);
                 menu.OpenSignIn?.Invoke();
             }
         }
@@ -98,14 +98,14 @@ namespace RPG
                 // Open register panel
                 registerPanel.SetActive(true);
                 signInPanel.SetActive(false);
-                LeanTween.size(rect, new Vector2(340.0f, 230.0f), 0.2f);
+                LeanTween.size(rect, new Vector2(320.0f, 510.0f), 0.2f);
                 menu.OpenSignIn?.Invoke();
             });
             else
             {
                 // Open register panel
                 registerPanel.SetActive(true);
-                LeanTween.size(rect, new Vector2(340.0f, 230.0f), 0.2f);
+                LeanTween.size(rect, new Vector2(340.0f, 510.0f), 0.2f);
                 menu.OpenRegister?.Invoke();
             }
         }
@@ -121,7 +121,7 @@ namespace RPG
             {
                 // Open name panel
                 namePanel.SetActive(true);
-                LeanTween.size(rect, new Vector2(340.0f, 110.0f), 0.2f);
+                LeanTween.size(rect, new Vector2(340.0f, 260.0f), 0.2f);
                 menu.OpenSignIn?.Invoke();
             }
         }
@@ -141,7 +141,7 @@ namespace RPG
         {
             // Update user data
             GameData.User = new UserInfo(id, name);
-            PlayerPrefs.SetString("user id", id);
+            PlayerPrefs.SetString("uid", id);
 
             // Reset input fields
             signInEmail.text = "";
@@ -168,7 +168,7 @@ namespace RPG
         {
             // Reset user data
             GameData.User = default;
-            PlayerPrefs.SetString("user id", "");
+            PlayerPrefs.SetString("uid", "");
 
             // Reset input fields
             signInEmail.text = "";
@@ -191,7 +191,7 @@ namespace RPG
             signInButton.SetActive(true);
             registerButton.SetActive(true);
             // Fetch stored user id
-            string userId = PlayerPrefs.GetString("user id");
+            string userId = PlayerPrefs.GetString("uid");
 
             // Check if previous login information exists
             if (string.IsNullOrEmpty(userId)) return;
@@ -240,7 +240,7 @@ namespace RPG
                     string name = callback.GetValue(1).GetString();
                     string id = callback.GetValue(2).GetString();
 
-                    PlayerPrefs.SetString("user id", id);
+                    PlayerPrefs.SetString("uid", id);
 
                     MessageManager.QueueMessage($"Signed in as {name}");
 
