@@ -154,6 +154,13 @@ namespace RPG
             if (linkLine != null) linkLine.active = enabled;
         }
 
+        public void RemoveLink()
+        {
+            linkedPortal = null;
+            Data.link = string.Empty;
+            VectorLine.Destroy(ref linkLine);
+        }
+
         private void DrawLink()
         {
             if (linkedPortal == null && !linking) return;
@@ -295,6 +302,7 @@ namespace RPG
         public void EndLinking()
         {
             linking = false;
+            linkPosition = Vector2.zero;
             VectorLine.Destroy(ref linkLine);
         }
 

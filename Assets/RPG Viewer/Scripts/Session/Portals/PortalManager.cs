@@ -161,12 +161,16 @@ namespace RPG
         private void RemovePortal(string id)
         {
             // Check if the portal exists
-            if (Portals.ContainsKey(id))
+            if (!Portals.ContainsKey(id)) return;
+
+            foreach (var portal in Portals)
             {
-                // Destroy the portal
-                Destroy(Portals[id].gameObject);
-                Portals.Remove(id);
+                if (portal.Value.Data.link == id) portal.Value.RemoveLink();
             }
+
+            // Destroy the portal
+            Destroy(Portals[id].gameObject);
+            Portals.Remove(id);
         }
 
         private void LinkPortal(string source, string destination)
