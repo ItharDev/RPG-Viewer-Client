@@ -240,13 +240,12 @@ namespace RPG
             SocketManager.EmitAsync("move-portal", (callback) =>
             {
                 // Check if the event was successful
-                if (callback.GetValue().GetBoolean())
-                {
-                    return;
-                }
+                if (callback.GetValue().GetBoolean()) return;
 
+
+                // Send error message
                 transform.localPosition = position;
-                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                MessageManager.QueueMessage(callback.GetValue(1).GetString(), MessageType.Error);
             }, Id, JsonUtility.ToJson(position));
         }
         public void OnClick(BaseEventData eventData)
@@ -283,7 +282,7 @@ namespace RPG
                     if (callback.GetValue().GetBoolean()) return;
 
                     // Send error message
-                    MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                    MessageManager.QueueMessage(callback.GetValue(1).GetString(), MessageType.Error);
                 }, Id, JsonUtility.ToJson(data));
             });
         }
@@ -314,7 +313,7 @@ namespace RPG
                 if (callback.GetValue().GetBoolean()) return;
 
                 // Send error message
-                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                MessageManager.QueueMessage(callback.GetValue(1).GetString(), MessageType.Error);
             }, Id, !Data.active);
         }
 
@@ -326,7 +325,7 @@ namespace RPG
                 if (callback.GetValue().GetBoolean()) return;
 
                 // Send error message
-                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                MessageManager.QueueMessage(callback.GetValue(1).GetString(), MessageType.Error);
             }, Id);
         }
 

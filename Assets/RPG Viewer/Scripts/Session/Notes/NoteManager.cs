@@ -68,7 +68,7 @@ namespace RPG
                 }
 
                 // Send error message
-                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                MessageManager.QueueMessage(callback.GetValue(1).GetString(), MessageType.Error);
             }, info.id);
         }
         private void MoveNote(string id, Vector2 position)

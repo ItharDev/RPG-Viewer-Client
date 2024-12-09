@@ -40,7 +40,7 @@ namespace RPG
                 }
 
                 // Send error message
-                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                MessageManager.QueueMessage(callback.GetValue(1).GetString(), MessageType.Error);
             }, data.user);
         }
     }

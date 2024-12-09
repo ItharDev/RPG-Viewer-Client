@@ -13,7 +13,7 @@ namespace RPG
         [SerializeField] private Transform confirmationParent;
 
         static private List<Message> listOfMessages = new List<Message>();
-        private static Queue<string> messageQueue = new Queue<string>();
+        private static Queue<MessageData> messageQueue = new Queue<MessageData>();
         private static Queue<Confirmation> confirmationQueue = new Queue<Confirmation>();
 
         private void Awake()
@@ -26,8 +26,8 @@ namespace RPG
             if (messageQueue.Count > 0)
             {
                 // Dequeue first message and send it
-                string message = messageQueue.Dequeue();
-                StartCoroutine(LogMessage(message));
+                MessageData message = messageQueue.Dequeue();
+                StartCoroutine(LogMessage(message.message, message.type));
             }
 
             // Check if there is any confirmations to show
@@ -39,10 +39,10 @@ namespace RPG
             }
         }
 
-        public static void QueueMessage(string message)
+        public static void QueueMessage(string message, MessageType type = MessageType.Info)
         {
             // Add message to queue
-            messageQueue.Enqueue(message);
+            messageQueue.Enqueue(new MessageData { message = message, type = type });
             Debug.Log($"Received new message: {message}");
         }
         public static void AskConfirmation(Confirmation confirmation)
@@ -58,7 +58,7 @@ namespace RPG
 
             // Remove message from list and destroy it
             listOfMessages.Remove(msg);
-            Destroy(msg.gameObject);
+            msg.Close();
         }
         public void CloseMessage(Message message)
         {
@@ -67,10 +67,10 @@ namespace RPG
 
             // Remove message from list and destroy it
             listOfMessages.Remove(message);
-            Destroy(message.gameObject);
+            message.Close();
         }
 
-        private IEnumerator LogMessage(string message)
+        private IEnumerator LogMessage(string message, MessageType type)
         {
             // Instantiate new message and attach it to correct parent
             Message msg = Instantiate(messagePrefab, messageParent);
@@ -78,7 +78,7 @@ namespace RPG
 
             // Add message to the list and load its data
             listOfMessages.Add(msg);
-            msg.Load(message);
+            msg.Load(message, type);
 
             // Close message after 5 seconds
             yield return new WaitForSeconds(5.0f);
@@ -90,5 +90,11 @@ namespace RPG
             ConfirmationPanel panel = Instantiate(confirmationPrefab, confirmationParent);
             panel.UpdateUI(confirmation);
         }
+    }
+
+    public struct MessageData
+    {
+        public string message;
+        public MessageType type;
     }
 }

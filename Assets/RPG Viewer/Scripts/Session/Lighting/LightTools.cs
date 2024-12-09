@@ -69,7 +69,7 @@ namespace RPG
                 if (callback.GetValue().GetBoolean()) return;
 
                 // Send error message
-                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                MessageManager.QueueMessage(callback.GetValue(1).GetString(), MessageType.Error);
             }, JsonUtility.ToJson(data), JsonUtility.ToJson(info));
         }
         private void PasteLight(LightData info, bool UsePreset)
@@ -83,7 +83,7 @@ namespace RPG
                 if (callback.GetValue().GetBoolean()) return;
 
                 // Send error message
-                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                MessageManager.QueueMessage(callback.GetValue(1).GetString(), MessageType.Error);
             }, JsonUtility.ToJson(info), UsePreset);
         }
 

@@ -252,7 +252,7 @@ namespace RPG
         {
             if (!ConnectionManager.Info.isMaster && data.locked)
             {
-                MessageManager.QueueMessage("This door is locked");
+                MessageManager.QueueMessage("This door is locked", MessageType.Warning);
                 return;
             }
 
@@ -264,7 +264,7 @@ namespace RPG
                 if (callback.GetValue().GetBoolean()) return;
 
                 // Send error message
-                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                MessageManager.QueueMessage(callback.GetValue(1).GetString(), MessageType.Error);
             }, JsonUtility.ToJson(newData));
         }
         private void LockDoor()
@@ -279,7 +279,7 @@ namespace RPG
                 if (callback.GetValue().GetBoolean()) return;
 
                 // Send error message
-                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                MessageManager.QueueMessage(callback.GetValue(1).GetString(), MessageType.Error);
             }, JsonUtility.ToJson(newData));
         }
     }

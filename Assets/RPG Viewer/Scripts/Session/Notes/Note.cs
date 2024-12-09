@@ -103,7 +103,7 @@ namespace RPG
                 }
 
                 // Send error message
-                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                MessageManager.QueueMessage(callback.GetValue(1).GetString(), MessageType.Error);
             }, info.id, JsonUtility.ToJson(newInfo));
         }
         public void OpenNote(BaseEventData eventData)
@@ -143,7 +143,7 @@ namespace RPG
                 if (callback.GetValue().GetBoolean()) return;
 
                 // Send error message
-                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                MessageManager.QueueMessage(callback.GetValue(1).GetString(), MessageType.Error);
             }, info.id);
         }
     }

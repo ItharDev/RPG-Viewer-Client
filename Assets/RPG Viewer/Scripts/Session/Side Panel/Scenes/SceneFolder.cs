@@ -292,7 +292,7 @@ namespace RPG
                     }
 
                     // Send error message
-                    MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                    MessageManager.QueueMessage(callback.GetValue(1).GetString(), MessageType.Error);
                 }, Path);
             }));
         }
@@ -334,7 +334,7 @@ namespace RPG
                 }
 
                 // Send error message
-                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                MessageManager.QueueMessage(callback.GetValue(1).GetString(), MessageType.Error);
                 header.text = Data.name;
             }, Path, newName);
         }
@@ -360,7 +360,7 @@ namespace RPG
                 }
 
                 // Send error message
-                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                MessageManager.QueueMessage(callback.GetValue(1).GetString(), MessageType.Error);
             }, Path, "New folder");
         }
         public void AddScene()

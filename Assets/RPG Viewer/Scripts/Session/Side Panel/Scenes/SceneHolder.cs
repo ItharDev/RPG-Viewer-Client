@@ -174,7 +174,7 @@ namespace RPG
                 if (callback.GetValue().GetBoolean()) return;
 
                 // Send error message
-                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                MessageManager.QueueMessage(callback.GetValue(1).GetString(), MessageType.Error);
             }, Data.id, ConnectionManager.State.synced);
         }
         public void Rename()
@@ -207,7 +207,7 @@ namespace RPG
                 }
 
                 // Send error message
-                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                MessageManager.QueueMessage(callback.GetValue(1).GetString(), MessageType.Error);
             }, Data.id, newName);
         }
         public void Delete()
@@ -225,7 +225,7 @@ namespace RPG
                     }
 
                     // Send error message
-                    MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                    MessageManager.QueueMessage(callback.GetValue(1).GetString(), MessageType.Error);
                 }, Path, Id);
 
             }));

@@ -164,7 +164,7 @@ namespace RPG
                 }
 
                 // Send error message
-                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                MessageManager.QueueMessage(callback.GetValue(1).GetString(), MessageType.Error);
             }, id, JsonUtility.ToJson(newData));
         }
         public void OnClick(BaseEventData eventData)
@@ -190,7 +190,7 @@ namespace RPG
                 if (callback.GetValue().GetBoolean()) return;
 
                 // Send error message
-                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                MessageManager.QueueMessage(callback.GetValue(1).GetString(), MessageType.Error);
             }, id, !info.enabled);
         }
         private void SelectLight()
@@ -219,7 +219,7 @@ namespace RPG
                 if (callback.GetValue().GetBoolean()) return;
 
                 // Send error message
-                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                MessageManager.QueueMessage(callback.GetValue(1).GetString(), MessageType.Error);
             }, id);
         }
         private void ModifyLight()
@@ -238,7 +238,7 @@ namespace RPG
                     if (callback.GetValue().GetBoolean()) return;
 
                     // Send error message
-                    MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                    MessageManager.QueueMessage(callback.GetValue(1).GetString(), MessageType.Error);
                 }, id, JsonUtility.ToJson(newInfo), JsonUtility.ToJson(newData));
             });
         }

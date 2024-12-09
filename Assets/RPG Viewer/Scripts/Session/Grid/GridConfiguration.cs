@@ -105,7 +105,7 @@ namespace RPG
                 Events.OnGridChanged?.Invoke(Session.Instance.Settings.grid, true, false);
 
                 // Send error message
-                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                MessageManager.QueueMessage(callback.GetValue(1).GetString(), MessageType.Error);
             }, JsonUtility.ToJson(data));
         }
     }

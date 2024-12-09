@@ -145,7 +145,7 @@ namespace RPG
                 token.Data.rotation = token.UI.OriginalRotation;
                 token.UI.SetRotation(token.UI.OriginalRotation);
                 // Send error message
-                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                MessageManager.QueueMessage(callback.GetValue(1).GetString(), MessageType.Error);
             }, token.Data.id, targetAngle, GameData.User.id);
         }
         public void MountedRotation()
@@ -167,7 +167,7 @@ namespace RPG
             if (!CheckManualMovement()) return;
 
             // Apply new target for the camera to follow
-            FindObjectOfType<Camera2D>().FollowTarget(transform);
+            FindFirstObjectByType<Camera2D>().FollowTarget(transform);
 
             // Get movement direction
             float inputX = Input.GetAxisRaw("Horizontal");
@@ -385,11 +385,11 @@ namespace RPG
                 // Allow movement if we are the master client
                 if (ConnectionManager.Info.isMaster)
                 {
-                    MessageManager.QueueMessage("This move would have collided with at least one wall");
+                    MessageManager.QueueMessage("This move would have collided with at least one wall", MessageType.Warning);
                     return false;
                 }
 
-                MessageManager.QueueMessage("Movement blocked by a wall");
+                MessageManager.QueueMessage("Movement blocked by a wall", MessageType.Error);
                 return true;
             }
 
@@ -408,7 +408,7 @@ namespace RPG
                 if (callback.GetValue().GetBoolean()) return;
 
                 // Send error message
-                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                MessageManager.QueueMessage(callback.GetValue(1).GetString(), MessageType.Error);
             }, JsonUtility.ToJson(movement));
         }
         public void AddWaypoints(MovementData data)
@@ -434,7 +434,7 @@ namespace RPG
                 if (callback.GetValue().GetBoolean()) return;
 
                 // Send error message
-                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                MessageManager.QueueMessage(callback.GetValue(1).GetString(), MessageType.Error);
             }, token.Id, !token.Data.locked);
         }
 
@@ -457,7 +457,7 @@ namespace RPG
             waypoints.Clear();
 
             if (!token.IsOwner || (ConnectionManager.Info.isMaster && !token.Selected)) return;
-            FindObjectOfType<Camera2D>().FollowTarget(transform, true);
+            FindFirstObjectByType<Camera2D>().FollowTarget(transform, true);
         }
     }
 }

@@ -118,7 +118,7 @@ namespace RPG
                 }
 
                 // Send error message
-                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                MessageManager.QueueMessage(callback.GetValue(1).GetString(), MessageType.Error);
             });
             else SocketManager.EmitAsync("get-public-blueprints", async (callback) =>
             {
@@ -148,7 +148,7 @@ namespace RPG
                 }
 
                 // Send error message
-                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                MessageManager.QueueMessage(callback.GetValue(1).GetString(), MessageType.Error);
             });
         }
         private void LoadToken(string id, string path)
@@ -235,7 +235,7 @@ namespace RPG
                         }
 
                         // Send error message
-                        MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                        MessageManager.QueueMessage(callback.GetValue(1).GetString(), MessageType.Error);
                     }, path, JsonUtility.ToJson(tokenData), JsonUtility.ToJson(lightData), Convert.ToBase64String(image), art == null ? null : Convert.ToBase64String(art));
                 });
             });
@@ -306,7 +306,7 @@ namespace RPG
                 }
 
                 // Send error message
-                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                MessageManager.QueueMessage(callback.GetValue(1).GetString(), MessageType.Error);
             }, "", "New folder");
         }
         public void RemoveToken(TokenHolder token)
@@ -397,7 +397,7 @@ namespace RPG
                 }
 
                 // Send error message
-                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                MessageManager.QueueMessage(callback.GetValue(1).GetString(), MessageType.Error);
                 selectedFolder = null;
             }, selectedFolder.Path, "");
         }
@@ -434,7 +434,7 @@ namespace RPG
                     }
 
                     // Send error message
-                    MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                    MessageManager.QueueMessage(callback.GetValue(1).GetString(), MessageType.Error);
                     selectedFolder = null;
                 }, selectedFolder.Path, folder.Path);
             }
@@ -461,7 +461,7 @@ namespace RPG
                     }
 
                     // Send error message
-                    MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                    MessageManager.QueueMessage(callback.GetValue(1).GetString(), MessageType.Error);
                     selectedToken = null;
                 }, selectedToken.Id, selectedToken.Path, folder.Path);
             }
@@ -502,7 +502,7 @@ namespace RPG
                 }
 
                 // Send error message
-                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                MessageManager.QueueMessage(callback.GetValue(1).GetString(), MessageType.Error);
                 selectedToken = null;
             }, selectedToken.Id, selectedToken.Path, "");
         }

@@ -215,7 +215,7 @@ namespace RPG
                 }
 
                 // Send error message
-                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                MessageManager.QueueMessage(callback.GetValue(1).GetString(), MessageType.Error);
             }, userId, "", "");
         }
         private void ToggleUI()
@@ -250,7 +250,7 @@ namespace RPG
                 }
 
                 // Send error message
-                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                MessageManager.QueueMessage(callback.GetValue(1).GetString(), MessageType.Error);
             }, "", signInEmail.text, signInPassword.text);
         }
         public void ChangeName()
@@ -266,13 +266,13 @@ namespace RPG
                     await UniTask.SwitchToMainThread();
 
 
-                    MessageManager.QueueMessage("Username updated");
+                    MessageManager.QueueMessage("Username updated", MessageType.Success);
                     Events.OnSignIn?.Invoke(GameData.User.id, nameInput.text);
                     return;
                 }
 
                 // Send error message
-                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                MessageManager.QueueMessage(callback.GetValue(1).GetString(), MessageType.Error);
             }, nameInput.text);
         }
         public void SignOutButton()
@@ -291,7 +291,7 @@ namespace RPG
                 }
 
                 // Send error message
-                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                MessageManager.QueueMessage(callback.GetValue(1).GetString(), MessageType.Error);
             });
         }
         public void Register()
@@ -302,7 +302,7 @@ namespace RPG
             // Check if passwords match
             if (registerPassword.text != registerVerification.text)
             {
-                MessageManager.QueueMessage("Passwords do not match");
+                MessageManager.QueueMessage("Passwords do not match", MessageType.Error);
                 return;
             }
 
@@ -312,7 +312,7 @@ namespace RPG
                 if (callback.GetValue().GetBoolean())
                 {
                     await UniTask.SwitchToMainThread();
-                    MessageManager.QueueMessage($"Account registered successfully");
+                    MessageManager.QueueMessage($"Account registered successfully", MessageType.Warning);
 
                     // Send registeration event
                     Events.OnRegister?.Invoke();
@@ -320,7 +320,7 @@ namespace RPG
                 }
 
                 // Send error message
-                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                MessageManager.QueueMessage(callback.GetValue(1).GetString(), MessageType.Error);
             }, registerEmail.text, registerName.text, registerPassword.text);
         }
     }

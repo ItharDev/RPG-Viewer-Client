@@ -176,7 +176,7 @@ namespace RPG
                     if (callback.GetValue().GetBoolean()) return;
 
                     // Send error message
-                    MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                    MessageManager.QueueMessage(callback.GetValue(1).GetString(), MessageType.Error);
                 }, data.id, Convert.ToBase64String(bytes));
             });
         }
@@ -205,7 +205,7 @@ namespace RPG
                 if (callback.GetValue().GetBoolean()) return;
 
                 // Send error message
-                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                MessageManager.QueueMessage(callback.GetValue(1).GetString(), MessageType.Error);
             }, data.id, !info.global);
         }
         public void ShowNote()
@@ -220,7 +220,7 @@ namespace RPG
                 }
 
                 // Send error message
-                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                MessageManager.QueueMessage(callback.GetValue(1).GetString(), MessageType.Error);
             }, data.id);
         }
         public void SaveNote()
@@ -232,13 +232,13 @@ namespace RPG
                 // Check if the event was successful
                 if (callback.GetValue().GetBoolean())
                 {
-                    MessageManager.QueueMessage("Note saved");
-                    FindObjectOfType<JournalsPanel>().LoadJournal(callback.GetValue(1).GetString(), "");
+                    MessageManager.QueueMessage("Note saved", MessageType.Success);
+                    FindFirstObjectByType<JournalsPanel>().LoadJournal(callback.GetValue(1).GetString(), "");
                     return;
                 }
 
                 // Send error message
-                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                MessageManager.QueueMessage(callback.GetValue(1).GetString(), MessageType.Error);
             }, data.id);
         }
         public void UpdateText(string text)
@@ -251,7 +251,7 @@ namespace RPG
                 if (callback.GetValue().GetBoolean()) return;
 
                 // Send error message
-                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                MessageManager.QueueMessage(callback.GetValue(1).GetString(), MessageType.Error);
 
                 await UniTask.SwitchToMainThread();
                 textInput.text = data.text;
@@ -270,7 +270,7 @@ namespace RPG
                 if (callback.GetValue().GetBoolean()) return;
 
                 // Send error message
-                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                MessageManager.QueueMessage(callback.GetValue(1).GetString(), MessageType.Error);
 
                 header.text = data.header;
                 headerInput.text = data.header;

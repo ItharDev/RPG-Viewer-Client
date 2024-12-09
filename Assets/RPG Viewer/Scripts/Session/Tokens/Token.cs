@@ -67,7 +67,7 @@ namespace RPG
                 Enabled = Selected;
             }
 
-            if (Selected) FindObjectOfType<Camera2D>().FollowTarget(transform);
+            if (Selected) FindFirstObjectByType<Camera2D>().FollowTarget(transform);
             Vision.ToggleVision(Enabled && Visibility.visible && (Data.enabled || ConnectionManager.Info.isMaster));
         }
 
@@ -225,7 +225,7 @@ namespace RPG
                 if (callback.GetValue().GetBoolean()) return;
 
                 // Send error message
-                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                MessageManager.QueueMessage(callback.GetValue(1).GetString(), MessageType.Error);
             }, Data.id);
         }
         #endregion

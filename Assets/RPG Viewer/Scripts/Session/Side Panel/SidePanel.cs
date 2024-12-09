@@ -168,7 +168,7 @@ namespace RPG
                 if (callback.GetValue().GetBoolean()) return;
 
                 // Send error message
-                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                MessageManager.QueueMessage(callback.GetValue(1).GetString(), MessageType.Error);
             }, ConnectionManager.State.scene, !ConnectionManager.State.synced);
         }
         public async void SelectImage()
@@ -181,7 +181,7 @@ namespace RPG
                     if (callback.GetValue().GetBoolean()) return;
 
                     // Send error mesage
-                    MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                    MessageManager.QueueMessage(callback.GetValue(1).GetString(), MessageType.Error);
                 }, Convert.ToBase64String(bytes)); ;
             });
         }

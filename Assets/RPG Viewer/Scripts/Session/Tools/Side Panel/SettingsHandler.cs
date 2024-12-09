@@ -503,7 +503,7 @@ namespace RPG
                     if (callback.GetValue().GetBoolean()) return;
 
                     // Send error mesage
-                    MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                    MessageManager.QueueMessage(callback.GetValue(1).GetString(), MessageType.Error);
                 }, Convert.ToBase64String(bytes)); ;
             });
         }

@@ -33,13 +33,13 @@ namespace Networking
 
         private static void OnReconnect(object sender, Exception e)
         {
-            MessageManager.QueueMessage("Failed to establish connection to the server. Reconnecting after a while");
+            MessageManager.QueueMessage("Failed to establish connection to the server. Reconnecting after a while", MessageType.Warning);
         }
 
         private static async void OnConnected(object sender, EventArgs e)
         {
             await UniTask.SwitchToMainThread();
-            MessageManager.QueueMessage("Connection established to the server");
+            MessageManager.QueueMessage("Connection established to the server", MessageType.Success);
 
             AddListeners();
 
@@ -51,7 +51,7 @@ namespace Networking
         {
             await UniTask.SwitchToMainThread();
 
-            MessageManager.QueueMessage("Disconnected from the server. Returning to menu");
+            MessageManager.QueueMessage("Disconnected from the server. Returning to menu", MessageType.Error);
 
             // Send disconnection event
             Events.OnDisconnected?.Invoke();
@@ -92,7 +92,7 @@ namespace Networking
                     }
 
                     // Send error message
-                    MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                    MessageManager.QueueMessage(callback.GetValue(1).GetString(), MessageType.Error);
                 }, scene);
             });
             Socket.On("change-landing-page", async (data) =>

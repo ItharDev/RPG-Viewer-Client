@@ -77,7 +77,7 @@ namespace RPG
                 if (callback.GetValue().GetBoolean()) return;
 
                 // Send error message
-                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                MessageManager.QueueMessage(callback.GetValue(1).GetString(), MessageType.Error);
             }, token.Data.id, !token.Data.lightEnabled);
         }
 
@@ -116,7 +116,7 @@ namespace RPG
                 token.Data.lightRotation = originalRotation;
 
                 // Send error message
-                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                MessageManager.QueueMessage(callback.GetValue(1).GetString(), MessageType.Error);
             }, token.Data.id, targetAngle, GameData.User.id);
         }
 
@@ -183,7 +183,7 @@ namespace RPG
                 }
 
                 // Send error message
-                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                MessageManager.QueueMessage(callback.GetValue(1).GetString(), MessageType.Error);
             }, token.Data.light);
         }
     }

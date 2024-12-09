@@ -88,7 +88,7 @@ namespace UnityEngine.UI.Extensions
             get
             {
                 if (instance == null)
-                    instance = FindObjectOfType<ToolTip>();
+                    instance = FindFirstObjectByType<ToolTip>();
                 return instance;
             }
         }

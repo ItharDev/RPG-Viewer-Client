@@ -48,10 +48,10 @@ namespace RPG
             else Destroy(gameObject);
 
             // Get reference of the managers
-            TokenManager = FindObjectOfType<TokenManager>();
-            NoteManager = FindObjectOfType<NoteManager>();
-            JournalManager = FindObjectOfType<JournalManager>();
-            Grid = FindObjectOfType<GridManager>();
+            TokenManager = FindFirstObjectByType<TokenManager>();
+            NoteManager = FindFirstObjectByType<NoteManager>();
+            JournalManager = FindFirstObjectByType<JournalManager>();
+            Grid = FindFirstObjectByType<GridManager>();
         }
         private void Start()
         {
@@ -115,7 +115,7 @@ namespace RPG
                 // Check if landing page exists
                 if (bytes == null)
                 {
-                    MessageManager.QueueMessage("Failed to load landing page, please try again");
+                    MessageManager.QueueMessage("Failed to load landing page, please try again", MessageType.Error);
                     return;
                 }
 
@@ -139,7 +139,7 @@ namespace RPG
                 // Check if landing page exists
                 if (bytes == null)
                 {
-                    MessageManager.QueueMessage("Failed to load image, please try again");
+                    MessageManager.QueueMessage("Failed to load image, please try again", MessageType.Error);
                     return;
                 }
 
@@ -179,7 +179,7 @@ namespace RPG
                     System.Text.Json.JsonElement notes;
                     if (callback.GetValue(1).TryGetProperty("notes", out notes)) settings.notes = GetNotes(callback.GetValue(1).GetProperty("notes").EnumerateObject().ToArray());
 
-                    MessageManager.QueueMessage("Loading scene");
+                    MessageManager.QueueMessage("Loading scene", MessageType.Info);
                     Settings = settings;
 
                     // Send load event
@@ -196,6 +196,7 @@ namespace RPG
 
                             // Remove message when loading is completed
                             MessageManager.RemoveMessage("Loading scene");
+                            MessageManager.QueueMessage("Scene loaded", MessageType.Success);
 
                             landingPage.transform.parent.gameObject.SetActive(false);
                             Events.OnViewChanged?.Invoke(ConnectionManager.Info.isMaster ? GameView.Clear : GameView.Player);
@@ -205,7 +206,7 @@ namespace RPG
                 }
 
                 // Send error message
-                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                MessageManager.QueueMessage(callback.GetValue(1).GetString(), MessageType.Error);
             }, id);
         }
 

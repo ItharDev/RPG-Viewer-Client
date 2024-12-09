@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using Networking;
 using UnityEngine;
@@ -11,6 +12,9 @@ namespace RPG
 
         [SerializeField] private Image imagePanel;
         [SerializeField] private BlockPause pauseBlocker;
+        [SerializeField] private GameObject clickBlocker;
+
+        private List<UIPanel> panels = new List<UIPanel>();
 
         private void OnEnable()
         {
@@ -19,6 +23,10 @@ namespace RPG
         private void OnDisable()
         {
             Events.OnImageShowed.RemoveListener(ShowImage);
+        }
+        private void Awake()
+        {
+            Instance = this;
         }
         private void Update()
         {
@@ -49,9 +57,49 @@ namespace RPG
             });
         }
 
-        private void Awake()
+        public void OpenPanel(Transform panel)
         {
-            Instance = this;
+            UIPanel uiPanel = new UIPanel
+            {
+                panel = panel,
+                parent = panel.parent,
+                isActive = panel.gameObject.activeSelf,
+                index = panel.GetSiblingIndex()
+            };
+
+            // Move panel to canvas
+            panels.Add(uiPanel);
+            panel.gameObject.SetActive(true);
+            panel.SetParent(transform);
+            panel.SetAsLastSibling();
+            PauseHandler.Instance.AddBlocker(pauseBlocker);
+            clickBlocker.SetActive(true);
+        }
+
+        public void ClosePanel(Transform panel)
+        {
+            UIPanel uiPanel = panels.Find(p => p.panel == panel);
+            if (uiPanel.panel == null) return;
+
+            // Move panel back to parent
+            uiPanel.panel.gameObject.SetActive(uiPanel.isActive);
+            uiPanel.panel.SetParent(uiPanel.parent);
+            uiPanel.panel.SetSiblingIndex(uiPanel.index);
+            panels.Remove(uiPanel);
+
+            if (panels.Count > 0) return;
+
+            // Remove click blocker
+            PauseHandler.Instance.RemoveBlocker(pauseBlocker);
+            clickBlocker.SetActive(false);
+        }
+
+        private struct UIPanel
+        {
+            public Transform panel;
+            public Transform parent;
+            public bool isActive;
+            public int index;
         }
     }
 }

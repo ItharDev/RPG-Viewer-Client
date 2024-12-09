@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using RPG;
 using UnityEngine;
@@ -36,7 +35,7 @@ namespace Networking
                         }
 
                         // Send error message
-                        MessageManager.QueueMessage(callback1.GetValue(1).GetString());
+                        MessageManager.QueueMessage(callback1.GetValue(1).GetString(), MessageType.Error);
                         callback(null);
                     }, id);
                 }
@@ -54,7 +53,7 @@ namespace Networking
                     }
 
                     // Send error message
-                    MessageManager.QueueMessage(callback1.GetValue(1).GetString());
+                    MessageManager.QueueMessage(callback1.GetValue(1).GetString(), MessageType.Error);
                     callback(null);
                 }, id);
             }

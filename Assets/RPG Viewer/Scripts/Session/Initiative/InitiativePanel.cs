@@ -83,7 +83,7 @@ namespace RPG
                 if (callback.GetValue().GetBoolean()) return;
 
                 // Send error message
-                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                MessageManager.QueueMessage(callback.GetValue(1).GetString(), MessageType.Error);
             }, JsonUtility.ToJson(data));
         }
         public void ResetInitiatives()
@@ -96,7 +96,7 @@ namespace RPG
                 if (callback.GetValue().GetBoolean()) GetUsers();
 
                 // Send error message
-                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                MessageManager.QueueMessage(callback.GetValue(1).GetString(), MessageType.Error);
             });
         }
         private void GetUsers()
@@ -119,7 +119,7 @@ namespace RPG
                 }
 
                 // Send error message
-                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                MessageManager.QueueMessage(callback.GetValue(1).GetString(), MessageType.Error);
             });
         }
         private void AddInitiative(string userId)
@@ -141,14 +141,14 @@ namespace RPG
                         if (callback.GetValue().GetBoolean()) return;
 
                         // Send error message
-                        MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                        MessageManager.QueueMessage(callback.GetValue(1).GetString(), MessageType.Error);
                     }, JsonUtility.ToJson(data));
 
                     return;
                 }
 
                 // Send error message
-                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                MessageManager.QueueMessage(callback.GetValue(1).GetString(), MessageType.Error);
             }, userId);
         }
         public void Sort()
@@ -159,7 +159,7 @@ namespace RPG
                 if (callback.GetValue().GetBoolean()) return;
 
                 // Send error message
-                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                MessageManager.QueueMessage(callback.GetValue(1).GetString(), MessageType.Error);
             });
         }
         private void Resize()
@@ -255,7 +255,7 @@ namespace RPG
                 }
 
                 // Send error message
-                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                MessageManager.QueueMessage(callback.GetValue(1).GetString(), MessageType.Error);
             });
         }
         private void ModifyInitiative(string id, InitiativeData data)

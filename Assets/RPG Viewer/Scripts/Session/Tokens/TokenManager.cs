@@ -93,9 +93,9 @@ namespace RPG
                 // Load data and add it to dictionary
                 token.LoadData(data, sprite);
                 Tokens.Add(data.id, token);
-                
+
                 // Select this token if it's the first token we instantiate and this client is player
-                if (myTokens.Count == 0) SelectToken(ConnectionManager.Info.isMaster ? null : myTokens[0]);
+                if (myTokens.Count == 0) SelectToken(ConnectionManager.Info.isMaster ? null : token);
 
                 // Check token's permissions
                 if (token.Permission.type == PermissionType.Controller && token.Visibility.visible && (token.Data.enabled || ConnectionManager.Info.isMaster)) myTokens.Add(token);
@@ -275,7 +275,7 @@ namespace RPG
                 }
 
                 // Send error message
-                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                MessageManager.QueueMessage(callback.GetValue(1).GetString(), MessageType.Error);
             });
         }
         private void LoadToken(System.Text.Json.JsonElement json)
@@ -368,7 +368,7 @@ namespace RPG
                 if (callback.GetValue().GetBoolean()) return;
 
                 // Send error message
-                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                MessageManager.QueueMessage(callback.GetValue(1).GetString(), MessageType.Error);
             }, token.Id, portal.Id);
         }
         public void TeleportToken(string id, Vector2 destination)

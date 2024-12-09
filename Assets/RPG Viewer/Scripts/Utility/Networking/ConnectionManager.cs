@@ -36,7 +36,7 @@ namespace RPG
                 // Check if landing page exists
                 if (bytes == null)
                 {
-                    MessageManager.QueueMessage("Failed to load landing page, please try again");
+                    MessageManager.QueueMessage("Failed to load landing page, please try again", MessageType.Error);
                     return;
                 }
 

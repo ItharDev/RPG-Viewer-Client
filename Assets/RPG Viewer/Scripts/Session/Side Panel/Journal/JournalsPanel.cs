@@ -87,7 +87,7 @@ namespace RPG
                             }
 
                             // Send error message
-                            MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                            MessageManager.QueueMessage(callback.GetValue(1).GetString(), MessageType.Error);
                         }, owner);
                     }
                     else
@@ -153,7 +153,7 @@ namespace RPG
                 }
 
                 // Send error message
-                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                MessageManager.QueueMessage(callback.GetValue(1).GetString(), MessageType.Error);
             });
         }
         public void LoadJournal(string id, string path)
@@ -231,7 +231,7 @@ namespace RPG
                 }
 
                 // Send error message
-                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                MessageManager.QueueMessage(callback.GetValue(1).GetString(), MessageType.Error);
             }, path, JsonUtility.ToJson(data));
         }
 
@@ -286,7 +286,7 @@ namespace RPG
                 }
 
                 // Send error message
-                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                MessageManager.QueueMessage(callback.GetValue(1).GetString(), MessageType.Error);
             }, "", "New folder");
         }
         public void RemoveJournal(JournalHolder journal)
@@ -377,7 +377,7 @@ namespace RPG
                 }
 
                 // Send error message
-                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                MessageManager.QueueMessage(callback.GetValue(1).GetString(), MessageType.Error);
                 selectedFolder = null;
             }, selectedFolder.Path, "");
         }
@@ -414,7 +414,7 @@ namespace RPG
                     }
 
                     // Send error message
-                    MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                    MessageManager.QueueMessage(callback.GetValue(1).GetString(), MessageType.Error);
                     selectedFolder = null;
                 }, selectedFolder.Path, folder.Path);
             }
@@ -441,7 +441,7 @@ namespace RPG
                     }
 
                     // Send error message
-                    MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                    MessageManager.QueueMessage(callback.GetValue(1).GetString(), MessageType.Error);
                     selectedJournal = null;
                 }, selectedJournal.Id, selectedJournal.Path, folder.Path);
             }
@@ -483,7 +483,7 @@ namespace RPG
                 }
 
                 // Send error message
-                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                MessageManager.QueueMessage(callback.GetValue(1).GetString(), MessageType.Error);
                 selectedJournal = null;
             }, selectedJournal.Id, selectedJournal.Path, "");
         }
@@ -506,7 +506,7 @@ namespace RPG
                     if (callback.GetValue().GetBoolean()) return;
 
                     // Send error message
-                    MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                    MessageManager.QueueMessage(callback.GetValue(1).GetString(), MessageType.Error);
                 }, data.id, JsonUtility.ToJson(newData));
             });
         }

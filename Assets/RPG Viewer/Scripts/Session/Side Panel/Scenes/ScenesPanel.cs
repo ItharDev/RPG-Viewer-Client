@@ -101,7 +101,7 @@ namespace RPG
                 }
 
                 // Send error message
-                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                MessageManager.QueueMessage(callback.GetValue(1).GetString(), MessageType.Error);
             });
         }
         private void LoadScene(string id, string path)
@@ -198,7 +198,7 @@ namespace RPG
                     }
 
                     // Send error message
-                    MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                    MessageManager.QueueMessage(callback.GetValue(1).GetString(), MessageType.Error);
                 }, path, JsonUtility.ToJson(data), Convert.ToBase64String(bytes));
             });
         }
@@ -268,7 +268,7 @@ namespace RPG
                 }
 
                 // Send error message
-                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                MessageManager.QueueMessage(callback.GetValue(1).GetString(), MessageType.Error);
             }, "", "New folder");
         }
         public void RemoveScene(SceneHolder scene)
@@ -359,7 +359,7 @@ namespace RPG
                 }
 
                 // Send error message
-                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                MessageManager.QueueMessage(callback.GetValue(1).GetString(), MessageType.Error);
                 selectedFolder = null;
             }, selectedFolder.Path, "");
         }
@@ -396,7 +396,7 @@ namespace RPG
                     }
 
                     // Send error message
-                    MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                    MessageManager.QueueMessage(callback.GetValue(1).GetString(), MessageType.Error);
                     selectedFolder = null;
                 }, selectedFolder.Path, folder.Path);
             }
@@ -423,7 +423,7 @@ namespace RPG
                     }
 
                     // Send error message
-                    MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                    MessageManager.QueueMessage(callback.GetValue(1).GetString(), MessageType.Error);
                     selectedScene = null;
                 }, selectedScene.Id, selectedScene.Path, folder.Path);
             }
@@ -464,7 +464,7 @@ namespace RPG
                 }
 
                 // Send error message
-                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                MessageManager.QueueMessage(callback.GetValue(1).GetString(), MessageType.Error);
                 selectedScene = null;
             }, selectedScene.Id, selectedScene.Path, "");
         }

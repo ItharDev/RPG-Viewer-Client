@@ -293,7 +293,7 @@ namespace RPG
                     }
 
                     // Send error message
-                    MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                    MessageManager.QueueMessage(callback.GetValue(1).GetString(), MessageType.Error);
                 }, Path);
             }));
         }
@@ -321,7 +321,7 @@ namespace RPG
         {
             if (headerInput.text == "Public")
             {
-                MessageManager.QueueMessage("Folder name cannot be 'Public'");
+                MessageManager.QueueMessage("Folder name cannot be 'Public'", MessageType.Error);
                 return;
             }
 
@@ -341,7 +341,7 @@ namespace RPG
                 }
 
                 // Send error message
-                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                MessageManager.QueueMessage(callback.GetValue(1).GetString(), MessageType.Error);
                 header.text = Data.name;
             }, Path, newName);
         }
@@ -367,7 +367,7 @@ namespace RPG
                 }
 
                 // Send error message
-                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+                MessageManager.QueueMessage(callback.GetValue(1).GetString(), MessageType.Error);
             }, Path, "New folder");
         }
         public void AddToken()
