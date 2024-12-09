@@ -3,7 +3,7 @@ using FunkyCode.LightingSettings;
 
 namespace FunkyCode
 {
-	[ExecuteInEditMode] 
+	[ExecuteInEditMode]
 	public class LightingManager2D : LightingMonoBehaviour
 	{
 		private static LightingManager2D instance;
@@ -26,20 +26,20 @@ namespace FunkyCode
 		public bool[,] foldout_lightmapMaterials = new bool[10, 10];
 
 		// Sets Lighting Main Profile Settings for Lighting2D at the start of the scene
-		private static bool initialized = false; 
+		private static bool initialized = false;
 
 		public Camera GetCamera(int id)
 		{
 			if (cameras.Length <= id)
 			{
-				return(null);
+				return (null);
 			}
 
-			return(cameras.Get(id).GetCamera());
+			return (cameras.Get(id).GetCamera());
 		}
 
-		public static void ForceUpdate() {}
-		
+		public static void ForceUpdate() { }
+
 		static public LightingManager2D Get()
 		{
 			if (instance != null)
@@ -47,7 +47,7 @@ namespace FunkyCode
 				return instance;
 			}
 
-			foreach(var manager in UnityEngine.Object.FindObjectsOfType<LightingManager2D>())
+			foreach (var manager in FindObjectsByType<LightingManager2D>(FindObjectsSortMode.None))
 			{
 				instance = manager;
 
@@ -78,17 +78,17 @@ namespace FunkyCode
 			}
 
 			CameraTransform.List.Clear();
-			
+
 			if (instance != null && instance != this)
 			{
-				switch(Lighting2D.ProjectSettings.managerInstance)
+				switch (Lighting2D.ProjectSettings.managerInstance)
 				{
 					case LightingSettings.ManagerInstance.Static:
 					case LightingSettings.ManagerInstance.DontDestroyOnLoad:
-						
+
 						Debug.LogWarning("Smart Lighting2D: Lighting Manager duplicate was found, new instance destroyed.", gameObject);
 
-						foreach(var manager in UnityEngine.Object.FindObjectsOfType<LightingManager2D>())
+						foreach (var manager in FindObjectsByType<LightingManager2D>(FindObjectsSortMode.None))
 						{
 							if (manager != instance)
 							{
@@ -101,10 +101,10 @@ namespace FunkyCode
 					case LightingSettings.ManagerInstance.Dynamic:
 
 						instance = this;
-						
+
 						Debug.LogWarning("Smart Lighting2D: Lighting Manager duplicate was found, old instance destroyed.", gameObject);
 
-						foreach(var manager in UnityEngine.Object.FindObjectsOfType<LightingManager2D>())
+						foreach (var manager in FindObjectsByType<LightingManager2D>(FindObjectsSortMode.None))
 						{
 							if (manager != instance)
 							{
@@ -112,7 +112,7 @@ namespace FunkyCode
 							}
 						}
 
-					break;
+						break;
 				}
 			}
 
@@ -149,7 +149,7 @@ namespace FunkyCode
 
 			FixTransform();
 		}
-		
+
 		public void FixTransform()
 		{
 			if (transform.lossyScale != Vector3.one)
@@ -159,7 +159,7 @@ namespace FunkyCode
 				Transform parent = transform.parent;
 
 				if (parent != null)
-				{	
+				{
 					scale.x /= parent.lossyScale.x;
 					scale.y /= parent.lossyScale.y;
 					scale.z /= parent.lossyScale.z;
@@ -187,7 +187,7 @@ namespace FunkyCode
 			}
 
 			UpdateInternal();
-			
+
 			if (Lighting2D.Profile.qualitySettings.updateMethod == LightingSettings.UpdateMethod.LateUpdate)
 			{
 				Rendering.Manager.Main.Render();
@@ -204,7 +204,7 @@ namespace FunkyCode
 			LightingManager2D.initialized = true;
 
 			LightingSettings.Profile profile = Lighting2D.Profile;
-			
+
 			Lighting2D.UpdateByProfile(profile);
 
 			Lighting2D.Materials.Reset();
@@ -245,7 +245,7 @@ namespace FunkyCode
 						Lighting2D.RemoveProfile();
 					}
 				}
-			}			
+			}
 		}
 
 		public void UpdateProfile()
@@ -253,13 +253,13 @@ namespace FunkyCode
 			if (setProfile == null)
 			{
 				setProfile = Lighting2D.ProjectSettings.Profile;
-			} 
+			}
 
 			if (Application.isPlaying)
 			{
 				profile = UnityEngine.Object.Instantiate(setProfile);
 			}
-				else
+			else
 			{
 				profile = setProfile;
 			}
@@ -269,7 +269,7 @@ namespace FunkyCode
 		{
 			sceneView.OnEnable();
 
-			foreach(var onRenderMode in UnityEngine.Object.FindObjectsOfType<OnRenderMode>())
+			foreach (var onRenderMode in FindObjectsByType<OnRenderMode>(FindObjectsSortMode.None))
 			{
 				onRenderMode.DestroySelf();
 			}
@@ -279,7 +279,7 @@ namespace FunkyCode
 			UpdateProfile();
 
 			Rendering.Manager.Main.UpdateMaterials();
-		
+
 			Update();
 			LateUpdate();
 		}
@@ -290,8 +290,8 @@ namespace FunkyCode
 			{
 				return;
 			}
-			
-			foreach(var buffer in LightMainBuffer2D.List)
+
+			foreach (var buffer in LightMainBuffer2D.List)
 			{
 				Rendering.LightMainBuffer.DrawPost(buffer);
 			}
@@ -306,7 +306,7 @@ namespace FunkyCode
 
 			DrawGizmos();
 		}
-		
+
 		private void DrawGizmos()
 		{
 			if (!isActiveAndEnabled)
@@ -318,7 +318,7 @@ namespace FunkyCode
 
 			if (Lighting2D.ProjectSettings.gizmos.drawGizmosBounds == EditorGizmosBounds.Enabled)
 			{
-				for(int i = 0; i < cameras.Length; i++)
+				for (int i = 0; i < cameras.Length; i++)
 				{
 					var cameraSetting = cameras.Get(i);
 					var camera = cameraSetting.GetCamera();
@@ -331,7 +331,7 @@ namespace FunkyCode
 				}
 			}
 
-			for(int i = 0; i < Scriptable.LightSprite2D.List.Count; i++)
+			for (int i = 0; i < Scriptable.LightSprite2D.List.Count; i++)
 			{
 				var light = Scriptable.LightSprite2D.List[i];
 				var rect = light.lightSpriteShape.GetWorldRect();

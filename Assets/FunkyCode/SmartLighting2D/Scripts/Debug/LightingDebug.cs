@@ -6,7 +6,7 @@ namespace FunkyCode
     public class LightingDebug
     {
         static public float atlasTimer = 0;
-    
+
         static public TimerHelper timer;
 
         static UnityEngine.Object[] lights = null;
@@ -16,12 +16,13 @@ namespace FunkyCode
 
         static public void OnGUI()
         {
-            if (lights == null) {
-                lights = UnityEngine.Object.FindObjectsOfType(typeof(Light2D));
-                colliders = UnityEngine.Object.FindObjectsOfType(typeof(LightCollider2D));
-                sprites = UnityEngine.Object.FindObjectsOfType(typeof(LightSprite2D));
+            if (lights == null)
+            {
+                lights = Object.FindObjectsByType<Light2D>(FindObjectsSortMode.None);
+                colliders = Object.FindObjectsByType<LightCollider2D>(FindObjectsSortMode.None);
+                sprites = Object.FindObjectsByType<LightSprite2D>(FindObjectsSortMode.None);
 
-                tilemaps = UnityEngine.Object.FindObjectsOfType(typeof(LightTilemapCollider2D));
+                tilemaps = Object.FindObjectsByType<LightTilemapCollider2D>(FindObjectsSortMode.None);
             }
 
             if (timer == null)
@@ -35,23 +36,23 @@ namespace FunkyCode
             }
 
             int count = 0;
-            foreach(Light2D light in Light2D.List)
+            foreach (Light2D light in Light2D.List)
             {
                 if (!light.InCameras())
                 {
                     continue;
                 }
 
-                count ++;
+                count++;
             }
 
             LightingManager2D manager2D = LightingManager2D.Get();
             //LightMainBuffer2D mainBuffer = LightMainBuffer2D.Get();
 
-            GUI.skin.GetStyle("label").alignment =  TextAnchor.UpperLeft;
+            GUI.skin.GetStyle("label").alignment = TextAnchor.UpperLeft;
 
             int textSpace = 15;
-            
+
             int y = textSpace;
 
             //GUI.Label(new Rect(10, y, 500, 20), "Total Custom Physics Shapes: " + totalPhysicsShapes);
@@ -65,7 +66,7 @@ namespace FunkyCode
             GUI.Label(new Rect(10, y, 500, 20), "Atlas Timer: " + atlasTimer);
 
             y += textSpace;
-            
+
             //GUI.Label(new Rect(10, y, 500, 20), "Camera Size: " + mainBuffer.cameraSize);
 
             y += textSpace;
@@ -78,7 +79,7 @@ namespace FunkyCode
 
             y += textSpace;
 
-        //  GUI.Label(new Rect(10, y, 500, 20), "Free Buffers: " + LightBuffers.GetFreeCount() + "/" + LightBuffers.GetList().Count);
+            //  GUI.Label(new Rect(10, y, 500, 20), "Free Buffers: " + LightBuffers.GetFreeCount() + "/" + LightBuffers.GetList().Count);
 
             y += textSpace;
 
@@ -145,7 +146,7 @@ namespace FunkyCode
             GUI.Label(new Rect(10, y, 500, 20), "=========================");
 
             y += textSpace;
-            
+
             //GUI.Label(new Rect(10, y, 500, 20), "Light Main Buffer Updates: " + ShowLightMainBufferUpdates);
 
             y += textSpace;
@@ -153,21 +154,22 @@ namespace FunkyCode
             GUI.Label(new Rect(10, y, 500, 20), "=========================");
 
             y += textSpace;
-    /*
-            Texture texture = LightMainBuffer2D.Get().bufferCamera.activeTexture;
-            if (texture != null) {
-                GUI.Label(new Rect(10, y, 500, 20), "Main Buffer Resolution: " + texture.width + "x" + texture.height);
-            } else {
-                GUI.Label(new Rect(10, y, 500, 20), "Main Buffer Resolution: NULL");
-            }*/
+            /*
+                    Texture texture = LightMainBuffer2D.Get().bufferCamera.activeTexture;
+                    if (texture != null) {
+                        GUI.Label(new Rect(10, y, 500, 20), "Main Buffer Resolution: " + texture.width + "x" + texture.height);
+                    } else {
+                        GUI.Label(new Rect(10, y, 500, 20), "Main Buffer Resolution: NULL");
+                    }*/
 
             y += textSpace;
 
-        
-            RightBottomPanel() ;    
+
+            RightBottomPanel();
         }
 
-        public static void RightBottomPanel() {
+        public static void RightBottomPanel()
+        {
             GUIStyle style = new GUIStyle();
             style.alignment = TextAnchor.LowerRight;
             style.normal.textColor = Color.white;
@@ -179,15 +181,15 @@ namespace FunkyCode
             GUI.Label(new Rect(0, -50, Screen.width - 10, Screen.height), "Colliders Count: " + colliders.Length, style);
             GUI.Label(new Rect(0, -70, Screen.width - 10, Screen.height), "Sprite Renderers Count: " + sprites.Length, style);
         }
-            
+
         static public void SecondUpdate()
         {
 
             timer = TimerHelper.Create();
 
-            lights = UnityEngine.Object.FindObjectsOfType(typeof(Light2D));
-            colliders = UnityEngine.Object.FindObjectsOfType(typeof(LightCollider2D));
-            sprites = UnityEngine.Object.FindObjectsOfType(typeof(LightSprite2D));
+            lights = Object.FindObjectsByType<Light2D>(FindObjectsSortMode.None);
+            colliders = Object.FindObjectsByType<LightCollider2D>(FindObjectsSortMode.None);
+            sprites = Object.FindObjectsByType<LightSprite2D>(FindObjectsSortMode.None);
         }
     }
 }

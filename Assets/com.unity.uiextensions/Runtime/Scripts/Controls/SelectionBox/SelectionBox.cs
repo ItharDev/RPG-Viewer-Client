@@ -169,7 +169,7 @@ namespace UnityEngine.UI.Extensions
 			
 			// If we do not have a group of selectables already set, we'll just loop through every object that's a monobehaviour, and look for selectable interfaces in them
 			if (selectableGroup == null) {
-				behavioursToGetSelectionsFrom = GameObject.FindObjectsOfType<MonoBehaviour>();
+				behavioursToGetSelectionsFrom = FindObjectsByType<MonoBehaviour>(FindObjectsSortMode.None);
 			} else {
 				behavioursToGetSelectionsFrom = selectableGroup;
 			}

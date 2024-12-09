@@ -9,7 +9,7 @@ namespace UnityEngine.UI.Extensions
 
         void Awake()
         {
-            foreach (var list in FindObjectsOfType<ReorderableList>())
+            foreach (var list in FindObjectsByType<ReorderableList>(FindObjectsSortMode.None))
             {
                 list.OnElementDropped.AddListener(ElementDropped);
             }
