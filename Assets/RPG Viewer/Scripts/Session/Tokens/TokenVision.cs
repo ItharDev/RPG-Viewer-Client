@@ -8,6 +8,7 @@ namespace RPG
 {
     public class TokenVision : MonoBehaviour
     {
+        [SerializeField] private GameObject lightObject;
         [SerializeField] private Light2D nightSource;
         [SerializeField] private Light2D visionSource;
         [SerializeField] private Light2D highlight;
@@ -133,7 +134,9 @@ namespace RPG
             Permission isPlayer = token.Data.permissions.FirstOrDefault(value => value.type == PermissionType.Controller);
             EnableHighlight(!string.IsNullOrEmpty(isPlayer.user) && token.Enabled && token.Visibility.visible);
             ToggleVision(token.Enabled && token.Visibility.visible && (token.Data.enabled || ConnectionManager.Info.isMaster) && token.Permission.type != PermissionType.None);
-            ToggleLight(token.Visibility.visible && token.Data.enabled && token.Data.lightEnabled);
+            ToggleLight(token.Data.lightEnabled);
+
+            lightObject.SetActive(token.Data.enabled);
         }
 
         public void ToggleVision(bool enabled)
