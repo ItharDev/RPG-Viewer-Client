@@ -94,11 +94,11 @@ namespace RPG
                 token.LoadData(data, sprite);
                 Tokens.Add(data.id, token);
 
-                // Select this token if it's the first token we instantiate and this client is player
-                if (myTokens.Count == 0) SelectToken(ConnectionManager.Info.isMaster ? null : token);
-
                 // Check token's permissions
                 if (token.Permission.type == PermissionType.Controller && token.Visibility.visible && (token.Data.enabled || ConnectionManager.Info.isMaster)) myTokens.Add(token);
+
+                // Select this token if it's the first token we instantiate and this client is player
+                if (myTokens.Count == 1 && myTokens[0] == token) SelectToken(ConnectionManager.Info.isMaster ? null : token);
             });
         }
         private void MoveToken(string id, MovementData data)
