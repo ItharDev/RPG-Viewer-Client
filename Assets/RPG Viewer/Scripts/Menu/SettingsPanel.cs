@@ -35,6 +35,7 @@ namespace RPG
 
             // Update fps
             QualitySettings.vSyncCount = 0;
+            Application.targetFrameRate = 60;
             int fps = PlayerPrefs.GetInt("FPS");
             if (fps != 0) UpdateFrameRate(fps);
         }
