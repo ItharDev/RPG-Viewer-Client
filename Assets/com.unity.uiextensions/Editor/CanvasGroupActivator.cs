@@ -29,7 +29,7 @@ namespace UnityEngine.UI.Extensions
 
         void ObtainCanvasGroups()
         {
-            canvasGroups = GameObject.FindObjectsOfType<CanvasGroup>();
+            canvasGroups = FindObjectsByType<CanvasGroup>(FindObjectsSortMode.None);
         }
 
         void OnGUI()

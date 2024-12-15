@@ -30,7 +30,7 @@ public class DrawCurve : MonoBehaviour {
 	public static DrawCurve use;
 	
 	void Start () {
-		use = this;	// Reference to this script, so FindObjectOfType etc. are not needed
+		use = this; // Reference to this script, so FindFirstObjectByType etc. are not needed
 		oldWidth = Screen.width;
 		oldSegments = segments;
 	

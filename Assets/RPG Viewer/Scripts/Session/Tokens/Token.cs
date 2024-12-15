@@ -67,7 +67,7 @@ namespace RPG
                 Enabled = Selected;
             }
 
-            if (Selected) FindObjectOfType<Camera2D>().FollowTarget(transform);
+            if (Selected) FindFirstObjectByType<Camera2D>().FollowTarget(transform);
             Vision.ToggleVision(Enabled && Visibility.visible && (Data.enabled || ConnectionManager.Info.isMaster));
         }
 

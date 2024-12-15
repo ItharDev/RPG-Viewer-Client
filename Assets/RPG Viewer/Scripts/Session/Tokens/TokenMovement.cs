@@ -167,7 +167,7 @@ namespace RPG
             if (!CheckManualMovement()) return;
 
             // Apply new target for the camera to follow
-            FindObjectOfType<Camera2D>().FollowTarget(transform);
+            FindFirstObjectByType<Camera2D>().FollowTarget(transform);
 
             // Get movement direction
             float inputX = Input.GetAxisRaw("Horizontal");
@@ -457,7 +457,7 @@ namespace RPG
             waypoints.Clear();
 
             if (!token.IsOwner || (ConnectionManager.Info.isMaster && !token.Selected)) return;
-            FindObjectOfType<Camera2D>().FollowTarget(transform, true);
+            FindFirstObjectByType<Camera2D>().FollowTarget(transform, true);
         }
     }
 }

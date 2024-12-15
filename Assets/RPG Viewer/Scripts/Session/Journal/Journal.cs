@@ -230,7 +230,7 @@ namespace RPG
                 if (callback.GetValue().GetBoolean())
                 {
                     MessageManager.QueueMessage("Journal saved");
-                    FindObjectOfType<JournalsPanel>().LoadJournal(callback.GetValue(1).GetString(), "");
+                    FindFirstObjectByType<JournalsPanel>().LoadJournal(callback.GetValue(1).GetString(), "");
                     return;
                 }
 

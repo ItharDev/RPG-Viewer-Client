@@ -48,10 +48,10 @@ namespace RPG
             else Destroy(gameObject);
 
             // Get reference of the managers
-            TokenManager = FindObjectOfType<TokenManager>();
-            NoteManager = FindObjectOfType<NoteManager>();
-            JournalManager = FindObjectOfType<JournalManager>();
-            Grid = FindObjectOfType<GridManager>();
+            TokenManager = FindFirstObjectByType<TokenManager>();
+            NoteManager = FindFirstObjectByType<NoteManager>();
+            JournalManager = FindFirstObjectByType<JournalManager>();
+            Grid = FindFirstObjectByType<GridManager>();
         }
         private void Start()
         {
