@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Sockets;
 using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using Networking;
@@ -32,21 +33,27 @@ namespace RPG
 
         private List<InviteHolder> inviteHolders = new List<InviteHolder>();
         private byte[] landingPageBytes;
+        private string id;
 
         public void OpenPanel()
         {
+            Reset();
             UICanvas.Instance.OpenPanel(transform);
         }
 
         public void ClosePanel()
         {
             UICanvas.Instance.ClosePanel(transform);
+            Reset();
         }
 
-        public void LoadData(string id, Sprite landingPageSprite)
+        public void LoadData(string _id, Sprite landingPageSprite)
         {
+            id = _id;
+            acceptText.text = "Save Changes";
+
             // Fetch session data
-            SocketManager.EmitAsync("load-session", async (callback) =>
+            SocketManager.EmitAsync("get-session", async (callback) =>
             {
                 // Check if the event was successful
                 if (callback.GetValue().GetBoolean())
@@ -64,13 +71,15 @@ namespace RPG
                     var invites = callback.GetValue(1).GetProperty("invites").EnumerateArray().ToArray();
                     for (int i = 0; i < invites.Length; i++)
                     {
-                        string name = invites[i].GetProperty("name").GetString();
-                        string id = invites[i].GetProperty("id").GetString();
-                        string status = invites[i].GetProperty("status").GetString();
+                        LoadInvite(invites[i].GetString());
+                    }
 
-                        InviteHolder inviteHolder = Instantiate(invitePrefab, inviteList);
-                        inviteHolder.SetData(id, name, status, true, this);
-                        inviteHolders.Add(inviteHolder);
+                    // Set players list
+                    var players = callback.GetValue(1).GetProperty("users").EnumerateArray().ToArray();
+                    for (int i = 0; i < players.Length; i++)
+                    {
+                        if (players[i].GetString() == GameData.User.id) continue;
+                        LoadInvite(players[i].GetString(), true);
                     }
 
                     return;
@@ -79,6 +88,115 @@ namespace RPG
                 // Send error message
                 MessageManager.QueueMessage(callback.GetValue(1).GetString(), MessageType.Error);
             }, id);
+        }
+
+        private void Reset()
+        {
+            // Reset Input
+            id = null;
+            landingPageBytes = null;
+
+            landingPage.sprite = defaultLandingPage;
+            nameInput.text = "";
+            inviteInput.text = "";
+            title.text = "New Session";
+            acceptText.text = "Create Session";
+            inviteHolders.Clear();
+
+            foreach (Transform child in inviteList)
+            {
+                Destroy(child.gameObject);
+            }
+        }
+
+        private void LoadInvite(string userId, bool hasAccepted = false)
+        {
+            SocketManager.EmitAsync("get-profile", async (callback) =>
+            {
+                await UniTask.SwitchToMainThread();
+
+                // Check if the event was successful
+                if (callback.GetValue().GetBoolean())
+                {
+                    await UniTask.SwitchToMainThread();
+                    string name = callback.GetValue(1).GetString();
+                    string email = callback.GetValue(2).GetString();
+
+                    InviteHolder inviteHolder = Instantiate(invitePrefab, inviteList);
+                    inviteHolder.SetData(userId, email, name, hasAccepted, false, this);
+                    inviteHolders.Add(inviteHolder);
+
+                    return;
+                }
+
+                // Send error message
+                MessageManager.QueueMessage(callback.GetValue(1).GetString(), MessageType.Error);
+            }, userId);
+        }
+
+        private void CreateInvite(string userId)
+        {
+            if (userId == GameData.User.id)
+            {
+                MessageManager.QueueMessage("You cannot invite yourself", MessageType.Error);
+                return;
+            }
+
+            SocketManager.EmitAsync("get-profile", async (callback) =>
+            {
+                await UniTask.SwitchToMainThread();
+
+                // Check if the event was successful
+                if (callback.GetValue().GetBoolean())
+                {
+                    await UniTask.SwitchToMainThread();
+                    string name = callback.GetValue(1).GetString();
+                    string email = callback.GetValue(2).GetString();
+
+                    InviteHolder inviteHolder = Instantiate(invitePrefab, inviteList);
+                    inviteHolder.SetData(userId, email, name, false, true, this);
+                    inviteHolders.Add(inviteHolder);
+
+                    MessageManager.QueueMessage("Invite added");
+                    return;
+                }
+
+                // Send error message
+                MessageManager.QueueMessage(callback.GetValue(1).GetString(), MessageType.Error);
+            }, userId);
+        }
+
+        public void AddInvite()
+        {
+            // Check if invite input is empty
+            if (string.IsNullOrEmpty(inviteInput.text))
+            {
+                MessageManager.QueueMessage("Invalid email address", MessageType.Error);
+                return;
+            }
+
+            // Check if invite email is already in the list
+            if (inviteHolders.Any(x => x.GetEmail == inviteInput.text))
+            {
+                MessageManager.QueueMessage("User already added", MessageType.Error);
+                return;
+            }
+
+            SocketManager.EmitAsync("get-user-id", async (callback) =>
+            {
+                // Check if the event was successful
+                if (callback.GetValue().GetBoolean())
+                {
+                    await UniTask.SwitchToMainThread();
+                    string userId = callback.GetValue(1).GetString();
+                    CreateInvite(userId);
+                    inviteInput.text = "";
+                    return;
+                }
+
+                // Send error message
+                MessageManager.QueueMessage(callback.GetValue(1).GetString(), MessageType.Error);
+            }, inviteInput.text);
         }
 
         public void CancelInvite(InviteHolder inviteHolder)
@@ -101,19 +219,6 @@ namespace RPG
             {
                 MessageManager.QueueMessage("No landing page selected", MessageType.Error);
                 return;
-            }
-
-            // Reset Input
-            landingPageBytes = null;
-            landingPage.sprite = defaultLandingPage;
-            nameInput.text = "";
-            inviteInput.text = "";
-            title.text = "New Session";
-            inviteHolders.Clear();
-
-            foreach (Transform child in inviteList)
-            {
-                Destroy(child.gameObject);
             }
         }
 

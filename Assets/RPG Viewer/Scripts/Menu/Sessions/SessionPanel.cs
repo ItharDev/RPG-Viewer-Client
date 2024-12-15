@@ -10,6 +10,7 @@ namespace RPG
     {
         [SerializeField] private Transform sessionList;
         [SerializeField] private SessionCard sessionPrefab;
+        [SerializeField] private SessionEditor sessionEditor;
 
         private void OnEnable()
         {
@@ -39,6 +40,7 @@ namespace RPG
 
         private void FetchSessions()
         {
+            ClearSessions();
             SocketManager.EmitAsync("load-licences", async (callback) =>
             {
                 // Check if the event was successful
@@ -53,10 +55,11 @@ namespace RPG
                     {
                         // Read session data
                         string id = list[i].GetProperty("id").GetString();
+                        string master = list[i].GetProperty("master").GetString();
                         string name = list[i].GetProperty("name").GetString();
                         string landingPage = list[i].GetProperty("landingPage").GetString();
 
-                        LoadSesionCard(id, name, landingPage);
+                        LoadSesionCard(id, master == GameData.User.id, name, landingPage);
                     }
 
                     return;
@@ -76,11 +79,11 @@ namespace RPG
             }
         }
 
-        private void LoadSesionCard(string id, string name, string landingPage)
+        private void LoadSesionCard(string id, bool isMaster, string name, string landingPage)
         {
             // Create session card
             SessionCard card = Instantiate(sessionPrefab, sessionList);
-            card.SetData(id, name, landingPage);
+            card.SetData(id, isMaster, name, landingPage, this);
         }
 
         public void JoinSession(string id)
@@ -90,7 +93,7 @@ namespace RPG
                 // Check if the event was successful
                 if (callback.GetValue().GetBoolean())
                 {
-                    MessageManager.QueueMessage($"Joining Game Session");
+                    MessageManager.QueueMessage("Joining Game Session");
 
                     // Read join data
                     JoinData data = JsonUtility.FromJson<JoinData>(callback.GetValue(1).ToString());
@@ -101,6 +104,43 @@ namespace RPG
                 // Send error message
                 MessageManager.QueueMessage(callback.GetValue(1).GetString(), MessageType.Error);
             }, id);
+        }
+
+        public void EditSession(string id, SessionCard card)
+        {
+            sessionEditor.OpenPanel();
+            sessionEditor.LoadData(id, card.GetSprite);
+        }
+
+        public void DeleteSession(string id, SessionCard card)
+        {
+            MessageManager.AskConfirmation(new Confirmation("Delete Session?", "Delete", "Cancel", (accepted) =>
+            {
+                if (!accepted) return;
+
+                SocketManager.EmitAsync("delete-session", (callback) =>
+                {
+                    // Check if the event was successful
+                    if (callback.GetValue().GetBoolean())
+                    {
+                        MessageManager.QueueMessage("Session deleted");
+                        Destroy(card.gameObject);
+                        return;
+                    }
+
+                    // Send error message
+                    MessageManager.QueueMessage(callback.GetValue(1).GetString(), MessageType.Error);
+                }, id);
+            }));
+        }
+
+        public void HandleSearch(string input)
+        {
+            SessionCard[] cards = sessionList.GetComponentsInChildren<SessionCard>(true);
+            foreach (SessionCard card in cards)
+            {
+                card.gameObject.SetActive(string.IsNullOrEmpty(input) || card.GetName.ToLower().Contains(input.ToLower()));
+            }
         }
     }
 }

@@ -39,8 +39,6 @@ namespace Networking
         private static async void OnConnected(object sender, EventArgs e)
         {
             await UniTask.SwitchToMainThread();
-            MessageManager.QueueMessage("Connection established to the server", MessageType.Success);
-
             AddListeners();
 
             // Send connection event

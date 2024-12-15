@@ -34,8 +34,6 @@ namespace Networking
                             return;
                         }
 
-                        // Send error message
-                        MessageManager.QueueMessage(callback1.GetValue(1).GetString(), MessageType.Error);
                         callback(null);
                     }, id);
                 }
@@ -52,8 +50,6 @@ namespace Networking
                         return;
                     }
 
-                    // Send error message
-                    MessageManager.QueueMessage(callback1.GetValue(1).GetString(), MessageType.Error);
                     callback(null);
                 }, id);
             }

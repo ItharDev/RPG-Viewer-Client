@@ -180,7 +180,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 4425208756613427995}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 4557169617742245328}
+        m_TargetAssemblyTypeName: RPG.InviteHolder, Assembly-CSharp
+        m_MethodName: HandleButtonClick
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &4895060105634637482
 GameObject:
   m_ObjectHideFlags: 0

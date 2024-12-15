@@ -9,21 +9,33 @@ namespace RPG
         [SerializeField] private TMP_Text statusText;
         [SerializeField] private TMP_Text buttonText;
 
+        private string id;
+        private string email;
+        private string username;
         private bool isRemoved;
-        private bool isInvited;
+        private bool hasAccepted;
+        private bool isNew;
         private SessionEditor menu;
 
-        public void SetData(string id, string name, string status, bool _isInvited, SessionEditor _menu)
+        public string GetEmail { get { return email; } }
+
+        public void SetData(string _id, string _email, string _name, bool _hasAccepted, bool _isNew, SessionEditor _menu)
         {
-            nameText.text = name;
-            statusText.text = status;
-            isInvited = _isInvited;
+            id = _id;
+            email = _email;
+            username = _name;
+            nameText.text = $"{username} ({email})";
+            hasAccepted = _hasAccepted;
+            isNew = _isNew;
+
+            statusText.text = isNew ? "Invited" : hasAccepted ? "Accepted" : "Pending";
+            buttonText.text = hasAccepted ? "Remove" : "Cancel";
             menu = _menu;
         }
 
         public void HandleButtonClick()
         {
-            if (isInvited)
+            if (isNew)
             {
                 menu.CancelInvite(this);
                 return;
@@ -31,6 +43,7 @@ namespace RPG
 
             isRemoved = !isRemoved;
             buttonText.text = isRemoved ? "Cancel" : "Remove";
+            statusText.text = isRemoved ? hasAccepted ? "Removed" : "Removed" : "Accepted";
         }
     }
 }
