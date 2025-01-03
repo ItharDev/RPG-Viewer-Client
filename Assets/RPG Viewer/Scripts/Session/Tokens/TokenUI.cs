@@ -27,6 +27,12 @@ namespace RPG
         [SerializeField] private GameObject visibilityButton;
         [SerializeField] private GameObject conditionsButton;
 
+        [Space]
+        [SerializeField] private Image lightImage;
+        [SerializeField] private Sprite lightOn;
+        [SerializeField] private Sprite lightOff;
+        [SerializeField] private Color lightOnColor;
+        [SerializeField] private Color lightOffColor;
 
         [Space]
         [SerializeField] private Image lockedImage;
@@ -169,6 +175,13 @@ namespace RPG
 
             elevationPanel.SetActive(token.Selected || value != 0);
         }
+        public void ToggleLight(bool enabled)
+        {
+            // Update button state
+            lightImage.sprite = enabled ? lightOn : lightOff;
+            lightImage.color = enabled ? lightOnColor : lightOffColor;
+        }
+
         public void UpdateHealth()
         {
             int health = 0;
@@ -247,6 +260,7 @@ namespace RPG
             Resize();
             LoadUI();
             LockToken(token.Data.locked);
+            ToggleLight(token.Data.lightEnabled);
             ApplyVisibility();
 
             if (!ConnectionManager.Info.isMaster) EnableRaycasting(token.Permission.type == PermissionType.Controller);

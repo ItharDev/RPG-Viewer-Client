@@ -70,7 +70,7 @@ namespace RPG
             if (Input.GetKeyDown(KeyCode.Space)) ToggleLight();
         }
 
-        private void ToggleLight()
+        public void ToggleLight()
         {
             SocketManager.EmitAsync("toggle-token-light", (callback) =>
             {

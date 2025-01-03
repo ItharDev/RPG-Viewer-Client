@@ -180,6 +180,7 @@ namespace RPG
         {
             Data.lightEnabled = enabled;
             Vision.ToggleLight(enabled);
+            UI.ToggleLight(enabled);
         }
         public void SetElevation(int elevation)
         {
