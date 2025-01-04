@@ -299,6 +299,13 @@ namespace RPG
             activeSetting = Setting.Lighting_Delete;
             lastLighting = activeSetting;
         }
+        public void ToggleLights(bool state)
+        {
+            LightingManager manager = FindFirstObjectByType<LightingManager>();
+            if (manager == null) return;
+
+            manager.ToggleLights(state);
+        }
 
         public void SelectCreatePortal()
         {

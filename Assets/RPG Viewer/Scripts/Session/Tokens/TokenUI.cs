@@ -28,6 +28,7 @@ namespace RPG
         [SerializeField] private GameObject conditionsButton;
 
         [Space]
+        [SerializeField] private GameObject lightButton;
         [SerializeField] private Image lightImage;
         [SerializeField] private Sprite lightOn;
         [SerializeField] private Sprite lightOff;
@@ -121,6 +122,7 @@ namespace RPG
             healthPanel.SetActive(selected || (token.IsOwner && token.Data.health != 0));
             elevationPanel.SetActive(selected || token.Data.elevation != 0);
             UpdateSorting();
+            lightButton.SetActive(selected || token.Data.lightEnabled);
         }
 
         private void HandleRaycast(Tool tool)
@@ -180,6 +182,8 @@ namespace RPG
             // Update button state
             lightImage.sprite = enabled ? lightOn : lightOff;
             lightImage.color = enabled ? lightOnColor : lightOffColor;
+
+            lightButton.SetActive(token.Selected || enabled);
         }
 
         public void UpdateHealth()

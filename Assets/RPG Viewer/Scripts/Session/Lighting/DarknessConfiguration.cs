@@ -9,12 +9,13 @@ namespace RPG
     {
         [SerializeField] private Toggle enabledToggle;
         [SerializeField] private Image colorButton;
-        [SerializeField] private Toggle globalToggle;
+        [SerializeField] private Image globalColorButton;
         [SerializeField] private TMP_InputField visionInput;
         [SerializeField] private FlexibleColorPicker colorPicker;
 
         private RectTransform rect;
         private LightingSettings data;
+        private bool editingGlobal;
 
         private void Awake()
         {
@@ -51,36 +52,37 @@ namespace RPG
                 gameObject.SetActive(false);
             });
         }
-        public void OpenColor()
+        public void OpenColor(bool isGlobal)
         {
-            Color initColor = data.color;
+            editingGlobal = isGlobal;
+            Color initColor = editingGlobal ? data.globalLighting : data.color;
             initColor.a = 1.0f;
-            colorPicker.SetColor(data.color);
+            colorPicker.SetColor(editingGlobal ? data.globalLighting : data.color);
             colorPicker.gameObject.SetActive(true);
-            colorButton.color = initColor;
+            (editingGlobal ? globalColorButton : colorButton).color = initColor;
         }
         public void LoadData(LightingSettings _data)
         {
             data = _data;
             _data.color.a = 1.0f;
             colorButton.color = _data.color;
-            globalToggle.isOn = _data.globalLighting;
+            globalColorButton.color = _data.globalLighting;
 
             visionInput.text = data.visionRange.ToString();
             ((TMP_Text)visionInput.placeholder).text = Session.Instance.Grid.Unit.name;
         }
         public void ChangeColor(Color color)
         {
-            data.color = color;
+            if (editingGlobal) data.globalLighting = color;
+            else data.color = color;
             color.a = 1.0f;
-            colorButton.color = color;
+            (editingGlobal ? globalColorButton : colorButton).color = color;
             Events.OnLightingChanged?.Invoke(data, false);
         }
 
         private void SaveData()
         {
             data.enabled = enabledToggle.isOn;
-            data.globalLighting = globalToggle.isOn;
             if (string.IsNullOrEmpty(visionInput.text)) visionInput.text = "0";
             float visionRange = float.Parse(visionInput.text);
             if (visionRange < 0.0f) visionRange = 0.0f;

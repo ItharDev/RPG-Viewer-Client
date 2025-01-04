@@ -65,7 +65,7 @@ namespace RPG
             {
                 case GameView.Player:
                     Lighting2D.LightmapPresets[0].darknessColor = data.darkness.color;
-                    Lighting2D.LightmapPresets[0].darknessColor.a = data.darkness.globalLighting ? 0.0f : data.darkness.color.a;
+                    Lighting2D.LightmapPresets[0].darknessColor= data.darkness.globalLighting;
                     Lighting2D.LightmapPresets[1].darknessColor = data.darkness.color;
                     return;
                 case GameView.Vision:
@@ -81,8 +81,8 @@ namespace RPG
         }
         private void LoadPlayer()
         {
-            Lighting2D.LightmapPresets[0].darknessColor = Session.Instance.Settings.darkness.color;
-            Lighting2D.LightmapPresets[0].darknessColor.a = Session.Instance.Settings.darkness.globalLighting ? 0.0f : Session.Instance.Settings.darkness.color.a;
+            Debug.Log(Session.Instance.Settings.darkness.globalLighting.ToString());
+            Lighting2D.LightmapPresets[0].darknessColor = Session.Instance.Settings.darkness.globalLighting;
             Lighting2D.LightmapPresets[1].darknessColor = Session.Instance.Settings.darkness.color;
         }
         private void LoadVision()
@@ -118,7 +118,7 @@ namespace RPG
             {
                 case GameView.Player:
                     Lighting2D.LightmapPresets[0].darknessColor = data.color;
-                    Lighting2D.LightmapPresets[0].darknessColor.a = data.globalLighting ? 0.0f : data.color.a;
+                    Lighting2D.LightmapPresets[0].darknessColor = data.globalLighting;
                     Lighting2D.LightmapPresets[1].darknessColor = data.color;
                     return;
                 case GameView.Vision:

@@ -182,7 +182,7 @@ namespace RPG
             if (pointerData.button == PointerEventData.InputButton.Right) ModifyLight();
         }
 
-        private void ToggleLight()
+        public void ToggleLight()
         {
             SocketManager.EmitAsync("toggle-light", (callback) =>
             {

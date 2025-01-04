@@ -3999,6 +3999,7 @@ RectTransform:
   m_Children:
   - {fileID: 5901277668996832974}
   - {fileID: 4666914850174027285}
+  - {fileID: 1225079948769577385}
   - {fileID: 2781691675828107965}
   - {fileID: 2042056970415988241}
   - {fileID: 1274222420584255424}
@@ -4277,7 +4278,6 @@ RectTransform:
   m_Children:
   - {fileID: 6257307133361103540}
   - {fileID: 6003805497924145122}
-  - {fileID: 1225079948769577385}
   m_Father: {fileID: 5486313823620303927}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -7877,6 +7877,7 @@ MonoBehaviour:
   lockButton: {fileID: 6088742763165236204}
   visibilityButton: {fileID: 9190994791423996013}
   conditionsButton: {fileID: 9056171919514738714}
+  lightButton: {fileID: 8284513895784952114}
   lightImage: {fileID: 1749298734957286034}
   lightOn: {fileID: 21300000, guid: 7b866a686e87e36429553044b840890d, type: 3}
   lightOff: {fileID: 21300000, guid: 59ae932553b255b4e98359585035f7a7, type: 3}
@@ -8643,7 +8644,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1225079948769577385
 RectTransform:
   m_ObjectHideFlags: 0
@@ -8651,13 +8652,13 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8284513895784952114}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 6787011495411655270}
-  m_Father: {fileID: 2781691675828107965}
+  m_Father: {fileID: 5486313823620303927}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}

@@ -155,5 +155,16 @@ namespace RPG
                 GetLight(list.ElementAt(i));
             }
         }
+
+        public void ToggleLights(bool enabled)
+        {
+            // Loop through each light
+            foreach (var item in lights)
+            {
+                // Continue if light is null
+                if (item.Value == null) continue;
+                item.Value.Toggle(enabled);
+            }
+        }
     }
 }

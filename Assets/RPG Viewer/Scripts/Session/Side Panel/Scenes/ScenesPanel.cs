@@ -175,7 +175,7 @@ namespace RPG
 
                 SceneInfo info = new SceneInfo("New Scene", "", 0.0f);
                 GridData grid = new GridData(true, new Vector2Int(25, rows), cellSize, gridPosition, Color.black, new GridUnit("feet", 5));
-                LightingSettings darkness = new LightingSettings(true, false, Color.black, 0.0f);
+                LightingSettings darkness = new LightingSettings(true, Color.black, Color.black, 0.0f);
                 SceneData data = new SceneData(info, grid, darkness);
                 data.path = path;
 

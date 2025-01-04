@@ -7,11 +7,11 @@ namespace RPG
     public struct LightingSettings
     {
         public bool enabled;
-        public bool globalLighting;
+        public Color globalLighting;
         public Color color;
         public float visionRange;
 
-        public LightingSettings(bool _enabled, bool _globalLighting, Color _color, float _visionRange)
+        public LightingSettings(bool _enabled, Color _globalLighting, Color _color, float _visionRange)
         {
             enabled = _enabled;
             globalLighting = _globalLighting;
