@@ -81,7 +81,6 @@ namespace RPG
         }
         private void LoadPlayer()
         {
-            Debug.Log(Session.Instance.Settings.darkness.globalLighting.ToString());
             Lighting2D.LightmapPresets[0].darknessColor = Session.Instance.Settings.darkness.globalLighting;
             Lighting2D.LightmapPresets[1].darknessColor = Session.Instance.Settings.darkness.color;
         }

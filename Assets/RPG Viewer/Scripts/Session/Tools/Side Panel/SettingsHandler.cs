@@ -217,12 +217,12 @@ namespace RPG
             doorsButton.Deselect();
             regularButton.Deselect();
             invisibleButton.Deselect();
-            fogButton.Select();
-            darknessButton.Deselect();
+            fogButton.Deselect();
+            darknessButton.Select();
             environemntButton.Deselect();
 
             // Update tool states
-            activeSetting = Setting.Walls_Environment;
+            activeSetting = Setting.Walls_Darkness;
             lastWalls = activeSetting;
         }
         public void SelectPlayer()
@@ -394,7 +394,7 @@ namespace RPG
             else if (lastWalls == Setting.Walls_Invisible) SelectInvisible();
             else if (lastWalls == Setting.Walls_Fog) SelectFog();
             else if (lastWalls == Setting.Walls_Environment) SelectEnvironment();
-            else if (lastWalls == Setting.Walls_Invisible) SelectInvisible();
+            else if (lastWalls == Setting.Walls_Darkness) SelectDarkness();
             else SelectDoors();
         }
         public void CloseWalls()
