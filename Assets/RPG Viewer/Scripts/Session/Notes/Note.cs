@@ -118,6 +118,7 @@ namespace RPG
             if (pointerData.dragging) return;
 
             ShowNote();
+            if (Input.GetKey(KeyCode.LeftShift)) activeNote.ShowNote();
         }
 
         public void ShowNote()

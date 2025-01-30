@@ -110,7 +110,11 @@ namespace RPG
             // Get pointer data
             PointerEventData pointerData = (PointerEventData)eventData;
 
-            if (pointerData.button == PointerEventData.InputButton.Left) OpenJournal();
+            if (pointerData.button == PointerEventData.InputButton.Left)
+            {
+                if (Input.GetKey(KeyCode.LeftShift)) Session.Instance.JournalManager.SendJournal(Data.id);
+                else OpenJournal();
+            }
             else if (pointerData.button == PointerEventData.InputButton.Right) ToggleOptions();
 
             // Send journal toggled event

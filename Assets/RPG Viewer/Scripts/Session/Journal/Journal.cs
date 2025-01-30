@@ -207,18 +207,7 @@ namespace RPG
         }
         public void ShowJournal()
         {
-            SocketManager.EmitAsync("show-journal", (callback) =>
-            {
-                // Check if the event was successful
-                if (callback.GetValue().GetBoolean())
-                {
-                    MessageManager.QueueMessage("Journal sent to others");
-                    return;
-                }
-
-                // Send error message
-                MessageManager.QueueMessage(callback.GetValue(1).GetString());
-            }, data.id);
+            Session.Instance.JournalManager.SendJournal(data.id);
         }
         public void SaveJournal()
         {

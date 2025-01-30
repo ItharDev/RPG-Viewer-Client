@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Networking;
 using UnityEngine;
 
 namespace RPG
@@ -78,6 +79,21 @@ namespace RPG
         {
             if (!openJournals.ContainsKey(id)) return;
             openJournals.Remove(id);
+        }
+
+        public void SendJournal(string id) {
+            SocketManager.EmitAsync("show-journal", (callback) =>
+            {
+                // Check if the event was successful
+                if (callback.GetValue().GetBoolean())
+                {
+                    MessageManager.QueueMessage("Journal sent to others");
+                    return;
+                }
+
+                // Send error message
+                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+            }, id);
         }
     }
 }

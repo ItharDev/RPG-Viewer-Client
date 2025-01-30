@@ -36,7 +36,7 @@ namespace RPG
         {
             activeToggle.isOn = data.active;
             visibleToggle.isOn = data.visible;
-            modeDropdown.value = data.continuous ? 1 : 0;
+            modeDropdown.value = data.continuous ? 0 : 1;
             radiusInput.text = data.radius.ToString();
         }
 
@@ -53,7 +53,7 @@ namespace RPG
             {
                 active = activeToggle.isOn,
                 visible = visibleToggle.isOn,
-                continuous = modeDropdown.value == 1,
+                continuous = modeDropdown.value == 0,
                 radius = radius
             };
 
