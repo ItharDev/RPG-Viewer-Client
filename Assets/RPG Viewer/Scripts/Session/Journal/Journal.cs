@@ -292,14 +292,14 @@ namespace RPG
             if (ratio > 1)
             {
                 width = Mathf.Min(maxSize.x, Screen.width);
-                height = Mathf.Min(width / ratio + 65.0f, Screen.height);
+                height = Mathf.Min(width / ratio + 65.0f, Screen.height * 0.8f);
             }
             else if (ratio < 1)
             {
-                height = Mathf.Min(maxSize.y + 65.0f, Screen.height);
+                height = Mathf.Min(maxSize.y + 65.0f, Screen.height * 0.8f);
                 width = height * ratio;
             }
-            else width = height = Mathf.Min(maxSize.y + 65.0f, Screen.height);
+            else width = height = Mathf.Min(maxSize.y + 65.0f, Screen.height * 0.8f);
 
             rect.sizeDelta = new Vector2(width, height);
             rect.anchoredPosition = new Vector2(-rect.sizeDelta.x / 2, rect.sizeDelta.y / 2);
