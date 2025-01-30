@@ -134,7 +134,7 @@ namespace RPG
 
             // Update our position and scale
             transform.position = Data.position;
-            canvas.transform.localScale = new Vector3(cellSize * 0.03f, cellSize * 0.03f, 1.0f);
+            canvas.transform.localScale = new Vector3(cellSize * 0.04f, cellSize * 0.04f, 1.0f);
             radiusCollider.radius = data.radius / Session.Instance.Grid.Unit.scale * Session.Instance.Grid.CellSize;
             radiusOutline.transform.parent.localScale = new Vector3(2.0f * radiusCollider.radius / canvas.transform.localScale.x, 2.0f * radiusCollider.radius / canvas.transform.localScale.y, 1.0f);
             canvas.enabled = (Data.active && Data.visible) || enabled;
