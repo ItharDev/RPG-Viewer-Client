@@ -305,7 +305,7 @@ namespace RPG
 
             if (ratio > 1)
             {
-                width = Mathf.Min(maxSize.x, Screen.width - 100.0f);
+                width = Mathf.Min(maxSize.x, Screen.width);
                 height = Mathf.Min(width / ratio + 65.0f, Screen.height * 0.8f);
             }
             else if (ratio < 1)
