@@ -194,6 +194,8 @@ namespace RPG
                             Events.OnSceneLoaded?.Invoke(settings);
                             Events.OnSceneChanged?.Invoke(ConnectionManager.State);
 
+                            FindFirstObjectByType<Camera2D>().UpdateSettings(settings.grid.cellSize, settings.grid.dimensions);
+
                             // Remove message when loading is completed
                             MessageManager.RemoveMessage("Loading scene");
 

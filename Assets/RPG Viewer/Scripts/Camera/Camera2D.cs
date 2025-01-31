@@ -61,10 +61,10 @@ namespace RPG
             cullingCollider.size = new Vector2(targetOrthographicSize * 2.0f * (16.0f / 9.0f), targetOrthographicSize * 2.0f);
         }
 
-        public void UpdateSettings(Texture2D texture)
+        public void UpdateSettings(float cellSize, Vector2Int dimensions)
         {
-            camZoomMin = (texture.width >= texture.height ? texture.width : texture.height) * 0.01f;
-            camZoomMax = (texture.width >= texture.height ? texture.width : texture.height) * 0.0004f;
+            camZoomMin = (dimensions.x >= dimensions.y ? dimensions.x : dimensions.y) * cellSize;
+            camZoomMax = cellSize * 2.0f;
         }
         public void MoveToPosition(Vector2 position, bool zoom = true)
         {
