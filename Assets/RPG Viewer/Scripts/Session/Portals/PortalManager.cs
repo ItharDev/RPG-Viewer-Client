@@ -205,16 +205,9 @@ namespace RPG
 
         private void UnloadPortals()
         {
-            // Loop through each portal
-            foreach (var item in Portals)
-            {
-                // Continue if portal is null
-                if (item.Value == null) continue;
-                Destroy(item.Value.gameObject);
-            }
-
             // Clear lists
             Portals.Clear();
+            foreach (Transform child in portalParent) Destroy(child.gameObject);
         }
         private void LoadPortals(SceneData settings)
         {

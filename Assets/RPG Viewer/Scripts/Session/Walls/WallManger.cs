@@ -56,16 +56,9 @@ namespace RPG
         }
         private void UnloadWalls()
         {
-            // Loop through each wall
-            foreach (var item in walls)
-            {
-                // Continue if token is null
-                if (item.Value == null) continue;
-                Destroy(item.Value.gameObject);
-            }
-
             // Clear lists
             walls.Clear();
+            foreach (Transform child in wallParent) Destroy(child.gameObject);
         }
         private void LoadWalls(SceneData settings)
         {

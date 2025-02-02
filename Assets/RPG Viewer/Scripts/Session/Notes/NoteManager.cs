@@ -181,16 +181,9 @@ namespace RPG
         }
         private void UnloadNotes()
         {
-            // Loop through each note
-            foreach (var item in notes)
-            {
-                // Continue if note is null
-                if (item.Value == null) continue;
-                Destroy(item.Value.gameObject);
-            }
-
             // Clear list
             notes.Clear();
+            foreach (var note in openNotes) Destroy(note.Value.gameObject);
         }
         private void LoadNotes(SceneData settings)
         {

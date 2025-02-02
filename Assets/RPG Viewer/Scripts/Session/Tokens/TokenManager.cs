@@ -310,17 +310,12 @@ namespace RPG
 
         private void UnloadTokens()
         {
-            // Loop through each token
-            foreach (var item in Tokens)
-            {
-                // Continue if token is null
-                if (item.Value == null) continue;
-                Destroy(item.Value.gameObject);
-            }
-
             // Clear lists
             Tokens.Clear();
             myTokens.Clear();
+
+            // Destroy all tokens
+            foreach (Transform child in tokenParent) Destroy(child.gameObject);
         }
 
         public void SelectToken(Token token, bool multiSelection = false)

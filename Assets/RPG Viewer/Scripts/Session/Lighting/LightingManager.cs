@@ -133,16 +133,9 @@ namespace RPG
         }
         private void UnloadLights()
         {
-            // Loop through each light
-            foreach (var item in lights)
-            {
-                // Continue if light is null
-                if (item.Value == null) continue;
-                Destroy(item.Value.gameObject);
-            }
-
             // Clear list
             lights.Clear();
+            foreach (Transform child in lightParent) Destroy(child.gameObject);
         }
         private void LoadLights(SceneData settings)
         {
