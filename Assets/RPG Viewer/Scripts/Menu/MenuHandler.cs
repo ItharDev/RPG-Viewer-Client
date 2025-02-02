@@ -12,6 +12,7 @@ namespace RPG
         [SerializeField] private Sprite connected;
         [SerializeField] private Sprite disconnected;
         [SerializeField] private TMP_Text statusText;
+        [SerializeField] private TMP_Text versionText;
 
         [Header("Events")]
 
@@ -28,6 +29,9 @@ namespace RPG
             // Add event listeners
             Events.OnConnected.AddListener(Connected);
             Events.OnDisconnected.AddListener(Disconnected);
+
+            // Set version text
+            versionText.text = "v" + Application.version;
         }
         private void OnDisable()
         {
