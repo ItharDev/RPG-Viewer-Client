@@ -49,7 +49,7 @@ namespace RPG
         private void Update()
         {
             // Return if token is not selected or we are edting any fields
-            if (!Selected || UI.Editing) return;
+            if (!Selected || UI.Editing || !IsOwner) return;
 
             HandleDeletion();
         }

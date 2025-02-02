@@ -114,15 +114,17 @@ namespace RPG
         private void HandleSelection(List<Token> tokens)
         {
             bool selected = tokens.Contains(token);
+            bool uiEnabled = selected && token.Permission.type == PermissionType.Controller;
+
             outline.enabled = selected;
             buttonsGroup.alpha = selected && ConnectionManager.Info.isMaster ? 1.0f : 0.0f;
             buttonsGroup.blocksRaycasts = selected && ConnectionManager.Info.isMaster ? true : false;
-            conditionsButton.SetActive(selected);
+            conditionsButton.SetActive(uiEnabled);
 
-            healthPanel.SetActive(selected || (token.IsOwner && token.Data.health != 0));
-            elevationPanel.SetActive(selected || token.Data.elevation != 0);
+            healthPanel.SetActive(uiEnabled || (token.IsOwner && token.Data.health != 0));
+            elevationPanel.SetActive(uiEnabled || token.Data.elevation != 0);
             UpdateSorting();
-            lightButton.SetActive(selected || token.Data.lightEnabled);
+            lightButton.SetActive(uiEnabled || token.Data.lightEnabled);
         }
 
         private void HandleRaycast(Tool tool)

@@ -56,8 +56,6 @@ namespace RPG
 
                 if (Input.GetKeyUp(KeyCode.LeftControl))
                 {
-                    Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-                    mousePos = new Vector3(mousePos.x, mousePos.y, 0);
                     dragPoints.Clear();
                     dragPoints.Add(transform.position);
                     MeasurementManager.Instance.StartMeasurement(transform.position, Input.GetKey(KeyCode.LeftAlt) ? MeasurementType.Precise : MeasurementType.Grid);
@@ -65,7 +63,7 @@ namespace RPG
             }
 
             // Return if token is not selected or we are edting any fields
-            if (!token.Selected || token.UI.Editing) return;
+            if (!token.Selected || token.UI.Editing || !token.IsOwner) return;
 
             HandleRotation();
             if (!token.Data.locked) HandleMovement();
