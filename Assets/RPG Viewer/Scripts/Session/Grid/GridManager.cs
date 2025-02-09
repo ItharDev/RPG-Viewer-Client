@@ -100,15 +100,15 @@ namespace RPG
         {
             if (dimensions == Vector2Int.zero || !gridData.snapToGrid) return point;
 
-            float closest = 0;
+            float closest = -1;
             Vector2 closestPoint = Vector2.zero;
             foreach (var cell in Grid)
             {
                 Vector2 finalPoint = cell.worldPosition;
-                if ((tokenSize.x % (unit.scale * 2) < (unit.scale / 2) || tokenSize.y % (unit.scale * 2) < (unit.scale / 2)) && (tokenSize.x >= unit.scale && tokenSize.y >= unit.scale)) finalPoint -= new Vector2(cellSize * 0.5f, cellSize * 0.5f);
+                if ((tokenSize.x % (unit.scale * 2) < (unit.scale / 2) || tokenSize.y % (unit.scale * 2) < (unit.scale / 2)) && tokenSize.x >= unit.scale && tokenSize.y >= unit.scale) finalPoint -= new Vector2(cellSize * 0.5f, cellSize * 0.5f);
                 float distance = Vector2.Distance(point, finalPoint);
 
-                if ((closest == 0) || distance < closest)
+                if ((closest == -1) || distance < closest)
                 {
                     closest = distance;
                     closestPoint = finalPoint;

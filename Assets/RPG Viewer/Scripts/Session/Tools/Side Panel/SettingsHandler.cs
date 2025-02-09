@@ -13,8 +13,11 @@ namespace RPG
     {
         [SerializeField] private CanvasGroup canvasGroup;
 
-        [Header("Buttons")]
+        [Header("Grid")]
         [SerializeField] private ToolButton gridButton;
+        [SerializeField] private RectMask2D gridMask;
+
+        [Header("Walls")]
         [SerializeField] private ToolButton wallsButton;
         [SerializeField] private ToolButton regularButton;
         [SerializeField] private ToolButton invisibleButton;
@@ -23,25 +26,35 @@ namespace RPG
         [SerializeField] private ToolButton fogButton;
         [SerializeField] private ToolButton darknessButton;
         [SerializeField] private ToolButton environemntButton;
+        [SerializeField] private RectMask2D wallsMask;
+
+        [Header("Lighting")]
         [SerializeField] private ToolButton lightingButton;
         [SerializeField] private ToolButton createButton;
         [SerializeField] private ToolButton copyButton;
         [SerializeField] private ToolButton deleteButton;
+        [SerializeField] private RectMask2D lightingMask;
+
+        [Header("View")]
         [SerializeField] private ToolButton viewButton;
         [SerializeField] private ToolButton playerButton;
         [SerializeField] private ToolButton visionButton;
         [SerializeField] private ToolButton clearButton;
+        [SerializeField] private RectMask2D viewMask;
+
+        [Header("Portals")]
         [SerializeField] private ToolButton portalsButton;
         [SerializeField] private ToolButton createPortalButton;
         [SerializeField] private ToolButton linkPortalButton;
         [SerializeField] private ToolButton deletePortalButton;
-
-        [Header("Masks")]
-        [SerializeField] private RectMask2D gridMask;
-        [SerializeField] private RectMask2D wallsMask;
-        [SerializeField] private RectMask2D lightingMask;
         [SerializeField] private RectMask2D portalMask;
-        [SerializeField] private RectMask2D viewMask;
+
+        [Header("Groups")]
+        [SerializeField] private ToolButton groupButton;
+        [SerializeField] private ToolButton groupOneButton;
+        [SerializeField] private ToolButton groupTwoButton;
+        [SerializeField] private ToolButton groupThreeButton;
+        [SerializeField] private RectMask2D groupMask;
 
         [Header("Configuration")]
         [SerializeField] private GridConfiguration gridConfiguration;
@@ -68,6 +81,7 @@ namespace RPG
         {
             // Add event listeners
             Events.OnSceneChanged.AddListener(ToggleUI);
+            Events.OnSceneLoaded.AddListener(ToggleGroups);
             Events.OnToolChanged.AddListener(HandleToolChanged);
         }
 
@@ -75,6 +89,7 @@ namespace RPG
         {
             // Remove event listeners
             Events.OnSceneChanged.RemoveListener(ToggleUI);
+            Events.OnSceneLoaded.RemoveListener(ToggleGroups);
             Events.OnToolChanged.RemoveListener(HandleToolChanged);
         }
 
@@ -88,6 +103,13 @@ namespace RPG
             }
         }
 
+        private void ToggleGroups(SceneData data)
+        {
+            groupOneButton.Activate(data.groupOne.selected);
+            groupTwoButton.Activate(data.groupTwo.selected);
+            groupThreeButton.Activate(data.groupThree.selected);
+        }
+
         private void HandleToolChanged(Tool tool)
         {
             if (tool == Tool.Move) return;
@@ -96,6 +118,7 @@ namespace RPG
             CloseView();
             CloseGrid();
             ClosePortals();
+            CloseGroups();
             activeSetting = Setting.None;
         }
 
@@ -341,6 +364,19 @@ namespace RPG
             lastPortal = activeSetting;
         }
 
+        public void SelectGroupOne()
+        {
+            groupOneButton.Activate(Session.Instance.TokenManager.ToggleGroup(1));
+        }
+        public void SelectGroupTwo()
+        {
+            groupTwoButton.Activate(Session.Instance.TokenManager.ToggleGroup(2));
+        }
+        public void SelectGroupThree()
+        {
+            groupThreeButton.Activate(Session.Instance.TokenManager.ToggleGroup(3));
+        }
+
         public void OpenGrid()
         {
             // Update selections
@@ -348,6 +384,7 @@ namespace RPG
             CloseLighting();
             CloseView();
             ClosePortals();
+            CloseGroups();
 
             // Close panel if it's open
             if (!gridMask.enabled)
@@ -375,6 +412,7 @@ namespace RPG
             CloseLighting();
             CloseView();
             ClosePortals();
+            CloseGroups();
 
             // Close panel if it's open
             if (!wallsMask.enabled)
@@ -409,6 +447,7 @@ namespace RPG
             CloseWalls();
             CloseView();
             ClosePortals();
+            CloseGroups();
 
             // Close panel if it's open
             if (!lightingMask.enabled)
@@ -439,6 +478,7 @@ namespace RPG
             CloseLighting();
             CloseWalls();
             CloseView();
+            CloseGroups();
 
             // Close panel if it's open
             if (!portalMask.enabled)
@@ -469,6 +509,7 @@ namespace RPG
             CloseLighting();
             CloseWalls();
             ClosePortals();
+            CloseGroups();
 
             // Close panel if it's open
             if (!viewMask.enabled)
@@ -492,6 +533,32 @@ namespace RPG
         {
             viewMask.enabled = true;
             viewButton.Deselect();
+        }
+        public void OpenGroups()
+        {
+            // Update selections
+            CloseGrid();
+            CloseLighting();
+            CloseWalls();
+            CloseView();
+            ClosePortals();
+
+            // Close panel if it's open
+            if (!groupMask.enabled)
+            {
+                CloseGroups();
+                activeSetting = Setting.None;
+                return;
+            }
+
+            // Update rect size
+            groupMask.enabled = false;
+            groupButton.Select();
+        }
+        public void CloseGroups()
+        {
+            groupMask.enabled = true;
+            groupButton.Deselect();
         }
 
         public async void SelectImage()

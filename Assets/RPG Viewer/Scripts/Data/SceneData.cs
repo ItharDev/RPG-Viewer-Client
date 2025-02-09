@@ -12,6 +12,9 @@ namespace RPG
         public List<WallData> walls;
         public List<PortalData> portals;
         public List<string> tokens;
+        public TokenGroup groupOne;
+        public TokenGroup groupTwo;
+        public TokenGroup groupThree;
 
         [NonSerialized] public string path;
         [NonSerialized] public string id;
@@ -85,6 +88,19 @@ namespace RPG
             name = _name;
             roll = _roll;
             visible = _visible;
+        }
+    }
+
+    [Serializable]
+    public struct TokenGroup
+    {
+        public bool selected;
+        public List<string> tokens;
+
+        public TokenGroup(bool _selected, List<string> _tokens)
+        {
+            selected = _selected;
+            tokens = _tokens;
         }
     }
 }

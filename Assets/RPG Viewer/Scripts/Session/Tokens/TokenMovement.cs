@@ -172,14 +172,13 @@ namespace RPG
             float inputY = Input.GetAxisRaw("Vertical");
 
             // Get current and target cells
-            Cell currentCell = Session.Instance.Grid.WorldPosToCell(transform.position);
-            Cell targetCell = Session.Instance.Grid.GetCell(currentCell.gridPosition.x + Mathf.RoundToInt(inputX), currentCell.gridPosition.y + Mathf.RoundToInt(inputY));
+            Vector2 gridPos = Session.Instance.Grid.SnapToGrid(transform.position, token.Data.dimensions);
+            Vector2 input = new Vector2(inputX * Session.Instance.Grid.CellSize, inputY * Session.Instance.Grid.CellSize);
 
-            // Return if no target cell was found
-            if (targetCell.worldPosition == Vector2.zero) return;
+            gridPos += input;
 
             // Return if movement would collide with walls
-            List<Vector2> movePoints = new List<Vector2>() { currentCell.worldPosition, targetCell.worldPosition };
+            List<Vector2> movePoints = new List<Vector2>() { transform.position, gridPos };
             if (CheckCollisions(movePoints)) return;
 
             // Proceed to movement if this is not a mount

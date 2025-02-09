@@ -218,6 +218,10 @@ namespace RPG
         }
         public void EnableToken()
         {
+            EnableToken(!token.Data.enabled);
+        }
+        public void EnableToken(bool state)
+        {
             SocketManager.EmitAsync("update-visibility", (callback) =>
             {
                 // Check if the event was successful
@@ -225,8 +229,10 @@ namespace RPG
 
                 // Send error message
                 MessageManager.QueueMessage(callback.GetValue(1).GetString());
-            }, token.Id, !token.Data.enabled);
+            }, token.Id, state);
         }
+
+
         public void Toggle(bool enabled)
         {
             if (!ConnectionManager.Info.isMaster)
@@ -244,12 +250,14 @@ namespace RPG
         public void SetRotation(float value)
         {
             image.transform.eulerAngles = new Vector3(0.0f, 0.0f, value);
+            outlineImage.transform.eulerAngles = new Vector3(0.0f, 0.0f, value);
             token.Data.rotation = value;
             OriginalRotation = value;
         }
         public void PreviewRotation(float value)
         {
             image.transform.eulerAngles = new Vector3(0.0f, 0.0f, value);
+            outlineImage.transform.eulerAngles = new Vector3(0.0f, 0.0f, value);
         }
         public void SetImage(Sprite sprite)
         {

@@ -3,7 +3,6 @@ using System.Linq;
 using Cysharp.Threading.Tasks;
 using Networking;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 namespace RPG
 {
@@ -19,6 +18,10 @@ namespace RPG
         private List<Token> tokensToSelect = new List<Token>();
 
         private List<int> selectedTokens = new List<int>() { 0 };
+
+        private TokenGroup groupOne;
+        private TokenGroup groupTwo;
+        private TokenGroup groupThree;
 
         private void OnEnable()
         {
@@ -63,14 +66,92 @@ namespace RPG
         private void Update()
         {
             // Iterate through my tokens
-            if (myTokens.Count != 0 && Input.GetKeyDown(KeyCode.Tab))
+            if (myTokens.Count != 0)
             {
-                if (selectedTokens.Count == 0) selectedTokens = new List<int>() { 0 };
-                else if (selectedTokens[0] >= myTokens.Count) selectedTokens = new List<int>() { 0 };
-
-                Events.OnTokenSelected?.Invoke(myTokens[selectedTokens[0]], false);
-                selectedTokens[0]++;
+                if (Input.GetKeyDown(KeyCode.Tab)) HandleSelection();
+                if (Input.GetKey(KeyCode.LeftControl)) HandleGrouping();
             }
+        }
+
+        private void HandleSelection()
+        {
+            if (selectedTokens.Count == 0) selectedTokens = new List<int>() { 0 };
+            else if (selectedTokens[0] >= myTokens.Count) selectedTokens = new List<int>() { 0 };
+
+            Events.OnTokenSelected?.Invoke(myTokens[selectedTokens[0]], false);
+            selectedTokens[0]++;
+        }
+
+        private void HandleGrouping()
+        {
+            int group = Input.GetKeyDown(KeyCode.Alpha1) ? 1 : Input.GetKeyDown(KeyCode.Alpha2) ? 2 : Input.GetKeyDown(KeyCode.Alpha3) ? 3 : -1;
+            if (group == -1) return;
+
+            List<string> tokens = new List<string>();
+            for (int i = 0; i < tokensToSelect.Count; i++)
+            {
+                tokens.Add(tokensToSelect[i].Id);
+            }
+
+            SocketManager.EmitAsync("group-tokens", (callback) =>
+            {
+                // Check if the event was successful
+                if (callback.GetValue().GetBoolean())
+                {
+                    if (group == 1) groupOne.tokens.AddRange(tokens);
+                    else if (group == 2) groupTwo.tokens.AddRange(tokens);
+                    else if (group == 3) groupThree.tokens.AddRange(tokens);
+
+                    MessageManager.QueueMessage($"Tokens added to group {group}.");
+                    return;
+                }
+
+                // Send error message
+                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+            }, tokens, group);
+        }
+
+        public void ClearGroup(int group)
+        {
+            SocketManager.EmitAsync("clear-group", (callback) =>
+            {
+                // Check if the event was successful
+                if (callback.GetValue().GetBoolean()) return;
+
+                // Send error message
+                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+            }, group);
+        }
+
+        public bool ToggleGroup(int group)
+        {
+            List<string> tokens = group == 1 ? groupOne.tokens : group == 2 ? groupTwo.tokens : group == 3 ? groupThree.tokens : null;
+            bool selected = group == 1 ? groupOne.selected : group == 2 ? groupTwo.selected : group == 3 ? groupThree.selected : false;
+            if (tokens == null) return false;
+
+            for (int i = 0; i < tokens.Count; i++)
+            {
+                if (!Tokens.ContainsKey(tokens[i])) continue;
+                Token token = Tokens[tokens[i]];
+                token.UI.EnableToken(!selected);
+            }
+
+            SocketManager.EmitAsync("toggle-group", (callback) =>
+            {
+                // Check if the event was successful
+                if (callback.GetValue().GetBoolean())
+                {
+                    if (group == 1) groupOne.selected = !selected;
+                    else if (group == 2) groupTwo.selected = !selected;
+                    else if (group == 3) groupThree.selected = !selected;
+                    return;
+                }
+
+                // Send error message
+                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+            }, group, !selected);
+
+            return !selected;
         }
 
         private void CreateToken(TokenData data)
@@ -259,6 +340,10 @@ namespace RPG
 
         private void LoadTokens(SceneData settings)
         {
+            groupOne = settings.groupOne;
+            groupTwo = settings.groupTwo;
+            groupThree = settings.groupThree;
+
             SocketManager.EmitAsync("get-tokens", (callback) =>
             {
                 // Check if the event was successful
@@ -269,6 +354,7 @@ namespace RPG
 
                     for (int i = 0; i < list.Length; i++)
                     {
+                        if (string.IsNullOrEmpty(list[i].ToString())) continue;
                         LoadToken(list[i]);
                     }
                     return;
