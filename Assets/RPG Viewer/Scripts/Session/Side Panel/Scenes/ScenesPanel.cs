@@ -76,17 +76,6 @@ namespace RPG
                 {
                     await UniTask.SwitchToMainThread();
 
-                    // Load folders
-                    System.Text.Json.JsonElement folders;
-                    if (callback.GetValue(1).TryGetProperty("folders", out folders))
-                    {
-                        var list = folders.EnumerateObject().ToArray();
-                        for (int i = 0; i < list.Length; i++)
-                        {
-                            LoadDirectory(list[i].Value, list[i].Name, "");
-                        }
-                    }
-
                     // Load scenes
                     System.Text.Json.JsonElement contents;
                     if (callback.GetValue(1).TryGetProperty("contents", out contents))
@@ -95,6 +84,17 @@ namespace RPG
                         for (int i = 0; i < list.Length; i++)
                         {
                             LoadScene(list[i].GetString(), "");
+                        }
+                    }
+
+                    // Load folders
+                    System.Text.Json.JsonElement folders;
+                    if (callback.GetValue(1).TryGetProperty("folders", out folders))
+                    {
+                        var list = folders.EnumerateObject().ToArray();
+                        for (int i = 0; i < list.Length; i++)
+                        {
+                            LoadDirectory(list[i].Value, list[i].Name, "");
                         }
                     }
                     return;
@@ -132,16 +132,16 @@ namespace RPG
             this.folders.Add(id, folder);
             folder.LoadData(data, this, targetFolder == null ? SortContent : targetFolder.SortContent);
 
-            // Load folders
-            for (int i = 0; i < folders.Length; i++)
-            {
-                LoadDirectory(folders[i].Value, folders[i].Name, pathToThisFolder);
-            }
-
             // Load scenes
             for (int i = 0; i < contents.Length; i++)
             {
                 LoadScene(contents[i].GetString(), pathToThisFolder);
+            }
+
+            // Load folders
+            for (int i = 0; i < folders.Length; i++)
+            {
+                LoadDirectory(folders[i].Value, folders[i].Name, pathToThisFolder);
             }
         }
         public Color GetColor()

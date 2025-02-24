@@ -26,6 +26,12 @@ namespace RPG
             info = _info;
             grid = _grid;
             darkness = _darkness;
+            walls = new List<WallData>();
+            portals = new List<PortalData>();
+            tokens = new List<string>();
+            groupOne = new TokenGroup(false, new List<string>());
+            groupTwo = new TokenGroup(false, new List<string>());
+            groupThree = new TokenGroup(false, new List<string>());
         }
     }
 
