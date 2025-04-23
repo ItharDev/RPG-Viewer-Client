@@ -57,7 +57,7 @@ namespace RPG
             get
             {
                 return RectTransformUtility.RectangleContainsScreenPoint(Rect, Camera.main.ScreenToWorldPoint(Input.mousePosition)) ||
-                RectTransformUtility.RectangleContainsScreenPoint(((RectTransform)(uICanvas.transform)), Camera.main.ScreenToWorldPoint(Input.mousePosition)) ||
+                RectTransformUtility.RectangleContainsScreenPoint((RectTransform)uICanvas.transform, Camera.main.ScreenToWorldPoint(Input.mousePosition)) ||
                 token.Conditions.MouseOver;
             }
         }
@@ -201,7 +201,7 @@ namespace RPG
 
                 // Send error message
                 MessageManager.QueueMessage(callback.GetValue(1).GetString());
-            }, token.Id, health);
+            }, token.Data.parentInstance, health);
         }
         public void UpdateElevation()
         {
@@ -215,7 +215,7 @@ namespace RPG
 
                 // Send error message
                 MessageManager.QueueMessage(callback.GetValue(1).GetString());
-            }, token.Id, elevation);
+            }, token.Data.parentInstance, elevation);
         }
         public void EnableToken()
         {
@@ -341,7 +341,7 @@ namespace RPG
 
                     // Send error message
                     MessageManager.QueueMessage(callback.GetValue(1).GetString());
-                }, token.Id, JsonUtility.ToJson(data), JsonUtility.ToJson(lighting), imageChanged ? Convert.ToBase64String(image) : null, art == null ? null : Convert.ToBase64String(art));
+                }, token.Data.parentInstance, JsonUtility.ToJson(data), JsonUtility.ToJson(lighting), imageChanged ? Convert.ToBase64String(image) : null, art == null ? null : Convert.ToBase64String(art));
             });
         }
 

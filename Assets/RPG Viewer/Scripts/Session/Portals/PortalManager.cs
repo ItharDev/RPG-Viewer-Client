@@ -211,6 +211,8 @@ namespace RPG
         }
         private void LoadPortals(SceneData settings)
         {
+            UnloadPortals();
+
             // Instantiate portals
             List<PortalData> list = settings.portals;
             for (int i = 0; i < list.Count; i++)

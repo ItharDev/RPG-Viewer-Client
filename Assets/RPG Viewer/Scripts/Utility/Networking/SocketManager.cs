@@ -585,6 +585,14 @@ namespace Networking
                 await UniTask.SwitchToMainThread();
                 Events.OnBlueprintModified?.Invoke(id);
             });
+            Socket.On("sync-blueprint", async (data) =>
+            {
+                string id = data.GetValue().GetString();
+                bool synced = data.GetValue(1).GetBoolean();
+
+                await UniTask.SwitchToMainThread();
+                Events.OnBlueprintSynced?.Invoke(id, synced);
+            });
             Socket.On("remove-blueprint", async (data) =>
             {
                 string id = data.GetValue().GetString();

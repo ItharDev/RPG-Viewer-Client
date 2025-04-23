@@ -50,6 +50,7 @@ namespace RPG
         public static UnityEvent OnBlueprintMoved = new UnityEvent();
         public static UnityEvent<string> OnBlueprintCreated = new UnityEvent<string>();
         public static UnityEvent<string> OnBlueprintModified = new UnityEvent<string>();
+        public static UnityEvent<string, bool> OnBlueprintSynced = new UnityEvent<string, bool>();
         public static UnityEvent<string> OnBlueprintRemoved = new UnityEvent<string>();
 
         // Side panel (Journals)

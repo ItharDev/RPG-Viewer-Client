@@ -13,12 +13,15 @@ namespace RPG
     {
         [SerializeField] private TMP_Text header;
         [SerializeField] private Image icon;
+        [SerializeField] private GameObject syncIcon;
         [SerializeField] private TokenConfiguration configPanel;
         [SerializeField] private TokenDrag dragPrefab;
 
         [Header("Options")]
         [SerializeField] private RectTransform optionsPanel;
         [SerializeField] private GameObject selectButton;
+        [SerializeField] private GameObject syncButton;
+        [SerializeField] private GameObject desyncButton;
         [SerializeField] private GameObject rootButton;
         [SerializeField] private GameObject deselectButton;
 
@@ -116,8 +119,6 @@ namespace RPG
         public void ClickToken(BaseEventData eventData)
         {
             // Get pointer data
-            PointerEventData pointerData = (PointerEventData)eventData;
-
             ToggleOptions();
 
             // Send token toggled event
@@ -151,7 +152,7 @@ namespace RPG
 
                     // Send error message
                     MessageManager.QueueMessage(callback.GetValue(1).GetString());
-                }, JsonUtility.ToJson(newData), JsonUtility.ToJson(lightData), Path.Contains("public"));
+                }, JsonUtility.ToJson(newData), JsonUtility.ToJson(lightData), Path.Contains("public"), Data.synced ? Data.id : null);
             });
         }
         private void ToggleOptions()
@@ -168,13 +169,13 @@ namespace RPG
             }
 
             // Calculate panel's target height
-            float targetSize = 60.0f;
+            float targetSize = 90.0f;
             if (selectButton.activeInHierarchy) targetSize += 30.0f;
             if (deselectButton.activeInHierarchy) targetSize += 30.0f;
             if (rootButton.activeInHierarchy) targetSize += 30.0f;
-            if (Path.Contains("public")) targetSize = 60.0f;
+            if (Path.Contains("public")) targetSize = 90.0f;
 
-            LeanTween.size(optionsPanel, new Vector2(110.0f, optionsOpen ? targetSize : 0.0f), 0.2f).setOnComplete(() =>
+            LeanTween.size(optionsPanel, new Vector2(160.0f, optionsOpen ? targetSize : 0.0f), 0.2f).setOnComplete(() =>
             {
                 // Set panel's transform to this after closing the panel
                 if (!optionsOpen)
@@ -237,6 +238,18 @@ namespace RPG
                     MessageManager.QueueMessage(callback.GetValue(1).GetString());
                 }, Id, JsonUtility.ToJson(tokenData), JsonUtility.ToJson(lightData), imageChanged ? Convert.ToBase64String(image) : null, art == null ? null : Convert.ToBase64String(art));
             });
+        }
+        public void Sync()
+        {
+            ToggleOptions();
+            SocketManager.EmitAsync("sync-blueprint", async (callback) =>
+            {
+                await UniTask.SwitchToMainThread();
+                if (callback.GetValue().GetBoolean()) return;
+
+                // Send error message
+                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+            }, Id, !Data.synced);
         }
         public void Delete()
         {
@@ -335,6 +348,7 @@ namespace RPG
         {
             Data = settings;
             header.text = settings.name;
+            SetSynced(settings.synced);
             WebManager.Download(settings.image, true, async (bytes) =>
             {
                 // Return if image couldn't be loaded
@@ -364,6 +378,14 @@ namespace RPG
                 // Send error message
                 MessageManager.QueueMessage(callback.GetValue(1).GetString());
             }, settings.light);
+        }
+
+        public void SetSynced(bool synced)
+        {
+            Data.synced = synced;
+            syncButton.SetActive(!synced);
+            desyncButton.SetActive(synced);
+            syncIcon.SetActive(synced);
         }
     }
 }

@@ -256,6 +256,8 @@ namespace RPG
         public float lightRotation;
         public bool lightEnabled;
         public bool teleportProtection;
+        public bool synced;
+        public string parentInstance;
     }
 
     [Serializable]

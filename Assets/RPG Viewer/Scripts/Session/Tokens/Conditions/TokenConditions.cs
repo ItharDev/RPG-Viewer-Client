@@ -83,7 +83,7 @@ namespace RPG
 
                 // Send error message
                 MessageManager.QueueMessage(callback.GetValue(1).GetString());
-            }, token.Id, (int)ConditionFlags);
+            }, token.Data.parentInstance, (int)ConditionFlags);
         }
     }
 }

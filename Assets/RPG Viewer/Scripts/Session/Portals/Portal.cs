@@ -59,7 +59,7 @@ namespace RPG
         }
         private void OnDestroy()
         {
-            if (linkLine != null) Destroy(linkLine.rectTransform.gameObject);
+            if (linkLine != null && linkLine.rectTransform != null) Destroy(linkLine.rectTransform.gameObject);
         }
         private void Update()
         {

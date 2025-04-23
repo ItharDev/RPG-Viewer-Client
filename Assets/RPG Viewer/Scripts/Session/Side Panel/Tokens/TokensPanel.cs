@@ -47,6 +47,7 @@ namespace RPG
             Events.OnSidePanelChanged.AddListener(DeselectToken);
             Events.OnBlueprintCreated.AddListener(CreatePublicToken);
             Events.OnBlueprintModified.AddListener(ModifyToken);
+            Events.OnBlueprintSynced.AddListener(SyncToken);
             Events.OnBlueprintRemoved.AddListener(DeletePublicToken);
         }
 
@@ -56,6 +57,7 @@ namespace RPG
             Events.OnSidePanelChanged.RemoveListener(DeselectToken);
             Events.OnBlueprintCreated.RemoveListener(CreatePublicToken);
             Events.OnBlueprintModified.RemoveListener(ModifyToken);
+            Events.OnBlueprintSynced.RemoveListener(SyncToken);
             Events.OnBlueprintRemoved.RemoveListener(DeletePublicToken);
         }
 
@@ -524,6 +526,13 @@ namespace RPG
             // Find target token
             TokenHolder targetToken = tokens[id];
             targetToken.LoadData(id, targetToken.Path, this, null);
+        }
+
+        private void SyncToken(string id, bool synced)
+        {
+            // Find target token
+            TokenHolder targetToken = tokens[id];
+            if (targetToken) targetToken.SetSynced(synced);
         }
 
         private void DeletePublicToken(string id)

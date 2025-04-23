@@ -79,7 +79,7 @@ namespace RPG
 
                 // Send error message
                 MessageManager.QueueMessage(callback.GetValue(1).GetString());
-            }, token.Data.id, !token.Data.lightEnabled);
+            }, token.Data.parentInstance, !token.Data.lightEnabled);
         }
 
         private void HandleRotation()

@@ -196,11 +196,19 @@ namespace RPG
         private void ModifyToken(string id, TokenData data)
         {
             // Find the correct token
-            Token token = Tokens[id];
+            List<Token> tokens = Tokens.Values.Where(x => x.Data.parentInstance == id).ToList();
 
-            // Check if token was found
-            if (token == null) return;
-
+            // Check if tokens were found
+            if (tokens == null) return;
+            for (int i = 0; i < tokens.Count; i++)
+            {
+                data.id = tokens[i].Id;
+                Debug.Log($"Modifying token {tokens[i].Id} with data {data.id}.");
+                ModifyToken(tokens[i], data);
+            }
+        }
+        private void ModifyToken(Token token, TokenData data)
+        {
             // Check if token's image was modified
             if (token.Data.image != data.image)
             {
@@ -234,6 +242,7 @@ namespace RPG
             }
             else if (!myTokens.Contains(token) && token.Permission.type != PermissionType.None && token.Visibility.visible) myTokens.Add(token);
         }
+
         private void RemoveToken(string id)
         {
             // Find the correct token
@@ -270,22 +279,26 @@ namespace RPG
         private void UpdateElevation(string id, int elevation)
         {
             // Find the correct token
-            Token token = Tokens[id];
+            List<Token> tokens = Tokens.Values.Where(x => x.Data.parentInstance == id).ToList();
 
-            // Check if token was found
-            if (token == null) return;
-
-            token.SetElevation(elevation);
+            // Check if tokens were found
+            if (tokens == null) return;
+            for (int i = 0; i < tokens.Count; i++)
+            {
+                tokens[i].SetElevation(elevation);
+            }
         }
         private void UpdateConditions(string id, int conditions)
         {
             // Find the correct token
-            Token token = Tokens[id];
+            List<Token> tokens = Tokens.Values.Where(x => x.Data.parentInstance == id).ToList();
 
-            // Check if token was found
-            if (token == null) return;
-
-            token.Conditions.SetConditions(conditions);
+            // Check if tokens were found
+            if (tokens == null) return;
+            for (int i = 0; i < tokens.Count; i++)
+            {
+                tokens[i].Conditions.SetConditions(conditions);
+            }
         }
         private void LockToken(string id, bool locked)
         {
@@ -300,22 +313,26 @@ namespace RPG
         private void ToggleLight(string id, bool enabled)
         {
             // Find the correct token
-            Token token = Tokens[id];
+            List<Token> tokens = Tokens.Values.Where(x => x.Data.parentInstance == id).ToList();
 
-            // Check if token was found
-            if (token == null) return;
-
-            token.ToggleLight(enabled);
+            // Check if tokens were found
+            if (tokens == null) return;
+            for (int i = 0; i < tokens.Count; i++)
+            {
+                tokens[i].ToggleLight(enabled);
+            }
         }
         private void UpdateHealth(string id, int health)
         {
             // Find the correct token
-            Token token = Tokens[id];
+            List<Token> tokens = Tokens.Values.Where(x => x.Data.parentInstance == id).ToList();
 
-            // Check if token was found
-            if (token == null) return;
-
-            token.SetHealth(health);
+            // Check if tokens were found
+            if (tokens == null) return;
+            for (int i = 0; i < tokens.Count; i++)
+            {
+                tokens[i].SetHealth(health);
+            }
         }
         private void RotateToken(string id, float angle, string user)
         {
