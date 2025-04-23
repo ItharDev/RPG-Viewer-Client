@@ -57,6 +57,7 @@ namespace RPG
             get
             {
                 return RectTransformUtility.RectangleContainsScreenPoint(Rect, Camera.main.ScreenToWorldPoint(Input.mousePosition)) ||
+                RectTransformUtility.RectangleContainsScreenPoint(((RectTransform)(uICanvas.transform)), Camera.main.ScreenToWorldPoint(Input.mousePosition)) ||
                 token.Conditions.MouseOver;
             }
         }
