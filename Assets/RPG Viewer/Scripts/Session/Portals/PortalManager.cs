@@ -200,6 +200,10 @@ namespace RPG
                     UnloadPortals();
                     return;
                 }
+
+                // Return if scene was not changed
+                if (oldState.scene == newState.scene) return;
+                UnloadPortals();
             }
         }
 
@@ -207,7 +211,10 @@ namespace RPG
         {
             // Clear lists
             Portals.Clear();
-            foreach (Transform child in portalParent) Destroy(child.gameObject);
+            for (int i = portalParent.childCount - 1; i >= 0; i--)
+            {
+                Destroy(portalParent.GetChild(i).gameObject);
+            }
         }
         private void LoadPortals(SceneData settings)
         {

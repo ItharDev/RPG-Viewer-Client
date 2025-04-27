@@ -182,8 +182,14 @@ namespace RPG
         private void UnloadNotes()
         {
             // Clear list
-            notes.Clear();
             foreach (var note in openNotes) Destroy(note.Value.gameObject);
+            for (int i = 0; i < noteParent.childCount; i++)
+            {
+                Destroy(noteParent.GetChild(i).gameObject);
+            }
+
+            notes.Clear();
+            openNotes.Clear();
         }
         private void LoadNotes(SceneData settings)
         {
@@ -191,9 +197,9 @@ namespace RPG
             Dictionary<string, NoteInfo> list = settings.notes;
 
             // Generate lights
-            for (int i = 0; i < list.Count; i++)
+            for (int i = noteParent.childCount - 1; i >= 0; i--)
             {
-                GetNote(list.ElementAt(i).Value);
+                Destroy(noteParent.GetChild(i).gameObject);
             }
         }
 

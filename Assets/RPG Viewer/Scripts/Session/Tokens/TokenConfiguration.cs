@@ -152,6 +152,12 @@ namespace RPG
             presetList.ClosePanel();
         }
 
+        public void ClearEffect()
+        {
+            data.effect = string.Empty;
+            activeEffect.text = "No effect";
+        }
+
         private void RemoveEffect(string id, EffectData _data)
         {
             if (data.effect == id) data.effect = string.Empty;
