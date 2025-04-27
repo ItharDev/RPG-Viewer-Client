@@ -157,7 +157,6 @@ namespace RPG
         }
         private void ToggleOptions()
         {
-
             // Toggle open state
             optionsOpen = !optionsOpen;
 
@@ -325,7 +324,7 @@ namespace RPG
         }
         private void ModifyPreset(string id, PresetData data)
         {
-            // Return if the effect doesn't affect us
+            // Return if the preset doesn't affect us
             if (lightData.id != id) return;
 
             Data.light = id;
@@ -335,13 +334,20 @@ namespace RPG
         {
             Data.light = Data.id;
             lightData = data;
+        }
+        private void ModifyEffect(string id, EffectData data)
+        {
+            // Return if the effect doesn't affect us
+            if (Data.effect != id) return;
 
-            // TODO: Implement lighting preset removal
-            // SocketManager.EmitAsync("modify-blueprint", (callback) =>
-            // {
-
-            // }, Id, JsonUtility.ToJson(Data), JsonUtility.ToJson(lightData), null);
-
+            Data.effect = id;
+        }
+        private void RemoveEffect(string id, EffectData data)
+        {
+            // Return if the effect doesn't affect us
+            if (Data.effect != id) return;
+            
+            Data.effect = "";
         }
 
         private void LoadData(TokenData settings)

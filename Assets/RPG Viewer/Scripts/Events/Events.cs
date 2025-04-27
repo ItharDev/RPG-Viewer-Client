@@ -104,6 +104,11 @@ namespace RPG
         public static UnityEvent<string, PresetData> OnPresetModified = new UnityEvent<string, PresetData>();
         public static UnityEvent<string, PresetData> OnPresetRemoved = new UnityEvent<string, PresetData>();
 
+        // Effects
+        public static UnityEvent<string, EffectData> OnEffectCreated = new UnityEvent<string, EffectData>();
+        public static UnityEvent<string, EffectData> OnEffectModified = new UnityEvent<string, EffectData>();
+        public static UnityEvent<string, EffectData> OnEffectRemoved = new UnityEvent<string, EffectData>();
+
         // Tokens
         public static UnityEvent<TokenData> OnTokenCreated = new UnityEvent<TokenData>();
         public static UnityEvent<string, MovementData> OnTokenMoved = new UnityEvent<string, MovementData>();

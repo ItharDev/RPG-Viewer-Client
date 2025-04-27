@@ -55,6 +55,7 @@ namespace RPG
                 }
 
                 PresetManager.Instance.LoadPresets(data.presets);
+                EffectManager.Instance.LoadEffects(data.effects);
 
                 // Generate session info and state
                 Info = new SessionInfo(data.id, data.master, data.isMaster, users, sprite);
@@ -111,6 +112,7 @@ namespace RPG
         public string scene;
         public List<string> users;
         public List<string> presets;
+        public List<string> effects;
         public string background;
     }
 }

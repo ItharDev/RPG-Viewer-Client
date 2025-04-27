@@ -87,22 +87,22 @@ namespace RPG
 
         private IEnumerator PrimaryPulse()
         {
-            float originalAlpha = primary.color.a - data.primary.effect.strength * 0.01f;
+            float targetAlpha = primary.color.a - data.primary.effect.strength * 0.01f;
             float originalColor = primary.color.a;
             float time = data.primary.effect.frequency * 0.5f;
 
             for (float t = 0f; t < time; t += Time.deltaTime)
             {
                 float normalizedTime = t / time;
-                primary.color.a = Mathf.Lerp(originalColor, originalAlpha, normalizedTime);
+                primary.color.a = Mathf.Lerp(originalColor, targetAlpha, normalizedTime);
                 yield return null;
             }
-            primary.color.a = originalAlpha;
+            primary.color.a = targetAlpha;
 
             for (float t = 0f; t < time; t += Time.deltaTime)
             {
                 float normalizedTime = t / time;
-                primary.color.a = Mathf.Lerp(originalAlpha, originalColor, normalizedTime);
+                primary.color.a = Mathf.Lerp(targetAlpha, originalColor, normalizedTime);
                 yield return null;
             }
 

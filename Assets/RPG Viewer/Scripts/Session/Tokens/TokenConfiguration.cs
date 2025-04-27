@@ -38,6 +38,10 @@ namespace RPG
         [SerializeField] private LightInput primary;
         [SerializeField] private LightInput secondary;
 
+        [Header("Effect")]
+        [SerializeField] private EffectList effectList;
+        [SerializeField] private TMP_Text activeEffect;
+
         private RectTransform rect;
         private byte[] image;
         private byte[] art;
@@ -55,12 +59,14 @@ namespace RPG
             // Add event listeners
             Events.OnPresetModified.AddListener(LoadPreset);
             Events.OnPresetRemoved.AddListener(RemovePreset);
+            Events.OnEffectRemoved.AddListener(RemoveEffect);
         }
         private void OnDisable()
         {
             // Remove event listeners
             Events.OnPresetModified.RemoveListener(LoadPreset);
             Events.OnPresetRemoved.RemoveListener(RemovePreset);
+            Events.OnEffectRemoved.RemoveListener(RemoveEffect);
         }
 
         public void OpenAppearance()
@@ -92,6 +98,7 @@ namespace RPG
         {
             if (presetList.gameObject.activeInHierarchy) return;
             presetList.LoadData(ApplyPreset);
+            effectList.ClosePanel();
         }
 
         private void LoadPreset(string id, PresetData data)
@@ -131,6 +138,24 @@ namespace RPG
             secondary.frequencyInput.SetTextWithoutNotify(data.secondary.effect.frequency.ToString());
 
             presetInfo.text = string.IsNullOrEmpty(lightData.name) ? "No preset" : lightData.name;
+        }
+
+        public void OpenEffects()
+        {
+            if (effectList.gameObject.activeInHierarchy) return;
+            effectList.LoadData((effect) =>
+            {
+                if (string.IsNullOrEmpty(effect.id)) return;
+                data.effect = effect.id;
+                activeEffect.text = effect.name;
+            });
+            presetList.ClosePanel();
+        }
+
+        private void RemoveEffect(string id, EffectData _data)
+        {
+            if (data.effect == id) data.effect = string.Empty;
+            activeEffect.text = "No effect";
         }
 
         public async void ChooseImage(bool art)
@@ -270,6 +295,7 @@ namespace RPG
             ((TMP_Text)widthInput.placeholder).text = Session.Instance.Grid.Unit.name;
             heightInput.text = data.dimensions.y.ToString();
             ((TMP_Text)heightInput.placeholder).text = Session.Instance.Grid.Unit.name;
+            activeEffect.text = string.IsNullOrEmpty(data.effect) ? "No effect" : EffectManager.Instance.GetEffect(data.effect).name;
         }
         public void LoadLighting(PresetData preset)
         {

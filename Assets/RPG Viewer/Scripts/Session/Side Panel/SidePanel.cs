@@ -34,6 +34,7 @@ namespace RPG
 
         [Space]
         [SerializeField] private PresetList presetList;
+        [SerializeField] private EffectList effectList;
 
         private bool open;
         private float targetWidthOpen;
@@ -159,6 +160,14 @@ namespace RPG
             if (presetList.gameObject.activeInHierarchy) return;
 
             presetList.LoadData(null);
+            effectList.ClosePanel();
+        }
+        public void OpenEffects()
+        {
+            if (effectList.gameObject.activeInHierarchy) return;
+
+            effectList.LoadData(null);
+            presetList.ClosePanel();
         }
         public void Sync()
         {

@@ -215,6 +215,8 @@ namespace RPG
         {
             await ImageTask((bytes) =>
             {
+                if (bytes == null) return;
+
                 TokenConfiguration config = Instantiate(configPrefab);
                 config.transform.SetParent(UICanvas.Instance.transform);
                 config.transform.localPosition = Vector3.zero;

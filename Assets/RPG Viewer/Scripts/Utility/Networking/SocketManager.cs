@@ -219,6 +219,32 @@ namespace Networking
                 Events.OnPresetRemoved?.Invoke(id, light);
             });
 
+            // Effects
+            Socket.On("create-effect", async (data) =>
+            {
+                string id = data.GetValue().GetString();
+                EffectData effect = JsonUtility.FromJson<EffectData>(data.GetValue(1).ToString());
+
+                await UniTask.SwitchToMainThread();
+                Events.OnEffectCreated?.Invoke(id, effect);
+            });
+            Socket.On("modify-effect", async (data) =>
+            {
+                string id = data.GetValue().GetString();
+                EffectData effect = JsonUtility.FromJson<EffectData>(data.GetValue(1).ToString());
+
+                await UniTask.SwitchToMainThread();
+                Events.OnEffectModified?.Invoke(id, effect);
+            });
+            Socket.On("remove-effect", async (data) =>
+            {
+                string id = data.GetValue().GetString();
+                EffectData effect = JsonUtility.FromJson<EffectData>(data.GetValue(1).ToString());
+
+                await UniTask.SwitchToMainThread();
+                Events.OnEffectRemoved?.Invoke(id, effect);
+            });
+
             // Tokens
             Socket.On("create-token", async (data) =>
             {

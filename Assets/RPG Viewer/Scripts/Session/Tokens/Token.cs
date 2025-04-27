@@ -18,6 +18,7 @@ namespace RPG
         public TokenVision Vision { get; private set; }
         public TokenUI UI { get; private set; }
         public TokenConditions Conditions { get; private set; }
+        public TokenEffect Effect { get; private set; }
 
         public bool IsOwner
         {
@@ -37,6 +38,7 @@ namespace RPG
             if (Vision == null) Vision = GetComponent<TokenVision>();
             if (UI == null) UI = GetComponent<TokenUI>();
             if (Conditions == null) Conditions = GetComponent<TokenConditions>();
+            if (Effect == null) Effect = GetComponent<TokenEffect>();
 
             // Add event listeners
             Events.OnTokensSelected.AddListener(HandleSelection);
@@ -123,6 +125,9 @@ namespace RPG
             // Load lighting and vision
             Vision.Reload();
 
+            // Load effects
+            Effect.Reload();
+
             float cellSize = Session.Instance.Grid.CellSize;
             Vector2 dimensions = Data.dimensions;
             boxCollider.size = new Vector2(100 * cellSize * (dimensions.x / Session.Instance.Grid.Unit.scale), 100 * cellSize * (dimensions.y / Session.Instance.Grid.Unit.scale));
@@ -172,8 +177,9 @@ namespace RPG
         {
             Data.enabled = enabled;
 
-            // Enable / disable vision and image
+            // Enable / disable token
             Vision.Reload();
+            Effect.Reload();
             UI.Toggle(enabled);
         }
         public void ToggleLight(bool enabled)
@@ -258,6 +264,7 @@ namespace RPG
         public bool teleportProtection;
         public bool synced;
         public string parentInstance;
+        public string effect;
     }
 
     [Serializable]
