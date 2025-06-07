@@ -85,10 +85,10 @@ namespace RPG
     {
         public string id;
         public string name;
-        public int roll;
+        public float roll;
         public bool visible;
 
-        public InitiativeData(string _id, string _name, int _roll, bool _visible)
+        public InitiativeData(string _id, string _name, float _roll, bool _visible)
         {
             id = _id;
             name = _name;

@@ -40,7 +40,7 @@ namespace RPG
         }
         public void Modify()
         {
-            InitiativeData data = new InitiativeData(Data.id, nameInput.text, int.Parse(valueInput.text), visible);
+            InitiativeData data = new InitiativeData(Data.id, nameInput.text, float.Parse(valueInput.text), visible);
             SocketManager.EmitAsync("modify-initiative", (callback) =>
             {
                 // Check if the event was successful

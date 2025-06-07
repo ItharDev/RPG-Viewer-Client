@@ -70,6 +70,7 @@ namespace RPG
             {
                 if (Input.GetKeyDown(KeyCode.Tab)) HandleSelection();
                 if (Input.GetKey(KeyCode.LeftControl)) HandleGrouping();
+                if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.P)) HandlePlayerToggle();
             }
         }
 
@@ -109,6 +110,29 @@ namespace RPG
                 // Send error message
                 MessageManager.QueueMessage(callback.GetValue(1).GetString());
             }, tokens, group);
+        }
+
+        private void HandlePlayerToggle()
+        {
+            // Check if we are the master client
+            if (!ConnectionManager.Info.isMaster) return;
+
+            bool disabled = true;
+            for (int i = 0; i < myTokens.Count; i++)
+            {
+                if (!myTokens[i].IsPlayer) continue; // skip if token is not a player
+                if (myTokens[i].Data.enabled) 
+                {
+                    disabled = false;
+                    break;
+                }
+            }
+
+            for (int i = 0; i < myTokens.Count; i++)
+            {
+                if (!myTokens[i].IsPlayer) continue; // skip if token is not a player
+                myTokens[i].UI.EnableToken(disabled);
+            }
         }
 
         public void ClearGroup(int group)

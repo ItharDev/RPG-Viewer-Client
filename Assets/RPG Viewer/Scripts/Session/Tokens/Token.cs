@@ -25,6 +25,14 @@ namespace RPG
             get { return Permission.type == PermissionType.Controller; }
         }
         public string Id { get { return Data.id; } }
+        public bool IsPlayer
+        {
+            get
+            {
+                Permission owner = Data.permissions.FirstOrDefault(value => value.type == PermissionType.Controller);
+                return !string.IsNullOrEmpty(owner.user);
+            }
+        }
 
         public Permission Permission;
         public Visible Visibility;
@@ -208,9 +216,7 @@ namespace RPG
         #region Buttons
         public void DeleteToken()
         {
-            // Check if any player is the owner
-            Permission owner = Data.permissions.FirstOrDefault(value => value.type == PermissionType.Controller);
-            if (string.IsNullOrEmpty(owner.user))
+            if (!IsPlayer)
             {
                 FinishDeletion(true);
                 return;
