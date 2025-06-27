@@ -2,7 +2,7 @@
 
 ![Downloads](https://img.shields.io/github/downloads/ItharDev/RPG-Viewer-Client/total)
 
-Welcome to the RPG Viewer Client! This application works hand-in-hand with the [RPG Viewer Server](https://github.com/ItharDev/RPG-Viewer-Server). If the Client is the wizard, the Server is its tower — one doesn't do much without the other.
+Welcome to the RPG Viewer Client! This application works hand-in-hand with the [RPG Viewer Server](https://github.com/ItharDev/RPG-Viewer-Server).
 
 This guide will walk you through everything you need to know, from setup to running full-fledged digital adventures.
 
@@ -79,11 +79,11 @@ Find the latest release on the right-hand panel. Installation is pretty straight
     ```
     chmod +x RPG-Viewer.x86_64
     ```
-- Without this, your terminal will just shrug and say, "Permission denied."
+- Without this, your terminal will say Permission denied.
 
 ## Connecting to a Server
 
-To connect the RPG Viewer Client to a server, you must have a running instance of the [RPG Viewer Server](https://github.com/ItharDev/RPG-Viewer-Server) and know its IP address and port.
+To connect the Client to a Server, you must have a running instance of the [RPG Viewer Server](https://github.com/ItharDev/RPG-Viewer-Server) and know its IP address and port.
 
 Open the connection field by clicking the **Settings** button in the top left corner of the application. Enter the server address in the format `<ip:port>`, for example:
 
@@ -137,11 +137,11 @@ This is the big utility belt on the right. Buttons here do everything from chang
 
 - **Change Landing Page (GM only)**: Set a new Landing Page.
 - **Sync View  (GM only)**: Toggle this off to experiment privately. Toggle on to show players the current state.
-- **Token Effects**: For managing visual effects. Details covered in the Token section.<TODO>
-- **Lighting Presets**: Manage reusable lighting setups.<TODO>
-- **Journal**: For Notes, logs, and handouts.<TODO>
-- **Scenes  (GM only)** Create, modify, or switch Scenes.<TODO>
-- **Blueprints** Token templates.<TODO>
+- **Token Effects**: For managing visual effects. Details covered in the Token section.
+- **Lighting Presets**: Manage reusable lighting setups.
+- **Journal**: For Notes, logs, and handouts.
+- **Scenes  (GM only)** Create, modify, or switch Scenes.
+- **Blueprints** Token templates.
 
 > [!TIP]
 > Items can be grouped into directories to keep things tidy. To move an item, click it and choose the **Select** option. This marks the item as selected. Then, click on the target folder and choose **Move here** to place the item inside it. If you want to move the item back to the root directory, click the item again and select **To root**.
@@ -194,10 +194,10 @@ Click the Scene, then hit **Play**. You can also rename or delete from this menu
 
 ### Tuning the Grid
 
-A well-aligned grid is the backbone of any grid-based system. It ensures that Tokens line up, measurements are accurate, and your inner perfectionist is satisfied.
+A well-aligned grid is the core element of any grid-based system. It ensures that Tokens line up and measurements are accurate.
 
 > [!IMPORTANT]
-> After tweaking the grid, hit the **Save** button before switching Scenes — otherwise your changes might vanish like a rogue in the shadows.
+> After tweaking the grid, hit the **Save** button before switching Scenes — otherwise your changes might vanish.
 
 There are many ways to setup the grid, but in my opinion the two best ways to achieve it are the following:
 
@@ -225,7 +225,7 @@ There are few fields to modify, each contributing to a different effect:
 - **Global Lighting Color**: Applies a global light tint across the entire Scene. This is perfect for simulating daylight, torchlight, moonlight, or the dreadful green glow of goblin caverns. **Common tip:** a soft blue hue makes a convincing nighttime tone.
 
 > [!NOTE]
-> Like any good mood lighting, it might take a few tries to get just right. Don't worry if it's not perfect on the first pass — lighting finesse often comes with experimentation. And a little patience.
+> Like any good mood lighting, it might take a few tries to get just right. Don't worry if it's not perfect on the first pass — lighting finesse often comes with experimentation.
 
 ### Light Sources
 
@@ -233,7 +233,7 @@ Light sources are attached to Tokens or specific parts of the Scene to dynamical
 
 To place a light source, open the [Configuration Panel](#the-gms-configuration-panel), select the **Create** Tool from the Lighting section, choose a point and press `Left Shift + Click` to assign a light. You'll be able to fine-tune how it behaves, from color and intensity to range and effect.
 
-Each light has two light sources, allowing you to create a blend between the colors and effects to create unique effects. Here are the main options for each light source:
+Each light has two light sources, allowing you to create a blend between the colors to create unique effects. Here are the main options for each light source:
 
 - **Enabled**: Toggles the light on or off.
 - **Direction**: Controls the direction in degrees where the light source points at. **Positive** values rotate the source **counter-clockwise** and **negative** rotates it **clockwise**.
@@ -247,12 +247,11 @@ Each light has two light sources, allowing you to create a blend between the col
 
 
 > [!TIP]
-> Use multiple overlapping light sources with different ranges and colors to create more complex moods — like a smoky red glow near a forge, or the gradual blue haze of magical fog.
+> Use multiple overlapping light sources with different ranges and colors to create more complex moods — like a smoky red glow near a forge.
 
 Once you get the hang of it, lighting becomes a powerful storytelling tool. A single torch in an otherwise pitch-black dungeon can do more for tension than a paragraph of exposition.
 
 #### Lighting Presets
-
 
 > [!WARNING] 
 > There is currently a known bug when creating or modifying a preset from light source panel. This causes the panel to open far left. You can still create and modify presets from the [Side Panel](#the-side-panel).
@@ -262,9 +261,9 @@ Lighting presets allow you to save and reuse specific lighting configurations ac
 To apply a preset, select one from the top right corner of the lighting configuration screen. This marks the current light source to use that preset. Any future changes made to the preset will automatically update all light sources using it.
 
 > [!TIP]  
-> You've created a "Dungeon Torch" preset with a warm orange color, mid-level intensity, and a flicker effect — and applied it to every wall-mounted torch in your crypt Scene. All looks perfect… until your players trigger a magical pulse that causes the torches to glow blue and burn twice as bright.
+> You've created a "Dungeon Torch" preset with a warm orange color and applied it to every torch in your Scene. All looks good... until your players enters a magical field that causes the torches to glow blue.
 > 
-> You update the preset to reflect the new look — switching the hue to blue and boosting the intensity. Instantly, every linked torch updates across the map, no need to click each one individually.
+> You update the preset to reflect the new look — switching the hue to blue. Instantly, every linked torch updates across the Scene, no need to click each one individually.
 > 
 > Just remember: if you had tweaked a torch earlier to dim it slightly or change the color for "variety," it's no longer using the preset — and won't be affected by these changes. You'll need to reassign the preset to re-establish the link.
 
@@ -274,7 +273,7 @@ However, keep in mind:
 - Even if you revert the values to match the preset exactly, the connection is still considered broken.
 - To reassign the preset, simply select it again from the dropdown.
   
-This system helps maintain consistency across your Scenes while giving you the flexibility to tweak individual light sources as needed — just remember that once you tweak, the preset no longer governs that light.
+This system helps maintain consistency across your Scenes while giving you the tools to tweak individual light sources as needed.
 
 > [!WARNING]  
 > All light presets are also available to players for **use**, **modification** and **deletion**.
@@ -289,12 +288,12 @@ Before you start clicking, make sure to choose the appropriate wall type from th
 
 Once you've selected a wall type, here's how to start building your dungeon:
 
-1. **Draw New Walls**: Hold `Left Shift` and drag your mouse to create a new wall segment. This is your bread-and-butter wall placement move.
+1. **Draw New Walls**: Hold `Left Shift` and drag your mouse to create a new wall segment.
 2. **Extend Existing Walls**: If you want to continue from a previously placed endpoint, hold `Left Control` and drag from that point.
-3. **Move Wall Points**: Drag any wall point with the mouse. They'll snap to nearby points automatically, which makes tidying up corners a breeze.
+3. **Move Wall Points**: Drag any wall point with the mouse. They'll snap to nearby points automatically.
 4. **Split Walls**: Click to select a point and press `Space`. This splits the wall at that point — handy for editing just one section.
 5. **Right Click for Options**: Want to lock a door, change wall behavior, or inspect details? Right-click the point or segment.
-6. **Delete Wall Points**: Select the point and hit `Delete` or `Backspace`. The system will automatically connect the points on either side, keeping things neat.
+6. **Delete Wall Points**: Select the point and hit `Delete` or `Backspace`.
 
 > [!TIP]  
 > To preview what these walls actually do, switch to Player View in the Configuration Panel and drag a Token with vision around the map. You'll instantly see how your walls affect visibility and movement.
@@ -303,18 +302,18 @@ Once you've selected a wall type, here's how to start building your dungeon:
 
 #### Types of Walls
 
-Walls come in different flavors, and each one is designed to block (or not block) something. Think of them as your Scene's rules of engagement. Here's the lineup:
+Walls come in different flavors, and each one is designed to block (or not block) something. Here's the lineup:
 
-- ![image](https://github.com/user-attachments/assets/3ed8589a-37a8-4fb1-b07b-9ad634faa2d3) **Regular Walls**: The default wall type. Blocks both movement and vision, like any self-respecting stone wall should.
-- ![image](https://github.com/user-attachments/assets/0dea34e8-5038-4fcf-a20d-e1569f1347b8) **Environmental Walls**: Acts like a regular wall, but also masks out everything inside the boundary. Great for dramatic reveals — but don't go overboard. Too many of these can seriously impact performance.
-- ![image](https://github.com/user-attachments/assets/b9b10e05-af2c-4bf2-9897-b53cc111f11a) **Invisible Walls**: These block movement but let vision and light pass through. Perfect for physical barriers that characters can see through, like windows, fences, or the world's rudest velvet ropes.
+- ![image](https://github.com/user-attachments/assets/3ed8589a-37a8-4fb1-b07b-9ad634faa2d3) **Regular Walls**: The default wall type. Blocks both movement and vision, like any stone wall should.
+- ![image](https://github.com/user-attachments/assets/0dea34e8-5038-4fcf-a20d-e1569f1347b8) **Environmental Walls**: Acts like a regular wall, but also masks out everything inside the boundary. Don't go overboard. Too many of these can seriously impact performance.
+- ![image](https://github.com/user-attachments/assets/b9b10e05-af2c-4bf2-9897-b53cc111f11a) **Invisible Walls**: These block movement but let vision and light pass through. Perfect for physical barriers that characters can see through, like windows or fences.
 - ![image](https://github.com/user-attachments/assets/dfd684fe-ea46-4019-a3b0-04f80dba4217) **Regular Doors**: Functionally a wall, but with an on-screen icon that players can click to open or close the passage. `Right Click` the icon (or one of its wall points) to lock the door and deny entry.
 - ![image](https://github.com/user-attachments/assets/c2e42544-7391-4c3f-9b46-16eee606185b) **Secret Doors**: Like Regular Doors, but sneakier. These don't show an icon to players. Only the GM knows it's there — ideal for ambushes, escape routes, and secret lairs.
-- ![image](https://github.com/user-attachments/assets/574665c7-ec4a-4a66-9568-3522310a252c) **Curtains**: These block light but not movement. Useful for illusions, magical veils, or that classic "you walk right through the waterfall" moment.
+- ![image](https://github.com/user-attachments/assets/574665c7-ec4a-4a66-9568-3522310a252c) **Curtains**: These block light but not movement. Useful for illusions or magical veils.
 - ![image](https://github.com/user-attachments/assets/dd689624-b6e8-40c3-a60d-fe6b453b9069) **Darkness**:  These blocks both movement and vision, and the global light from entering the enclosed area. Once the loop is closed, the area within becomes shadowed from everything, including global light.
   
 > [!NOTE] 
-> Darkness Walls automatically seal off the enclosed shape by connecting the last segment back to the first. This makes using them with openings like doors or windows tricky — so use sparingly and deliberately.
+> Darkness Walls automatically seal off the enclosed shape by connecting the last segment back to the first. This makes using them with openings like doors or windows tricky — so use sparingly.
 
 ### Portals: Way of Linking Areas
 
@@ -326,17 +325,17 @@ To create a Portal, select the Portal creation view from the [Configuration Pane
 
 There are two modes of Portal operation:
 
-- **Proximity**: This mode keeps its ears open at all times. As soon as an active Token enters thePportal's radius, the teleportation triggers instantly. Ideal for seamless transitions between map segments.
-- **Stationary**: This mode is a bit more refined. It only activates when a Token finishes its movement inside the Portal's detection radius — giving players time to rethink whether they really want to step into that ominous glowing circle.
+- **Proximity**: This mode keeps its ears open at all times. As soon as an active Token enters thePportal's radius, the teleportation triggers instantly. Ideal for seamless transitions between different segments.
+- **Stationary**: This mode is a bit more refined. It only activates when a Token finishes its movement inside the Portal's detection radius.
 
-Portals can be used creatively to manage complex maps. They're perfect for connecting floors, teleporting between distant areas, or hiding shortcuts your players won't notice until it's far too late.
+Portals can be used creatively to manage complex Scenes. They're perfect for connecting floors, teleporting between distant areas, or hiding shortcuts your players won't notice.
 
 #### Managing Portals
 
 Once placed, Portals aren't set in stone. You can:
 
 - **Move** a Portal by dragging it.
-- **Toggle** a Portal on or off by `left Clicking` it. This is great for secret or time-based transitions.
+- **Toggle** a Portal on or off by `Left Clicking` it.
 - **Configure** a Portal by `Right Clicking` it to access its settings.
 - **Delete** a Portal by selecting the Delete option in the Configuration Panel, then clicking the Portal you want to delete.
 
@@ -376,7 +375,7 @@ To create a Blueprint:
 
 Tokens placed into the Scene are then fully configurable on their own. But here's the twist: Blueprints can optionally be **marked as Synced** from their context menu — look for the little globe icon on the right side of the Blueprint in the Side Panel.
 
-If you drag a **Synced Blueprint** into a Scene, that Token maintains a live connection with the original. Update the Blueprint? All Tokens using it will update too. Adjust a Token that originated from it? The source Blueprint (and its other synced Tokens) update along with it. It's one big happy hive mind.
+If you drag a **Synced Blueprint** into a Scene, that Token maintains a live connection with the original. Update the Blueprint? All Tokens using it will update too. Adjust a Token that originated from it? The source Blueprint (and its other synced Tokens) update along with it.
 
 > [!IMPORTANT]  
 > Each Blueprint can only sync to Tokens that were created from it *after* it was marked as synced. Existing Tokens won't retroactively sync.
@@ -420,11 +419,11 @@ Visibility works per player and can be configured on both Tokens and Blueprints.
 > [!TIP]
 > A player has the ability to see invisible creatures. You configure a hidden creature to be invisible to everyone except that player. The creature appears only to them — and they now face the moral dilemma of shouting a warning or staying quiet.
 
-These controls help ensure that only the right eyes see what they're supposed to, giving your game that cinematic layer of mystery and surprise. It also opens the door to stealth mechanics, hidden allies, decoys, and all the delightful chaos that follows.
+These controls help ensure that only the right eyes see what they're supposed to, giving your game that layer of mystery and surprise. It also opens the door to stealth mechanics, hidden allies, and all the chaos that follows.
 
 ### Limiting Token Vision
 
-Limiting Token vision is crucial for creating suspense and realism in your game. By restricting what each Token can see, you ensure that players only have information their characters would reasonably know.
+Limiting Token vision is crucial for creating realism in your game. By restricting what each Token can see, you ensure that players only have information their characters would reasonably know.
 
 To limit Token vision:
 
@@ -455,14 +454,11 @@ Once grouped, you can manage the Token groups from the [Configuration Panel](#th
 
 Tokens can belong to multiple groups at once, allowing for overlapping control schemes. To remove a Token from a group, simply select it and press `Left Control + [group number]` again — the same key combo unassigns it.
 
-> [!TIP] 
-> Group all goblins behind a wall into Group 1, all ogres lurking in the basement into Group 2, and the final boss into Group 3. When the party makes noise, reveal Group 1. When they hit the stairs, drop Group 2. When they think it's finally safe — boom, Group 3.
-
-Token Groups are perfect for preparing surprises, managing encounters, or just staying organized in a high-stakes dungeon crawl.
+Token Groups are perfect for preparing surprises, managing encounters, or just staying organized in a dungeon crawl.
 
 ### Token Effects
 
-Token Effects are a powerful way to visually enhance your Scenes by attaching dynamic overlays **above or below** Tokens. Whether your caster is walking around with a swirling aura of fire, or your summoned spirit exudes radiant energy, effects help communicate what's happening — no verbal reminders required.
+Token Effects are a powerful way to visually enhance your Scenes by attaching dynamic overlays **above or below** Tokens. Whether your caster is walking around with a swirling aura of fire, or your summoned spirit exudes radiant energy, effects help communicate what's happening.
 
 To add a Token Effect, Select a Token, and assign an effect. Each effect can be:
 - Positioned **above or below** the Token.
@@ -478,8 +474,6 @@ Effects behave similarly to Lighting Presets — you can configure them once and
 > - AoE zones that follow the Token
 > - Utility indicators (radius indicators, stealth mode, etc.)
 > - Light sources (glowing orbs, torches, magical lanterns)
-
-Token Effects aren't just for flair — they serve as functional, in-the-moment reminders of status, position, and danger. And let's be honest: they look really cool when done right.
 
 ## Journals & Notes
 
@@ -529,7 +523,7 @@ Use Journals to:
 > [!TIP]  
 > You can turn any Note into a Journal Entry using the save icon in the Note's context menu — great for preserving player-discovered information across Scenes.
 
-You can also share a Journal Entry with another player or Game Master by clicking the Share button on the Journal. This allows you to create shared, Session-wide Journals where everyone can contribute or refer to shared information.
+You can also share a Journal Entry with another player or Game Master by clicking the Share button on the Journal context menu on the Side Panel. This allows you to create shared, Session-wide Journals where everyone can contribute or refer to shared information.
 
 > [!NOTE] 
 > When sharing a Journal, if some player doesn't show up right away, click the refresh button to the left of the close button on the panel to update the list.
