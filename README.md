@@ -1,365 +1,605 @@
-# RPG Viewer VTT
-
-Official cliend-side application for RPG Viewer VTT
-
-By reading this guide, you will understand everything you need to know about this application and its features
+# RPG Viewer Client
 
 ![Downloads](https://img.shields.io/github/downloads/ItharDev/RPG-Viewer-Client/total)
 
-## Disclaimer
+Welcome to the RPG Viewer Client! This application works hand-in-hand with the [RPG Viewer Server](https://github.com/ItharDev/RPG-Viewer-Server). If the Client is the wizard, the Server is its tower — one doesn't do much without the other.
 
-This guide is highly outdated, and will be updated in the next major update.
+This guide will walk you through everything you need to know, from setup to running full-fledged digital adventures.
 
-## Table of contents
+## Table of Contents
 
-<!--ts-->
-* [Installation](#installation)
-* [User guide](#user-guide)
-  * [Connecting](#connecting)
-  * [Accounts](#accounts)
-  * [Sessions](#sessions)
-  * [Game view](#game-view)
-    * [Side buttons](#side-buttons)
-    * [Side panel](#side-panel)
-  * [Journal pages](#journal-pages)
-  * [Scenes](#scenes)
-    * [Creation & modification](#creating-and-modifying-scenes)
-    * [Tokens](#tokens)
-    * [Lights](#lights)
-    * [Notes](#notes)
-  * [Blueprints](#blueprints)
-    * [Permissions](#permissions)
-      * [Owner](#owner)
-      * [Observer](#observer)
-      * [None](#none)
-* [Keyboard shortcuts](#keyboard-shortcuts)
-<!--te-->
+- [RPG Viewer Client](#rpg-viewer-client)
+  - [Table of Contents](#table-of-contents)
+  - [Installing the Application](#installing-the-application)
+    - [Windows](#windows)
+    - [Linux](#linux)
+  - [Connecting to a Server](#connecting-to-a-server)
+  - [Tuning Your Settings](#tuning-your-settings)
+  - [Authentication \& Registration](#authentication--registration)
+  - [Running Game Sessions](#running-game-sessions)
+    - [Creating a Session](#creating-a-session)
+    - [Connecting to an Existing Session](#connecting-to-an-existing-session)
+    - [Joining a Session with a Key](#joining-a-session-with-a-key)
+  - [Inside the Session](#inside-the-session)
+    - [The Side Panel](#the-side-panel)
+    - [The Tool Panel](#the-tool-panel)
+    - [The GM's Configuration Panel](#the-gms-configuration-panel)
+  - [Scenes](#scenes)
+    - [Creating a Scene](#creating-a-scene)
+    - [Activating a Scene](#activating-a-scene)
+    - [Tuning the Grid](#tuning-the-grid)
+      - [If You Know the Dimensions](#if-you-know-the-dimensions)
+      - [If You Don't Know the Dimensions](#if-you-dont-know-the-dimensions)
+    - [Lighting Up the Scene](#lighting-up-the-scene)
+    - [Light Sources](#light-sources)
+      - [Lighting Presets](#lighting-presets)
+    - [Walls: Defining Spaces and Blocking Vision](#walls-defining-spaces-and-blocking-vision)
+      - [Placing walls](#placing-walls)
+      - [Types of Walls](#types-of-walls)
+    - [Portals: Way of Linking Areas](#portals-way-of-linking-areas)
+      - [Creating Portals](#creating-portals)
+      - [Managing Portals](#managing-portals)
+      - [Connecting Portals](#connecting-portals)
+  - [Tokens \& Blueprints](#tokens--blueprints)
+    - [Permissions \& Visibility](#permissions--visibility)
+      - [Permission Levels](#permission-levels)
+      - [Visibility](#visibility)
+    - [Limiting Token Vision](#limiting-token-vision)
+    - [Token Groups](#token-groups)
+    - [Token Effects](#token-effects)
+  - [Journals \& Notes](#journals--notes)
+    - [Scene Notes](#scene-notes)
+    - [Global Journals](#global-journals)
+  - [Useful Keybinds](#useful-keybinds)
+    - [General Keybinds](#general-keybinds)
+    - [Grid \& Scene Configuration](#grid--scene-configuration)
+    - [Wall Tools](#wall-tools)
+    - [Measuring Tools](#measuring-tools)
+    - [Ping Tools](#ping-tools)
+    - [Notes](#notes)
+    - [Token Management](#token-management)
+    - [Token Groups](#token-groups-1)
 
-# Installation
+## Installing the Application
 
-You can find the latest release on the right hand panel
+Find the latest release on the right-hand panel. Installation is pretty straightforward:
 
-![GitHub release (latest by date)](https://img.shields.io/github/v/release/ItharDev/RPG-Viewer-Client)
+### Windows
 
-1. Download `RPG-Viewer.zip`
-2. Extract all of the zip file's contents
-3. Run the applicaton by starting `RPG Viewer.exe`
-   
-   Windows may ask for permission to operate on private networks. Please accept this to allow the application to work normally
-4. See [user guide](#user-guide) below 
+- Download and unzip the version for Windows.
+- When prompted by Windows Defender about your mysterious new app, don't panic. If you got it from the official GitHub, you can ignore the warning.
+- Accept private network permissions if prompted — otherwise your client might not work properly.
 
-# User guide
+### Linux
 
-## Connecting
-
-![image](https://user-images.githubusercontent.com/70658690/214797669-9742276a-cf76-4076-a262-48b130c24b5a.png)
-
-* When the application is started, an IP Address must be specified to which the application will try to connect
-* This can be done from the top right corner of the main menu
-* Syntax: `<IP Address>:<Port>` For example: `127.0.0.1:3000` will connect to localhost, on port 3000
-
-*  Once connected for the first time, the application will automatically connect to this IP address when opened.
-* * The IP address can be changed at any time by entering a new address in the top right hand corner of the main menu using the syntax above.
-
-## Accounts
-
-![image](https://user-images.githubusercontent.com/70658690/214797780-dfde14bd-7dbe-4f9c-b9e8-bc377efab93d.png)
-
-Account data is synchronised across all devices, including
-* Sessions
-* Blueprints
-* Scenes
-* Notes
-
-## Sessions
-
-![image](https://user-images.githubusercontent.com/70658690/214797913-3c4b2ded-23a3-40da-917d-9cd1634a69ee.png)
-
-* There is no limit to the number of sessions you can create.
-* Landing page will be visible if there are no Scenes loaded or the session is not synced with players (more on this [later](#side-buttons)).
-* Click the button next to the Join panel drop down menu to copy the session ID to your clipboard.
-* Invite someone to this session by giving them this ID
-* Accept invitations by pasting a key you have received into the right hand panel
-* You can remove your access to any session you have been invited to by clicking the 'Remove Licences' button.
-
-## Game view
-
-![image](https://user-images.githubusercontent.com/70658690/214657068-9f40dfe2-5517-4722-a815-629aa27b3fd2.png)
-
-* When you first join, you should see your landing page as the background.
-* As a player, you won't be able to see the side panel on the right. It is only visible to Game Masters.
-
-### Side buttons
+- Linux builds are available from version `v2.7.0` onward.
+- Download and unzip the version for Linux.
+- Make the downloaded file executable:
   
-  All buttons are only visible when a Scene is active.
-  
-  * ![image](https://user-images.githubusercontent.com/70658690/214668643-62a6a8a0-b93e-42c8-86e3-ec4aa5bfb505.png) 
-    Pan Tool
-    * Quick select this Tool by pressing `1` on your keyboard 
-    * Left-click to move the camera
-  * ![image](https://user-images.githubusercontent.com/70658690/214668692-54e15ca9-6ead-4a3c-a8b8-70481f1c7e29.png)
-    Measure Tool
-    * Quick select this Tool by pressing `3` on your keyboard
-    * ![image](https://user-images.githubusercontent.com/70658690/214667672-31709621-4d3c-45b0-9f8a-29c6b1ae0eb5.png)
-      Precise. Measures every foot
-    * ![image](https://user-images.githubusercontent.com/70658690/214667880-22d375dc-1d22-4eb9-8caa-bf18dfff73a0.png)
-      Cell-based. Snaps measurement points to cells in a grid. Distances are calculated using D&D 5e's optional movement.
-      Each cell counts as 5 feet, and every other diagonal counts as 10 feet.
-    * Right-click while measuring to add waypoints
-    * Quick select this Tool by pressing `2` on your keyboard
-  * ![image](https://user-images.githubusercontent.com/70658690/214668832-1b29f490-d61a-4cbc-854d-37bffc5473e0.png)
-    Ping Tool
-    * The markers remain on the map for 10 seconds
-    * Left-click and hold to move each players' camera to that location
-  * ![image](https://user-images.githubusercontent.com/70658690/215039279-0a064a12-49ce-4842-855a-cdb7544d29e1.png)
-    Note Tools
-    * Quick select this Tool by pressing `4` on your keyboard
-    * Add Notes by clicking left-clicking
-    * See [Notes](#notes)
+    ```
+    chmod +x RPG-Viewer.x86_64
+    ```
+- Without this, your terminal will just shrug and say, "Permission denied."
 
-  * ![image](https://user-images.githubusercontent.com/70658690/214669095-5fcb56cc-6761-445a-b79b-724a66db672e.png)
-    Fog Tool (Game Master only)
-    * Quick select this Tool by pressing `5` on your keyboard
-    * ![image](https://user-images.githubusercontent.com/70658690/214665922-02bbf0fb-7a02-4ef5-996c-f86ea6ebdf0a.png)
-      Player view. Clicking on a Token with this enabled will simulate that player's view of the game.
-    * ![image](https://user-images.githubusercontent.com/70658690/214666376-61d7809b-5965-4a11-8620-f1ab6350c443.png)
-       Vision only. Clicking a Token with this enabled will show what that player can see. Everything else is shown opaque
-    * ![image](https://user-images.githubusercontent.com/70658690/214666211-3869adb5-cef2-45bf-b5fa-4a1bc8ab94b4.png)
-      No Fog. This will remove all Fog and allow you to see the entire map and Tokens.
-  * ![image](https://user-images.githubusercontent.com/70658690/214669164-d0685566-3deb-4e2f-8311-75b8eeb3f662.png)
-    Light Tool (Game Master only)
-    * Quick select this Tool by pressing `6` on your keyboard
-    * Left-clicking on a map will add a light source on that location
-    * More on lights can be found [here](#lights)
-  * ![image](https://user-images.githubusercontent.com/70658690/214669185-852c161f-72f9-4e4c-92fa-4785320d9334.png)
-    Sync (Game master only)
-    * Sync session to players
-    * While locked, players will only see the landing page.
-    * While syncing, players will see the active Scene if there is one.
-  * ![image](https://user-images.githubusercontent.com/70658690/214670372-ded947c8-111f-4d22-b477-d798084983f8.png)
-    Centre camera
-    * Move camera back to centre and reset zoom
-  * ![image](https://user-images.githubusercontent.com/70658690/214670519-3ac5c9d6-7dae-497e-bd53-13da8f378945.png)
-    Leave session
-    * Leave session and return to main menu
-    * Clicking this as a Game Master will set the sync state to locked, so that players will only see the landing page.
+## Connecting to a Server
 
-### Side panel
-* Create and modify Scenes and Blueprints (Game Master only)
-* Create and modify Journal pages. More information [here](#journal-pages)
-* Scene configuration can be seen [here](#scenes)
-* Creating and managing Blueprints can be seen [here](#blueprints)
+To connect the RPG Viewer Client to a server, you must have a running instance of the [RPG Viewer Server](https://github.com/ItharDev/RPG-Viewer-Server) and know its IP address and port.
 
-## Journal pages
+Open the connection field by clicking the **Settings** button in the top left corner of the application. Enter the server address in the format `<ip:port>`, for example:
 
-* Create a new Journal pages from the right panel.
-* Right-clicking on a Journal page in the right panel allows you to delete, modify, or share it with others
-* Journal pages shared with you are located in the `Shared` folder
-* You can drag Journal pages and folders from one folder to another
-* Rename folders by double clicking them
+```
+127.0.0.1:4000
+```
+
+Replace `127.0.0.1` with the actual IP address of your server and `4000` with the correct port if different. The client will attempt to connect to the specified server for all further interactions.
+
+## Tuning Your Settings
+
+Inside the Settings panel, you'll find an FPS slider. 30 FPS is the sweet spot for most machines — unless you're roleplaying on a toaster, then maybe try 20.
+
+Pressing the **Esc** key anywhere in the application opens a panel where you can manage the application resolution and toggle fullscreen mode.
+
+## Authentication & Registration
+
+Before you storm dungeons and conquer camps, you'll need an account. Head to the top-right corner and open the registration panel. Sign up once, and the client remembers you until you log out manually. 
+
+> [!NOTE]
+> Forgot your password? There's no reset button yet. Changing it involves diving into the database directly. Not for the faint of heart — or the technically inexperienced.
+
+## Running Game Sessions
+
+Game Sessions are the heart of the app. Here, you can manage Scenes, Tokens, lighting, and player actions.
+
+### Creating a Session
+
+Click the Sessions panel in the top left, give your Session a name, and select a Landing Page image using the folder icon. Creating a Session without choosing the Landing Page first is not allowed. You can change the Landing Page later inside the Session ([more on that further down](#side-panel)).
+
+### Connecting to an Existing Session
+
+Pick your Session from the dropdown, then click the connect button. You can copy the Session's licence key using the button on the far right — you'll need this to invite others (see below).
+
+Your latest Session is featured front and center in the pre-Session view for quick access.
+
+### Joining a Session with a Key
+
+To join, you need that licence key from the Session's host. Paste it into the validation field between the dropdown and creation panel. If it matches, you're in.
+
+## Inside the Session
+
+When a Session opens, you'll see the Landing Page you picked earlier. Depending on your role (GM or player), you'll have access to different tools and panels.
+
+### The Side Panel
+
+![](https://github.com/user-attachments/assets/171a5797-9811-46b2-bb11-4e0d38b1ce81)
+
+
+This is the big utility belt on the right. Buttons here do everything from changing Scenes to writing lore.
+
+- **Change Landing Page (GM only)**: Set a new Landing Page.
+- **Sync View  (GM only)**: Toggle this off to experiment privately. Toggle on to show players the current state.
+- **Token Effects**: For managing visual effects. Details covered in the Token section.<TODO>
+- **Lighting Presets**: Manage reusable lighting setups.<TODO>
+- **Journal**: For Notes, logs, and handouts.<TODO>
+- **Scenes  (GM only)** Create, modify, or switch Scenes.<TODO>
+- **Blueprints** Token templates.<TODO>
+
+> [!TIP]
+> Items can be grouped into directories to keep things tidy. To move an item, click it and choose the **Select** option. This marks the item as selected. Then, click on the target folder and choose **Move here** to place the item inside it. If you want to move the item back to the root directory, click the item again and select **To root**.
+
+### The Tool Panel
+
+When a Scene is open, this floating toolbox appears. Here's what each mode does:
+
+- ![image](https://github.com/user-attachments/assets/8a4475ed-7545-4624-8f72-02db520b08d8) **Move**: Pan and zoom. Some tools disable movement, but you can always drag with the middle mouse.
+- ![](https://github.com/user-attachments/assets/e752b0ec-2826-46dc-acb6-b4de4849ed75) **Measure**:
+  - ![](https://github.com/user-attachments/assets/cce89eaa-0eb8-4ed7-bf97-db85e1a4240a) **Precice**: Straight-line distances for absolute positioning.
+  - ![](https://github.com/user-attachments/assets/fd13e099-c3bd-479d-8733-19a1d8d1fcc4) **Snap to Grid**:  Snaps to grid cells, handy for grid-based movement.
+  - While measuring, you can add waypoints by `Right Clicking` during the measurement.
+  - All measuring actions require holding down `Left Shift` while clicking.
+- ![](https://github.com/user-attachments/assets/343fee34-dea9-4121-8f15-3c0990b692e1) **Ping**:
+  - ![](https://github.com/user-attachments/assets/02cf72a0-0a71-4eee-bca1-a691b286c989) **Mark**: Place a marker with `Left Shift + Click`. Hold to focus everyone's view.
+  - ![](https://github.com/user-attachments/assets/bbe42143-abe3-4bcf-8a0e-424708099ad5) **Pointer**: Show a live pointer using `Left Shift + Click`. Follows your mouse and helps direct attention.
+- ![](https://github.com/user-attachments/assets/204be568-bcb7-421b-a1be-4435a92eb98e) **Notes**:
+  - ![](https://github.com/user-attachments/assets/241b2487-2600-4d01-9eed-0c58600ef3f6) **Create**: Hold `Left Shift` and click to drop a Note.
+  - ![](https://github.com/user-attachments/assets/fc724226-8719-432e-a257-84f08096b705) **Delete**: Click Notes to remove them.
+
+### The GM's Configuration Panel
+
+For Game Masters only. When a Scene is open, this panel lets you reshape the Scene itself.
+
+- ![image](https://github.com/user-attachments/assets/5cd3c5a9-7728-4d85-88f2-bcd1e7617310) **Change Image**: Swap the Scene background. Dimensions must match.
+- ![image](https://github.com/user-attachments/assets/9a5c18fc-2d96-46e3-8874-7a14c98ef038) **Grid Settings**: Modify grid size, cell count, and colors. Read more about grid configuration [here](#tuning-the-grid).
+- ![image](https://github.com/user-attachments/assets/433783d9-c9bd-42d4-af63-a7fab88cd739) **Wall Tools**: Open [wall creation tools](#walls-defining-spaces-and-blocking-vision).
+- ![image](https://github.com/user-attachments/assets/8dda9d85-8639-4687-889a-cff2865e5165) **Lighting Tools**:  Edit [lights and fog](#lighting-up-the-Scene).
+- ![image](https://github.com/user-attachments/assets/443ecbe7-0e5e-4f0d-9f70-0c421d744883) **Portal Tools**:  Add [teleportation](#portals-way-of-linking-areas) points.
+- ![image](https://github.com/user-attachments/assets/844a458e-67b9-4f59-a542-f1c2a19d86ca) **Change View**: From this menu, you can change the current view (visible only to you). There are currently three options:
+  - ![image](https://github.com/user-attachments/assets/58d002ce-9268-4964-ae41-fd20421b3750) **Player View**:  This simulates what the selected Token would see, including lighting and fog. It's the default player experience.
+  - ![image](https://github.com/user-attachments/assets/0ed50a8f-e3a4-4a22-b95a-3f8ec026ad98) **Vision Only**: Shows the visible area based on each Token's vision range, but without applying any lighting effects. Useful for checking vision coverage.
+  - ![image](https://github.com/user-attachments/assets/e9560fa7-07ef-4cf0-8c0a-99b76b6bfdc6) **No Fog**: Completely removes fog and lighting for the GM, allowing a clear view of the entire Scene. Ideal for setup and configuration.
+- ![image](https://github.com/user-attachments/assets/d23e36ba-cd1e-4ad4-9382-eefa210bf290) **Token Groups**: Create and manage Token groups.<TODO>
 
 ## Scenes
 
-* Create and modify Scenes by opening the tab on the right.
-* Scene configuration can be seen [here](#creating-and-modifying-scenes)
-* While modifying or creating a Scene, players will not be able to affect the current Scene and will only see the landing page.
+Scenes are your adventuring environments. Each one has its own lighting, Tokens, and configuration.
+### Creating a Scene
 
-### Creating and modifying scenes
+From the Side Panel, upload an image to start a new Scene. It will then be added to your Scene list.
 
-* ![image](https://user-images.githubusercontent.com/70658690/214675341-8c7a686f-066c-4b0a-9f14-f18b092f62b9.png)
-  Wall Tools
-  * Restrict players' vision and lighting. Create toggleable doors that can be hidden from players.
-  * ![image](https://user-images.githubusercontent.com/70658690/214675899-47515036-173d-4898-96a2-0c3f6f4ff50a.png)
-    Regular walls. Block player movement, light and vision
-  * ![image](https://user-images.githubusercontent.com/70658690/214676076-45314635-07c2-4cd8-bc87-5ac83f88a17e.png)
-    Doors. Works like normal walls. Can be turned on and off (door icons visible to players)
-  * ![image](https://user-images.githubusercontent.com/70658690/214676358-0033633d-dc2f-4047-b1f4-08cd886ff615.png)
-    Hidden doors. Works like a normal door, but the door-icons are not visible to players
-  * ![image](https://user-images.githubusercontent.com/70658690/214676578-7f57c534-bdde-42c7-97a4-b97ebd2c9a4e.png)
-    Invisible walls. Blocks player movement, but not light or vision
-  * Click and drag to create walls
-  * Hold `Ctrl` and drag from wall endpoint to continue wall
-  * Click on a wall endpoint to select it. Press `Backspace` or `Delete` to delete that wall point.
-  * Snap wall endpoints together by dragging one endpoint over another
-* ![image](https://user-images.githubusercontent.com/70658690/214675430-c027dc43-bb5f-448b-a735-1153f5692736.png)
-  Grid configuration
-    * Configure the grid for this Scene. Activate grid snap and measure Tools
-    * ![image](https://user-images.githubusercontent.com/70658690/214678419-9204d23c-5d3d-46a0-ad91-b1024b82a583.png)
-      Configure grid settings
-      
-      ![image](https://user-images.githubusercontent.com/70658690/214679711-45a6f21d-d819-4b42-aa9f-07338ee8c5bc.png)
-      
-      * `Enable grid`: Enables / disables the grid for this Scene
-      * `Snap to grid`: Snaps Tokens to grid cells. Does nothing if grid is off.
-      * `Grid dimensions`: Grid size. Default size when creating the Scene is `10x10`.
-      * `Grid colour`: Opens a colour picker where you can choose the colour for your grid.
-      
-        There is currently a known bug where you have to click this button at least twice to update the colour of the colour picker.
-      * `Grid opacity` Opacity of the grid. Set to `0` to hide the grid
-      * To save changes, click `Save`
-      * To discard changes, click `Close`
-    * ![image](https://user-images.githubusercontent.com/70658690/214679223-86133691-198f-48aa-ad0f-6190263023ce.png)
-      Enable & disable grid visibility. Applies to Modification View only
-    * Scale grid by dragging one of its corners. Move grid around using `Arrow keys` or `W A S D`
-* ![image](https://user-images.githubusercontent.com/70658690/214675490-301ee42f-5a21-480c-bf64-7c95b8a17ff7.png)
-  Fog configuration
-  * Restrict players' view. Add dynamic lighting and shadows to the Scene
-  
-  ![image](https://user-images.githubusercontent.com/70658690/214681958-d89da85f-4b01-494e-b42c-af74ff1b5025.png)
-  
-  * `Enable Fog of War`: Enables / disables Fog of War for this Scene.
-  * `Global lighting`: Light up the entire Scene. Lights have no effect when this is enabled.
-  * `Translucency`: Change global lighting translucency.
-  * `Fog colour`: Opens a colour picker where you can choose the colour for your Fog.
-      
-      There is currently a known bug where you have to click this button at least twice to update the colour in the colour picker.
-  * To save changes, click the `Save` button.
-  * To discard changes, click `Close`
-* ![image](https://user-images.githubusercontent.com/70658690/214675517-3c7d468f-e4d9-4d97-bd9b-8f692b15110e.png)
-  Night Filter
-    * Apply the Night filter to this Scene to create the illusion of night lighting.
+### Activating a Scene
 
-  ![image](https://user-images.githubusercontent.com/70658690/214682559-c3151e92-1a7c-4150-af83-7e16d75bae12.png)
-  
-* `Night effect strength` controls how much of the night filter is applied. 0 is no effect and 100 is the maximum effect.
-* Rename Scene from the top left corner
-* ![image](https://user-images.githubusercontent.com/70658690/214683961-78a3a849-83c5-4122-9d99-76a5a3bfebf5.png)
-  Save and exit 
-  
-### Tokens
+Click the Scene, then hit **Play**. You can also rename or delete from this menu.
 
-While you are the owner of the Token, you can do the following
-  * Switch between the Tokens you own by clicking `Tab`.
-  * Move Tokens using the left mouse button (with the Pan Tool enabled)
-  * Click on a Token to select it
-    * Press `Delete` or `Backspace` to delete the Token 
-    * Move the Token with the arrow keys
-  * Movement is blocked by walls (normal walls, doors, hidden doors, invisible walls)
-  * As the Game Master, you can move the Token through walls. You will be notified if you collide with a wall.
-  * When dragging, right-click to add a waypoint. 
+> [!TIP] 
+> Keep Sync View off if you don't want players seeing a half-finished dungeon.
+
+### Tuning the Grid
+
+A well-aligned grid is the backbone of any grid-based system. It ensures that Tokens line up, measurements are accurate, and your inner perfectionist is satisfied.
+
+> [!IMPORTANT]
+> After tweaking the grid, hit the **Save** button before switching Scenes — otherwise your changes might vanish like a rogue in the shadows.
+
+There are many ways to setup the grid, but in my opinion the two best ways to achieve it are the following:
+
+#### If You Know the Dimensions
+
+1. Drag the **bottom-left grid corner** to the correct position. You can nudge it with the `Arrow Keys`; hold `Shift` while doing so for full-cell movement.
+2. Open the configuration panel and enter the exact width and height of the grid cells.
+3. Drag the **top-right corner** to stretch the grid and lock in the size.
+
+#### If You Don't Know the Dimensions
+
+1. Temporarily change the grid color to something that contrasts well with your map — bright pink is a classic.
+2. Drag **one of the corners** to a **known feature** (like a doorway or floor tile) and eyeball the estimated cell size.
+3. Stretch the **opposite corner** until the cells appear to align with map features.
+4. Adjust the **bottom-left corner** of the grid for final alignment, and input dimensions into the configuration panel if needed.
+
+### Lighting Up the Scene
+
+Lighting is where the mood of your Scene is forged — from eerie crypts to sunlit forests, it's all about ambiance.
+
+There are few fields to modify, each contributing to a different effect:
+
+- **Enabled**: This switch turns the entire lighting and vision system on or off. If you're wondering why everything's **pitch black**, check this first.
+- **Darkness Color**: This sets the color for areas your Tokens can't see. It doesn't affect lighting — it just fills in the unknown. Think of it as the color of the void.
+- **Global Lighting Color**: Applies a global light tint across the entire Scene. This is perfect for simulating daylight, torchlight, moonlight, or the dreadful green glow of goblin caverns. **Common tip:** a soft blue hue makes a convincing nighttime tone.
+
+> [!NOTE]
+> Like any good mood lighting, it might take a few tries to get just right. Don't worry if it's not perfect on the first pass — lighting finesse often comes with experimentation. And a little patience.
+
+### Light Sources
+
+Light sources are attached to Tokens or specific parts of the Scene to dynamically illuminate the surroundings based on their settings.
+
+To place a light source, open the [Configuration Panel](#the-gms-configuration-panel), select the **Create** Tool from the Lighting section, choose a point and press `Left Shift + Click` to assign a light. You'll be able to fine-tune how it behaves, from color and intensity to range and effect.
+
+Each light has two light sources, allowing you to create a blend between the colors and effects to create unique effects. Here are the main options for each light source:
+
+- **Enabled**: Toggles the light on or off.
+- **Direction**: Controls the direction in degrees where the light source points at. **Positive** values rotate the source **counter-clockwise** and **negative** rotates it **clockwise**.
+- **Radius**: Defines how far the light reaches from its origin point.
+- **Angle**: Defines the arc of angle for the light source. Use narrow angles for flashlights and larger for bonfires. 
+- **Intensity**: Controls how strong the light appears. Higher values make the light appear brighter and more saturated.
+- **Color**: The hue of the light. Use warm tones for cozy Scenes, or sickly greens and icy blues for a more unsettling feel.
+- **Effect**: Adds a custom effect for the light source. This way you can create flickering torches or pulsating portals, drawing the attention of players.
+- **Effect Strength**: Controls the effect strength. This is the **strength** for **flickering** effect and **pulsating amount** for **pulsing** effect.
+- **Effect Frequency**: Controls how often the light flickers, or how fast the pulsating happens. For flickering, it's flickers per second, and for pulsing, it's duration of each pulse.
+
+
+> [!TIP]
+> Use multiple overlapping light sources with different ranges and colors to create more complex moods — like a smoky red glow near a forge, or the gradual blue haze of magical fog.
+
+Once you get the hang of it, lighting becomes a powerful storytelling tool. A single torch in an otherwise pitch-black dungeon can do more for tension than a paragraph of exposition.
+
+#### Lighting Presets
+
+
+> [!WARNING] 
+> There is currently a known bug when creating or modifying a preset from light source panel. This causes the panel to open far left. You can still create and modify presets from the [Side Panel](#the-side-panel).
+
+Lighting presets allow you to save and reuse specific lighting configurations across different Tokens or light sources. Instead of adjusting the color, intensity, and other fields manually each time, you can apply a preset to maintain consistency and speed things up.
+
+To apply a preset, select one from the top right corner of the lighting configuration screen. This marks the current light source to use that preset. Any future changes made to the preset will automatically update all light sources using it.
+
+> [!TIP]  
+> You've created a "Dungeon Torch" preset with a warm orange color, mid-level intensity, and a flicker effect — and applied it to every wall-mounted torch in your crypt Scene. All looks perfect… until your players trigger a magical pulse that causes the torches to glow blue and burn twice as bright.
+> 
+> You update the preset to reflect the new look — switching the hue to blue and boosting the intensity. Instantly, every linked torch updates across the map, no need to click each one individually.
+> 
+> Just remember: if you had tweaked a torch earlier to dim it slightly or change the color for "variety," it's no longer using the preset — and won't be affected by these changes. You'll need to reassign the preset to re-establish the link.
+
+However, keep in mind:
+
+- If you manually change any field of a light source that's currently using a preset, that link will be broken.
+- Even if you revert the values to match the preset exactly, the connection is still considered broken.
+- To reassign the preset, simply select it again from the dropdown.
   
-    Releasing the left mouse button will move the Token along its waypoints.
-    
-    If snap to grid is enabled. The Token will snap to the nearest cell. To prevent this, press `Alt` while releasing the left mouse button.
-  * Move distance and path is displayed when dragging.
-  * Copy and paste Tokens using `Ctrl + V` and `Ctrl + V`.
+This system helps maintain consistency across your Scenes while giving you the flexibility to tweak individual light sources as needed — just remember that once you tweak, the preset no longer governs that light.
+
+> [!WARNING]  
+> All light presets are also available to players for **use**, **modification** and **deletion**.
+
+### Walls: Defining Spaces and Blocking Vision
+
+Walls are the unseen guardians of your Scene — defining rooms, blocking sightlines, and keeping overly curious players from wandering into the boss fight early.
+
+#### Placing walls
+
+Before you start clicking, make sure to choose the appropriate wall type from the wall tools. Each type has its own behavior (we'll cover those in the next section).
+
+Once you've selected a wall type, here's how to start building your dungeon:
+
+1. **Draw New Walls**: Hold `Left Shift` and drag your mouse to create a new wall segment. This is your bread-and-butter wall placement move.
+2. **Extend Existing Walls**: If you want to continue from a previously placed endpoint, hold `Left Control` and drag from that point.
+3. **Move Wall Points**: Drag any wall point with the mouse. They'll snap to nearby points automatically, which makes tidying up corners a breeze.
+4. **Split Walls**: Click to select a point and press `Space`. This splits the wall at that point — handy for editing just one section.
+5. **Right Click for Options**: Want to lock a door, change wall behavior, or inspect details? Right-click the point or segment.
+6. **Delete Wall Points**: Select the point and hit `Delete` or `Backspace`. The system will automatically connect the points on either side, keeping things neat.
+
+> [!TIP]  
+> To preview what these walls actually do, switch to Player View in the Configuration Panel and drag a Token with vision around the map. You'll instantly see how your walls affect visibility and movement.
+> 
+> Note that as a Game Master, you can freely move Tokens through walls. Players won't have this power in their hands, and moving a Token through a wall notifies you about it.
+
+#### Types of Walls
+
+Walls come in different flavors, and each one is designed to block (or not block) something. Think of them as your Scene's rules of engagement. Here's the lineup:
+
+- ![image](https://github.com/user-attachments/assets/3ed8589a-37a8-4fb1-b07b-9ad634faa2d3) **Regular Walls**: The default wall type. Blocks both movement and vision, like any self-respecting stone wall should.
+- ![image](https://github.com/user-attachments/assets/0dea34e8-5038-4fcf-a20d-e1569f1347b8) **Environmental Walls**: Acts like a regular wall, but also masks out everything inside the boundary. Great for dramatic reveals — but don't go overboard. Too many of these can seriously impact performance.
+- ![image](https://github.com/user-attachments/assets/b9b10e05-af2c-4bf2-9897-b53cc111f11a) **Invisible Walls**: These block movement but let vision and light pass through. Perfect for physical barriers that characters can see through, like windows, fences, or the world's rudest velvet ropes.
+- ![image](https://github.com/user-attachments/assets/dfd684fe-ea46-4019-a3b0-04f80dba4217) **Regular Doors**: Functionally a wall, but with an on-screen icon that players can click to open or close the passage. `Right Click` the icon (or one of its wall points) to lock the door and deny entry.
+- ![image](https://github.com/user-attachments/assets/c2e42544-7391-4c3f-9b46-16eee606185b) **Secret Doors**: Like Regular Doors, but sneakier. These don't show an icon to players. Only the GM knows it's there — ideal for ambushes, escape routes, and secret lairs.
+- ![image](https://github.com/user-attachments/assets/574665c7-ec4a-4a66-9568-3522310a252c) **Curtains**: These block light but not movement. Useful for illusions, magical veils, or that classic "you walk right through the waterfall" moment.
+- ![image](https://github.com/user-attachments/assets/dd689624-b6e8-40c3-a60d-fe6b453b9069) **Darkness**:  These blocks both movement and vision, and the global light from entering the enclosed area. Once the loop is closed, the area within becomes shadowed from everything, including global light.
   
-    Distance is calculated in the same way as the cell based measure Tool (see [Tools guide](#side buttons))
-  * Double-click on a Token to open its configuration panel
+> [!NOTE] 
+> Darkness Walls automatically seal off the enclosed shape by connecting the last segment back to the first. This makes using them with openings like doors or windows tricky — so use sparingly and deliberately.
+
+### Portals: Way of Linking Areas
+
+Portals are your go-to method for linking separate parts of the map — upstairs and downstairs, or maybe different wings of a castle.
+
+#### Creating Portals
+
+To create a Portal, select the Portal creation view from the [Configuration Panel](#the-gms-configuration-panel), then hold `Left Shift` and click where you want the Portal to appear. You'll see a detection area pop up.
+
+There are two modes of Portal operation:
+
+- **Proximity**: This mode keeps its ears open at all times. As soon as an active Token enters thePportal's radius, the teleportation triggers instantly. Ideal for seamless transitions between map segments.
+- **Stationary**: This mode is a bit more refined. It only activates when a Token finishes its movement inside the Portal's detection radius — giving players time to rethink whether they really want to step into that ominous glowing circle.
+
+Portals can be used creatively to manage complex maps. They're perfect for connecting floors, teleporting between distant areas, or hiding shortcuts your players won't notice until it's far too late.
+
+#### Managing Portals
+
+Once placed, Portals aren't set in stone. You can:
+
+- **Move** a Portal by dragging it.
+- **Toggle** a Portal on or off by `left Clicking` it. This is great for secret or time-based transitions.
+- **Configure** a Portal by `Right Clicking` it to access its settings.
+- **Delete** a Portal by selecting the Delete option in the Configuration Panel, then clicking the Portal you want to delete.
+
+> [!TIP]  
+> Disabled Portals don't show up for players and don't trigger teleports. Use this to control when shortcuts are revealed.
+
+#### Connecting Portals
+
+A single Portal does nothing on its own — like a bridge with no other side. To make them functional, you must connect two Portals together.
+
+Here's how:
+
+1. Open the Configuration Panel and select the Linking Tool.
+2. Click on the source portal (where the journey begins).
+3. Then click the destination portal (where it ends).
+
+A directional arrow will appear to indicate the connection.
+
+Each portal can:
+- Serve as the **source** of one connection (**must be enabled**).
+- Serve as the **destination** for multiple connections (**even when disabled**).
+
+Removing a connected portal will automatically sever any links associated with it.
+
+> [!NOTE]  
+> Linking is one-directional. If you want two-way travel, you'll need to connect both portals to each other manually.
+
+## Tokens & Blueprints
+
+Tokens represent characters, creatures, or objects that exist within your Scene — but unlike some systems, you can't just spawn Tokens from nothing. First, you need to create a **Blueprint**, which acts as the template. Once that's done, you can drag the Blueprint into a Scene to instantiate a **Token**.
+
+To create a Blueprint:
+
+1. Open the Blueprints Panel from the Side Panel.
+2. Create a new Blueprint and configure it (name, image, vision, lighting, etc.).
+3. Once saved, it appears in your list of Blueprints and can be dragged into any Scene.
+
+Tokens placed into the Scene are then fully configurable on their own. But here's the twist: Blueprints can optionally be **marked as Synced** from their context menu — look for the little globe icon on the right side of the Blueprint in the Side Panel.
+
+If you drag a **Synced Blueprint** into a Scene, that Token maintains a live connection with the original. Update the Blueprint? All Tokens using it will update too. Adjust a Token that originated from it? The source Blueprint (and its other synced Tokens) update along with it. It's one big happy hive mind.
+
+> [!IMPORTANT]  
+> Each Blueprint can only sync to Tokens that were created from it *after* it was marked as synced. Existing Tokens won't retroactively sync.
+
+Blueprints can also be created inside the **Public Folder**, a shared space designed for your players. Blueprints in this folder can be freely created, edited, and dragged into Scenes by players. It's a great way to let them manage their own Tokens, companions, or even bring in utility objects like illusionary spell markers, measuring tools, or custom light sources.
+
+> [!TIP]  
+> Use the Public Folder for anything players should have access to — it keeps the GM folder tidy and gives players just enough rope to be useful (or to hang themselves with, depending on your game).
+
+> [!CAUTION]  
+> If you're not using Synced Blueprints, editing a placed Token won't update the Blueprint it came from — and modifying a Blueprint won't affect existing Tokens already in a Scene.
+
+### Permissions & Visibility
+
+Every Token and Blueprint in your game can be finely tuned for visibility and player control, giving you complete command over what your players see — and what they can do.
+
+> [!NOTE]
+> You might need to refresh the visibility and permission panels when opening them to refresh default permissions. If your visibility or permission panels looks empty, this might be the issue.
+
+#### Permission Levels
+
+Each player's interaction with a Token is defined by its Permission Level, which comes in three tiers:
+
+- **None (Default)**: The player has no control or visibility over the Token beyond what the game passively reveals (e.g., lighting, fog). They cannot move, select, or interact with the Token.
+- **Observer**: The player can view the world through the Token's vision (great for NPC allies or familiars), but cannot move or edit it in any way.
+- **Controller**: The player has full control over the Token. They can move it, edit its properties, delete it, and use it as their own character.
+
+> [!NOTE] 
+> The Game Master is considered a **Controller** for **all** Tokens by default, regardless of individual permission settings.
+
+#### Visibility
+
+Visibility settings control who can see the Token at all — regardless of lighting or line-of-sight. This allows for more immersive scenarios:
+
+- Hide an invisible creature from all but one player.
+- Let one character see hidden allies, thanks to magical effects.
+- Surprise players with hidden enemies that only appear when triggered.
+
+Visibility works per player and can be configured on both Tokens and Blueprints. Tokens retain their visibility settings when placed in a Scene.
+
+> [!TIP]
+> A player has the ability to see invisible creatures. You configure a hidden creature to be invisible to everyone except that player. The creature appears only to them — and they now face the moral dilemma of shouting a warning or staying quiet.
+
+These controls help ensure that only the right eyes see what they're supposed to, giving your game that cinematic layer of mystery and surprise. It also opens the door to stealth mechanics, hidden allies, decoys, and all the delightful chaos that follows.
+
+### Limiting Token Vision
+
+Limiting Token vision is crucial for creating suspense and realism in your game. By restricting what each Token can see, you ensure that players only have information their characters would reasonably know.
+
+To limit Token vision:
+
+- **Assign Vision Ranges:** Each Token can be given a specific vision range from its configuration panel. This determines how far the Token can see in any direction.
   
-    ![image](https://user-images.githubusercontent.com/70658690/214686628-7673f0ba-f872-4e47-a28e-fce981703a55.png)
-    * `Display name`: The name of the Token
-    * `Token type`: Character type can have vision
-    
-      Mount types can have vision and will grab other Tokens on top of them when they move.
-      
-      Item types cannot have vision
-    * `Token size`: The dimensions of the Token. Scales the Token's image to fit (does not stretch).
-    * `Image`: Token's sprite
-    
-    ![image](https://user-images.githubusercontent.com/70658690/214688869-dc7e69ef-bcc6-4a11-b4be-34cd9f5dea34.png)
-    * `Has vision`: Does this Token have vision. Does nothing if the Token type is set to `Item`.
-    * `Night vision`: A special light source that only you can see. Does nothing if the Token does not have vision enabled
-    * `Token highlighted`: Small light source to show this Token even if it's in total darkness.
-    * `Light Source`: Select the light source of the Token. There are a few presets that will automatically change the light depending on the source.
-    
-      By selecting `Flickering` or `Pulsing` you can fully configure the effect speed, strength etc.
-      
-      Larger light sources have reduced shadow resolution and precision.
-    * Select the light colour. Selecting one of the light presets will automatically update this to match that preset's settings.
-    
-      There is currently a known bug where you need to click this button at least twice to update the colour of the colour picker.
-    
-      By selecting `Flickering` or `Pulsing` you will be able to fully configure effect speed, strength, etc.
-      
-      Bigger light sources have decreased shadow resolution and precision
-    * `Light color` Select light color. Selecting one of the light presets automatically updates this to match that preset settings
-    
-      There is currently a known bug, where you have to click this button at least twice to update the color picker's color
-    
-    ![image](https://user-images.githubusercontent.com/70658690/214690354-349a14ad-f42e-4e89-bff9-0e1d26532054.png)
-    * Select possible conditions for this Token. Conditions will be visible as small icons at the top of the Token
-  
-  * To save changes, click `Save`
-  * To discard changes, click `Close`
-  
-### Lights
-  * Move lights with the left mouse button. New position will not be updated for players until you stop dragging.
-  * Copy and paste lights with `Ctrl + V` and `Ctrl + V`.
-  * Click on a light to open its configuration panel
-  
-  ![image](https://user-images.githubusercontent.com/70658690/214691876-e2c51761-3ec6-4b88-a66c-6dccea93aead.png)
-  * `Enabled`: to enable/disable a light source
-  * `Light Radius`: Configure the size of the light. Larger light sources have reduced shadow resolution and precision.
-  * `Light Intensity`: configure light intensity (how bright the emitted light is)
-  * `Light source`: Select light source. There are a few presets that will automatically change the light depending on the source.
-    
-      By selecting `Flickering` or `Pulsing` you can fully configure the effect speed, strength etc.
-      
-    * Select the light colour. Selecting one of the light presets will automatically update this to match that preset's settings.
-    
-      There is currently a known bug where you need to click this button at least twice to update the colour of the colour picker.
-  * To save changes, click `Save`.
-  * Discard changes will be added in the near future.
-  
-  
+> [!TIP]  
+> You can set the global vision range from the [lighting configuration panel](#lighting-up-the-Scene).
+
+- **Configure Vision Types:** Choose between different vision types, such as normal, darkvision, or blindsight, depending on the character's abilities. These options are available in the Token's settings.
+- **Use Walls:** Walls will automatically block vision, preventing Tokens from seeing through them.
+- **Adjust Lighting:** The amount of light in a Scene affects how much a Token can see. Tokens without darkvision will be limited by darkness, while those with darkvision can see further in low-light areas.
+
+> [!TIP] 
+> You can test Token vision by switching to the **Player View** in the Configuration Panel and clicking on a Token. This shows exactly what that Token can see, helping you fine-tune vision settings for your game.
+
+### Token Groups
+
+Token Groups are your secret weapon for timed ambushes, synchronized strikes, or just unleashing chaos with a single click. They let you group Tokens together and control them as a unit — making it easy to reveal, or hide multiple creatures or objects at once.
+
+To group Tokens:
+
+1. Select the Tokens you want to group by clicking on them. Hold `Left Control` to multi-select.
+2. Press `Left Control` + `1`, `2`, or `3` to assign the selected Tokens to Group **1**, **2**, or **3** respectively.
+
+Once grouped, you can manage the Token groups from the [Configuration Panel](#the-gms-configuration-panel):
+- Enable / Disable Groups: Toggle visibility and interaction for an entire group in one go.
+- Clear Group: Remove all Tokens from a group without affecting the Tokens themselves.
+
+Tokens can belong to multiple groups at once, allowing for overlapping control schemes. To remove a Token from a group, simply select it and press `Left Control + [group number]` again — the same key combo unassigns it.
+
+> [!TIP] 
+> Group all goblins behind a wall into Group 1, all ogres lurking in the basement into Group 2, and the final boss into Group 3. When the party makes noise, reveal Group 1. When they hit the stairs, drop Group 2. When they think it's finally safe — boom, Group 3.
+
+Token Groups are perfect for preparing surprises, managing encounters, or just staying organized in a high-stakes dungeon crawl.
+
+### Token Effects
+
+Token Effects are a powerful way to visually enhance your Scenes by attaching dynamic overlays **above or below** Tokens. Whether your caster is walking around with a swirling aura of fire, or your summoned spirit exudes radiant energy, effects help communicate what's happening — no verbal reminders required.
+
+To add a Token Effect, Select a Token, and assign an effect. Each effect can be:
+- Positioned **above or below** the Token.
+- Assigned an image — use a visual representation like fire, smoke, runes, or magical energy.
+- Animated with effects such as pulse, rotation, or both — perfect for auras, enchantments, or timers.
+
+Effects behave similarly to Lighting Presets — you can configure them once and apply them consistently across multiple Tokens.
+
+> [!TIP]
+> Use Token Effects to represent:
+> 
+> - Ongoing spell effects (like Spirit Guardians or Darkness)
+> - AoE zones that follow the Token
+> - Utility indicators (radius indicators, stealth mode, etc.)
+> - Light sources (glowing orbs, torches, magical lanterns)
+
+Token Effects aren't just for flair — they serve as functional, in-the-moment reminders of status, position, and danger. And let's be honest: they look really cool when done right.
+
+## Journals & Notes
+
+Journals and Notes are your tools for storing, sharing, and organizing written information — whether it's GM secrets, player lore, or in-game puzzles.
+
+While similar, they serve different purposes:
+
+- Notes are Scene-specific. They're placed directly onto the Scene and tied to that location. Perfect for handouts, environmental storytelling, or leaving clues in a dungeon.
+- Journals are global, accessible from the Journal Panel at any time, regardless of which Scene is active. They're ideal for campaign logs, player backstories, rules references, or worldbuilding material.
+
+Each Note and Journal entry features two sections: **Text** and **Image**, accessible via the toggle in the bottom right corner. If you've selected an image for the entry, that section will be shown by default when opening the Note or Journal — making this a powerful way to share visual content with your players.
+
+> [!TIP]  
+> Want to display a clue, handout, or spooky sketch? Just create a Journal, add your image, and hit the upward arrow icon to push it to your players. Each player can also save a local copy of that image to their Journal Panel for future reference.
+
+> [!TIP]
+> The text editor supports some Markdown features, like headings, text decorations and lists.
+
+### Scene Notes
+
+To place a Note:
+
+1. Open the [Tool Panel](#the-tool-panel).
+2. Select the Note Tool.
+3. Click where you want to place the Note in the Scene while holding `Left Shift`.
+
+By default, Notes are visible only to you. You can change this by clicking the Context Menu (the small icon to the left of the close button on the Note). This menu allows you to:
+
+- Modify the visibility.
+- Send the Note to everyone, instantly popping it open on their screens (via the upward arrow icon).
+- Save a copy to your Journal Panel, creating a static snapshot of the Note's current state.
+
+> [!NOTE] 
+> Saving a local copy creates a separate Journal entry — it won't auto-update if the original Note changes.
+
+### Global Journals
+
+Journals are created and edited from the Journal Panel, which houses all your global entries. They're not tied to any Scene, making them perfect for persistent reference material.
+
+Use Journals to:
+
+- Track party progress.
+- Store lore handouts.
+- Keep a running GM prep document.
+- Share Session summaries with players
+
+> [!TIP]  
+> You can turn any Note into a Journal Entry using the save icon in the Note's context menu — great for preserving player-discovered information across Scenes.
+
+You can also share a Journal Entry with another player or Game Master by clicking the Share button on the Journal. This allows you to create shared, Session-wide Journals where everyone can contribute or refer to shared information.
+
+> [!NOTE] 
+> When sharing a Journal, if some player doesn't show up right away, click the refresh button to the left of the close button on the panel to update the list.
+
+## Useful Keybinds
+
+There are many useful keybinds, which are not listed anywhere in the application. Here's a list of all the keybinds inside the Session:
+
+### General Keybinds
+
+| Keybind                  | Use Case / Description                                                                           |
+| ------------------------ | ------------------------------------------------------------------------------------------------ |
+| **Esc**                  | Opens the settings panel anywhere in the application to manage resolution and toggle fullscreen. |
+| **Middle Button + Drag** | Force move the camera when Left Click Dragging isn't available.                                  |
+
+### Grid & Scene Configuration
+
+| Keybind                | Use Case / Description                                      |
+| ---------------------- | ----------------------------------------------------------- |
+| **Arrow Keys**         | Nudge the grid corner for precise alignment.                |
+| **Shift + Arrow Keys** | Move the grid corner by a full cell for faster adjustments. |
+
+### Wall Tools
+
+| Keybind                     | Use Case / Description                                                           |
+| --------------------------- | -------------------------------------------------------------------------------- |
+| **Left Shift + Drag**       | Draw a new wall segment.                                                         |
+| **Left Control + Drag**     | Extend an existing wall from a selected endpoint.                                |
+| **Space**                   | Split a wall at the selected point.                                              |
+| **Delete** or **Backspace** | Delete a selected wall point.                                                    |
+| **Right Click**             | Open options for a wall point or segment (lock, change behavior, inspect, etc.). |
+
+### Measuring Tools
+
+| Keybind                           | Use Case / Description                                              |
+| --------------------------------- | ------------------------------------------------------------------- |
+| **Left Shift + Click**            | Start measuring (all measuring actions require holding Left Shift). |
+| **Right Click (while measuring)** | Add waypoints during measurement.                                   |
+
+### Ping Tools
+
+| Keybind                     | Use Case / Description                                                   |
+| --------------------------- | ------------------------------------------------------------------------ |
+| **Left Shift + Click**      | Place a marker or show a live pointer (depending on selected ping tool). |
+| **Hold Left Shift + Click** | Focus everyone's view on the marker.                                     |
+
 ### Notes
 
-* Create Notes by selecting the `Notes` Tool and clicking on a Scene
-* By default, Notes are set to be visible only for you
-* Double clicking on a Note icon will open it
-* Modify Note text by pressin `Ctrl + M`, and save edits by pressin `Ctrl + S`
-* Move Notes around by dragging, and minimise by double clicking. Both actions can be done from the top left corner
-* Scale Notes from bottom right corner
+| Keybind                | Use Case / Description               |
+| ---------------------- | ------------------------------------ |
+| **Left Shift + Click** | Drop a Note at the clicked location. |
 
-## Blueprints
+### Token Management
 
-* Create a new Blueprint from the right panel. This will open a configuration panel. (see [Token configuration](#tokens))
-* Add Tokens to the Scene by dragging Blueprints out from the side panel
-* Right-clicking on a Blueprint in the right panel allows you to delete, modify, or set permissions for it
-* Modifying Blueprints doesn't update any Tokens already on the Scene. 
-* You can drag Blueprints and folders from one folder to another
-* Rename folders by double clicking them
+| Keybind                     | Use Case / Description                                                                |
+| --------------------------- | ------------------------------------------------------------------------------------- |
+| **Arrow Keys**              | Move a Token one cell at a time.                                                      |
+| **Left Alt + Drag**         | Drag Token without the grid snapping.                                                 |
+| **Left Control + Drag**     | Drag Token with pathfinding enabled, findign the best route around walls and corners. |
+| **Left Shift + Drop**       | Teleport the Token to the cursor position. Useful for cross-map transfers.            |
+| **Space**                   | Quickly toggle the Token on and off.                                                  |
+| **X**                       | Quickly add the **Dead** condition for the Token.                                     |
+| **Delete** or **Backspace** | Quickly delete the Token.                                                             |
+| **Q** and **E**             | Rotate the light source arount the Token.                                             |
+| **A** and **D**             | Rotate the Token.                                                                     |
 
-### Permissions
+### Token Groups
 
-* Open Permission panel by right-clicking on a Blueprint, and selecting `Permissions`
-* Configure permissions for each user you have invited to this game session
-* Clicking on `Refresh` will add any missing users, who have been invited after this Blueprint was created
-
-#### Owner
-
-* This player can see through the eyes of the Token, but cannot move or delete it.
-* This option is useful for general NPCs.
-
-#### Observer
-
-* This player can see through the Token's eyes, but have no permissions to move, or delete it
-* This option is useful for general NPCs
-
-#### None
-
-* This player does not have permissions to move, edit, delete or see through the Token's eyes.
-* This option is useful for enemies and Tokens that you don't want the player to interact with.
-
-# Keyboard shortcuts
-
-* Here are some useful keayboard shortcuts that everyone should know
-* More will be added in future updates
-
-## Game View
-
-### Tokens
-
-* `Tab`: Switch between Tokens you own
-* `Arrow keys`: Moves selected Token on the map, one cell at a time
-* `Alt`: Prevents Token from snapping to grid when moved
-
-### Side panel
-
-* `Num 1`: Pan Tool
-* `Num 2`: Measure Tools
-* `Num 3`: Ping Tool
-* `Num 4`: Note Tool
-* `Num 5`: Fog Tools (Game Master only)
-* `Num 6`: Light Tools (Game Master only)
+| Keybind                           | Use Case / Description                           |
+| --------------------------------- | ------------------------------------------------ |
+| **Left Control + Click**          | Multi-select Tokens for grouping.                |
+| **Left Control + 1/2/3**          | Assign selected Tokens to Group 1, 2, or 3.      |
+| **Left Control + [group number]** | Remove a Token from a group (toggle assignment). |
