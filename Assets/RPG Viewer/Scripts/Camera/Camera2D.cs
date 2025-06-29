@@ -28,10 +28,13 @@ namespace RPG
         private void Update()
         {
             HandleCameraZoom();
+            bool forceMove = Input.GetMouseButtonDown(2);
+            bool mouseDown = !Input.GetKey(KeyCode.LeftShift) && Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject();
+            bool mouseUp = Input.GetMouseButtonUp(0) || Input.GetMouseButtonUp(2);
 
-            if (UsePan)
+            if (UsePan || forceMove)
             {
-                if (!Input.GetKey(KeyCode.LeftShift) && Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject())
+                if (mouseDown || forceMove)
                 {
                     panActive = true;
                     panPosition = (Vector2)Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -39,7 +42,7 @@ namespace RPG
                 }
             }
 
-            if (Input.GetMouseButtonUp(0))
+            if (mouseUp)
             {
                 panActive = false;
                 panPosition = Vector2.zero;

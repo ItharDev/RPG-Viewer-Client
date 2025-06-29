@@ -80,12 +80,7 @@ namespace RPG
 
             if (!Input.GetMouseButton(0))
             {
-                camera2D.UsePan = true;
-                measuring = false;
-                waypoints.Clear();
-                infoPanel.SetActive(false);
-                if (line != null) VectorLine.Destroy(ref line);
-                line = null;
+                StopMeasurement();
             }
         }
         private void LateUpdate()
@@ -128,6 +123,17 @@ namespace RPG
 
             infoPanel.SetActive(true);
         }
+
+        public void StopMeasurement()
+        {
+            camera2D.UsePan = true;
+            measuring = false;
+            waypoints.Clear();
+            infoPanel.SetActive(false);
+            if (line != null) VectorLine.Destroy(ref line);
+            line = null;
+        }
+
         public void MeasureDistance(List<Vector2> waypoints)
         {
             camera2D.UsePan = false;

@@ -16,6 +16,7 @@ namespace RPG
         private GridData gridData;
         private VectorLine line;
         private float moveSpeed;
+        private float moveTimer;
 
         private void Awake()
         {
@@ -40,7 +41,11 @@ namespace RPG
             if (!canvasGroup.blocksRaycasts) return;
 
             // Check if any of the arrow keys are pressed down
-            if (!CheckArrowKeys()) return;
+            if (!CheckArrowKeys())
+            {
+                moveTimer = 0.25f;
+                return;
+            }
 
             MoveGrid();
         }
@@ -59,13 +64,25 @@ namespace RPG
             float inputX = Input.GetAxisRaw("Horizontal");
             float inputY = Input.GetAxisRaw("Vertical");
 
-            corners[0].transform.position += new Vector3(inputX * moveSpeed, inputY * moveSpeed);
-            corners[1].transform.position += new Vector3(inputX * moveSpeed, inputY * moveSpeed);
-            corners[2].transform.position += new Vector3(inputX * moveSpeed, inputY * moveSpeed);
-            corners[3].transform.position += new Vector3(inputX * moveSpeed, inputY * moveSpeed);
+            Vector3 direction = new Vector2(inputX * moveSpeed, inputY * moveSpeed);
+            if (moveTimer > 0.0f && Input.GetKey(KeyCode.LeftShift)) direction = Vector2.zero;
+            if (Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyUp(KeyCode.LeftShift)) moveTimer = 0.5f;
+
+            // If shift is held down, move faster
+            if (Input.GetKey(KeyCode.LeftShift) && moveTimer >= 0.25f)
+            {
+                moveTimer = 0.0f;
+                direction = new Vector2(gridData.cellSize * inputX, gridData.cellSize * inputY);
+            }
+
+            corners[0].transform.position += direction;
+            corners[1].transform.position += direction;
+            corners[2].transform.position += direction;
+            corners[3].transform.position += direction;
 
             gridData.position = corners[2].transform.position;
             UpdateGrid(gridData.cellSize);
+            moveTimer += Time.deltaTime;
         }
 
         private void ReloadGrid(GridData newData, bool reloadRequired, bool globalUpdate)

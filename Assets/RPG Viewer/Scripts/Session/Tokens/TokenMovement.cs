@@ -60,6 +60,13 @@ namespace RPG
                     dragPoints.Add(transform.position);
                     MeasurementManager.Instance.StartMeasurement(transform.position, Input.GetKey(KeyCode.LeftAlt) ? MeasurementType.Precise : MeasurementType.Grid);
                 }
+
+                if (Input.GetKeyDown(KeyCode.Space))
+                {
+                    dragging = false;
+                    Destroy(dragObject.gameObject);
+                    MeasurementManager.Instance.StopMeasurement();
+                }
             }
 
             // Return if token is not selected or we are edting any fields
