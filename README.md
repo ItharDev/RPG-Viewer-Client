@@ -260,13 +260,6 @@ Lighting presets allow you to save and reuse specific lighting configurations ac
 
 To apply a preset, select one from the top right corner of the lighting configuration screen. This marks the current light source to use that preset. Any future changes made to the preset will automatically update all light sources using it.
 
-> [!TIP]  
-> You've created a "Dungeon Torch" preset with a warm orange color and applied it to every torch in your Scene. All looks good... until your players enters a magical field that causes the torches to glow blue.
-> 
-> You update the preset to reflect the new look — switching the hue to blue. Instantly, every linked torch updates across the Scene, no need to click each one individually.
-> 
-> Just remember: if you had tweaked a torch earlier to dim it slightly or change the color for "variety," it's no longer using the preset — and won't be affected by these changes. You'll need to reassign the preset to re-establish the link.
-
 However, keep in mind:
 
 - If you manually change any field of a light source that's currently using a preset, that link will be broken.
