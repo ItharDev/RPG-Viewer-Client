@@ -50,7 +50,7 @@ namespace RPG
             listOfFolders.Sort(SortByName);
             listOfScenes.Sort(SortByName);
 
-            for (int i = 0; i < folders.Count; i++)
+            for (int i = 0; i < listOfFolders.Count; i++)
             {
                 listOfFolders[i].transform.SetSiblingIndex(i);
             }
@@ -112,8 +112,12 @@ namespace RPG
             // Instantiate scene
             SceneHolder scene = Instantiate(scenePrefab, targetFolder == null ? rootTransform : targetFolder.Content);
             scene.transform.SetAsLastSibling();
-            scenes.Add(id, scene);
-            scene.LoadData(id, path, this, targetFolder == null ? SortContent : targetFolder.SortContent);
+            scene.LoadData(id, path, this, () =>
+            {
+                scenes.Add(id, scene);
+                if (targetFolder == null) SortContent();
+                else targetFolder.SortContent();
+            });
         }
         private void LoadDirectory(System.Text.Json.JsonElement json, string id, string path)
         {
@@ -129,9 +133,13 @@ namespace RPG
             // Instantiate folder
             SceneFolder targetFolder = GetDirectoryByPath(path);
             SceneFolder folder = Instantiate(folderPrefab, targetFolder == null ? rootTransform : targetFolder.Content);
-            this.folders.Add(id, folder);
-            folder.LoadData(data, this, targetFolder == null ? SortContent : targetFolder.SortContent);
-
+            folder.LoadData(data, this, () =>
+            {
+                this.folders.Add(id, folder);
+                if (targetFolder == null) SortContent();
+                else targetFolder.SortContent();
+            });
+            
             // Load scenes
             for (int i = 0; i < contents.Length; i++)
             {

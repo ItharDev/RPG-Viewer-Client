@@ -164,8 +164,12 @@ namespace RPG
             // Instantiate journal
             JournalHolder journal = Instantiate(journalPrefab, targetFolder == null ? rootTransform : targetFolder.Content);
             journal.transform.SetAsLastSibling();
-            journals.Add(id, journal);
-            journal.LoadData(id, path, this, targetFolder == null ? SortContent : targetFolder.SortContent);
+            journal.LoadData(id, path, this, () =>
+            {
+                journals.Add(id, journal);
+                if (targetFolder == null) SortContent();
+                else targetFolder.SortContent();
+            });
         }
         private void LoadDirectory(System.Text.Json.JsonElement json, string id, string path)
         {
@@ -181,8 +185,12 @@ namespace RPG
             // Instantiate folder
             JournalFolder targetFolder = GetDirectoryByPath(path);
             JournalFolder folder = Instantiate(folderPrefab, targetFolder == null ? rootTransform : targetFolder.Content);
-            this.folders.Add(id, folder);
-            folder.LoadData(data, this, targetFolder == null ? SortContent : targetFolder.SortContent);
+            folder.LoadData(data, this, () =>
+            {
+                this.folders.Add(id, folder);
+                if (targetFolder == null) SortContent();
+                else targetFolder.SortContent();
+            });
 
             // Load folders
             for (int i = 0; i < folders.Length; i++)

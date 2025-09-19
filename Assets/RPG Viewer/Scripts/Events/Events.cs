@@ -25,6 +25,7 @@ namespace RPG
         public static UnityEvent<SceneData> OnSceneLoaded = new UnityEvent<SceneData>();
         public static UnityEvent<string> OnLandingPageChanged = new UnityEvent<string>();
         public static UnityEvent<string> OnSceneImageChanged = new UnityEvent<string>();
+        public static UnityEvent<bool> OnGamePaused = new UnityEvent<bool>();
 
         // Side panel
         public static UnityEvent OnSidePanelChanged = new UnityEvent();

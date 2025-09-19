@@ -109,6 +109,13 @@ namespace Networking
                 await UniTask.SwitchToMainThread();
                 Events.OnSceneImageChanged?.Invoke(id);
             });
+            Socket.On("pause-game", async (data) =>
+            {
+                bool paused = data.GetValue().GetBoolean();
+
+                await UniTask.SwitchToMainThread();
+                Events.OnGamePaused?.Invoke(paused);
+            });
 
             // Walls
             Socket.On("create-wall", async (data) =>

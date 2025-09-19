@@ -26,9 +26,13 @@ namespace RPG
         [Space]
         [SerializeField] private GameObject imageButton;
         [SerializeField] private GameObject syncButton;
+        [SerializeField] private GameObject pauseButton;
         [SerializeField] private Image syncIcon;
+        [SerializeField] private Image pauseIcon;
         [SerializeField] private Sprite syncedSprite;
         [SerializeField] private Sprite desyncedSprite;
+        [SerializeField] private Sprite pauseSprite;
+        [SerializeField] private Sprite playSprite;
         [SerializeField] private GameObject tokensButton;
         [SerializeField] private GameObject scenesButton;
 
@@ -37,6 +41,7 @@ namespace RPG
         [SerializeField] private EffectList effectList;
 
         private bool open;
+        private bool isPaused;
         private float targetWidthOpen;
         private float targetWidthClose;
 
@@ -44,11 +49,13 @@ namespace RPG
         {
             // Add event listeners
             Events.OnStateChanged.AddListener(SetSynced);
+            Events.OnGamePaused.AddListener(SetPaused);
         }
         private void OnDisable()
         {
             // Add event listeners
             Events.OnStateChanged.RemoveListener(SetSynced);
+            Events.OnGamePaused.RemoveListener(SetPaused);
         }
         private void Start()
         {
@@ -58,6 +65,7 @@ namespace RPG
             {
                 imageButton.gameObject.SetActive(false);
                 syncButton.gameObject.SetActive(false);
+                pauseButton.gameObject.SetActive(false);
                 scenesButton.gameObject.SetActive(false);
                 targetWidthOpen = 160.0f;
                 targetWidthClose = 100.0f;
@@ -69,6 +77,12 @@ namespace RPG
         private void SetSynced(SessionState oldState, SessionState newState)
         {
             syncIcon.sprite = newState.synced ? syncedSprite : desyncedSprite;
+        }
+
+        private void SetPaused(bool state)
+        {
+            pauseIcon.sprite = state ? pauseSprite : playSprite;
+            isPaused = state;
         }
 
         public void SelectTokens()
@@ -179,6 +193,17 @@ namespace RPG
                 // Send error message
                 MessageManager.QueueMessage(callback.GetValue(1).GetString());
             }, ConnectionManager.State.scene, !ConnectionManager.State.synced);
+        }
+        public void Pause()
+        {
+            SocketManager.EmitAsync("pause-game", (callback) =>
+            {
+                // Check if the event was successful
+                if (callback.GetValue().GetBoolean()) return;
+
+                // Send error message
+                MessageManager.QueueMessage(callback.GetValue(1).GetString());
+            }, !isPaused);
         }
         public async void SelectImage()
         {

@@ -161,8 +161,12 @@ namespace RPG
             // Instantiate token
             TokenHolder token = Instantiate(tokenPrefab, targetFolder == null ? rootTransform : targetFolder.Content);
             token.transform.SetAsLastSibling();
-            tokens.Add(id, token);
-            token.LoadData(id, path, this, targetFolder == null ? SortContent : targetFolder.SortContent);
+            token.LoadData(id, path, this, () =>
+            {
+                tokens.Add(id, token);
+                if (targetFolder == null) SortContent();
+                else targetFolder.SortContent();
+            });
         }
         private void LoadDirectory(System.Text.Json.JsonElement json, string id, string path)
         {
@@ -178,8 +182,12 @@ namespace RPG
             // Instantiate folder
             TokenFolder targetFolder = GetDirectoryByPath(path);
             TokenFolder folder = Instantiate(folderPrefab, targetFolder == null ? rootTransform : targetFolder.Content);
-            this.folders.Add(id, folder);
-            folder.LoadData(data, this, targetFolder == null ? SortContent : targetFolder.SortContent);
+            folder.LoadData(data, this, () =>
+            {
+                this.folders.Add(id, folder);
+                if (targetFolder == null) SortContent();
+                else targetFolder.SortContent();
+            });
 
             // Load folders
             for (int i = 0; i < folders.Length; i++)
