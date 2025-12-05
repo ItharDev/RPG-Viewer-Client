@@ -43,6 +43,9 @@ namespace RPG
                 case GameView.Vision:
                     LoadVision();
                     return;
+                case GameView.Lights:
+                    LoadLights();
+                    return;
                 case GameView.Clear:
                     LoadClear();
                     return;
@@ -65,7 +68,7 @@ namespace RPG
             {
                 case GameView.Player:
                     Lighting2D.LightmapPresets[0].darknessColor = data.darkness.color;
-                    Lighting2D.LightmapPresets[0].darknessColor= data.darkness.globalLighting;
+                    Lighting2D.LightmapPresets[0].darknessColor = data.darkness.globalLighting;
                     Lighting2D.LightmapPresets[1].darknessColor = data.darkness.color;
                     return;
                 case GameView.Vision:
@@ -89,6 +92,11 @@ namespace RPG
             Lighting2D.LightmapPresets[0].darknessColor = new Color(0.0f, 0.0f, 0.0f, 0.0f);
             Lighting2D.LightmapPresets[1].darknessColor = Session.Instance.Settings.darkness.color;
             Lighting2D.LightmapPresets[1].darknessColor.a = 0.9f;
+        }
+        private void LoadLights()
+        {
+            Lighting2D.LightmapPresets[1].darknessColor = new Color(0.0f, 0.0f, 0.0f, 0.0f);
+            Lighting2D.LightmapPresets[0].darknessColor = Session.Instance.Settings.darkness.color;
         }
         private void LoadClear()
         {
@@ -137,6 +145,7 @@ namespace RPG
     {
         Player,
         Vision,
+        Lights,
         Clear
     }
 }

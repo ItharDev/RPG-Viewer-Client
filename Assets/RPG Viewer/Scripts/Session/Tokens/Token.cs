@@ -50,11 +50,13 @@ namespace RPG
 
             // Add event listeners
             Events.OnTokensSelected.AddListener(HandleSelection);
+            Events.OnViewChanged.AddListener(ChangeView);
         }
         private void OnDisable()
         {
             // Remove event listeners
             Events.OnTokensSelected.RemoveListener(HandleSelection);
+            Events.OnViewChanged.RemoveListener(ChangeView);
         }
         private void Update()
         {
@@ -79,6 +81,11 @@ namespace RPG
 
             if (Selected) FindFirstObjectByType<Camera2D>().FollowTarget(transform);
             Vision.ToggleVision(Enabled && Visibility.visible && (Data.enabled || ConnectionManager.Info.isMaster));
+        }
+
+        private void ChangeView(GameView view)
+        {
+            Vision.ToggleLight(Data.lightEnabled && view != GameView.Lights);
         }
 
         private void HandleDeletion()

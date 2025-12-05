@@ -436,7 +436,6 @@ public partial class VectorLine {
 	float m_textureScale;
 	[SerializeField]
 	bool m_useTextureScale = false;
-	[SerializeField]
 	public float textureScale {
 		get {return m_textureScale;}
 		set {

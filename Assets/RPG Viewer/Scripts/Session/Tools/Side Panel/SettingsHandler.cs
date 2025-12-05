@@ -39,6 +39,7 @@ namespace RPG
         [SerializeField] private ToolButton viewButton;
         [SerializeField] private ToolButton playerButton;
         [SerializeField] private ToolButton visionButton;
+        [SerializeField] private ToolButton lightsButton;
         [SerializeField] private ToolButton clearButton;
         [SerializeField] private RectMask2D viewMask;
 
@@ -254,6 +255,7 @@ namespace RPG
             playerButton.Select();
             visionButton.Deselect();
             clearButton.Deselect();
+            lightsButton.Deselect();
 
             // Update tool states
             LastView = GameView.Player;
@@ -266,10 +268,23 @@ namespace RPG
             visionButton.Select();
             playerButton.Deselect();
             clearButton.Deselect();
+            lightsButton.Deselect();
 
             // Update tool states
             LastView = GameView.Vision;
             Events.OnViewChanged?.Invoke(GameView.Vision);
+        }
+        public void SelectLights()
+        {
+            // Update selections
+            lightsButton.Select();
+            playerButton.Deselect();
+            visionButton.Deselect();
+            clearButton.Deselect();
+
+            // Update tool states
+            LastView = GameView.Lights;
+            Events.OnViewChanged?.Invoke(GameView.Lights);
         }
         public void SelectClear()
         {

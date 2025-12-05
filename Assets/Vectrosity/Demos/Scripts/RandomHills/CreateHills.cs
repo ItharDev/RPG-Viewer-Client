@@ -34,7 +34,7 @@ public class CreateHills : MonoBehaviour {
 		if (GUI.Button (new Rect(10, 10, 150, 40), "Make new hills")) {
 			CreateHillLine();
 			ball.transform.position = storedPosition;
-			ball.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
+			ball.GetComponent<Rigidbody2D>().linearVelocity = Vector2.zero;
 			ball.GetComponent<Rigidbody2D>().WakeUp();
 		}
 	}
