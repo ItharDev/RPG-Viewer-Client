@@ -259,7 +259,6 @@ namespace RPG
 
             // Update tool states
             LastView = GameView.Player;
-            activeSetting = Setting.Visibility;
             Events.OnViewChanged?.Invoke(GameView.Player);
         }
         public void SelectVision()
@@ -292,6 +291,7 @@ namespace RPG
             clearButton.Select();
             playerButton.Deselect();
             visionButton.Deselect();
+            lightsButton.Deselect();
 
             // Update tool states
             LastView = GameView.Clear;
@@ -542,6 +542,7 @@ namespace RPG
             // Activate last tool selection
             if (LastView == GameView.Player) SelectPlayer();
             else if (LastView == GameView.Vision) SelectVision();
+            else if (LastView == GameView.Lights) SelectLights();
             else SelectClear();
         }
         public void CloseView()

@@ -96,7 +96,7 @@ namespace RPG
         private void LoadLights()
         {
             Lighting2D.LightmapPresets[1].darknessColor = new Color(0.0f, 0.0f, 0.0f, 0.0f);
-            Lighting2D.LightmapPresets[0].darknessColor = Session.Instance.Settings.darkness.color;
+            Lighting2D.LightmapPresets[0].darknessColor = Session.Instance.Settings.darkness.globalLighting;
         }
         private void LoadClear()
         {
@@ -132,6 +132,10 @@ namespace RPG
                     Lighting2D.LightmapPresets[0].darknessColor = new Color(0.0f, 0.0f, 0.0f, 0.0f);
                     Lighting2D.LightmapPresets[1].darknessColor = data.color;
                     Lighting2D.LightmapPresets[1].darknessColor.a = 0.9f;
+                    return;
+                case GameView.Lights:
+                    Lighting2D.LightmapPresets[1].darknessColor = new Color(0.0f, 0.0f, 0.0f, 0.0f);
+                    Lighting2D.LightmapPresets[0].darknessColor = data.globalLighting;
                     return;
                 case GameView.Clear:
                     Lighting2D.LightmapPresets[0].darknessColor.a = 0.0f;
